@@ -1,0 +1,19 @@
+{
+  "name": "steps_networking_module",
+  "version": "1.0.0",
+  "description": "A networking module integrated with SoC term Project Showcase (STePS) in NUS",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nus-mtp/steps-networking-module.git"
+  },
+  "author": "XORcerors",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nus-mtp/steps-networking-module/issues"
+  },
+  "homepage": "https://github.com/nus-mtp/steps-networking-module#readme"
+}
