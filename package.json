@@ -4,7 +4,8 @@
   "description": "A networking module integrated with SoC term Project Showcase (STePS) in NUS",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/nus-mtp/steps-networking-module/issues"
   },
-  "homepage": "https://github.com/nus-mtp/steps-networking-module#readme"
+  "homepage": "https://github.com/nus-mtp/steps-networking-module#readme",
+  "dependencies": {
+    "express": "^4.14.1",
+    "react": "^15.4.2"
+  }
 }
