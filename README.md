@@ -4,12 +4,12 @@ SoC term Project Showcase (STePS) System has event workflow management, registra
 ## Setup
 
 ### Prerequisite
-* Node v6.3.0
+* Node v6.3.0 and above
 
 ### First Installation
 1. Clone the repository
 2. In the root directory, install the dependencies with: `npm install`
-3. In the same directory, run the web server with `npm start`
+3. In the same directory, run the web server with `gulp`
 4. Paste the address shown in your terminal into your browser
 
 ## Development
@@ -17,9 +17,10 @@ SoC term Project Showcase (STePS) System has event workflow management, registra
 ### Github Workflow
 1. Branch from `develop` and name the branch with the issue name
 2. Perform all work only on your branch
-3. Push the main branch (the one with the issue name) to the origin after all work has been completed
-4. Wait for clearance from the team (i.e. next meeting) before merging your branch into `develop`
-5. Merge `develop` into `master` upon release
+3. All commits should have <=50 characters and should be concise and accurate of your work
+4. Push the main branch (the one with the issue name) to the origin after all work has been completed
+5. Wait for clearance from the team (i.e. next meeting) before merging your branch into `develop`
+6. Merge `develop` into `master` upon release
 
 ### Coding Standards
 Lint according to `https://github.com/airbnb/javascript`
