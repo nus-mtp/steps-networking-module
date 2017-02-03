@@ -1,1 +1,10 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# npm files
 node_modules
+
+# production files
+dist
