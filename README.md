@@ -23,4 +23,7 @@ SoC term Project Showcase (STePS) System has event workflow management, registra
 6. Merge `develop` into `master` upon release
 
 ### Coding Standards
-Lint according to `https://github.com/airbnb/javascript`
+Lint according to https://github.com/airbnb/javascript
+
+### Coding Standards 
+Version numbering according to http://semver.org/
