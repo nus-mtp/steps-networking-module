@@ -4,7 +4,7 @@
   "description": "A networking module integrated with SoC term Project Showcase (STePS) in NUS",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "start": "node server.js"
   },
   "repository": {
