@@ -3,8 +3,8 @@ var path = require('path');
 
 var config = {
   output: {
-    filename: 'app.js',
-    sourceMapFilename: 'app.js.map'
+    filename: 'main.js',
+    sourceMapFilename: 'main.js.map'
   },
   debug: true,
   devtool: 'source-map',

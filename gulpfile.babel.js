@@ -45,7 +45,7 @@ gulp.task('image', () =>
 );
 
 gulp.task('bundle', () =>
-  gulp.src('./app/app.js')
+  gulp.src('./app/main.js')
     .pipe(webpack(webpackConfig))
     .pipe(gulp.dest(rootDir))
 );
