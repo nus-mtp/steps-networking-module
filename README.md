@@ -25,5 +25,5 @@ SoC term Project Showcase (STePS) System has event workflow management, registra
 ### Coding Standards
 Lint according to https://github.com/airbnb/javascript
 
-### Coding Standards 
+### Version Standards 
 Version numbering according to http://semver.org/
