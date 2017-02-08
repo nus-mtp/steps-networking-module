@@ -1,0 +1,6 @@
+@import '/css/bootstrap.min.css';
+
+#root {
+  @import 'header';
+  @import 'body';
+}
