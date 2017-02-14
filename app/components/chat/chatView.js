@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-impo
 
 export default class ChatView extends Component {
 	constructor(props) {
@@ -58,7 +57,7 @@ export default class ChatView extends Component {
 				<div className="container-fluid">
 					{this.state.messages}
 				</div>
-				<div className="row align-items-end" id="chat-form-container">
+				<div className="fixed-bottom" id="chat-form-container">
 					<div className="col-12">
 						<form 
 							onSubmit={this.handleSubmit.bind(this)}>

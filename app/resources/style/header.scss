@@ -1,8 +1,10 @@
 #header {
-  display: flex;
-  box-shadow: 0px 3px 5px #888888;
+	display: flex;
+	box-shadow: 0px 3px 5px #888888;
+	background-color:white;
+	flex-direction: row;
 
-  #brand-logo {
-    height: 50px;
-  }
+	#brand-logo {
+		height: 50px;
+	}
 }
