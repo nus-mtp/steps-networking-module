@@ -7,7 +7,7 @@ class ProjectView extends React.Component {
 
         <div className="row justify-content-center">
           <div id="project-poster">
-            <img src="../../resources/images/dummy-poster.png" alt="project-poster" />
+            <img className="img-fluid" src="../../resources/images/dummy-poster.png" alt="project-poster" />
           </div>
         </div>
 
