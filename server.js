@@ -11,7 +11,7 @@ app.use(express.static(__dirname + '/dist'));
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));  // redirect CSS bootstrap
 
 // Initialize database connection once
-var url = "mongodb://localhost:27017/STePsDB"; // mongodb://localhost:27017/<databaseToUse>
+var url = "mongodb://localhost:27017/fake-data"; // mongodb://localhost:27017/<databaseToUse>
 MongoClient.connect(url, function(err, database) {
 	if (err) throw err;
 	
