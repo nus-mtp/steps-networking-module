@@ -1,6 +1,7 @@
 @import '/css/bootstrap.min.css';
 
 #root {
-  @import 'header';
-  @import 'body';
+  	@import 'header';
+  	@import 'body';
+	@import 'chat';
 }
