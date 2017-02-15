@@ -1,6 +1,6 @@
 var should = require("should");
 var mongoose = require('mongoose');
-var Account = require("../models/account.js");
+var Account = require("../server/models/account.js");
 var db;
 
 describe('Account', function() {
@@ -17,8 +17,12 @@ describe('Account', function() {
 
     beforeEach(function(done) {
         var account = new Account({
-            username: '12345',
-            password: 'testy'
+            username: 'saitama',
+            password: 'onepunch',
+            email: 'onepunchman@hero.association.com',
+            description: 'strongest man alive',
+            will_notify: 'genos',
+            is_deleted: false,
         });
 
         account.save(function(error) {
@@ -29,10 +33,14 @@ describe('Account', function() {
     });
 
     it('find a user by username', function(done) {
-        Account.findOne({ username: '12345' }, function(err, account) {
-            account.username.should.eql('12345');
+        Account.findOne({ username: 'saitama' }, function(err, account) {
+            account.username.should.eql('saitama');
             console.log("   username: ", account.username);
-            console.log("   username: ", account.password);
+            console.log("   password: ", account.password);
+            console.log("   email: ", account.email);
+            console.log("   description: ", account.description);
+            console.log("   will_notify: ", account.will_notify);
+            console.log("   is_deleted: ", account.is_deleted);
             done();
         });
     });

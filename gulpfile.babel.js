@@ -72,7 +72,7 @@ gulp.task('watch', () => {
 /** run gulp task for development **/
 gulp.task('default', ['watch', 'css', 'html', 'image', 'bundle'], () => {
   nodemon({
-    script: './server.js',
+    script: './server/server.js',
     ignore: ['./dist/'],
   });
 });
