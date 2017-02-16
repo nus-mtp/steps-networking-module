@@ -1,0 +1,4 @@
+{
+  "dbUri": "mongodb://localhost/xorcerors",
+  "jwtSecret": "secret-phrase"
+}
