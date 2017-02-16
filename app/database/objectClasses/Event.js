@@ -1,5 +1,5 @@
 class EventClass{
-    constructor(EventID, EventName = "eventName", EventDescription = "description", StartDate = 0, EndDate = 0, Location = "location", Map = null) {
+    constructor(EventID, EventName, EventDescription, StartDate, EndDate, Location, Map) {
         //self-generated eventID
         this.EventID=0; //dummy value
         this.EventName=EventName;
