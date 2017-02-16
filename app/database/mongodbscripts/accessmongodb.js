@@ -2,8 +2,6 @@
 // Note 2: Run this script via command prompt in the root of the project: node "<full_file_path>/<this_file>.js"
 // Note 3: All functions here take in a DB object from a MongoDB connection
 
-var generateDocuments = require("./generateDocuments.js");
-
 /*
 	Inserts one document into a specified collection in the DB.
 	

@@ -1,5 +1,5 @@
 /* 
-	Generates a Visits Document JS Object that can be inserted into a User Document.
+	Creates a Visits Document JS Object that can be inserted into a User Document.
 	This tracks a Visits relationship between the User and an Event.
 	
 	@param {string} eventID: Specifies the ID of the Event that the User is visiting.
@@ -8,7 +8,7 @@
 	@return {JSObj}	
 */
 
-function generateVisitsDocument(eventID, reason) {
+function createVisitsDocument(eventID, reason) {
     return {
 
         // Passed in Arguments
@@ -18,7 +18,7 @@ function generateVisitsDocument(eventID, reason) {
 }
 
 /* 
-	Generates a Participate Document JS Object that can be inserted into a User Document.
+	Creates a Participate Document JS Object that can be inserted into a User Document.
 	This tracks a Participate relationship between the User and an Event.
 	
 	@param {string} exhibitionID: Specifies the ID of the Exhibition that the User is participating in.
@@ -27,7 +27,7 @@ function generateVisitsDocument(eventID, reason) {
 	@return {JSObj}	
 */
 
-function generateParticipateDocument(exhibitionID, reason) {
+function createParticipateDocument(exhibitionID, reason) {
     return {
 
         // Passed in Arguments
@@ -37,7 +37,7 @@ function generateParticipateDocument(exhibitionID, reason) {
 }
 
 /*
-	Generates an Exhibition Document JS Object that can be inserted into the Database.
+	Creates an Exhibition Document JS Object that can be inserted into the Database.
 	
 	@param {string} exhibitionname: Specifies the Name of the Exhibition
 	@param {string} exhibitiondescription: Specifies the Description of the Exhibition
@@ -45,7 +45,7 @@ function generateParticipateDocument(exhibitionID, reason) {
 	@return {JSObj}
 */
 
-function generateExhibitionDocument(exhibitionname, exhibitiondescription) {
+function createExhibitionDocument(exhibitionname, exhibitiondescription) {
 
     return {
 
@@ -59,7 +59,7 @@ function generateExhibitionDocument(exhibitionname, exhibitiondescription) {
 }
 
 /*
-	Generates an Event Document JS Object that can be inserted into the Database.
+	Creates an Event Document JS Object that can be inserted into the Database.
 	
 	@param {string} eventName: Specifies the Event's name.
 	@param {string} eventDescription: Specifies the Event's description.
@@ -72,7 +72,7 @@ function generateExhibitionDocument(exhibitionname, exhibitiondescription) {
 	@return {JSObj}
 */
 
-function generateEventDocument(eventName, eventDescription, startDate, endDate, eventLocation, eventMap, eventPicture) {
+function createEventDocument(eventName, eventDescription, startDate, endDate, eventLocation, eventMap, eventPicture) {
     return {
 
         // Passed in Arguments	
@@ -94,7 +94,7 @@ function generateEventDocument(eventName, eventDescription, startDate, endDate, 
 }
 
 /*
-	Generates a User Document JS Object that can be inserted into the Database.
+	Creates a User Document JS Object that can be inserted into the Database.
 	
 	@param {string} email: Specifies the User's email.
 	@param {string} name: Specifies the User's name.
@@ -104,7 +104,7 @@ function generateEventDocument(eventName, eventDescription, startDate, endDate, 
 	@return {JSObj}
 */
 
-function generateUserDocument(email, name, description, hashedPw) {
+function createUserDocument(email, name, description, hashedPw) {
     return {
 
         // Passed in Arguments
@@ -125,8 +125,8 @@ function generateUserDocument(email, name, description, hashedPw) {
     };
 }
 
-module.exports.visitsGenerator = generateVisitsDocument;
-module.exports.participateGenerator = generateParticipateDocument;
-module.exports.exhibitionGenerator = generateExhibitionDocument;
-module.exports.eventGenerator = generateEventDocument;
-module.exports.userGenerator = generateUserDocument;
+module.exports.createVisitDoc = createVisitsDocument;
+module.exports.createParticipateDoc = createParticipateDocument;
+module.exports.createExhibitionDoc = createExhibitionDocument;
+module.exports.createEventDoc = createEventDocument;
+module.exports.createUserDoc = createUserDocument;
