@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router';
 
 class Login extends React.Component {
   constructor(props) {
@@ -7,20 +8,26 @@ class Login extends React.Component {
 
   render() {
     return(
-      <div id="login-form">
-        {this.props.successMessage && <p className="success-message">{this.props.successMessage}</p>}
-        {this.props.errors.summary && <p className="error-message">{this.props.errors.summary}</p>}
-        <form>
-          <div className="form-group">
-            <label htmlFor="inputEmail">Email address</label>
-            <input type="email" className="form-control" id="inputEmail" aria-describedby="emailHelp" placeholder="Enter email" ref="email" onChange={this.props.onChangeEmail}/>
-          </div>
-          <div className="form-group">
-            <label htmlFor="inputPassword">Password</label>
-            <input type="password" className="form-control" id="inputPassword" placeholder="Password" ref="password" onChange={this.props.onChangePassword}/>
-          </div>
-          <button type="submit" className="btn btn-primary" onClick={this.props.onSubmit}>Submit</button>
-        </form>
+      <div id="login-form" className="card">
+        <h3 className="card-header">Login</h3>
+        <div className="card-block">
+          { this.props.successMessage && <div className="alert alert-success success-message"><strong>Login successful! </strong>{this.props.successMessage}</div> }
+          { this.props.errors.summary && <div className="alert alert-danger error-message"><strong>Unable to login! </strong>{this.props.errors.summary}</div> }
+          <form className="authentication-form">
+            <div className="form-group">
+              <label htmlFor="inputEmail">Email address</label>
+              <input type="email" className="form-control" id="inputEmail" aria-describedby="emailHelp" placeholder="Enter email" ref="email" onChange={this.props.onChangeEmail}/>
+            </div>
+            <div className="form-group">
+              <label htmlFor="inputPassword">Password</label>
+              <input type="password" className="form-control" id="inputPassword" placeholder="Password" ref="password" onChange={this.props.onChangePassword}/>
+            </div>
+            <button type="submit" className="btn btn-primary" onClick={this.props.onSubmit}>Submit</button>
+          </form>
+        </div>
+        <div className="card-block">
+          Don&apos;t have an account? <Link to="/signup">Create one!</Link>
+        </div>
       </div>
     );
   }
