@@ -5,4 +5,12 @@
   #brand-logo {
     height: 50px;
   }
+
+  #user-authentication-buttons {
+    width: 100%;
+
+    #login, #signin, #logout {
+      margin: 10px;
+    }
+  }
 }
