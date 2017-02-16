@@ -3,6 +3,7 @@ const babel = require('gulp-babel');
 const csso = require('gulp-csso');
 const sass = require('gulp-sass');
 const imagemin = require('gulp-imagemin');
+const mocha = require('gulp-mocha-co');
 const eslint = require('gulp-eslint');
 const nodemon = require('nodemon');
 const webpack = require('webpack-stream');
@@ -19,6 +20,17 @@ gulp.task('lint', () =>
     .pipe(eslint())
     .pipe(eslint.formatEach())
     .pipe(eslint.failAfterError())
+);
+
+/** run test **/
+gulp.task('test', () =>
+  gulp.src('tests/*.test.js')
+    .pipe(babel({
+      presets: ['es2015'],
+    }))
+    .pipe(mocha({
+      reporter: 'Spec',
+    }))
 );
 
 /** minimizing files and bundling **/
