@@ -27,7 +27,6 @@ var localSignUpStrategy = require('./passport/local-signup');
 var localLoginStrategy = require('./passport/local-login');
 passport.use('local-signup', localSignUpStrategy);
 passport.use('local-login', localLoginStrategy);
-// app.use(passport.session());
 
 const authCheckMiddleware = require('./middleware/auth-check');
 app.use('/api', authCheckMiddleware);
