@@ -78,6 +78,20 @@ function createUserDocument(email, name, description, hashedPw) {
 }
 
 /*
+    Checks for a pre-existing User Document in the Database via the Email as the Primary Key.
+    If there is, update, if not, insert.
+
+    @param {Document Instance} doc: Specifies a User Document Instance.
+
+
+function upsertUserDocument(doc) {
+    User.findOneAndUpdate({ email: doc.email }, doc, { upsert: true }, function(err, doc) {
+        if (err) console.log(err);
+    });
+}
+*/
+
+/*
 	Creates an Event Document Instance that can be inserted into the Database.
 	
 	@param {string} eventName: Specifies the Event's name.
