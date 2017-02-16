@@ -115,3 +115,7 @@ function createEventDocument(eventName, eventDescription, startDate, endDate, ev
 function createExhibitionDocument(exhibitionname, exhibitiondescription) {
     return new Exhibition({ exhibition_name: exhibitionname, exhibition_description: exhibitiondescription });
 }
+
+module.exports.createUserDocument = createUserDocument;
+module.exports.createEventDocument = createEventDocument;
+module.exports.createExhibitionDocument = createExhibitionDocument;
