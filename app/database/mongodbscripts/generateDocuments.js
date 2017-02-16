@@ -10,6 +10,8 @@
 
 function generateVisitsDocument(eventID, reason) {
 	return {
+	
+		// Passed in Arguments
 		"eventID" : eventID,
 		"reason" : reason
 	};
@@ -25,10 +27,69 @@ function generateVisitsDocument(eventID, reason) {
 	@return {JSObj}	
 */
 
-function generateParticipateDocument(eventID, reason) {
+function generateParticipateDocument(exhibitionID, reason) {
 	return {
-		"exhibitionID" : eventID,
+	
+		// Passed in Arguments
+		"exhibitionID" : exhibitionID,
 		"reason" : reason
+	};
+}
+
+/*
+	Generates an Exhibition Document JS Object that can be inserted into the Database.
+	
+	@param {string} exhibitionname: Specifies the Name of the Exhibition
+	@param {string} exhibitiondescription: Specifies the Description of the Exhibition
+	
+	@return {JSObj}
+*/
+
+function generateExhibitionDocument(exhibitionname, exhibitiondescription) {
+	
+	return {
+	
+		// Passed in Arguments	
+		"exhibitionname" : exhibitionname, 
+		"exhibitiondescription" : exhibitiondescription
+		
+		// Other Default Fields
+		
+	};
+}
+
+/*
+	Generates an Event Document JS Object that can be inserted into the Database.
+	
+	@param {string} eventName: Specifies the Event's name.
+	@param {string} eventDescription: Specifies the Event's description.
+	@param {ISOstring} startDate: Specifies the Event's start date.
+	@param {ISOstring} endDate: Specifies the Event's end date.
+	@param {string} eventLocation: Specifies a description about the Event's location.
+	@param {string} eventMap: Specifies a URL to a visual Map.
+	@param {string} eventPicture: Specifies a URL to a visual Picture.
+	
+	@return {JSObj}
+*/
+
+function generateEventDocument(eventName, eventDescription, startDate, endDate, eventLocation, eventMap, eventPicture) {
+	return {
+	
+		// Passed in Arguments	
+	
+		"event_name" : eventName,
+		"event_description" : eventDescription, 
+		"start_date" : new Date(startDate),
+		"end_date" : new Date(endDate), 
+		"event_location" : eventLocation, 
+		"event_map" : eventMap, 
+		"event_picture" : eventPicture,
+		
+		// Other Default Fields
+		
+		"exhibitions_hosted" : [], 				// Supposed to store Exhibition IDs that the Event has
+		"tags" : [], 							// Supposed to store Tags in the form of Strings
+		
 	};
 }
 
@@ -38,12 +99,12 @@ function generateParticipateDocument(eventID, reason) {
 	@param {string} email: Specifies the User's email.
 	@param {string} name: Specifies the User's name.
 	@param {string} description: Specifies a description about the User.
-	@param {string} hashed_pw: Specifies the User's hashed_pw
+	@param {string} hashedPw: Specifies the User's hashed_pw
 	
 	@return {JSObj}
 */
 
-function generateUserDocument(email, name, description, hashed_pw) {
+function generateUserDocument(email, name, description, hashedPw) {
 	return {
 		
 		// Passed in Arguments
@@ -51,7 +112,7 @@ function generateUserDocument(email, name, description, hashed_pw) {
 		"email" :  email,				// A non-null unique Key
 		"name" : name,
 		"description" : description,
-		"hashed_pw" : hashed_pw, 				
+		"hashed_pw" : hashedPw, 				
 		
 		// Other Default Fields
 		
@@ -64,38 +125,3 @@ function generateUserDocument(email, name, description, hashed_pw) {
 	};
 }
 
-/*
-	Generates a Event Document JS Object that can be inserted into the Database.
-	
-	@param {string} eventname: Specifies the Event's name.
-	@param {string} eventdescription: Specifies the Event's description.
-	@param {ISOstring} startdate: Specifies the Event's start date.
-	@param {ISOstring} enddate: Specifies the Event's end date.
-	@param {string} eventlocation: Specifies a description about the Event's location.
-	@param {string} eventmap: Specifies a URL to a visual Map.
-	@param {string} eventPicture: Specifies a URL to a visual Picture.
-	
-	@return {JSObj}
-*/
-
-function generateEventDocument(eventname, eventdescription, startdate, enddate, eventlocation, eventmap, eventPicture) {
-	
-	return {
-	
-		// Passed in Arguments	
-	
-		"eventName" : eventName,
-		"eventDescription" : eventdescription, 
-		"startdate" : new Date(startdate),
-		"enddate" : new Date(enddate), 
-		"eventlocation" : eventlocation, 
-		"eventmap" : eventmap, 
-		"eventpicture" : eventPicture,
-		
-		// Other Default Fields
-		
-		"exhibitions_hosted" : [], 				// Supposed to store Exhibition IDs that the Event has
-		"tags" : [], 							// Supposed to store Tags in the form of Strings
-		
-	};
-}
