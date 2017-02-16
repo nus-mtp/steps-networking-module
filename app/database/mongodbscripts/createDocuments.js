@@ -1,3 +1,5 @@
+var ObjectID = require("mongodb").ObjectID;
+
 /* 
 	Creates a Visits Document JS Object that can be inserted into a User Document.
 	This tracks a Visits relationship between the User and an Event.
@@ -13,7 +15,10 @@ function createVisitsDocument(eventID, reason) {
 
         // Passed in Arguments
         "eventID": eventID,
-        "reason": reason
+        "reason": reason,
+
+        // Other Default Fields
+        "_id": new ObjectID()
     };
 }
 
@@ -32,7 +37,10 @@ function createParticipateDocument(exhibitionID, reason) {
 
         // Passed in Arguments
         "exhibitionID": exhibitionID,
-        "reason": reason
+        "reason": reason,
+
+        // Other Default Fields
+        "_id": new ObjectID()
     };
 }
 
@@ -50,10 +58,12 @@ function createExhibitionDocument(exhibitionname, exhibitiondescription) {
     return {
 
         // Passed in Arguments	
+        "_id": new ObjectID(),
         "exhibitionname": exhibitionname,
-        "exhibitiondescription": exhibitiondescription
+        "exhibitiondescription": exhibitiondescription,
 
         // Other Default Fields
+        "_id": new ObjectID()
 
     };
 }
@@ -87,6 +97,8 @@ function createEventDocument(eventName, eventDescription, startDate, endDate, ev
 
         // Other Default Fields
 
+        "_id": new ObjectID(),
+
         "exhibitions_hosted": [], // Supposed to store Exhibition IDs that the Event has
         "tags": [], // Supposed to store Tags in the form of Strings
 
@@ -115,6 +127,8 @@ function createUserDocument(email, name, description, hashedPw) {
         "hashed_pw": hashedPw,
 
         // Other Default Fields
+
+        "_id": new ObjectID(),
 
         "will_notify": false,
         "is_deleted": false,
