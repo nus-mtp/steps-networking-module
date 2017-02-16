@@ -9,12 +9,12 @@
 */
 
 function generateVisitsDocument(eventID, reason) {
-	return {
-	
-		// Passed in Arguments
-		"eventID" : eventID,
-		"reason" : reason
-	};
+    return {
+
+        // Passed in Arguments
+        "eventID": eventID,
+        "reason": reason
+    };
 }
 
 /* 
@@ -28,12 +28,12 @@ function generateVisitsDocument(eventID, reason) {
 */
 
 function generateParticipateDocument(exhibitionID, reason) {
-	return {
-	
-		// Passed in Arguments
-		"exhibitionID" : exhibitionID,
-		"reason" : reason
-	};
+    return {
+
+        // Passed in Arguments
+        "exhibitionID": exhibitionID,
+        "reason": reason
+    };
 }
 
 /*
@@ -46,16 +46,16 @@ function generateParticipateDocument(exhibitionID, reason) {
 */
 
 function generateExhibitionDocument(exhibitionname, exhibitiondescription) {
-	
-	return {
-	
-		// Passed in Arguments	
-		"exhibitionname" : exhibitionname, 
-		"exhibitiondescription" : exhibitiondescription
-		
-		// Other Default Fields
-		
-	};
+
+    return {
+
+        // Passed in Arguments	
+        "exhibitionname": exhibitionname,
+        "exhibitiondescription": exhibitiondescription
+
+        // Other Default Fields
+
+    };
 }
 
 /*
@@ -73,24 +73,24 @@ function generateExhibitionDocument(exhibitionname, exhibitiondescription) {
 */
 
 function generateEventDocument(eventName, eventDescription, startDate, endDate, eventLocation, eventMap, eventPicture) {
-	return {
-	
-		// Passed in Arguments	
-	
-		"event_name" : eventName,
-		"event_description" : eventDescription, 
-		"start_date" : new Date(startDate),
-		"end_date" : new Date(endDate), 
-		"event_location" : eventLocation, 
-		"event_map" : eventMap, 
-		"event_picture" : eventPicture,
-		
-		// Other Default Fields
-		
-		"exhibitions_hosted" : [], 				// Supposed to store Exhibition IDs that the Event has
-		"tags" : [], 							// Supposed to store Tags in the form of Strings
-		
-	};
+    return {
+
+        // Passed in Arguments	
+
+        "event_name": eventName,
+        "event_description": eventDescription,
+        "start_date": new Date(startDate),
+        "end_date": new Date(endDate),
+        "event_location": eventLocation,
+        "event_map": eventMap,
+        "event_picture": eventPicture,
+
+        // Other Default Fields
+
+        "exhibitions_hosted": [], // Supposed to store Exhibition IDs that the Event has
+        "tags": [], // Supposed to store Tags in the form of Strings
+
+    };
 }
 
 /*
@@ -105,23 +105,28 @@ function generateEventDocument(eventName, eventDescription, startDate, endDate, 
 */
 
 function generateUserDocument(email, name, description, hashedPw) {
-	return {
-		
-		// Passed in Arguments
-		
-		"email" :  email,				// A non-null unique Key
-		"name" : name,
-		"description" : description,
-		"hashed_pw" : hashedPw, 				
-		
-		// Other Default Fields
-		
-		"will_notify" : false,
-		"is_deleted" : false,
-		
-		"events_visited" : [], 					// Supposed to store pairs of Event IDs of what the User is attending as a Guest, and the reason they are attending the Event
-		"events_participated" : [] 				// Supposed to store pairs of Exhibition IDs of what the User is participating as an Exhibitor, and the reason they are attending the Event
-		
-	};
+    return {
+
+        // Passed in Arguments
+
+        "email": email, // A non-null unique Key
+        "name": name,
+        "description": description,
+        "hashed_pw": hashedPw,
+
+        // Other Default Fields
+
+        "will_notify": false,
+        "is_deleted": false,
+
+        "events_visited": [], // Supposed to store pairs of Event IDs of what the User is attending as a Guest, and the reason they are attending the Event
+        "events_participated": [] // Supposed to store pairs of Exhibition IDs of what the User is participating as an Exhibitor, and the reason they are attending the Event
+
+    };
 }
 
+module.exports.visitsGenerator = generateVisitsDocument;
+module.exports.participateGenerator = generateParticipateDocument;
+module.exports.exhibitionGenerator = generateExhibitionDocument;
+module.exports.eventGenerator = generateEventDocument;
+module.exports.userGenerator = generateUserDocument;
