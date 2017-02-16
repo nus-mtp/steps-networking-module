@@ -6,9 +6,12 @@
 var createDocuments = require("./createDocumentsMongoose.js");
 
 var mongoose = require("mongoose");
+
+var db;
+
 mongoose.connect("mongodb://localhost:27017/fake-data");
 
-var db = mongoose.connection;
+db = mongoose.connection;
 
 db.on('error', console.error.bind(console, "Connection Error: "));
 
