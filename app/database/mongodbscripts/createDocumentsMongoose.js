@@ -116,6 +116,6 @@ function createExhibitionDocument(exhibitionname, exhibitiondescription) {
     return new Exhibition({ exhibition_name: exhibitionname, exhibition_description: exhibitiondescription });
 }
 
-module.exports.createUserDocument = createUserDocument;
-module.exports.createEventDocument = createEventDocument;
-module.exports.createExhibitionDocument = createExhibitionDocument;
+module.exports.createUserDoc = createUserDocument;
+module.exports.createEventDoc = createEventDocument;
+module.exports.createExhibitionDoc = createExhibitionDocument;
