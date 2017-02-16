@@ -62,74 +62,8 @@ var User = mongoose.model('user', userSchema);
 var Event = mongoose.model('event', eventSchema);
 var Exhibition = mongoose.model('exhibition', exhibitionSchema);
 
-/*
-	Creates a User Document Instance that can be inserted into the Database.
-	
-	@param {string} email: Specifies the User's email.
-	@param {string} name: Specifies the User's name.
-	@param {string} description: Specifies a description about the User.
-	@param {string} hashedPw: Specifies the User's hashed_pw
-	
-	@return {Document}
-*/
-
-function createUserDocument(email, name, description, hashedPw) {
-    return new User({ email: email, name: name, description: description, hashed_pw: hashedPw });
-}
-
-/*
-    Checks for a pre-existing User Document in the Database via the Email as the Primary Key.
-    If there is, update, if not, insert.
-
-    @param {Document Instance} doc: Specifies a User Document Instance.
-
-
-function upsertUserDocument(doc) {
-    User.findOneAndUpdate({ email: doc.email }, doc, { upsert: true }, function(err, doc) {
-        if (err) console.log(err);
-    });
-}
-*/
-
-/*
-	Creates an Event Document Instance that can be inserted into the Database.
-	
-	@param {string} eventName: Specifies the Event's name.
-	@param {string} eventDescription: Specifies the Event's description.
-	@param {ISOstring} startDate: Specifies the Event's start date.
-	@param {ISOstring} endDate: Specifies the Event's end date.
-	@param {string} eventLocation: Specifies a description about the Event's location.
-	@param {string} eventMap: Specifies a URL to a visual Map.
-	@param {string} eventPicture: Specifies a URL to a visual Picture.
-	
-	@return {Document}
-*/
-
-function createEventDocument(eventName, eventDescription, startDate, endDate, eventLocation, eventMap, eventPicture) {
-    return new Event({
-        event_name: eventName,
-        event_description: eventDescription,
-        start_date: new Date(start_date),
-        end_date: new Date(end_date),
-        event_location: eventLocation,
-        event_map: eventMap,
-        event_picture: eventPicture
-    });
-}
-
-/*
-	Creates an Exhibition Document Instance that can be inserted into the Database.
-	
-	@param {string} exhibitionname: Specifies the Name of the Exhibition
-	@param {string} exhibitiondescription: Specifies the Description of the Exhibition
-	
-	@return {Document}
-*/
-
-function createExhibitionDocument(exhibitionname, exhibitiondescription) {
-    return new Exhibition({ exhibition_name: exhibitionname, exhibition_description: exhibitiondescription });
-}
-
-module.exports.createUserDoc = createUserDocument;
-module.exports.createEventDoc = createEventDocument;
-module.exports.createExhibitionDoc = createExhibitionDocument;
+module.exports.Visit = Visit;
+module.exports.Participate = Participate;
+module.exports.User = User;
+module.exports.Event = Event;
+module.exports.Exhibition = Exhibition;

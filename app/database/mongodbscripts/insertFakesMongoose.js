@@ -12,22 +12,27 @@ var db = mongoose.connection;
 
 db.on('error', console.error.bind(console, "Connection Error: "));
 
-db.once('open', function() {
-
-    // Generate and Insert Users
-    var user1 = createDocuments.createUserDoc("user1@user.com", "user1", "I am user1.", "");
-    var user2 = createDocuments.createUserDoc("user2@user.com", "user2", "I am user2.", "");
-    var user3 = createDocuments.createUserDoc("user3@user.com", "user3", "I am user3.", "");
-    var user4 = createDocuments.createUserDoc("user4@user.com", "user4", "I am user4.", "");
-    var user5 = createDocuments.createUserDoc("user5@user.com", "user5", "I am user5.", "");
-
-    user1.save(function(err, document) {
-        if (err) return console.error(err);
-    });
-
+db.collections["users"].drop(function(err) {
+    if (err) console.log(err);
 });
 
-// If the Node process ends, close the Mongoose connection 
-process.on('SIGINT', function() {
-    mongoose.disconnect();
+db.once('open', function() {
+
+    var User = createDocuments.User;
+
+    // Generate and Insert Users
+    var user1 = new User({ email: "user1@user.com", name: "user1", description: "I am user1.", hashed_pw: "" });
+    var user2 = new User({ email: "user2@user.com", name: "user2", description: "I am user2.", hashed_pw: "" });
+    var user3 = new User({ email: "user3@user.com", name: "user3", description: "I am user3.", hashed_pw: "" });
+    var user4 = new User({ email: "user4@user.com", name: "user4", description: "I am user4.", hashed_pw: "" });
+    var user5 = new User({ email: "user5@user.com", name: "user5", description: "I am user5.", hashed_pw: "" });
+
+    var userArray = [user1, user2, user3, user4, user5];
+
+    User.collection.insert(userArray, function(err, result) {
+        if (err) console.log(err);
+
+        mongoose.disconnect();
+    });
+
 });
