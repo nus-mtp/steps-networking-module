@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, hashHistory, IndexRoute } from 'react-router';
-import App from './components/app'
+import App from './components/app';
 import Home from './components/home/homeView';
 import Exhibition from './components/exhibition/exhibitionView';
 import Chat from './components/chat/chatView';
