@@ -4,7 +4,7 @@
   "description": "A networking module integrated with SoC term Project Showcase (STePS) in NUS",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "gulp test",
     "start": "node server.js"
   },
   "repository": {
@@ -33,6 +33,7 @@
     "babel-preset-react": "^6.22.0",
     "babel-preset-stage-0": "^6.22.0",
     "babel-register": "^6.22.0",
+    "chai": "^3.5.0",
     "eslint-config-airbnb": "^14.0.0",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^3.0.2",
@@ -42,7 +43,9 @@
     "gulp-csso": "^2.0.0",
     "gulp-eslint": "^3.0.1",
     "gulp-imagemin": "^3.1.1",
+    "gulp-mocha-co": "^0.4.1-co.3",
     "gulp-sass": "^3.1.0",
+    "mocha": "^3.2.0",
     "nodemon": "^1.11.0",
     "webpack": "^2.2.1",
     "webpack-stream": "^3.2.0"
