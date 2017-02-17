@@ -1,10 +1,7 @@
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
 var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-var routes = require('./routes/index');
 var config = require('./config.json');
 
 require('./models').connect(config.dbUri);
