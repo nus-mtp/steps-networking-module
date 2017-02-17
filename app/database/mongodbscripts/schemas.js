@@ -52,18 +52,8 @@ var exhibitionSchema = new Schema({
     tags: [String]
 });
 
-/* 
-    Model Definition
-*/
-
-var Visit = mongoose.model('visit', visitSchema);
-var Participate = mongoose.model('participate', participateSchema);
-var User = mongoose.model('user', userSchema);
-var Event = mongoose.model('event', eventSchema);
-var Exhibition = mongoose.model('exhibition', exhibitionSchema);
-
-module.exports.Visit = Visit;
-module.exports.Participate = Participate;
-module.exports.User = User;
-module.exports.Event = Event;
-module.exports.Exhibition = Exhibition;
+module.exports.visitSchema = visitSchema;
+module.exports.participateSchema = participateSchema;
+module.exports.userSchema = userSchema;
+module.exports.eventSchema = eventSchema;
+module.exports.exhibitionSchema = exhibitionSchema;
