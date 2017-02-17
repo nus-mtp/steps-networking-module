@@ -1,6 +1,8 @@
 /*
     This file defines a connection to the fake-data MongoDB database.
     Ensure that a MongoDB local server connection is running before executing.
+
+    Note that running this script by itself will not terminate the process.
 */
 
 var mongoose = require('mongoose');
