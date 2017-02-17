@@ -33,6 +33,7 @@ var apiRoutes = require('./routes/api');
 app.use('/auth', authRoutes);
 app.use('/api', apiRoutes);
 
-app.listen(port);
-
-console.log("Running at Port 3000");
+app.listen(process.env.PORT || port, function(){
+  var listeningPort = process.env.PORT || port;
+  console.log(`Running on ${listeningPort}`);
+});
