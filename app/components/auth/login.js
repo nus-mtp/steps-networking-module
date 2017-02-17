@@ -11,16 +11,21 @@ class Login extends React.Component {
       <div id="login-form" className="card">
         <h3 className="card-header">Login</h3>
         <div className="card-block">
-          { this.props.successMessage && <div className="alert alert-success success-message"><strong>Login successful! </strong>{this.props.successMessage}</div> }
+          { (!this.props.errors.summary) ?
+            (this.props.successMessage && <div className="alert alert-success success-message"><strong>Registration successful! </strong>{this.props.successMessage}</div>) :
+            <div />
+           }
           { this.props.errors.summary && <div className="alert alert-danger error-message"><strong>Unable to login! </strong>{this.props.errors.summary}</div> }
           <form className="authentication-form">
-            <div className="form-group">
+            <div className="form-group has-warning">
               <label htmlFor="inputEmail">Email address</label>
               <input type="email" className="form-control" id="inputEmail" aria-describedby="emailHelp" placeholder="Enter email" ref="email" onChange={this.props.onChangeEmail}/>
+              <div className="form-control-feedback">{this.props.errors.email}</div>
             </div>
-            <div className="form-group">
+            <div className="form-group has-warning">
               <label htmlFor="inputPassword">Password</label>
               <input type="password" className="form-control" id="inputPassword" placeholder="Password" ref="password" onChange={this.props.onChangePassword}/>
+              <div className="form-control-feedback">{this.props.errors.password}</div>
             </div>
             <button type="submit" className="btn btn-primary" onClick={this.props.onSubmit}>Submit</button>
           </form>
