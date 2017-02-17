@@ -32,6 +32,10 @@ var userSchema = new Schema({
     events_participated: [participateSchema]
 });
 
+userSchema.methods.get_id = function() {
+    return this._id;
+};
+
 var eventSchema = new Schema({
     event_name: String,
     event_description: String,
