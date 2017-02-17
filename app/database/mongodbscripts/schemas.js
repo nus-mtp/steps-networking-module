@@ -24,10 +24,10 @@ var userSchema = new Schema({
     name: String,
     description: String,
     hashed_pw: String,
-    profile_picture: String,
 
     will_notify: Boolean,
     is_deleted: Boolean,
+    profile_picture: String,
 
     events_visited: [visitSchema],
     events_participated: [participateSchema]
