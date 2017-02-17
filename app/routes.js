@@ -6,8 +6,8 @@ import Chat from './components/chat/chatView';
 import Event from './components/event/eventView';
 import Project from './components/project/projectView';
 import Profile from './components/profile/profileView';
-import Login from './components/auth/LoginView';
-import Signup from './components/auth/SignupView';
+import Login from './components/auth/loginView';
+import Signup from './components/auth/signupView';
 import Auth from './database/auth';
 
 
