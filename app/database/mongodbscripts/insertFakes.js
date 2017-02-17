@@ -28,4 +28,4 @@ User.collection.insert(userArray, function(err, result) {
 
 });
 
-db.close(); // May be problematic - alternative is mongoose.disconnect();
+db.close(); // May be problematic if this occurs before asynchronous behavior from database operations is completed - alternative is mongoose.disconnect(); if required
