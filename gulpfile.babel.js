@@ -9,9 +9,10 @@ const nodemon = require('nodemon');
 const webpack = require('webpack-stream');
 
 const webpackConfig = require('./webpack.config.js');
+const webpackServerConfig = require('./webpack.server.config.js');
 const rootDir = './dist';
 
-require('babel-core/register');
+require('babel-register');
 require('babel-polyfill');
 
 /** lint task **/
@@ -69,10 +70,16 @@ gulp.task('watch', () => {
   gulp.watch('./app/**/*.js', ['bundle']);
 });
 
+gulp.task('buildServer', () =>
+  gulp.src('./server/server.js')
+    .pipe(webpack(webpackServerConfig))
+    .pipe(gulp.dest('./server/'))
+);
+
 /** run gulp task for development **/
-gulp.task('default', ['watch', 'css', 'html', 'image', 'bundle'], () => {
+gulp.task('default', ['watch', 'css', 'html', 'image', 'bundle', 'buildServer'], () => {
   nodemon({
-    script: './server.js',
+    script: './server/server.bundle.js',
     ignore: ['./dist/'],
   });
 });
