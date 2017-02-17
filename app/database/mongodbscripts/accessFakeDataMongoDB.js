@@ -12,7 +12,7 @@ db.on('error', function(err) {
 });
 
 db.once('open', function() {
-    console.info('MongoDB Connected Successfully.');
+    console.info('fake-data MongoDB Connected Successfully.');
 });
 
 module.exports = db;
