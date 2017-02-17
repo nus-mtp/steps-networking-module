@@ -5,10 +5,10 @@ import Auth from '../database/auth';
 class App extends React.Component {
   render() {
     return(
-    <div>
-      <nav id="header" className="navbar navbar-toggleable-md navbar-light fixed-top flex-row">
-        <Link to="/"><img id="brand-logo" src="resources/images/home.svg" alt="Home"/></Link>
-        <div id="user-authentication-buttons" className="justify-content-end d-flex">
+    <div className="container-fluid">
+      <nav id="header" className="navbar navbar-toggleable-md navbar-light fixed-top row justify-content-between">
+        <Link className="col-4" to="/"><img id="brand-logo" src="resources/images/home.svg" alt="Home"/></Link>
+        <div id="user-authentication-buttons" className="col-8 col-md-2">
           { Auth.isUserAuthenticated() ?
             <Link to="/logout"><button id="logout" type="button" className="btn btn-secondary">Logout</button></Link> :
             <div>
