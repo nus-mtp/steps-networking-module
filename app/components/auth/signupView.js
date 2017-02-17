@@ -1,30 +1,27 @@
 import React from 'react';
 import Signup from './signup';
-import Auth from '../../database/auth';
 
 class SignupView extends React.Component {
   constructor(props, context) {
     super(props, context);
 
-    const storedMessage = localStorage.getItem('successMessage');
-    let successMessage = '';
-
-    if (storedMessage) {
-      successMessage = storedMessage;
-      localStorage.removeItem('successMessage');
-    }
-
     this.state = {
       errors: {},
-      successMessage,
       user: {
+        name: '',
         email: '',
         password: '',
+        confirmPassword: '',
+        description: '',
       }
     }
+
     this.processForm = this.processForm.bind(this);
+    this.handleUsername = this.handleUsername.bind(this);
     this.handleUserEmail = this.handleUserEmail.bind(this);
     this.handleUserPassword = this.handleUserPassword.bind(this);
+    this.handleConfirmPassword = this.handleConfirmPassword.bind(this);
+    this.handleUserDescription = this.handleUserDescription.bind(this);
   }
 
   /**
@@ -36,11 +33,12 @@ class SignupView extends React.Component {
        // prevent default action. in this case, action is the form submission event
        e.preventDefault();
 
-       console.log('email:', this.state.user.email);
-       console.log('password:', this.state.user.password);
+       const name = encodeURIComponent(this.state.user.name);
        const email = encodeURIComponent(this.state.user.email);
        const password = encodeURIComponent(this.state.user.password);
-       const formData = `email=${email}&password=${password}`;
+       const description = encodeURIComponent(this.state.user.description);
+       const confirmPassword = encodeURIComponent(this.state.user.confirmPassword);
+       const formData = `name=${name}&email=${email}&password=${password}&description=${description}&confirmPassword=${confirmPassword}`;
 
        const xhr = new XMLHttpRequest();
        xhr.open('post', '/auth/signup');
@@ -55,9 +53,8 @@ class SignupView extends React.Component {
             errors: {}
           });
 
-          // save the token
-          Auth.authenticateUser(xhr.response.token);
-
+          // set a message
+          localStorage.setItem('successMessage', xhr.response.message);
 
           // change the current URL to /
           this.context.router.replace('/login');
@@ -77,36 +74,60 @@ class SignupView extends React.Component {
 
     }
 
-    handleUserPassword(e) {
+    handleUsername(e) {
+      let user = this.state.user;
+      user.name = e.target.value;
       this.setState({
-        user: {
-          email: this.state.user.email,
-          password: e.target.value,
-        }
+        user,
       });
     }
 
-  handleUserEmail(e) {
-    this.setState({
-      user: {
-        email: e.target.value,
-        password: this.state.user.password,
-      }
-    });
-  }
+    handleUserPassword(e) {
+      let user = this.state.user;
+      user.password = e.target.value;
+      this.setState({
+        user,
+      });
+    }
 
-  render() {
-    return (
-      <Signup
-        onSubmit={this.processForm}
-        onChangePassword={this.handleUserPassword}
-        onChangeEmail={this.handleUserEmail}
-        errors={this.state.errors}
-        successMessage={this.state.successMessage}
-        user={this.state.user}
-      />
-    );
-  }
+    handleConfirmPassword(e) {
+      let user = this.state.user;
+      user.confirmPassword = e.target.value;
+      this.setState({
+        user,
+      });
+    }
+
+    handleUserEmail(e) {
+      let user = this.state.user;
+      user.email = e.target.value;
+      this.setState({
+        user,
+      });
+    }
+
+    handleUserDescription(e) {
+      let user = this.state.user;
+      user.description = e.target.value;
+      this.setState({
+        user,
+      });
+    }
+
+    render() {
+      return (
+        <Signup
+          onSubmit={this.processForm}
+          onChangeUsername={this.handleUsername}
+          onChangePassword={this.handleUserPassword}
+          onConfirmPassword={this.handleConfirmPassword}
+          onChangeEmail={this.handleUserEmail}
+          onChangeDescription={this.handleUserDescription}
+          errors={this.state.errors}
+          user={this.state.user}
+        />
+      );
+    }
 }
 
 SignupView.contextTypes = {

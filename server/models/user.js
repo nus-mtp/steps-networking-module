@@ -8,6 +8,10 @@ var UserSchema = new mongoose.Schema({
   },
   password: String,
   name: String,
+  description: String,
+  profilePicture: String,
+  will_notify: String,
+  is_deleted: Boolean,
 });
 
 UserSchema.methods.comparePassword = function comparePassword(password, callback) {

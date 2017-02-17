@@ -16,6 +16,11 @@ function validateSignupForm(payload) {
   let isFormValid = true;
   let message = '';
 
+  if (!payload || typeof payload.name !== 'string' || payload.name.trim().length < 1) {
+    isFormValid = false;
+    errors.name = 'Please provide valid username.';
+  }
+
   if (!payload || typeof payload.email !== 'string' || !validator.isEmail(payload.email)) {
     isFormValid = false;
     errors.email = 'Please provide a correct email address.';
@@ -26,10 +31,15 @@ function validateSignupForm(payload) {
     errors.password = 'Password must have at least 8 characters.';
   }
 
+  if (!payload || typeof payload.confirmPassword !== 'string' || payload.confirmPassword.trim() !== payload.password.trim()) {
+    isFormValid = false;
+    errors.confirmPassword = 'Both password must be the same.';
+  }
+
   if (!isFormValid) {
     message = 'Check the form for errors.';
   }
-  console.log('....' + isFormValid);
+
   return {
     success: isFormValid,
     message,
