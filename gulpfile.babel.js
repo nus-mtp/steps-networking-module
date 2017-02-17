@@ -76,6 +76,8 @@ gulp.task('buildServer', () =>
     .pipe(gulp.dest('./server/'))
 );
 
+gulp.task('buildClient', ['css', 'html', 'image', 'bundle']);
+
 /** run gulp task for development **/
 gulp.task('default', ['watch', 'css', 'html', 'image', 'bundle', 'buildServer'], () => {
   nodemon({
