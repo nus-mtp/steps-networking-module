@@ -9,7 +9,7 @@ require('./models').connect(config.dbUri);
 var app = express();
 var port = 3000;
 
-app.use(express.static(path.join(__dirname, '/../dist')));
+app.use(express.static(path.join(__dirname, '/../app')));
 app.use('/css', express.static(path.join(__dirname + '/../node_modules/bootstrap/dist/css')));  // redirect CSS bootstrap
 
 app.get('/',function(req,res){
