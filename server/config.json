@@ -1,4 +1,4 @@
 {
-  "dbUri": "mongodb://localhost/xorcerors",
+  "dbUri": "mongodb://xorcerors:xorcerors3283@ds153719.mlab.com:53719/heroku_5gpljgmd",
   "jwtSecret": "secret-phrase"
 }
