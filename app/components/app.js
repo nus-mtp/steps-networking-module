@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
+
 import Auth from '../database/auth';
 
 class App extends React.Component {
@@ -22,8 +23,11 @@ class App extends React.Component {
         {this.props.children}
       </div>
     </div>
-    );
-  }
-}
+  </div>
+);
+
+App.propTypes = {
+  children: React.PropTypes.element.isRequired,
+};
 
 export default App;
