@@ -36,8 +36,6 @@ class LoginView extends React.Component {
        // prevent default action. in this case, action is the form submission event
        e.preventDefault();
 
-       console.log('email:', this.state.user.email);
-       console.log('password:', this.state.user.password);
        const email = encodeURIComponent(this.state.user.email);
        const password = encodeURIComponent(this.state.user.password);
        const formData = `email=${email}&password=${password}`;
@@ -73,7 +71,6 @@ class LoginView extends React.Component {
           });
         }
       });
-      console.log(formData);
       xhr.send(formData);
 
     }
