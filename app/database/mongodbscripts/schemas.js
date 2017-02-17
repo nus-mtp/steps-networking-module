@@ -1,12 +1,12 @@
 /*
-    This file contains the Schema for Document Creation in our Database.
+    This file contains the Schemas for Document Creation in our Database.
 */
 
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 /* 
-    Schema Definition and Methods
+    Schema Definitions and Methods
 */
 
 var visitSchema = new Schema({
