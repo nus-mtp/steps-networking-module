@@ -10,10 +10,10 @@ var app = express();
 var port = 3000;
 
 app.use(express.static(path.join(__dirname, '/../dist')));
-app.use('/css', express.static(__dirname + '/../node_modules/bootstrap/dist/css'));  // redirect CSS bootstrap
+app.use('/css', express.static(path.join(__dirname + '/../node_modules/bootstrap/dist/css')));  // redirect CSS bootstrap
 
 app.get('/',function(req,res){
-  res.sendFile('index.html');   //It will find and locate index.html from View or Scripts
+  res.sendFile(path.join(__dirname + '/../app/index.html'));   //It will find and locate index.html from View or Scripts
 });
 
 app.use(bodyParser.json());
