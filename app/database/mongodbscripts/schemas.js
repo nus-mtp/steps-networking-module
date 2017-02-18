@@ -3,6 +3,8 @@
 */
 
 var mongoose = require("mongoose");
+var bcrypt = require('bcrypt-nodejs');
+
 var Schema = mongoose.Schema;
 
 /* 
@@ -20,7 +22,10 @@ var participateSchema = new Schema({
 });
 
 var userSchema = new Schema({
-    email: String,
+    email: {
+        type: String,
+        index: { unique: true }
+    },
     name: String,
     description: String,
     hashed_pw: String,
@@ -36,6 +41,34 @@ var userSchema = new Schema({
 userSchema.methods.get_id = function() {
     return this._id;
 };
+
+UserSchema.methods.comparePassword = function comparePassword(password, callback) {
+    bcrypt.compare(password, this.password, callback);
+};
+
+UserSchema.pre('save', function saveHook(next) {
+    var user = this;
+
+    if (!user.isModified('password')) {
+        return next();
+    }
+
+    return bcrypt.genSalt(null, (saltError, salt) => {
+        if (saltError) {
+            return next(saltError);
+        }
+
+        return bcrypt.hash(user.password, salt, null, (hashError, hash) => {
+            if (hashError) {
+                return next(hashError);
+            }
+
+            user.password = hash;
+
+            return next();
+        });
+    });
+});
 
 var eventSchema = new Schema({
     event_name: String,
