@@ -1,5 +1,7 @@
 var Schema = require("./schemaHeader.js");
 
+var bcrypt = require('bcrypt-nodejs');
+
 var visitSchema = require("./visitSchema.js");
 var participateSchema = require("./participateSchema.js");
 
@@ -10,7 +12,7 @@ var userSchema = new Schema({
     },
     name: String,
     description: String,
-    hashed_pw: String,
+    password: String,
 
     will_notify: Boolean,
     is_deleted: Boolean,
