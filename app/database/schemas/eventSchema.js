@@ -3,7 +3,10 @@ var Schema = require("./schemaHeader.js");
 var exhibitionSchema = require("./exhibitionSchema.js");
 
 var eventSchema = new Schema({
-    event_name: String,
+    event_name: {
+        type: String,
+        index: { unique: true }
+    },
     event_description: String,
     start_date: Date,
     end_date: Date,
