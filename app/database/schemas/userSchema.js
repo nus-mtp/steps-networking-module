@@ -18,8 +18,8 @@ var userSchema = new Schema({
     is_deleted: Boolean,
     profile_picture: String,
 
-    events_visited: [visitSchema],
-    events_participated: [participateSchema]
+    events_visited: [Schema.Types.ObjectId],
+    events_participated: [Schema.Types.ObjectId]
 });
 
 userSchema.methods.get_id = function() {

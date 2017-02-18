@@ -14,7 +14,7 @@ var eventSchema = new Schema({
     event_map: String,
     event_picture: String,
 
-    exhibitions_hosted: [exhibitionSchema],
+    exhibitions_hosted: [Schema.Types.ObjectId],
     tags: [String]
 });
 
