@@ -39,19 +39,19 @@ async.series(
             async.parallel(
                 [
                     function(callback) {
-                        new User({ email: "user1@user.com", name: "user1", description: "I am user1.", password: "" }).save(callback);
+                        new User({ email: "user1@user.com", name: "user1", description: "I am user1.", password: "user1" }).save(callback);
                     },
                     function(callback) {
-                        new User({ email: "user2@user.com", name: "user2", description: "I am user2.", password: "" }).save(callback);
+                        new User({ email: "user2@user.com", name: "user2", description: "I am user2.", password: "user2" }).save(callback);
                     },
                     function(callback) {
-                        new User({ email: "user3@user.com", name: "user3", description: "I am user3.", password: "" }).save(callback);
+                        new User({ email: "user3@user.com", name: "user3", description: "I am user3.", password: "user3" }).save(callback);
                     },
                     function(callback) {
-                        new User({ email: "user4@user.com", name: "user4", description: "I am user4.", password: "" }).save(callback);
+                        new User({ email: "user4@user.com", name: "user4", description: "I am user4.", password: "user4" }).save(callback);
                     },
                     function(callback) {
-                        new User({ email: "user5@user.com", name: "user5", description: "I am user5.", password: "" }).save(callback);
+                        new User({ email: "user5@user.com", name: "user5", description: "I am user5.", password: "user5" }).save(callback);
                     },
                 ]
             );
