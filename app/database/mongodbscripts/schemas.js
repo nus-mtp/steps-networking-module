@@ -42,11 +42,11 @@ userSchema.methods.get_id = function() {
     return this._id;
 };
 
-UserSchema.methods.comparePassword = function comparePassword(password, callback) {
+userSchema.methods.comparePassword = function comparePassword(password, callback) {
     bcrypt.compare(password, this.password, callback);
 };
 
-UserSchema.pre('save', function saveHook(next) {
+userSchema.pre('save', function saveHook(next) {
     var user = this;
 
     if (!user.isModified('password')) {
