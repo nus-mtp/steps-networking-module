@@ -34,7 +34,7 @@ async.series(
             callback(null, "");
         },
         function(callback) {
-            // Insert entries into database
+            // Insert User Documents into fake-data
 
             async.parallel(
                 [

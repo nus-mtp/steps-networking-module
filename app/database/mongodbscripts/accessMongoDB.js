@@ -5,9 +5,6 @@
     Note that running this script by itself will not terminate the process.
 */
 
-/*
-
-*/
 module.exports.connect = function(host, port, database) {
     var mongoose = require('mongoose');
 
