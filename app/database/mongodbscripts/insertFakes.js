@@ -9,7 +9,7 @@ var async = require("async");
 
 // Establish a connection to the MongoDB server
 
-var db = require("./accessFakeDataMongoDB.js");
+var db = require("./accessMongoDB.js").connect("localhost", "27017", "fake-data");
 
 // Include the relevant Schema files
 
@@ -60,7 +60,7 @@ async.series(
         function(callback) {
             // Test environment
 
-            User.find({}).find(function(err, doc) {
+            User.find({}, function(err, doc) {
                 if (err) console.log(err);
 
                 console.log(doc);
