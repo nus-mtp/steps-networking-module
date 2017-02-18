@@ -3,6 +3,10 @@
     Ensure that a MongoDB local server connection is running before executing.
 */
 
+// For ensuring all tasks are completed before db closes
+
+var async = require("async");
+
 // Establish a connection to the MongoDB server
 
 var db = require("./accessFakeDataMongoDB.js");
@@ -12,29 +16,54 @@ var db = require("./accessFakeDataMongoDB.js");
 var userSchema = require("../schemas/userSchema.js");
 var eventSchema = require("../schemas/eventSchema.js");
 
-// Defines the Models for our Database
+// Establish Models
 
 var User = db.model('user', userSchema);
 var Event = db.model('event', eventSchema);
 
-// Removes all prior documents created in the previous run
+// Start
 
-User.collection.remove();
-Event.collection.remove();
+async.series(
+    [
+        function(callback) {
+            // Remove all prior documents created in the previous run
 
-// Generate 5 test users
+            User.collection.remove({});
+            Event.collection.remove({});
 
-var user1 = new User({ email: "user1@user.com", name: "user1", description: "I am user1.", hashed_pw: "" });
-var user2 = new User({ email: "user2@user.com", name: "user2", description: "I am user2.", hashed_pw: "" });
-var user3 = new User({ email: "user3@user.com", name: "user3", description: "I am user3.", hashed_pw: "" });
-var user4 = new User({ email: "user4@user.com", name: "user4", description: "I am user4.", hashed_pw: "" });
-var user5 = new User({ email: "user5@user.com", name: "user5", description: "I am user5.", hashed_pw: "" });
+            callback(null, "");
+        },
+        function(callback) {
+            // Insert entries into database
 
-var userArray = [user1, user2, user3, user4, user5];
+            async.parallel(
+                [
+                    function(callback) {
+                        new User({ email: "user1@user.com", name: "user1", description: "I am user1.", password: "" }).save(callback);
+                    },
+                    function(callback) {
+                        new User({ email: "user2@user.com", name: "user2", description: "I am user2.", password: "" }).save(callback);
+                    },
+                    function(callback) {
+                        new User({ email: "user3@user.com", name: "user3", description: "I am user3.", password: "" }).save(callback);
+                    },
+                    function(callback) {
+                        new User({ email: "user4@user.com", name: "user4", description: "I am user4.", password: "" }).save(callback);
+                    },
+                    function(callback) {
+                        new User({ email: "user5@user.com", name: "user5", description: "I am user5.", password: "" }).save(callback);
+                    },
+                ]
+            );
 
-User.collection.insert(userArray, function(err, result) {
-    if (err) console.log(err);
+            callback(null, "");
+        },
+        function(callback) {
+            // Close the database only AFTER the insertions have been completed
 
-});
+            db.close();
 
-db.close(); // May be problematic if this occurs before asynchronous behavior from database operations is completed - alternative is mongoose.disconnect(); or use the async library if required
+            callback(null, "");
+        },
+    ]
+);
