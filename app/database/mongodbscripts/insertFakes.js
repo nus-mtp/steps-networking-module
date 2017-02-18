@@ -6,12 +6,14 @@
 var db = require("./accessFakeDataMongoDB.js");
 var schemas = require("./schemas.js");
 
-// Removes all prior documents created in the previous run
-
 // Defines the Models for our Database
 
 var User = db.model('user', schemas.userSchema);
 var Event = db.model('event', schemas.eventSchema);
+
+// Removes all prior documents created in the previous run
+
+User.collection.remove();
 
 // Generate 5 test users
 
