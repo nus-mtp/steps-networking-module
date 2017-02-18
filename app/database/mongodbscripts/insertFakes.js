@@ -3,17 +3,24 @@
     Ensure that a MongoDB local server connection is running before executing.
 */
 
+// Establish a connection to the MongoDB server
+
 var db = require("./accessFakeDataMongoDB.js");
-var schemas = require("./schemas.js");
+
+// Include the relevant Schema files
+
+var userSchema = require("../schemas/userSchema.js");
+var eventSchema = require("../schemas/eventSchema.js");
 
 // Defines the Models for our Database
 
-var User = db.model('user', schemas.userSchema);
-var Event = db.model('event', schemas.eventSchema);
+var User = db.model('user', userSchema);
+var Event = db.model('event', eventSchema);
 
 // Removes all prior documents created in the previous run
 
 User.collection.remove();
+Event.collection.remove();
 
 // Generate 5 test users
 
@@ -30,4 +37,4 @@ User.collection.insert(userArray, function(err, result) {
 
 });
 
-db.close(); // May be problematic if this occurs before asynchronous behavior from database operations is completed - alternative is mongoose.disconnect(); if required
+db.close(); // May be problematic if this occurs before asynchronous behavior from database operations is completed - alternative is mongoose.disconnect(); or use the async library if required
