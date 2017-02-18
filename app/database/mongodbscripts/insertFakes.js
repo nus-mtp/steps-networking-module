@@ -53,17 +53,32 @@ async.series(
                     function(callback) {
                         new User({ email: "user5@user.com", name: "user5", description: "I am user5.", password: "user5" }).save(callback);
                     },
-                ]
+                ], callback
             );
 
-            callback(null, "");
+        },
+        function(callback) {
+            // Test environment
+
+            User.find({}).find(function(err, doc) {
+                if (err) console.log(err);
+
+                console.log(doc);
+
+                callback(null, "");
+            });
         },
         function(callback) {
             // Close the database only AFTER the insertions have been completed
 
-            db.close();
+            db.close(function(err) {
 
-            callback(null, "");
+                if (err) console.log(err);
+                else console.log("fake-data MongoDB Disconnected Successfully.");
+
+                callback(null, "");
+
+            });
         },
     ]
 );
