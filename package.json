@@ -58,6 +58,7 @@
     "gulp-sass": "^3.1.0",
     "json-loader": "^0.5.4",
     "mocha": "^3.2.0",
+    "mocca": "^1.0.3",
     "nodemon": "^1.11.0",
     "should": "^11.2.0",
     "webpack": "^2.2.1",
