@@ -1,7 +1,5 @@
 var Schema = require("./schemaHeader.js");
 
-var exhibitionSchema = require("./exhibitionSchema.js");
-
 var eventSchema = new Schema({
     event_name: {
         type: String,
@@ -14,7 +12,6 @@ var eventSchema = new Schema({
     event_map: String,
     event_picture: String,
 
-    exhibitions_hosted: [Schema.Types.ObjectId],
     tags: [String]
 });
 

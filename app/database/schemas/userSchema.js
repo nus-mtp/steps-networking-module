@@ -2,9 +2,6 @@ var Schema = require("./schemaHeader.js");
 
 var bcrypt = require('bcrypt-nodejs');
 
-var visitSchema = require("./visitSchema.js");
-var participateSchema = require("./participateSchema.js");
-
 var userSchema = new Schema({
     email: {
         type: String,
@@ -18,8 +15,8 @@ var userSchema = new Schema({
     is_deleted: Boolean,
     profile_picture: String,
 
-    events_visited: [Schema.Types.ObjectId],
-    events_participated: [Schema.Types.ObjectId]
+    skills: [String],
+    bookmarked_users: [String]
 });
 
 userSchema.methods.get_id = function() {
