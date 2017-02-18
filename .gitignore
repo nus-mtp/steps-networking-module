@@ -8,3 +8,4 @@ node_modules
 
 # production files
 dist
+server/server.bundle.js
