@@ -16,7 +16,7 @@ var db = require("./accessMongoDB.js").connect("localhost", "27017", "fake-data"
 var userSchema = require("../schemas/userSchema.js");
 var eventSchema = require("../schemas/eventSchema.js");
 
-// Establish Models
+// Establish Models on the connection
 
 var User = db.model('user', userSchema);
 var Event = db.model('event', eventSchema);
@@ -60,7 +60,7 @@ async.series(
         function(callback) {
             // Test environment
 
-            User.find({}, function(err, doc) {
+            User.find({ email: "user4@user.com" }, function(err, doc) {
                 if (err) console.log(err);
 
                 console.log(doc);
