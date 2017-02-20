@@ -1,58 +1,149 @@
-class User{
-    constructor(Name, Email, Description, Hashed_PW, isNotified, isDeleted) {
-        this.Name = Name;
-        this.Email = Email;
-        this.Description = Description;
-        this.Hashed_PW = Hashed_PW;
-        this.isNotfied = isNotified;
-        this.isDeleted = isDeleted;
+class User {
+    constructor(_id = "i0000", email = "email@email.com", name = "name", description = "description", hashed_pw = "password", will_notify = true, is_deleted = false, profile_pic = "url", skill_sets = [], bookedmarked_users = []) {
+        this._id = _id;
+        this.name = name;
+        this.email = email;
+        this.description= description;
+        this.hashed_pw = hashed_pw;
+        this.will_notfy = will_notify;
+        this.is_deleted = is_deleted;
+        this.profile_picture = profile_pic;
+        this.skill_sets = skill_sets;
+        this.bookmarked_users = bookedmarked_users;
+
     }
-    getName(){
-        return this.Name;
+   
+    /**
+     * Getter methods
+     **/
+    
+    /**
+     * @return {string}
+     */
+    getName() {
+        return this.name;
     }
     
-    getEmail(){
-        return this.Email;
+    /** 
+     * @return {string}
+     */
+    getEmail() {
+        return this.email;
     }
     
-    getDescription(){
-        return this.Description;
+    /**
+     * @return {string}
+     */
+    getDescription() {
+        return this.description;
     }
     
-    getHashedPW(){
-        return this.Hashed_PW;
+    /**
+     * @return {string}
+     */
+    getHashedPW() {
+        return this.hashed_pw;
     }
     
-    getIsNotified(){
-        return this.isNotfied;
+    /**
+     * @return {boolean}
+     */
+    getWillNotify() {
+        return this.will_notify;
     }
     
-    getIsDeleted(){
-        return this.isDeleted;
+    /** 
+     * @return {boolean}
+     */
+    getIsDeleted() {
+        return this.is_deleted;
     }
     
-    setName(newName){
-        this.Name = newName;
+    /**
+     * @return {string}
+     */
+    getProfilePicture() {
+        return this.profile_picture;
     }
     
-    setEmail(newEmail){
-        this.Email = newEmail;
+    /**
+     * @return {StringArray}
+     */
+    getSkillSets(){
+        return this.skill_sets;
     }
     
-    setDescription(newDescription){
-        this.Description = newDescription;
+    /**
+     * @return {StringArray}
+     */
+    getBookmarkedUsers(){
+        return this.bookmarked_users;
     }
     
-    setHashedPW(newHashedPW){
-        this.Hashed_PW = newHashedPW;
+    /**
+     * Setter methods
+     **/
+    
+    /**
+     * @param {string}
+     */
+    setName(new_name) {
+        this.name = new_name;
     }
     
-    setIsNotified(newIsNotified){
-        this.isNotfied = newIsNotified;
+    /**
+     * @param {string}
+     */
+    setEmail(new_email) {
+        this.email = new_email;
     }
     
-    setIsDeleted(newIsDeleted){
-        this.isDeleted = newIsDeleted;
+    /**
+     * @param {string}
+     */
+    setDescription(new_description) {
+        this.description = new_description;
     }
     
+    /**
+     * @param {string}
+     */
+    setHashedPW(new_hashed_pw) {
+        this.hashed_pw = new_hashed_pw;
+    }
+    
+    /**
+     * @param {boolean}
+     */
+    setWillNotify(new_will_notify) {
+        this.will_notfy = new_will_notify;
+    }
+    
+    /**
+     * @param {boolean}
+     */
+    setIsDeleted(new_is_deleted) {
+        this.is_deleted = new_is_deleted;
+    }
+    
+    /**
+     * @param {string}
+     */
+    setProfile_picture(new_URL) {
+       this.profile_picture = new_URL;
+    }
+    
+    /**
+     * @param {StringArray}
+     */
+    setSkillSets(new_skills_set){
+        this.skill_sets = new_skills_set;
+    }
+    
+    /**
+     * @param {StringArray}
+     */
+    setBookmarkedUsers(new_bookmarked_users){
+        this.bookmarked_users = new_bookmarked_users;
+    }
 }
