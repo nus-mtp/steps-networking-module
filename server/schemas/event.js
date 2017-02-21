@@ -1,6 +1,6 @@
-var Schema = require("./schemaHeader.js");
+var mongoose = require('mongoose');
 
-var eventSchema = new Schema({
+var eventSchema = new mongoose.Schema({
     event_name: {
         type: String,
         index: { unique: true }

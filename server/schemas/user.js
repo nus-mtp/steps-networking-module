@@ -1,8 +1,8 @@
-var Schema = require("./schemaHeader.js");
-
+var mongoose = require('mongoose');
+var db = require('../mongodbScripts/accessMongoDB');
 var bcrypt = require('bcrypt-nodejs');
 
-var userSchema = new Schema({
+const userSchema = new mongoose.Schema({
     email: {
         type: String,
         index: { unique: true }
