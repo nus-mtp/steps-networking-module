@@ -1,17 +1,27 @@
 #chat-body {
 	height: 100%;
-	max-height: 100%;
-	background-color: red;
 	width: 100%;
+	max-width: 750px;
+	background-color: white;
 	padding-bottom: 50px;
 }
 
 #chat-other {
-	background-color:aqua;
+	background-color:lightgray;
+	margin-bottom: 5px;
 }
 
 #chat-self {
-	color: white;
-	background-color:blue;
+	/*color: white;*/
+	background-color:palegreen;
 	text-align: right;
+	margin-bottom: 5px;
+}
+
+#chat-input {
+	width: 100%;
+	max-width: 750px;
+	align-self: center;
+	margin-left: auto;
+  margin-right: auto;
 }

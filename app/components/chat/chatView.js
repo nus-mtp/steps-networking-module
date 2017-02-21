@@ -15,7 +15,7 @@ export default class ChatView extends Component {
 		this.placeholder = 'Type a message...';
 	}
 	
-	setMessages(text) {
+	addMessages(text) {
 		var messages = this.state.messages.slice();
 		messages.push(text);
 		this.setState({messages: messages});
@@ -42,13 +42,26 @@ export default class ChatView extends Component {
 	}
 
 	handleSubmit (event) {
-		event.preventDefault();
-		this.setMessages(
-			this.Chat_postSelf(
-				this.refs.chatinput.value
-			)
-		);
+		var new_div = this.Chat_postSelf(this.refs.chatinput.value);
+		this.addMessages(new_div);
 		this.refs.chatinput.value = '';
+		this.scrollToBottom();
+	}
+	
+	handleChange (event) {
+		var str = this.refs.chatinput.value;
+		var str_strip = str.trim();
+		if (str[str.length-1]=="\n") {
+			if (str_strip.length>0) {
+				this.handleSubmit.bind(this).call(event);
+			} else {
+				this.refs.chatinput.value = str.slice(0, str.length-1);
+			}			
+		}
+	}
+	
+	scrollToBottom() {
+		document.body.scrollTop = document.body.scrollHeight;
 	}
 	
 	render() {
@@ -58,16 +71,14 @@ export default class ChatView extends Component {
 					{this.state.messages}
 				</div>
 				<div className="fixed-bottom" id="chat-form-container">
-					<div className="col-12">
-						<form 
-							onSubmit={this.handleSubmit.bind(this)}>
-							<input
-								className="form-control"  
-								ref="chatinput"
-								placeholder={this.placeholder}
-							/>
-						</form>
-					</div>
+					<textarea
+						className="form-control"  
+						ref="chatinput"
+						id="chat-input"
+						placeholder={this.placeholder}
+						onSubmit={this.handleSubmit.bind(this)}
+						onChange={this.handleChange.bind(this)}
+					/>
 				</div>
 			</div>
 		);
