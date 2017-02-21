@@ -9,7 +9,7 @@ var async = require("async");
 
 // Obtain the User Model
 
-var ModelHandler = require("./models.js");
+var ModelHandler = require("../../app/database/mongodbscripts/models.js");
 
 var Models = new ModelHandler("localhost", "27017", "fake-data");
 
