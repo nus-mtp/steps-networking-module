@@ -1,21 +1,29 @@
 import React from 'react';
+import { Link } from 'react-router';
+import Paths from '../../paths';
 
 class ProfileView extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  
   render() {
     return (
       <div id="profile-body">
-        <div className="row justify-content-center">
-          <div id="profile-picture" className="col-md-6 push-md-1 col-12 text-center">
-            <img className="clickable" src="../../resources/images/default-profile-picture.png" alt="profile-picture" />
-          </div>
-          <div id="chat-icon" className="col-md-1 pull-md-6 col-6 text-center align-middle">
-            <img className="clickable" src="../../resources/images/chat-icon.png" alt="chat-icon" />
-          </div>
-          <div id="edit-icon" className="col-md-1 col-6 text-center">
-            <img className="clickable" src="../../resources/images/edit-icon.png" alt="edit-icon" />
-          </div>
+      <div className="row justify-content-center">
+        <div id="profile-picture" className="col-md-6 push-md-1 col-12 text-center">
+          <img className="clickable" src="../../resources/images/default-profile-picture.png" alt="profile-picture" />
         </div>
-        <div className="profile-info">
+        <div id="chat-icon" className="col-md-1 pull-md-6 col-6 text-center align-middle">
+          <Link to={Paths.chat}>
+            <img className="clickable" src="../../resources/images/chat-icon.png" alt="chat-icon" />
+          </Link>
+        </div>
+        <div id="edit-icon" className="col-md-1 col-6 text-center">
+          <img className="clickable" src="../../resources/images/edit-icon.png" alt="edit-icon" />
+        </div>
+        </div>
+          <div className="profile-info">
           <div className="info-type">Name</div>
           <div id="user-name" className="user-info" />
           <div className="info-type">Email</div>
