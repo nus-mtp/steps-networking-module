@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
 import Paths from '../../paths';
-import Database from '../../database/database'
 
 class ProfileView extends React.Component {
 	constructor(props) {
