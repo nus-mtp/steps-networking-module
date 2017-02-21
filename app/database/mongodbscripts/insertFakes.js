@@ -10,9 +10,14 @@ var async = require("async");
 // Obtain the User Model
 
 var ModelHandler = require("./models.js");
+
 var Models = new ModelHandler("localhost", "27017", "fake-data");
+
 var User = Models.getUserModel();
 var Event = Models.getEventModel();
+var Exhibition = Models.getExhibitionModel();
+var Attendance = Models.getAttendanceModel();
+var Comment = Models.getCommentModel();
 
 // Start
 
@@ -23,6 +28,9 @@ async.series(
 
             User.collection.remove({});
             Event.collection.remove({});
+            Exhibition.collection.remove({});
+            Attendance.collection.remove({});
+            Comment.collection.remove({});
 
             callback(null, "");
         },
@@ -48,6 +56,29 @@ async.series(
                     },
                     function(callback) {
                         new User({ email: "user6@user.com", name: "user6", description: "I am user6.", password: "user6" }).save(callback);
+                    },
+                ], callback
+            );
+
+        },
+        function(callback) {
+            // Insert Event Documents into fake-data
+
+            async.parallel(
+                [
+                    function(callback) {
+                        new Event({
+                            event_name: "10th Steps",
+                            event_description: "The First Event",
+                            start_date: new Date('Feburary 28, 2017 19:00:00'),
+                            end_date: new Date('Feburary 28, 2017 21:00:00'),
+                            event_location: "",
+                            event_map: "",
+                            event_picture: "https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.proto.gr%2Fsites%2Fdefault%2Ffiles%2Fstyles%2Fcolorbox%2Fpublic%2Fimages%2Ffruits%2Fapple.png&f=1",
+
+                            tags: ["10th Steps", "computing", "cs3283", "cs3247"],
+
+                        }).save(callback);
                     },
                 ], callback
             );
