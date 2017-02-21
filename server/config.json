@@ -6,7 +6,7 @@
 	},
 	"devDbUri": {
 		"host": "localhost",
-		"port": "9000",
+		"port": "27017",
 		"database": "dev"
 	},
   "jwtSecret": "secret-phrase"
