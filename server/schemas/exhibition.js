@@ -1,6 +1,6 @@
-var Schema = require("./schemaHeader.js");
+var mongoose = require('mongoose');
 
-var exhibitionSchema = new Schema({
+var exhibitionSchema = new mongoose.Schema({
     exhibition_name: {
         type: String,
         index: { unique: true }
@@ -15,3 +15,5 @@ var exhibitionSchema = new Schema({
 
     tags: [String]
 });
+
+module.exports = exhibitionSchema;
