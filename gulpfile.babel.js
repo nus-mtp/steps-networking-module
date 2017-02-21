@@ -8,7 +8,7 @@ const eslint = require('gulp-eslint');
 const nodemon = require('nodemon');
 const webpack = require('webpack-stream');
 
-const webpackConfig = require('./webpack.config.js');
+const webpackConfig = require('./webpack.client.config.js');
 const webpackServerConfig = require('./webpack.server.config.js');
 const rootDir = './dist';
 
