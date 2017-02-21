@@ -1,6 +1,9 @@
 var mongoDBConnector = require("../mongodbscripts/accessMongoDB.js");
 var userSchema = require("../schemas/userSchema.js");
 var eventSchema = require("../schemas/eventSchema.js");
+var exhibitionSchema = require("../schemas/exhibitionSchema.js");
+var attendanceSchema = require("../schemas/attendanceSchema.js");
+var commentSchema = require("../schemas/commentSchema.js");
 
 /* 
     This file defines a Class Object that allows one to get the Mongoose Models from a specified database.
@@ -20,6 +23,9 @@ class ModelHandler {
         this.db = mongoDBConnector.connect(host, port, name);
         this.userModel = this.db.model("user", userSchema);
         this.eventModel = this.db.model("event", eventSchema);
+        this.exhibitionModel = this.db.model("exhibition", exhibitionSchema);
+        this.attendanceModel = this.db.model("attendance", attendanceSchema);
+        this.commentModel = this.db.model("comment", commentSchema);
     }
 
     /*
@@ -34,10 +40,37 @@ class ModelHandler {
     /*
         Returns a Event Mongoose Model Object - configured for the parameters specified in the constructor.
 
-        @return {Mongoose.Model} userModel: The Mongoose Model that can be used to interact with the MongoDB backend.
+        @return {Mongoose.Model} eventModel: The Mongoose Model that can be used to interact with the MongoDB backend.
     */
     getEventModel() {
         return this.eventModel;
+    }
+
+    /*
+        Returns a Exhibition Mongoose Model Object - configured for the parameters specified in the constructor.
+
+        @return {Mongoose.Model} exhibitionModel: The Mongoose Model that can be used to interact with the MongoDB backend.
+    */
+    getExhibitionModel() {
+        return this.exhibitionModel;
+    }
+
+    /*
+        Returns a Attendance Mongoose Model Object - configured for the parameters specified in the constructor.
+
+        @return {Mongoose.Model} attendanceModel: The Mongoose Model that can be used to interact with the MongoDB backend.
+    */
+    getAttendanceModel() {
+        return this.attendanceModel;
+    }
+
+    /*
+        Returns a Comment Mongoose Model Object - configured for the parameters specified in the constructor.
+
+        @return {Mongoose.Model} commentModel: The Mongoose Model that can be used to interact with the MongoDB backend.
+    */
+    getCommentModel() {
+        return this.commentModel;
     }
 
     /*
