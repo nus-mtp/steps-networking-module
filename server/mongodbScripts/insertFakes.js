@@ -7,19 +7,12 @@
 
 var async = require("async");
 
-// Establish a connection to the MongoDB server
+// Obtain the User Model
 
-var db = require("./accessMongoDB.js").connect("localhost", "27017", "fake-data");
-
-// Include the relevant Schema files
-
-var userSchema = require("../schemas/userSchema.js");
-var eventSchema = require("../schemas/eventSchema.js");
-
-// Establish Models on the connection
-
-var User = db.model('user', userSchema);
-var Event = db.model('event', eventSchema);
+var ModelHandler = require("./models.js");
+var Models = new ModelHandler("localhost", "27017", "fake-data");
+var User = Models.getUserModel();
+var Event = Models.getEventModel();
 
 // Start
 
@@ -53,6 +46,9 @@ async.series(
                     function(callback) {
                         new User({ email: "user5@user.com", name: "user5", description: "I am user5.", password: "user5" }).save(callback);
                     },
+                    function(callback) {
+                        new User({ email: "user6@user.com", name: "user6", description: "I am user6.", password: "user6" }).save(callback);
+                    },
                 ], callback
             );
 
@@ -64,6 +60,7 @@ async.series(
                 if (err) console.log(err);
 
                 console.log(doc);
+                console.log(doc[0].email);
 
                 callback(null, "");
             });
@@ -71,14 +68,8 @@ async.series(
         function(callback) {
             // Close the database only AFTER the insertions have been completed
 
-            db.close(function(err) {
+            Models.disconnect(function() {});
 
-                if (err) console.log(err);
-                else console.log("fake-data MongoDB Disconnected Successfully.");
-
-                callback(null, "");
-
-            });
         },
     ]
 );
