@@ -15,7 +15,7 @@ module.exports.connect = function(host, port, database) {
     });
 
     db.once('open', function() {
-        console.info('MongoDB ' + host + ' Connected Successfully.');
+        console.info('MongoDB ' + database + ' Connected Successfully.');
     });
 
     return db;
