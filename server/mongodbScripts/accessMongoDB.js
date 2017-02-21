@@ -5,7 +5,6 @@
     Note that running this script by itself will not terminate the process.
 */
 var mongoose = require('mongoose');
-var options = { promiseLibrary: require('bluebird') };
 var attendanceSchema = require('../schemas/user');
 var commentSchema = require('../schemas/user');
 var exhibitionSchema = require('../schemas/exhibition');
@@ -14,7 +13,7 @@ var userSchema = require('../schemas/user');
 
 module.exports.connect = (host, port, database)  => {
 
-	var db = mongoose.createConnection('mongodb://' + host + ':' + port + '/' + database, options);
+	var db = mongoose.createConnection('mongodb://' + host + ':' + port + '/' + database);
 
 	db.on('error', function(err) {
 			if (err) throw err;
@@ -23,7 +22,7 @@ module.exports.connect = (host, port, database)  => {
 	db.once('open', function() {
 			console.info('MongoDB ' + database + ' Connected Successfully.');
 	});
-	
+
 	db.model('Attendance', attendanceSchema);
 	db.model('Comment', commentSchema);
 	db.model('Exhibition', exhibitionSchema);
