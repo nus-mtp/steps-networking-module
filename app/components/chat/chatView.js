@@ -23,51 +23,52 @@ export default class ChatView extends Component {
 	
 	Chat_postSelf (text) {
 		return (
-			<div className="row justify-content-end">
-				<div className="col-9 form-control" id="chat-self">
-					{text}
-				</div>
+			<div className="container form-control" id="chat-self">
+				{text}
 			</div>
 		);
 	}
 
 	Chat_postOther (text) {
 		return (
-			<div className="row">
-				<div className="col-9 form-control" id="chat-other">
-					{text}
-				</div>
+			<div className="container-fluid form-control" id="chat-other">
+				{text}
 			</div>
 		);
 	}
 
 	handleSubmit (event) {
-		var new_div = this.Chat_postSelf(this.refs.chatinput.value);
-		this.addMessages(new_div);
-		this.refs.chatinput.value = '';
-		this.scrollToBottom();
+		var str = this.refs.chatinput.value;
+		var str_strip = str.trim();
+		if (str_strip.length>0) {
+			var new_div = this.Chat_postSelf(this.refs.chatinput.value);
+			this.addMessages(new_div);
+			this.refs.chatinput.value = '';
+		} else {
+			this.refs.chatinput.value = str.slice(0, str.length-1);
+		}
 	}
 	
 	handleChange (event) {
 		var str = this.refs.chatinput.value;
-		var str_strip = str.trim();
 		if (str[str.length-1]=="\n") {
-			if (str_strip.length>0) {
-				this.handleSubmit.bind(this).call(event);
-			} else {
-				this.refs.chatinput.value = str.slice(0, str.length-1);
-			}			
+			this.handleSubmit.bind(this).call(event);
 		}
 	}
 	
 	scrollToBottom() {
+		//window.scrollTo(1, 1)
 		document.body.scrollTop = document.body.scrollHeight;
+	}
+	
+	componentDidUpdate () {
+		this.scrollToBottom();
 	}
 	
 	render() {
 		return (
 			<div className="container" id="chat-body">
-				<div className="container-fluid">
+				<div className="container-fluid" id="chat-content-container">
 					{this.state.messages}
 				</div>
 				<div className="fixed-bottom" id="chat-form-container">
@@ -76,9 +77,10 @@ export default class ChatView extends Component {
 						ref="chatinput"
 						id="chat-input"
 						placeholder={this.placeholder}
-						onSubmit={this.handleSubmit.bind(this)}
 						onChange={this.handleChange.bind(this)}
-					/>
+					/><button type="button" id="chat-submit-button" className="btn btn-default" 
+						onClick={this.handleSubmit.bind(this)}><img id="chat-submit-image" src="../../resources/images/ic_send_24dp.png" />
+					</button>
 				</div>
 			</div>
 		);
