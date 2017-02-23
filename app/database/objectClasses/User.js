@@ -1,32 +1,39 @@
 var ModelHandler = require("../mongodbscripts/models.js");
+const port = "27017";
+const host = "localhost";
+const dbName = "fake-data";
 
 /**
- * This is the wrapper class used extract out information from the database between view and model
+ * This is the wrapper class used extract out and store information about the Users from the database between view and model
  *
  */
 
 
 class User {
   constructor(email = "", name = "", description = "", hashed_pw = "", will_notify = true, is_deleted = false, profile_pic = "", skill_sets = [], bookedmarked_users = []) {
-    var port = "27017";
-    var host = "localhost";
-    var dbName = "fake-data";
-    console.log("default name is : "+name);
-    ModelHandler = new ModelHandler (host, port, dbName);
-    this.userModel = ModelHandler.getUserModel();
-    //this.clearUser();
-    this.userModelDoc = new this.userModel({
-      email : email,
-      name : name,
-      description : description,
-      hashed_pw : hashed_pw,
-      will_notfy : will_notify,
-      is_deleted : is_deleted,
-      profile_picture : profile_pic,
-      skill_sets : skill_sets,
-      bookmarked_users : bookedmarked_users,
-    });
+    this.ModelHandler = new ModelHandler (host, port, dbName);
+    this.userModel = this.ModelHandler.getUserModel();
+    //User.clearAllUser();
+    console.log("all users " + User.getAllUsers());
+    console.log("cleared");
+    try{
+      this.userModelDoc = new this.userModel({
+        email : email,
+        name : name,
+        description : description,
+        hashed_pw : hashed_pw,
+        will_notfy : will_notify,
+        is_deleted : is_deleted,
+        profile_picture : profile_pic,
+        skills : skill_sets,
+        bookmarked_users : bookedmarked_users,
+      });
+    } catch (err){
+      console.log( "there's an error!");
+      throw err;
+    }
     this.saveUser();
+    this.ModelHandler.disconnect();
   }
 
   /**
@@ -173,6 +180,9 @@ class User {
     this.userModelDoc.comparePassword(password, callback);
   }
 
+  /**
+   * Saves users into database
+   */
   saveUser(){
     this.userModelDoc.save(function (err) {
       if (err)
@@ -181,9 +191,53 @@ class User {
     })    
   }
 
-  clearUser(){
-    this.userModel.collection.remove();
+  /**
+   * Remove the collection of Users from database
+   */
+  static clearAllUser(){
+    this.ModelHandler = new ModelHandler (host, port, dbName);
+    this.userModel = this.ModelHandler.getUserModel();
+    this.userModel.collection.remove({});
+    this.ModelHandler.disconnect();
   }
-}
 
+  /**
+   *Returns the entire collection of Users
+   */
+  static getAllUsers(){
+    this.ModelHandler = new ModelHandler (host, port, dbName);
+    this.userModel = this.ModelHandler.getUserModel();
+    var allUsers = this.userModel.find({});
+    this.ModelHandler.disconnect();
+    return allUsers;
+  }
+
+  /**
+   * This method takes in an email and returns a match in the database
+   *  
+   * @param {String}
+   * @returns {UserObject}
+   */
+  static getUserObject(email){
+    this.ModelHandler = new ModelHandler (host, port, dbName);
+    this.userModel = this.ModelHandler.getUserModel();
+    try{
+      this.userModel.findOne({ 'email': email }, function(err, doc) {
+
+        if (err) {
+          console.log("error : "+err);
+        }
+        console.log("doc = " +doc);
+        return doc;
+      });
+    } catch(err){
+      throw err;
+    }
+    this.ModelHandler.disconnect();
+  }
+
+
+  //getUserObject(by email)
+  //those done before.
+}
 module.exports = User;
