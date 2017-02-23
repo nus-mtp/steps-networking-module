@@ -26,13 +26,24 @@ async.series(
         function(callback) {
             // Remove all prior documents created in the previous run
 
-            User.collection.remove({});
-            Event.collection.remove({});
-            Exhibition.collection.remove({});
-            Attendance.collection.remove({});
-            Comment.collection.remove({});
+            async.parallel([
+                function(callback) {
+                    User.remove({}, callback);
+                },
+                function(callback) {
+                    Event.remove({}, callback);
+                },
+                function(callback) {
+                    Exhibition.remove({}, callback);
+                },
+                function(callback) {
+                    Attendance.remove({}, callback);
+                },
+                function(callback) {
+                    Comment.remove({}, callback);
+                },
+            ], callback);
 
-            callback(null, "");
         },
         function(callback) {
             // Insert User Documents into fake-data
@@ -87,11 +98,10 @@ async.series(
         function(callback) {
             // Test environment
 
-            User.find({ email: "user4@user.com" }, function(err, doc) {
+            User.find({ email: "user4@user.com" }, function(err, docs) {
                 if (err) console.log(err);
 
-                console.log(doc);
-                console.log(doc[0].email);
+                console.log(docs[0].toJSON());
 
                 callback(null, "");
             });
@@ -100,7 +110,6 @@ async.series(
             // Close the database only AFTER the insertions have been completed
 
             Models.disconnect(function() {});
-
         },
     ]
 );
