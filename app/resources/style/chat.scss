@@ -13,22 +13,22 @@
 
 #chat-other {
 	background-color:lightgray;
-	margin-bottom: 5px;
 	margin-left:0;
 	margin-right:auto;
-	display:inline-block;
-	word-wrap: break-word;
+	margin-bottom: 5px;
 	width: -webkit-fit-content;
+	white-space: pre;
+	word-wrap: break-word;
 }
 
 #chat-self {
-	/*color: white;*/
+	background-color:palegreen;
 	margin-left: auto;
 	margin-right:0;
-	background-color:palegreen;
 	margin-bottom: 5px;
-	word-wrap: break-word;
 	width: -webkit-fit-content;
+	white-space: pre;
+	word-wrap: break-word;
 }
 
 #chat-form-container {

@@ -36,8 +36,14 @@ export default class ChatView extends Component {
 			</div>
 		);
 	}
+	
+	handleChange (e) {
+		if (this.refs.chatinput.value = '\n') {
+			this.refs.chatinput.value = '';
+		}
+	}
 
-	handleSubmit (event) {
+	handleSubmit (e) {
 		var str = this.refs.chatinput.value;
 		var str_strip = str.trim();
 		if (str_strip.length>0) {
@@ -49,14 +55,16 @@ export default class ChatView extends Component {
 		}
 	}
 	
-	handleChange (event) {
-		var str = this.refs.chatinput.value;
-		if (str[str.length-1]=="\n") {
-			this.handleSubmit.bind(this).call(event);
+	catchSubmit (e) {
+		e = e || event;
+		if (e.keyCode==13 && !e.shiftKey) {
+			e.preventDefault();
+			this.handleSubmit (e);
 		}
+		return true;
 	}
 	
-	scrollToBottom() {
+	scrollToBottom () {
 		//window.scrollTo(1, 1)
 		document.body.scrollTop = document.body.scrollHeight;
 	}
@@ -77,8 +85,9 @@ export default class ChatView extends Component {
 						ref="chatinput"
 						id="chat-input"
 						placeholder={this.placeholder}
-						onChange={this.handleChange.bind(this)}
-					/><button type="button" id="chat-submit-button" className="btn btn-default" 
+						onKeyDown={this.catchSubmit.bind(this)}
+					/>
+					<button type="button" id="chat-submit-button" className="btn btn-default" 
 						onClick={this.handleSubmit.bind(this)}><img id="chat-submit-image" src="../../resources/images/ic_send_24dp.png" />
 					</button>
 				</div>
