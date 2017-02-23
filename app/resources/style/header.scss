@@ -1,10 +1,14 @@
 #header {
 	display: flex;
-	box-shadow: 0px 3px 5px #888888;
-	background-color:white;
-	flex-direction: row;
+  flexdirection: row;
+  boxshadow: 0px 3px 5px #888888;
+  backgroundcolor: white;
 
-	#brand-logo {
-		height: 50px;
-	}
+  #brandlogo {
+    height: 50px;
+  }
+
+  #login, #signin, #logout {
+    margin: 10px;
+  }
 }
