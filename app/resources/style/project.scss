@@ -1,5 +1,13 @@
-.exhibition-info {
-  margin: 15px;
-  box-shadow: 0px 3px 5px #888888;
-  padding: 30px;
+#project-poster {
+	max-height: 480px;
+	margin-bottom: 30px;
+}
+
+.list-group-item {
+	justify-content: center;
+	flex-direction: column;
+	
+	button {
+		margin: 10px;
+	}
 }
