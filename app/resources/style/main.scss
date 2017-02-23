@@ -1,6 +1,10 @@
+// bootstrap styles
 @import '/css/bootstrap.min.css';
 
 #root {
   @import 'header';
   @import 'body';
+	@import 'profile';
+	@import 'project';
+	@import 'event';
 }
