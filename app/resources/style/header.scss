@@ -2,14 +2,28 @@
   display: flex;
   flex-direction: row;
   box-shadow: 0px 3px 5px #888888;
-  background-color: white;
+  background-color: mediumseagreen;
 
   #brand-logo {
     height: 50px;
   }
 
-  #login, #signin, #logout {
-    margin: 10px;
+  #login, #signin, #logout, .navbar-buttons {
+    padding: 10px 20px 0 20px;
+		border-radius: 20px;
+		color: white;
   }
-
+	
+	a {
+		text-decoration: none;
+	}
+	
+	#nav-links {
+		display: flex;
+		justify-content: flex-end;
+		
+		.active {
+  		background-color: teal;
+  	}
+	}
 }
