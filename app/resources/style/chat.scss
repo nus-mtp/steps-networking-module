@@ -1,48 +1,48 @@
 #chat-body {
-	max-width: 750px;
-	width: 100%;
-	background-color: white;
+  max-width: 750px;
+  width: 100%;
+  background-color: white;
 }
 
 #chat-content-container {
-	max-width: 750px;
-	width: 100%;
-	background-color: white;
-	margin-bottom: 105px;
+  max-width: 750px;
+  width: 100%;
+  background-color: white;
+  margin-bottom: 105px;
 }
 
 #chat-other {
-	background-color:lightgray;
-	margin-left:0;
-	margin-right:auto;
-	margin-bottom: 5px;
-	width: -webkit-fit-content;
-	word-wrap: break-word;
+  background-color:lightgray;
+  margin-left:0;
+  margin-right:auto;
+  margin-bottom: 5px;
+  width: -webkit-fit-content;
+  word-wrap: break-word;
 }
 
 #chat-self {
-	background-color:palegreen;
-	margin-left: auto;
-	margin-right:0;
-	margin-bottom: 5px;
-	width: -webkit-fit-content;
-	word-wrap: break-word;
+  background-color:palegreen;
+  margin-left: auto;
+  margin-right:0;
+  margin-bottom: 5px;
+  width: -webkit-fit-content;
+  word-wrap: break-word;
 }
 
 #chat-form-container {
-	max-width: 750px;
-	width: 100%;
-	margin-left: auto;
+  max-width: 750px;
+  width: 100%;
+  margin-left: auto;
   margin-right: auto;
-	height: 100px;
-	display:flex;
+  height: 100px;
+  display:flex;
 }
 
 #chat-input {
-	display:inline-block;
-	resize: none;
+  display:inline-block;
+  resize: none;
 }
 
 #chat-submit-button {
-	display:inline-block;
+  display:inline-block;
 }
