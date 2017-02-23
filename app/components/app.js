@@ -7,8 +7,8 @@ class App extends React.Component {
   render() {
     return(
       <div className="container-fluid">
-        <nav id="header" className="navbar navbar-toggleable-md navbar-light fixed-top row justify-content-between collapse navbar-collapse">
-          <Link className="col-4" to={Paths.home}><img id="brand-logo" src="resources/images/home.svg" alt="Home"/></Link>
+        <nav id="header" className="navbar navbar-toggleable-md navbar-light fixed-top row justify-content-between navbar-collapse">
+          <Link className="col-4" to={Paths.home}><img id="brand-logo" src="resources/images/home-icon.svg" alt="Home"/></Link>
           <Link to={Paths.profile}>Profile</Link>
           <Link to={Paths.event}>Event</Link>
           <Link to={Paths.chat}>Chat</Link>
