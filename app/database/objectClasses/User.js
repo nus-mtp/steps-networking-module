@@ -10,17 +10,17 @@ const dbName = "fake-data";
 
 
 class User {
-  
+
   /**
-   * This method creates a new instance of the model, returns .
+   * This method creates a new instance of the model, an error will be thrown if there's a duplicate.
    *
    * @param {String} email: Email used to register in the respective events
-   * @param {String} name
-   * @param {String} description
-   * @param {String} password
+   * @param {String} name: name of user
+   * @param {String} description: summary of the user
+   * @param {String} password: user's password in plain string
    * @param {Boolean} will_notify: To determine if the user wants to be notified of new messages by email
    * @param {Boolean} is_deleted: To determine if this user is still valid in the database
-   * @param {String} profile_pic: A url string which contains the profile picture.11
+   * @param {String} profile_pic: A url string which contains the profile picture.
    * @param {StringArray} skills_set: The skills that the user possess. Such as programming skills, management skills, etc
    * @param {StringArray} bookedmarked_users: A collection of users' emails that the current user wants to keep track of.
    */
@@ -42,7 +42,6 @@ class User {
     this.ModelHandler.disconnect();
   }
 
-
   /**
   * Takes in password from user and checks the hashed version with the databse
   * 
@@ -63,6 +62,7 @@ class User {
 
         //Is there an existing User?
         if (err.name === 'MongoError' && err.code === 11000) {
+          //Report and abort.
           console.log("There is an existing user with the same Email.");
         }
       } else {
@@ -85,12 +85,12 @@ class User {
    * Returns the entire collection of Users
    * To use this function use
    * User.getAllUsers(function functionName(err,obj) {
-        if (err){
-        //error handling
-        } else {
-        // do anything to obj. obj is an array of documents.
-        }
-     });
+   *     if (err){
+   *     //error handling
+   *     } else {
+   *     // do anything to obj. obj is an array of documents.
+   *     }
+   *  });
    */
   static getAllUsers(cb){
     this.ModelHandler = new ModelHandler (host, port, dbName);
@@ -109,19 +109,18 @@ class User {
    * This method takes in an email and returns a match in the database
    * To use this function use 
    * getUser(email, function functionName(err, docs){
-       if (err){
-         //error handling
-       } else {
-       //do anything to doc here. docs is the UserObject.
-       //To access attribute, use docs.[attribute];
-       }
-     });
+   *     if (err){
+   *      //error handling
+   *    } else {
+   *    //do anything to doc here. docs is the UserObject.
+   *    //To access attribute, use docs.[attribute];
+   *    }
+   *  });
    *  
    * @param {String} email
    * @param {function} cb
-   **/
+   */
   static getUser(email, cb){
-    var results;
     this.ModelHandler = new ModelHandler (host, port, dbName);
     this.userModel = this.ModelHandler.getUserModel();
     this.userModel.findOne({ 'email': email }, function(err, docs) {
@@ -137,27 +136,28 @@ class User {
    * This method updates overwrites all the current attribute content (except email) with the user input content 
    *
    * @param {String} email: used as an identifer for the respective user instance
-   * @param {String} name
-   * @param {String} description
-   * @param {String} password
+   * @param {String} name: name of user
+   * @param {String} description: a summary of the user
+   * @param {String} password: user's password in plain string
    * @param {Boolean} will_notify: To determine if the user wants to be notified of new messages by email
    * @param {Boolean} is_deleted: To determine if this user is still valid in the database
-   * @param {String} profile_pic: A url string which contains the profile picture.11
+   * @param {String} profile_pic: A url string which contains the profile picture.
    * @param {StringArray} skills_set: The skills that the user possess. Such as programming skills, management skills, etc
    * @param {StringArray} bookedmarked_users: A collection of users' emails that the current user wants to keep track of.
-   **/
+   */
   static updateUser(email = "", name = "", description = "", password = "", will_notify = true, is_deleted = false, profile_pic = "", skill_sets = [], bookedmarked_users = []){
-    
-    //The list of  
-    var update = { name : name,
-      description : description,
-      password : password,
-      will_notify : will_notify,
-      is_deleted : is_deleted,
-      profile_picture : profile_pic,
-      skills : skill_sets,
-      bookmarked_users : bookedmarked_users,
-    }
+
+    //The list of  attributes that will be updated
+    var update = {  email : email,
+                  name : name,
+                  description : description,
+                  password : password,
+                  will_notify : will_notify,
+                  is_deleted : is_deleted,
+                  profile_picture : profile_pic,
+                  skills : skill_sets,
+                  bookmarked_users : bookedmarked_users,
+                 }
     var options = {new: true};
     this.ModelHandler = new ModelHandler (host, port, dbName);
     this.userModel = this.ModelHandler.getUserModel();
@@ -167,6 +167,25 @@ class User {
       } else {
         console.log ("User is updated successfully");
       }
+    });
+    this.ModelHandler.disconnect();
+  }
+
+  
+  /**
+   *This methods filters the list of users base on a single skill
+   *
+   * @param {string} skillToBeSearched: the skill that is to be matched in the database.
+   * @param {function}callback
+   */
+  static searchUsersBySkills(skillToBeSearched, callback){
+    this.ModelHandler = new ModelHandler (host, port, dbName);
+    this.userModel = this.ModelHandler.getUserModel();
+    this.userModel.find({ 'skills': { $regex: new RegExp(skillToBeSearched.replace('+',"\\+"),"i")} }, function(err, docs) {
+      if (err){
+        callback(err, null)
+      }
+      callback(null,docs);
     });
     this.ModelHandler.disconnect();
   }
