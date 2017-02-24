@@ -51,22 +51,24 @@ async.series(
             async.parallel(
                 [
                     function(callback) {
-                        new User({ email: "user1@user.com", name: "user1", description: "I am user1.", password: "user1" }).save(callback);
+                        var User1 = new User({ email: "user1@user.com", name: "user1", description: "I am user1.", password: "user1" });
+                        User1.skills.push("programming");
+                        User1.save(callback);
                     },
                     function(callback) {
-                        new User({ email: "user2@user.com", name: "user2", description: "I am user2.", password: "user2" }).save(callback);
+                        var User2 = new User({ email: "user2@user.com", name: "user2", description: "I am user2.", password: "user2" }).save(callback);
                     },
                     function(callback) {
-                        new User({ email: "user3@user.com", name: "user3", description: "I am user3.", password: "user3" }).save(callback);
+                        var User3 = new User({ email: "user3@user.com", name: "user3", description: "I am user3.", password: "user3" }).save(callback);
                     },
                     function(callback) {
-                        new User({ email: "user4@user.com", name: "user4", description: "I am user4.", password: "user4" }).save(callback);
+                        var User4 = new User({ email: "user4@user.com", name: "user4", description: "I am user4.", password: "user4" }).save(callback);
                     },
                     function(callback) {
-                        new User({ email: "user5@user.com", name: "user5", description: "I am user5.", password: "user5" }).save(callback);
+                        var User5 = new User({ email: "user5@user.com", name: "user5", description: "I am user5.", password: "user5" }).save(callback);
                     },
                     function(callback) {
-                        new User({ email: "user6@user.com", name: "user6", description: "I am user6.", password: "user6" }).save(callback);
+                        var User6 = new User({ email: "user6@user.com", name: "user6", description: "I am user6.", password: "user6" }).save(callback);
                     },
                 ], callback
             );
@@ -98,7 +100,7 @@ async.series(
         function(callback) {
             // Test environment
 
-            User.find({ email: "user4@user.com" }, function(err, docs) {
+            User.find({ email: "user1@user.com" }, function(err, docs) {
                 if (err) console.log(err);
 
                 console.log(docs[0].toJSON());
