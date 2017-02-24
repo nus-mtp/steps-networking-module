@@ -20,6 +20,7 @@ var Attendance = Models.getAttendanceModel();
 var Comment = Models.getCommentModel();
 
 // Start
+// Note that the entire Transaction will fail silently if any one of the below generates an Error
 
 async.series(
     [
