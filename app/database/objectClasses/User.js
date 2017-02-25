@@ -38,7 +38,16 @@ class User {
       skills : skill_sets,
       bookmarked_users : bookedmarked_users,
     });
-    this.saveUser();
+    
+    this.saveUser(function callback(err){
+      if (err){
+        if (err.name === 'MongoError' && err.code === 11000) {
+          //Report and abort.
+          console.log("There is an existing user with the same Email.");
+        }
+      }
+    });
+
     this.ModelHandler.disconnect();
   }
 
@@ -56,15 +65,10 @@ class User {
    * Saves users into database
    * Report if there's any duplicate
    */
-  saveUser(){
+  saveUser(callback){
     this.userModelDoc.save(function (err) {
       if (err) {
-
-        //Is there an existing User?
-        if (err.name === 'MongoError' && err.code === 11000) {
-          //Report and abort.
-          console.log("There is an existing user with the same Email.");
-        }
+        callback(err);
       } else {
         console.log("Users are saved.");
       }
@@ -162,21 +166,29 @@ class User {
     this.ModelHandler = new ModelHandler (host, port, dbName);
     this.userModel = this.ModelHandler.getUserModel();
     this.userModel.findOneAndUpdate({ 'email': email }, update, options, function(err, docs) {
+
+      // Did something went wrong?
       if (err){
         console.log("Error with updating users.");
-      } else {
+      } 
+      // If not, is it existing?
+      else if (docs) {
         console.log ("User is updated successfully");
+      } 
+      // No errors, and no existing document
+      else {
+        console.log ("There is no such users.")
       }
     });
     this.ModelHandler.disconnect();
   }
 
-  
+
   /**
-   *This methods filters the list of users base on a single skill
+   * This methods filters the list of users base on a single skill
    *
    * @param {string} skillToBeSearched: the skill that is to be matched in the database.
-   * @param {function}callback
+   * @param {function} callback (err, docs): errors are stored in err, results are stored in docs.
    */
   static searchUsersBySkills(skillToBeSearched, callback){
     this.ModelHandler = new ModelHandler (host, port, dbName);
@@ -186,6 +198,49 @@ class User {
         callback(err, null)
       }
       callback(null,docs);
+    });
+    this.ModelHandler.disconnect();
+  }
+
+  /**
+   * This method checks if user is both existing and not marked as deleted in database
+   *
+   * @param {String} email: to be checked against database
+   * @param {function} callback (err,results): errors are stored in err, results is boolean
+   */
+  static isValidUser(email,callback){
+    this.ModelHandler = new ModelHandler (host, port, dbName);
+    this.userModel = this.ModelHandler.getUserModel();
+    this.userModel.findOne({ 'email': email }, function (err, docs) {
+      if (err){
+        callback(err,null);
+      } else if (docs) {
+        if (!docs.is_deleted){
+          callback(null, true);
+        } else {
+          callback(null, false);
+        }
+      } else {
+        callback(null, false);
+      }
+    });
+    this.ModelHandler.disconnect();
+  }
+
+  /**
+   *This method marks a user as deleted from the database
+   *
+   * @param {String} email:  the email used to match in the database
+   * @param {function} callback (err): any error is returned here
+   */
+  static removeUser(email,callback){
+    var update = {is_deleted : true};
+    this.ModelHandler = new ModelHandler (host, port, dbName);
+    this.userModel = this.ModelHandler.getUserModel();
+    this.userModel.findOneAndUpdate({ 'email': email },{$set: update}, function (err, docs) {
+      if (err){
+        callback(err);
+      } 
     });
     this.ModelHandler.disconnect();
   }
