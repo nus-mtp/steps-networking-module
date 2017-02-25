@@ -38,7 +38,7 @@ class User {
       skills : skill_sets,
       bookmarked_users : bookedmarked_users,
     });
-    
+
     this.saveUser(function callback(err){
       if (err){
         if (err.name === 'MongoError' && err.code === 11000) {
@@ -233,16 +233,22 @@ class User {
    * @param {String} email:  the email used to match in the database
    * @param {function} callback (err): any error is returned here
    */
-  static removeUser(email,callback){
-    var update = {is_deleted : true};
+  static setUserAsDeleted(email, boolDeleted, callback){
+    var update = {is_deleted : boolDeleted};
+    var options = {new: true};
     this.ModelHandler = new ModelHandler (host, port, dbName);
     this.userModel = this.ModelHandler.getUserModel();
-    this.userModel.findOneAndUpdate({ 'email': email },{$set: update}, function (err, docs) {
+    this.userModel.findOneAndUpdate({ 'email': email },{$set: update}, options, function (err, docs) {
       if (err){
-        callback(err);
+        callback(err, null);
+      } else {
+        callback(null, docs);
       } 
+
     });
     this.ModelHandler.disconnect();
   }
+  
+  
 }
 module.exports = User;
