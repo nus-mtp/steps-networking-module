@@ -3,14 +3,16 @@ const babel = require('gulp-babel');
 const csso = require('gulp-csso');
 const sass = require('gulp-sass');
 const imagemin = require('gulp-imagemin');
+const mocha = require('gulp-mocha-co');
 const eslint = require('gulp-eslint');
 const nodemon = require('nodemon');
 const webpack = require('webpack-stream');
 
-const webpackConfig = require('./webpack.config.js');
+const webpackConfig = require('./webpack.client.config.js');
+const webpackServerConfig = require('./webpack.server.config.js');
 const rootDir = './dist';
 
-require('babel-core/register');
+require('babel-register');
 require('babel-polyfill');
 
 /** lint task **/
@@ -19,6 +21,17 @@ gulp.task('lint', () =>
     .pipe(eslint())
     .pipe(eslint.formatEach())
     .pipe(eslint.failAfterError())
+);
+
+/** run test **/
+gulp.task('test', () =>
+  gulp.src('tests/*.test.js')
+    .pipe(babel({
+      presets: ['es2015'],
+    }))
+    .pipe(mocha({
+      reporter: 'Spec',
+    }))
 );
 
 /** minimizing files and bundling **/
@@ -57,10 +70,18 @@ gulp.task('watch', () => {
   gulp.watch('./app/**/*.js', ['bundle']);
 });
 
+gulp.task('buildServer', () =>
+  gulp.src('./server/server.js')
+    .pipe(webpack(webpackServerConfig))
+    .pipe(gulp.dest('./server/'))
+);
+
+gulp.task('buildClient', ['css', 'html', 'image', 'bundle']);
+
 /** run gulp task for development **/
-gulp.task('default', ['watch', 'css', 'html', 'image', 'bundle'], () => {
+gulp.task('default', ['watch', 'css', 'html', 'image', 'bundle', 'buildServer'], () => {
   nodemon({
-    script: './server.js',
+    script: './server/server.bundle.js',
     ignore: ['./dist/'],
   });
 });
