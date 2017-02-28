@@ -46,21 +46,19 @@ export default class ChatView extends Component {
   }
 
   handleChange() {
-    if (this.refs.chatinput.value === '\n') {
-      this.refs.chatinput.value = '';
+    if (this.refs.chatInput.value === '\n') {
+      this.refs.chatInput.value = '';
     }
   }
 
   handleSubmit() {
-    const str = this.refs.chatinput.value;
+    const str = this.refs.chatInput.value;
     const strStrip = str.trim();
     if (strStrip.length > 0) {
-      const newDiv = ChatView.PostSelf(this.refs.chatinput.value);
+      const newDiv = ChatView.PostSelf(this.refs.chatInput.value);
       this.addMessages(newDiv);
-      this.refs.chatinput.value = '';
-    } else {
-      this.refs.chatinput.value = str.slice(0, str.length - 1);
     }
+    this.refs.chatInput.value = '';
   }
 
   catchSubmit(e) {
@@ -80,7 +78,7 @@ export default class ChatView extends Component {
         <div className="fixed-bottom" id="chat-form-container">
           <textarea
             className="form-control"
-            ref="chatinput"
+            ref="chatInput"
             id="chat-input"
             placeholder={this.placeholder}
             onKeyDown={this.catchSubmit.bind(this)}
