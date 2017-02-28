@@ -2,7 +2,8 @@ import React from 'react';
 import { Link } from 'react-router';
 import Auth from '../database/auth';
 import Paths from '../paths';
-import Dropdown from '../../node_modules/bootstrap/dist/bootstrap';
+import JQuery from '../../node_modules/jquery/dist/jquery';
+import Bootstrap from '../../node_modules/bootstrap/dist/js/bootstrap';
 
 class App extends React.Component {
   render() {
@@ -15,7 +16,7 @@ class App extends React.Component {
           <Link to={Paths.home}><img id="brand-logo" src="resources/images/home.svg" alt="Home"/></Link>
 
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <form className="searchbar form-inline my-2 my-lg-0">
+            <form className="form-inline my-2 my-lg-0">
               <input className="form-control mr-sm-2" type="text" placeholder="Search" />
               <button className="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
             </form>
