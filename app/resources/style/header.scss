@@ -10,20 +10,20 @@
 
   #login, #signin, #logout, .navbar-buttons {
     padding: 10px 20px 0 20px;
-		border-radius: 20px;
-		color: white;
+    border-radius: 20px;
+    color: white;
   }
-	
-	a {
-		text-decoration: none;
-	}
-	
-	#nav-links {
-		display: flex;
-		justify-content: flex-end;
-		
-		.active {
-  		background-color: teal;
-  	}
-	}
+
+  a {
+    text-decoration: none;
+  }
+
+  #nav-links {
+    display: flex;
+    justify-content: flex-end;
+
+    .active {
+      background-color: teal;
+    }
+  }
 }
