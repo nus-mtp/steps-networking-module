@@ -54,4 +54,17 @@
 #brand-logo {
   width: 40px;
   height: auto;
+  margin-right: 20px;
+}
+
+.link.nav-link {
+  color: white;
+  font-weight: bold;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.collapse.navbar-collapse {
+  flex-direction: row;
+  justify-content: space-between;
 }

@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router';
 import Auth from '../database/auth';
-import Paths from "../paths"
+import Paths from '../paths';
+import Dropdown from '../../node_modules/bootstrap/dist/bootstrap';
 
 class App extends React.Component {
   render() {
@@ -14,22 +15,35 @@ class App extends React.Component {
           <Link to={Paths.home}><img id="brand-logo" src="resources/images/home.svg" alt="Home"/></Link>
 
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav mr-auto">
-              <li className="nav-item active">
-                <Link className="nav-link" to={Paths.profile}>Profile</Link>
+            <form className="searchbar form-inline my-2 my-lg-0">
+              <input className="form-control mr-sm-2" type="text" placeholder="Search" />
+              <button className="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+            </form>
+            <ul className="navbar-nav">
+              <li className="nav-item">
+                { Auth.isUserAuthenticated() ?
+                  <Link className="link nav-link" to={Paths.profile}>Profile</Link> :
+                  <Link></Link> }
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to={Paths.event}>Event</Link>
+                { Auth.isUserAuthenticated() ?
+                  <Link className="link nav-link" to={Paths.event}>Event</Link> :
+                  <Link></Link> }
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to={Paths.chat}>Chat</Link>
+                { Auth.isUserAuthenticated() ?
+                  <Link className="link nav-link" to={Paths.chat}>Chat</Link> :
+                  <Link></Link> }
+
+              </li>
+              <li className="nav-item">
+                { Auth.isUserAuthenticated() ?
+                  <Link id="logout" className="link nav-link" to={Paths.logout}>Logout</Link> :
+                  <Link id="login" className="link nav-link" to={Paths.login}>Login</Link> }
               </li>
             </ul>
-            <form className="form-inline my-2 my-lg-0">
-              <input className="form-control mr-sm-2" type="text" placeholder="Search" />
-              <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            </form>
           </div>
+
         </nav>
         <div id="app-body">
           {this.props.children}
