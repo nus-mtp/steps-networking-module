@@ -1,12 +1,10 @@
 #chat-body {
   max-width: 750px;
-  width: 100%;
   background-color: white;
 }
 
 #chat-content-container {
   max-width: 750px;
-  width: 100%;
   background-color: white;
   margin-bottom: 105px;
 }
@@ -18,6 +16,7 @@
   margin-bottom: 5px;
   width: -webkit-fit-content;
   word-wrap: break-word;
+  max-width: 100%;
 }
 
 #chat-self {
@@ -27,6 +26,7 @@
   margin-bottom: 5px;
   width: -webkit-fit-content;
   word-wrap: break-word;
+  max-width: 100%;
 }
 
 #chat-form-container {
