@@ -20,42 +20,24 @@ class App extends React.Component {
   }
 
   handleLinks() {
+    const baseState = {
+      profileActive: '',
+      loginActive: '',
+      eventActive: '',
+      chatActive: '',
+    };
+
     if (this.props.location.pathname === Paths.profile) {
-      this.setState({
-        profileActive: 'active',
-        loginActive: '',
-        eventActive: '',
-        chatActive: '',
-      });
+      baseState.profileActive = 'active';
     } else if (this.props.location.pathname === Paths.login) {
-      this.setState({
-        profileActive: '',
-        loginActive: 'active',
-        eventActive: '',
-        chatActive: '',
-      });
+      baseState.loginActive = 'active';
     } else if (this.props.location.pathname === Paths.event) {
-      this.setState({
-        profileActive: '',
-        loginActive: '',
-        eventActive: 'active',
-        chatActive: '',
-      });
+      baseState.eventActive = 'active';
     } else if (this.props.location.pathname === Paths.chat) {
-      this.setState({
-        profileActive: '',
-        loginActive: '',
-        eventActive: '',
-        chatActive: 'active',
-      });
-    } else {
-      this.setState({
-        profileActive: '',
-        loginActive: '',
-        eventActive: '',
-        chatActive: '',
-      });
-    }
+      baseState.chatActive = 'active';
+    } // Else base state is empty
+
+    this.setState(baseState);
   }
 
   render() {
@@ -83,7 +65,7 @@ class App extends React.Component {
 
 App.propTypes = {
   children: React.PropTypes.element.isRequired,
-	location: React.PropTypes.object.isRequired,
+  location: React.PropTypes.object.isRequired,
 };
 
 export default App;
