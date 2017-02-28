@@ -26,7 +26,7 @@ class Event{
       if (err){
         if (err.name === 'MongoError' && err.code === 11000) {
           //Report and abort.
-          console.log("There is an existing user with the same eventName");
+          console.log("There is an existing event with the same eventName: "  + eventName);
           console.log(err);
         }
       }
