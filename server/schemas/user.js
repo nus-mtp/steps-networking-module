@@ -5,17 +5,38 @@ var bcrypt = require('bcrypt-nodejs');
 const userSchema = new mongoose.Schema({
     email: {
         type: String,
-        index: { unique: true }
+        lowercase: true,
+        trim: true,
+        unique: true,
+        required: "Email is a Primary Key, and is therefore Required.",
+        index: true,
     },
-    name: String,
+    password: {
+        type: String,
+        required: "Password is Required for Security Reasons.",
+    },
+    name: {
+        type: String,
+        trim: true,
+    },
     description: String,
-    password: String,
 
-    will_notify: Boolean,
-    is_deleted: Boolean,
+    will_notify: {
+        type: Boolean,
+        default: false,
+    },
+    is_deleted: {
+        type: Boolean,
+        default: false,
+    },
     profile_picture: String,
 
-    skills: [String],
+    skills: [{
+        type: String,
+        lowercase: true,
+        trim: true,
+        unique: true,
+    }],
     bookmarked_users: [String]
 });
 

@@ -3,11 +3,20 @@ var mongoose = require('mongoose');
 var eventSchema = new mongoose.Schema({
     event_name: {
         type: String,
-        index: { unique: true }
+        trim: true,
+        unique: true,
+        required: "The Event Name is a Primary Key, and is therefore Required. ",
+        index: true,
     },
     event_description: String,
-    start_date: Date,
-    end_date: Date,
+    start_date: {
+        type: Date,
+        default: Date.now,
+    },
+    end_date: {
+        type: Date,
+        default: function() { return Date.now() + 24 * 60 * 60 * 1000 },
+    },
     event_location: String,
     event_map: String,
     event_picture: String,
