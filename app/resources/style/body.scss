@@ -1,7 +1,5 @@
 #app-body {
-  position: relative;
-  top: 80px;
-  margin: 30px;
+  margin-top: 60px;
 }
 
 .authentication-form {
@@ -51,4 +49,9 @@
 
 .collapsing {
   width: 90vw;
+}
+
+#brand-logo {
+  width: 40px;
+  height: auto;
 }
