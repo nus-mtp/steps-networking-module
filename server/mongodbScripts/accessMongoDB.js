@@ -4,22 +4,19 @@
 
     Note that running this script by itself will not terminate the process.
 */
-var mongoose = require('mongoose');
-var attendanceSchema = require('../schemas/attendance.js');
-var commentSchema = require('../schemas/comment.js');
-var exhibitionSchema = require('../schemas/exhibition.js');
-var eventSchema = require('../schemas/event.js');
-var userSchema = require('../schemas/user.js');
+const mongoose = require('mongoose');
+const attendanceSchema = require('../schemas/attendance');
+const commentSchema = require('../schemas/comment');
+const exhibitionSchema = require('../schemas/exhibition');
+const eventSchema = require('../schemas/event');
+const userSchema = require('../schemas/user');
 
 module.exports.connect = (host, port, database) => {
+    const db = mongoose.createConnection('mongodb://' + host + ':' + port + '/' + database);
 
-    var db = mongoose.createConnection('mongodb://' + host + ':' + port + '/' + database);
+    db.on('error', (err) => { if (err) throw err; });
 
-    db.on('error', function(err) {
-        if (err) throw err;
-    });
-
-    db.once('open', function() {
+    db.once('open', () => {
         console.info('MongoDB ' + database + ' Connected Successfully.');
     });
 
@@ -30,4 +27,4 @@ module.exports.connect = (host, port, database) => {
     db.model('User', userSchema);
 
     return db;
-}
+};
