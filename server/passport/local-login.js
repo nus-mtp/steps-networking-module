@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const PassportLocalStrategy = require('passport-local').Strategy;
+const config = require('../config.json');
 
 module.exports = (db) => new PassportLocalStrategy({
     usernameField: 'email',
