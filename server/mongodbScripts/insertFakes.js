@@ -94,6 +94,20 @@ async.series(
 
                         }).save(callback);
                     },
+                    function(callback) {
+                        new Event({
+                            event_name: "9th Steps",
+                            event_description: "The Second Event",
+                            start_date: new Date('September 27, 2017 19:00:00'),
+                            end_date: new Date('September 28, 2017 22:00:00'),
+                            event_location: "",
+                            event_map: "",
+                            event_picture: "https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.proto.gr%2Fsites%2Fdefault%2Ffiles%2Fstyles%2Fcolorbox%2Fpublic%2Fimages%2Ffruits%2Fapple.png&f=1",
+
+                            tags: ["9th Steps", "cs4350"],
+
+                        }).save(callback);
+                    },
                 ], callback
             );
 
