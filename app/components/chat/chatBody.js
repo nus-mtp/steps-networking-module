@@ -73,33 +73,28 @@ export default class ChatBody extends Component {
     return true;
   }
   
-  chatBody() {
+  inputBox() {
     return (
-      <div id="chat-body">
-        <div id="chat-content-container">
-          {this.state.messages}
-        </div>
-        <div className="fixed-bottom" id="chat-form-container">
-          <textarea
-            className="form-control"
-            ref="chatInput"
-            id="chat-input"
-            placeholder={this.placeholder}
-            onKeyDown={this.catchSubmit.bind(this)}
+      <div className="fixed-bottom" id="chat-form-container">
+        <textarea
+          className="form-control"
+          ref="chatInput"
+          id="chat-input"
+          placeholder={this.placeholder}
+          onKeyDown={this.catchSubmit.bind(this)}
+        />
+        <button
+          type="button"
+          id="chat-submit-button"
+          className="btn btn-default"
+          onClick={this.handleSubmit.bind(this)}
+        >
+          <img
+            id="chat-submit-image"
+            src="../../resources/images/ic_send_24dp.png"
+            alt="Submit"
           />
-          <button
-            type="button"
-            id="chat-submit-button"
-            className="btn btn-default"
-            onClick={this.handleSubmit.bind(this)}
-          >
-            <img
-              id="chat-submit-image"
-              src="../../resources/images/ic_send_24dp.png"
-              alt="Submit"
-            />
-          </button>
-        </div>
+        </button>
       </div>
     );
   }
@@ -107,12 +102,22 @@ export default class ChatBody extends Component {
   checkQuery(matches) {
     if (matches) {
       return (
-        <div style={this.divStyle}>
-          {this.chatBody()}
+        <div id="chat-body" style={this.divStyle}>
+          <div id="chat-content-container">
+            {this.state.messages}
+          </div>
+          {this.inputBox()}
         </div>
       );
     } else {
-      return this.chatBody();
+      return (
+        <div id="chat-body">
+          <div id="chat-content-container">
+            {this.state.messages}
+          </div>
+          {this.inputBox()}
+        </div>
+      );
     }
   }
 

@@ -19,15 +19,14 @@
 /* Main chat function */
 #chat-body {
   background-color: white;
-  margin-left:inherit;
+  margin-left: 0;
 }
 
 /* Actual messages in the chat */
 #chat-content-container {
   background-color: white;
-  margin-left:auto;
-  margin-right:0;
   margin-bottom: 105px;
+  margin-left:0;
 }
 
 /* Messages sent by other user */
