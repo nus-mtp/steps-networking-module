@@ -15,6 +15,7 @@ export default class ChatBody extends Component {
 
     this.placeholder = 'Type a message...';
     this.divStyle = {
+      paddingLeft: "15px",
       marginLeft: this.props.marginLeft,
     }
   }
@@ -100,11 +101,15 @@ export default class ChatBody extends Component {
     );
   }
 
+  getUserName(email) {
+    return "Name of \"" + email + "\"";
+  }
+
   getCurrentConversation() {
     return (
       <div>
         <div className="container" id="chat-name-header">
-          {this.props.users[this.props.current]}
+          {this.getUserName.bind(this)(this.props.users[this.props.current])}
         </div>
         <div id="chat-content-container">
           {this.state.messages}

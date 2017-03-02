@@ -3,10 +3,19 @@
   display: relative;
 }
 
+/* Sidebar to hold tabs when in desktop mode */
+#chat-sidebar {
+  margin-top: 70px;
+  padding-right: 5px;
+  position: fixed;
+  overflow: hidden;
+  overflow-y: scroll;
+  height: 85%;
+}
+
 /* Tab column/section */
 #chat-tabs {
-  float: left;
-  padding-right: 10px;
+  width: 100%;
 }
 
 /* Individual tabs */
@@ -67,6 +76,7 @@
 /* Textbox to submit messages */
 #chat-form-container {
   margin-left:inherit;
+  padding-left: inherit;
   margin-right: 0;
   height: 100px;
   display:flex;

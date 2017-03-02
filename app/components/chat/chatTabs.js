@@ -47,13 +47,17 @@ class ChatTabs extends Component {
   render() {
     return (
       <div 
-        className="btn-group-vertical" 
-        role="group" 
-        aria-label="" 
-        id="chat-tabs" 
+        id="chat-sidebar" 
         style={this.divStyle} 
       >
-        {this.inititaliseTabs(this.props.current)}
+        <div 
+          className="btn-group-vertical" 
+          role="group" 
+          aria-label="" 
+          id="chat-tabs" 
+        >
+          {this.inititaliseTabs(this.props.current)}
+        </div>
       </div>
     );
   }
