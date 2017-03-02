@@ -14,20 +14,33 @@ class ChatTabs extends Component {
     }
   }
   
-  static createTab(email, key=0) {
+  createTab(email, key=0) {
     return (
-      <button className="btn" id="chat-tab" key={key}>{email}</button>
+      <button 
+        className="btn" 
+        id="chat-tab" 
+        key={key} 
+        onClick={this.handleClick.bind(this)(key)}
+      >
+        {email}
+      </button>
     );
   }
 
   inititaliseTabs() {
     const tabList = [];
     for (let i = 0; i < this.props.users.length; i++) {
-      tabList.push(ChatTabs.createTab(this.props.users[i], i));
+      tabList.push(this.createTab.bind(this)(this.props.users[i], i));
     }
     return tabList;
   }
   
+  handleClick(key) {
+    return function (event) {
+      this.props.changeConversation(key);
+    }.bind(this);
+  }
+
   render() {
     return (
       <div 
@@ -35,9 +48,9 @@ class ChatTabs extends Component {
         role="group" 
         aria-label="" 
         id="chat-tabs" 
-        style={this.divStyle}
+        style={this.divStyle} 
       >
-        {this.state.tabs}
+          {this.state.tabs}
       </div>
     );
   }

@@ -73,7 +73,7 @@ export default class ChatBody extends Component {
     return true;
   }
   
-  inputBox() {
+  getInputBox() {
     return (
       <div className="fixed-bottom" id="chat-form-container">
         <textarea
@@ -99,23 +99,32 @@ export default class ChatBody extends Component {
     );
   }
 
+  getCurrentConversation() {
+    return (
+      <div>
+        <div className="container" id="chat-name-header">
+          {this.props.users[this.props.current]}
+        </div>
+        <div id="chat-content-container">
+          {this.state.messages}
+        </div>
+      </div>
+    );    
+  }
+
   checkQuery(matches) {
     if (matches) {
       return (
         <div id="chat-body" style={this.divStyle}>
-          <div id="chat-content-container">
-            {this.state.messages}
-          </div>
-          {this.inputBox()}
+          {this.getCurrentConversation()}
+          {this.getInputBox()}
         </div>
       );
     } else {
       return (
         <div id="chat-body">
-          <div id="chat-content-container">
-            {this.state.messages}
-          </div>
-          {this.inputBox()}
+          {this.getCurrentConversation()}
+          {this.getInputBox()}
         </div>
       );
     }

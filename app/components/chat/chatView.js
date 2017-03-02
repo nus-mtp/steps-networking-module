@@ -12,9 +12,8 @@ export default class ChatView extends Component {
         "gun@dam.com",
         "gun@dam",
       ],
-      current: 0, // current user being talked to
+      current: 0, // current conversation being displayed
       minWidth: "700px",
-      marginLeft: "",
     }
     
     
@@ -22,14 +21,18 @@ export default class ChatView extends Component {
     this.widthOfChatTabs = "25%";
   }
   
+  changeConversation(index) {
+    this.setState({ current: index });
+  }
+  
   showChatTabs(matches) {
     if (matches) {
       return (
         <ChatTabs 
+          width={this.widthOfChatTabs} 
           users={this.state.users} 
-          userLength={this.state.users.length} 
           current={this.state.current} 
-          width={this.widthOfChatTabs}
+          changeConversation={this.changeConversation.bind(this)} 
         />
       );
     } else {
@@ -46,6 +49,8 @@ export default class ChatView extends Component {
         <ChatBody 
           query={this.query}
           marginLeft={this.widthOfChatTabs} 
+          users={this.state.users} 
+          current={this.state.current} 
         />
       </div>
     );
