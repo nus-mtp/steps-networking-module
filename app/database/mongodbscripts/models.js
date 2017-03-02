@@ -8,7 +8,7 @@ var attendanceSchema = require(serverFilePath + "schemas/attendance.js");
 var commentSchema = require(serverFilePath + "schemas/comment.js");
 
 /* 
-    This file defines a Class Object that allows one to get the Mongoose Models from a specified database.
+    This file defines a Class Object that allows one to get our Mongoose Models from a specified database.
 */
 class ModelHandler {
 
