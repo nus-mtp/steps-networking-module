@@ -1,11 +1,11 @@
-const serverFilePath = "../../../server/";
+const serverFilePath = '../../../server/';
 
-var mongoDBConnector = require(serverFilePath + "mongodbScripts/accessMongoDB.js");
-var userSchema = require(serverFilePath + "schemas/user.js");
-var eventSchema = require(serverFilePath + "schemas/event.js");
-var exhibitionSchema = require(serverFilePath + "schemas/exhibition.js");
-var attendanceSchema = require(serverFilePath + "schemas/attendance.js");
-var commentSchema = require(serverFilePath + "schemas/comment.js");
+const mongoDBConnector = require(serverFilePath + 'mongodbScripts/accessMongoDB.js');
+const userSchema = require(serverFilePath + 'schemas/user.js');
+const eventSchema = require(serverFilePath + 'schemas/event.js');
+const exhibitionSchema = require(serverFilePath + 'schemas/exhibition.js');
+const attendanceSchema = require(serverFilePath + 'schemas/attendance.js');
+const commentSchema = require(serverFilePath + 'schemas/comment.js');
 
 /* 
     This file defines a Class Object that allows one to get our Mongoose Models from a specified database.
@@ -23,11 +23,11 @@ class ModelHandler {
     */
     constructor(host, port, name) {
         this.db = mongoDBConnector.connect(host, port, name);
-        this.userModel = this.db.model("user", userSchema);
-        this.eventModel = this.db.model("event", eventSchema);
-        this.exhibitionModel = this.db.model("exhibition", exhibitionSchema);
-        this.attendanceModel = this.db.model("attendance", attendanceSchema);
-        this.commentModel = this.db.model("comment", commentSchema);
+        this.userModel = this.db.model('user', userSchema);
+        this.eventModel = this.db.model('event', eventSchema);
+        this.exhibitionModel = this.db.model('exhibition', exhibitionSchema);
+        this.attendanceModel = this.db.model('attendance', attendanceSchema);
+        this.commentModel = this.db.model('comment', commentSchema);
     }
 
     /*
@@ -85,7 +85,7 @@ class ModelHandler {
         this.db.close(function(err) {
             if (err) console.log(err);
 
-            if (typeof callback === "function") callback();
+            if (typeof callback === 'function') callback();
         });
     }
 
