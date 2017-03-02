@@ -1,11 +1,11 @@
 const serverFilePath = '../../../server/';
 
-const mongoDBConnector = require(serverFilePath + 'mongodbScripts/accessMongoDB.js');
-const userSchema = require(serverFilePath + 'schemas/user.js');
-const eventSchema = require(serverFilePath + 'schemas/event.js');
-const exhibitionSchema = require(serverFilePath + 'schemas/exhibition.js');
-const attendanceSchema = require(serverFilePath + 'schemas/attendance.js');
-const commentSchema = require(serverFilePath + 'schemas/comment.js');
+const mongoDBConnector = require(serverFilePath + 'mongodbScripts/accessMongoDB');
+const userSchema = require(serverFilePath + 'schemas/user');
+const eventSchema = require(serverFilePath + 'schemas/event');
+const exhibitionSchema = require(serverFilePath + 'schemas/exhibition');
+const attendanceSchema = require(serverFilePath + 'schemas/attendance');
+const commentSchema = require(serverFilePath + 'schemas/comment');
 
 /* 
     This file defines a Class Object that allows one to get our Mongoose Models from a specified database.
