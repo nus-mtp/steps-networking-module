@@ -22,10 +22,10 @@ class StepsModelHandler {
     */
     constructor(host, port, name) {
         this.db = mongoDBConnector.connect(host, port, name);
-        this.userModel = this.db.model('_User', stepsUserSchema);
-        this.guestModel = this.db.model('Guest', stepsGuestSchema);
-        this.moduleModel = this.db.model('Module', stepsModuleSchema);
-        this.eventModel = this.db.model('Event', stepsEventSchema);
+        this.userModel = this.db.model('_User', stepsUserSchema, '_User');
+        this.guestModel = this.db.model('Guest', stepsGuestSchema, 'Guest');
+        this.moduleModel = this.db.model('Module', stepsModuleSchema, 'Module');
+        this.eventModel = this.db.model('Event', stepsEventSchema, 'Event');
     }
 
     /*
