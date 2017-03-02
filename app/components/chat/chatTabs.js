@@ -9,17 +9,20 @@ class ChatTabs extends Component {
     };
     
     this.client = "turkey@bacon.com"; // the user who is logged in
+    this.divStyle = {
+      width: this.props.width,
+    }
   }
   
   static createTab(email, key=0) {
     return (
-      <button className="btn btn-default" id="chat-tab" key={key}>{email}</button>
+      <button className="btn" id="chat-tab" key={key}>{email}</button>
     );
   }
 
   inititaliseTabs() {
     const tabList = [];
-    for (let i = 0; i < this.props.userLength; i++) {
+    for (let i = 0; i < this.props.users.length; i++) {
       tabList.push(ChatTabs.createTab(this.props.users[i], i));
     }
     return tabList;
@@ -27,7 +30,13 @@ class ChatTabs extends Component {
   
   render() {
     return (
-      <div className="btn-group-vertical" role="group" aria-label="" id="chat-tabs">
+      <div 
+        className="btn-group-vertical" 
+        role="group" 
+        aria-label="" 
+        id="chat-tabs" 
+        style={this.divStyle}
+      >
         {this.state.tabs}
       </div>
     );

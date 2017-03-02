@@ -6,8 +6,7 @@
 /* Tab column/section */
 #chat-tabs {
   float: left;
-  width: 24%;
-  margin-right: 10px;
+  padding-right: 10px;
 }
 
 /* Individual tabs */
@@ -20,7 +19,6 @@
 /* Main chat function */
 #chat-body {
   background-color: white;
-  margin-left: 25%;
 }
 
 /* Actual messages in the chat */

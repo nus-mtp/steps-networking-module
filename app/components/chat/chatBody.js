@@ -13,6 +13,9 @@ export default class ChatBody extends Component {
     };
 
     this.placeholder = 'Type a message...';
+    this.divStyle = {
+      marginLeft: this.props.marginLeft,
+    }
   }
 
   static PostSelf(text, key=0) {
@@ -71,7 +74,7 @@ export default class ChatBody extends Component {
 
   render() {
     return (
-      <div id="chat-body">
+      <div id="chat-body" style={this.divStyle}>
         <div id="chat-content-container">
           {this.state.messages}
         </div>
