@@ -1,4 +1,4 @@
-const serverFilePath = '../../../server/';
+const serverFilePath = '../../../../server/';
 
 const mongoDBConnector = require(serverFilePath + 'mongodbScripts/accessMongoDB');
 const stepsUserSchema = require('./stepsUserSchema');

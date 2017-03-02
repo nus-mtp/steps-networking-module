@@ -59,4 +59,4 @@ stepsUserSchema.statics.findByUserId = function(userId) {
     return Promise.resolve(this.findById(userId).exec());
 };
 
-module.exports = stepsUserSchena;
+module.exports = stepsUserSchema;
