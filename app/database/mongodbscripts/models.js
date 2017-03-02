@@ -82,7 +82,7 @@ class ModelHandler {
         @param {function} callback: An optional function that can be sent in to execute after the db closes.
     */
     disconnect(callback) {
-        this.db.close(function(err) {
+        this.db.close((err) => {
             if (err) console.log(err);
 
             if (typeof callback === 'function') callback();
