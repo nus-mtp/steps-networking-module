@@ -9,7 +9,7 @@ const stepsProjectSchema = new mongoose.Schema({
     videoLink: { type: String, default: '' },
     posterLink: { type: String, default: '' },
     imageLinks: [{ type: String, default: '' }],
-    members: { type: [{ type: ObjectId, ref: '_User', index: true }] }
+    members: { type: [{ type: ObjectId, ref: '_User', index: true }] },
 });
 
 module.exports = stepsProjectSchema;

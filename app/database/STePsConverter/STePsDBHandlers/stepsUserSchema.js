@@ -23,7 +23,7 @@ const stepsUserSchema = new mongoose.Schema({
         type: String,
         enum: [Constants.VEGETARIAN_PREF, Constants.NON_VEGETARIAN_PREF],
         default: Constants.NON_VEGETARIAN_PREF,
-    }
+    },
 });
 
 /**

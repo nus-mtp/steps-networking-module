@@ -7,13 +7,13 @@ const stepsGuestSchema = new mongoose.Schema({
     name: { type: String, required: true, index: true },
     email: { type: String, required: true, index: true },
     phone: { type: String, index: true },
-    isCheckedIn: { type: Boolean, default: false }
+    isCheckedIn: { type: Boolean, default: false },
     // Votes will be a dynamic map with each key as module code
     // Dynamic fields
 }, {
     // Dynamic fields for extra fields
     strict: false,
-    autoIndex: true
+    autoIndex: true,
 });
 
 stepsGuestSchema.index({ event: 1, token: 1 }, { unique: true });

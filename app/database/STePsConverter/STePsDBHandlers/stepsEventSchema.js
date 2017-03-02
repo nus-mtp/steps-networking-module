@@ -79,7 +79,7 @@ const stepsEventSchema = new mongoose.Schema({
         startTime: { type: Date },
         endTime: { type: Date },
         isResultPublished: { type: Boolean, default: false }
-    }
+    },
 });
 
 module.exports = stepsEventSchema;

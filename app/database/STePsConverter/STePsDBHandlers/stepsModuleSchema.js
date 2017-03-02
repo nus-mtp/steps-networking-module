@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-const stepsProjectSchema = require('./stepsProjectSchema/');
+const Project = require('./stepsProjectSchema');
 
-const stepsProjectModel = mongoose.model(stepsProjectSchema);
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const stepsModuleSchema = new mongoose.Schema({
@@ -12,7 +11,7 @@ const stepsModuleSchema = new mongoose.Schema({
     creator: { type: ObjectId, ref: '_User', index: true, required: true },
     isApproved: { type: Boolean, index: true, required: true, default: false },
     students: { type: [{ type: ObjectId, ref: '_User', index: true }] },
-    projects: { type: [stepsProjectModel] }
+    projects: { type: [Project] },
 });
 
 // Compound Index
