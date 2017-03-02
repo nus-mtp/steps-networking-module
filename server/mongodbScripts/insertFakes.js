@@ -128,5 +128,5 @@ async.series(
 
             Models.disconnect(() => {});
         },
-    ],
+    ]
 );
