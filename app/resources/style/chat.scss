@@ -1,16 +1,37 @@
-#chat-body {
-  max-width: 750px;
-  width: 100%;
-  background-color: white;
+/* Overall chatpage div */
+#chat {
+  display: relative;
 }
 
-#chat-content-container {
-  max-width: 750px;
-  width: 100%;
+/* Tab column/section */
+#chat-tabs {
+  float: left;
+  width: 24%;
+  margin-right: 10px;
+}
+
+/* Individual tabs */
+#chat-tab {
+  margin-bottom: 5px;
+  word-wrap: break-word;
+  text-align: left;
+}
+
+/* Main chat function */
+#chat-body {
   background-color: white;
+  margin-left: 25%;
+}
+
+/* Actual messages in the chat */
+#chat-content-container {
+  background-color: white;
+  margin-left:auto;
+  margin-right:0;
   margin-bottom: 105px;
 }
 
+/* Messages sent by other user */
 #chat-other {
   background-color:lightgray;
   margin-left:0;
@@ -21,6 +42,7 @@
   max-width: 100%;
 }
 
+/* Messages sent by user */
 #chat-self {
   background-color:palegreen;
   margin-left: auto;
@@ -31,20 +53,21 @@
   max-width: 100%;
 }
 
+/* Textbox to submit messages */
 #chat-form-container {
-  max-width: 750px;
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
+  margin-left:inherit;
+  margin-right: 0;
   height: 100px;
   display:flex;
 }
 
+/* Textbox settings */
 #chat-input {
   display:inline-block;
   resize: none;
 }
 
+/* Settings for submit button */
 #chat-submit-button {
   display:inline-block;
 }
