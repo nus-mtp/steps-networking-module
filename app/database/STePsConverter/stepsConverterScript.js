@@ -1,0 +1,4 @@
+/*
+    This file contains a script to populate the dev database with information that can be used for our own App based on information on the STePs DB.
+    Ensure that a MongoDB local server connection is running before executing.
+*/
