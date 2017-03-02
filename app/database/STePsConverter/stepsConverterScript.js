@@ -42,7 +42,7 @@ async.series(
                         stepsUser.find({}, (err, docs) => {
                             if (err) console.log(err);
 
-                            callback(null, docs);
+                            callback(null, docs); // Get all Users from the STePs DB.
                         });
                     },
                     (allUsers, callback) => {
@@ -53,9 +53,10 @@ async.series(
                             const userName = user.get('name');
                             const userPassword = '';
 
-                            const query = { email: userEmail, name: userName, password: userPassword };
+                            const query = { email: userEmail };
+                            const update = { email: userEmail, name: userName, password: userPassword };
 
-                            User.findOneAndUpdate(query, query, { upsert: true }, (err, doc) => {
+                            User.findOneAndUpdate(query, update, { upsert: true }, (err, doc) => {
                                 if (err) console.log(err);
 
                                 console.log(doc); // This will print null the first time this function is run.
