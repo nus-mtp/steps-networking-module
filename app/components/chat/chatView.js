@@ -13,37 +13,40 @@ export default class ChatView extends Component {
         "gun@dam",
       ],
       current: 0, // current user being talked to
-      minWidth: "700px",      
+      minWidth: "700px",
+      marginLeft: "",
     }
+    
     
     this.query = "screen and (min-width: " + this.state.minWidth + ")";
     this.widthOfChatTabs = "25%";
   }
   
-  checkChatTabs() {
-    return (
-      <MediaQuery query={this.query}>
-        {(matches) => {
-          if (matches) {
-            return (<ChatTabs 
-              users={this.state.users} 
-              userLength={this.state.users.length} 
-              current={this.state.current} 
-              width={this.widthOfChatTabs}
-            />);
-          } else {
-            return (null);
-          }
-        }}
-      </MediaQuery>
-    );
+  showChatTabs(matches) {
+    if (matches) {
+      return (
+        <ChatTabs 
+          users={this.state.users} 
+          userLength={this.state.users.length} 
+          current={this.state.current} 
+          width={this.widthOfChatTabs}
+        />
+      );
+    } else {
+      return (null);
+    }
   }
   
   render() {
     return (
       <div id="chat">
-        {this.checkChatTabs()}
-        <ChatBody marginLeft={this.widthOfChatTabs} />
+        <MediaQuery query={this.query}>
+          {this.showChatTabs.bind(this)}
+        </MediaQuery>
+        <ChatBody 
+          query={this.query}
+          marginLeft={this.widthOfChatTabs} 
+        />
       </div>
     );
   }

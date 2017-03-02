@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import MediaQuery from 'react-responsive';
 
 export default class ChatBody extends Component {
   constructor(props) {
@@ -71,10 +72,10 @@ export default class ChatBody extends Component {
     }
     return true;
   }
-
-  render() {
+  
+  chatBody() {
     return (
-      <div id="chat-body" style={this.divStyle}>
+      <div id="chat-body">
         <div id="chat-content-container">
           {this.state.messages}
         </div>
@@ -100,6 +101,26 @@ export default class ChatBody extends Component {
           </button>
         </div>
       </div>
+    );
+  }
+
+  checkQuery(matches) {
+    if (matches) {
+      return (
+        <div style={this.divStyle}>
+          {this.chatBody()}
+        </div>
+      );
+    } else {
+      return this.chatBody();
+    }
+  }
+
+  render() {
+    return (
+      <MediaQuery query={this.props.query}>
+        {this.checkQuery.bind(this)}
+      </MediaQuery>
     );
   }
 }
