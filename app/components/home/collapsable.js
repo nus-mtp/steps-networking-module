@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router';
 
 class Collapsable extends React.Component {
   constructor(props) {
@@ -45,8 +46,14 @@ class Collapsable extends React.Component {
       <div style={this.setLayout()} className={showCollapse}>
         <div className="collapse-body card card-block">
           <div>
-            <div id="event-title"><h6>{this.props.file.name}</h6></div>
-            <div id="event-description" />
+            <div id="event-description">{this.props.file.description}</div>
+            <div id="event-matches">
+              <div className="event-match-title">Matches: </div>
+              <nav className="nav">
+                <Link className="nav-link" to="/project">Project1</Link>
+                <Link className="nav-link" to="/project">Project2</Link>
+              </nav>
+            </div>
           </div>
         </div>
       </div>
