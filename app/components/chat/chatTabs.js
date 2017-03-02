@@ -4,33 +4,36 @@ class ChatTabs extends Component {
   constructor(props) {
     super(props);
     
-    this.state = {
-      tabs: [this.inititaliseTabs()],
-    };
-    
     this.client = "turkey@bacon.com"; // the user who is logged in
     this.divStyle = {
       width: this.props.width,
     }
   }
   
-  createTab(email, key=0) {
+  createTab(email, key=0, selected=-1) {
+    const buttonStyle = {};
+    if (selected===key) {
+      buttonStyle.backgroundColor="mediumslateblue";
+      buttonStyle.color = "white";
+    }
+    
     return (
       <button 
         className="btn" 
         id="chat-tab" 
         key={key} 
         onClick={this.handleClick.bind(this)(key)}
+        style={buttonStyle}
       >
         {email}
       </button>
     );
   }
 
-  inititaliseTabs() {
+  inititaliseTabs(selected=0) {
     const tabList = [];
     for (let i = 0; i < this.props.users.length; i++) {
-      tabList.push(this.createTab.bind(this)(this.props.users[i], i));
+      tabList.push(this.createTab.bind(this)(this.props.users[i], i, selected));
     }
     return tabList;
   }
@@ -50,7 +53,7 @@ class ChatTabs extends Component {
         id="chat-tabs" 
         style={this.divStyle} 
       >
-          {this.state.tabs}
+        {this.inititaliseTabs(this.props.current)}
       </div>
     );
   }

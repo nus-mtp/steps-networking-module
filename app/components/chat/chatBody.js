@@ -41,6 +41,7 @@ export default class ChatBody extends Component {
 
   componentDidUpdate() {
     ChatBody.scrollToBottom();
+    this.textInput.focus(); 
   }
 
   addMessages(text) {
@@ -50,19 +51,19 @@ export default class ChatBody extends Component {
   }
 
   handleChange() {
-    if (this.refs.chatInput.value === '\n') {
-      this.refs.chatInput.value = '';
+    if (this.textInput.value === '\n') {
+      this.textInput.value = '';
     }
   }
 
   handleSubmit() {
-    const str = this.refs.chatInput.value;
+    const str = this.textInput.value;
     const strStrip = str.trim();
     if (strStrip.length > 0) {
-      const newDiv = ChatBody.PostSelf(this.refs.chatInput.value, this.state.messages.length);
+      const newDiv = ChatBody.PostSelf(this.textInput.value, this.state.messages.length);
       this.addMessages(newDiv);
     }
-    this.refs.chatInput.value = '';
+    this.textInput.value = '';
   }
 
   catchSubmit(e) {
@@ -78,7 +79,7 @@ export default class ChatBody extends Component {
       <div className="fixed-bottom" id="chat-form-container">
         <textarea
           className="form-control"
-          ref="chatInput"
+          ref={(input) => { this.textInput = input; }}
           id="chat-input"
           placeholder={this.placeholder}
           onKeyDown={this.catchSubmit.bind(this)}
