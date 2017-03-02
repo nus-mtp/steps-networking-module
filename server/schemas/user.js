@@ -8,12 +8,12 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         trim: true,
         unique: true,
-        required: "Email is a Primary Key, and is therefore Required.",
+        required: 'Email is a Primary Key, and is therefore Required.',
         index: true,
     },
     password: {
         type: String,
-        required: "Password is Required for Security Reasons.",
+        required: 'Password is Required for Security Reasons.',
     },
     name: {
         type: String,
@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema({
         trim: true,
         unique: true,
     }],
-    bookmarked_users: [String]
+    bookmarked_users: [String],
 });
 
 userSchema.methods.get_id = function() {
