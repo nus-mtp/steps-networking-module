@@ -47,7 +47,7 @@ async.series(
                     },
                     (allUsers, callback) => {
 
-                        async.each(allUsers, (user, callback) => {
+                        async.each(allUsers, (user, callback) => { // Iterate through allUsers in parallel
 
                             const userEmail = user.get('email');
                             const userName = user.get('name');
@@ -58,7 +58,7 @@ async.series(
                             User.findOneAndUpdate(query, query, { upsert: true }, (err, doc) => {
                                 if (err) console.log(err);
 
-                                console.log(doc); // This will print null the first time this function is run
+                                console.log(doc); // This will print null the first time this function is run.
 
                                 callback();
                             });
