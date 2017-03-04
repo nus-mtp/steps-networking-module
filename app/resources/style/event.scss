@@ -1,0 +1,41 @@
+.event-poster {
+  min-width: 300px;
+}
+
+.collapse {
+  width: 90vw;
+}
+
+.collapsing {
+  width: 90vw;
+}
+
+#event-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 10px;
+}
+
+#event-container {
+  width: 300px;
+  margin: 10px 0 0 0;
+}
+
+.event-picture {
+  z-index: 10;
+}
+
+.event-info {
+  font-size: 14px;
+  color: grey;
+}
+
+.event-title {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.event-match-title {
+  margin: 15px 0 0 0;
+  font-weight: 100;
+}

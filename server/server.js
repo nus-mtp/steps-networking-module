@@ -4,7 +4,7 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var config = require('./config.json');
 
-require('./models').connect(config.dbUri);
+var db = require('./mongodbScripts/accessMongoDB').connect(config.devDbUri.host, config.devDbUri.port, config.devDbUri.database);
 
 var app = express();
 var port = 3000;
@@ -20,8 +20,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 
-var localSignUpStrategy = require('./passport/local-signup');
-var localLoginStrategy = require('./passport/local-login');
+var localSignUpStrategy = require('./passport/local-signup')(db);
+var localLoginStrategy = require('./passport/local-login')(db);
 passport.use('local-signup', localSignUpStrategy);
 passport.use('local-login', localLoginStrategy);
 

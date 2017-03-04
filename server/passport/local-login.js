@@ -1,9 +1,8 @@
 const jwt = require('jsonwebtoken');
-const User = require('mongoose').model('User');
 const PassportLocalStrategy = require('passport-local').Strategy;
 const config = require('../config.json');
 
-module.exports = new PassportLocalStrategy({
+module.exports = (db) => new PassportLocalStrategy({
     usernameField: 'email',
     passwordField: 'password',
     session: false,
@@ -13,7 +12,8 @@ module.exports = new PassportLocalStrategy({
       email: email.trim(),
       password: password.trim()
     };
-
+	const User = db.model('User');
+	
   // find a user by email address
   return User.findOne({ email: userData.email }, (err, user) => {
     if (err) { return done(err); }
