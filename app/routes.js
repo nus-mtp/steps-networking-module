@@ -1,7 +1,6 @@
 import App from './components/app'
 import Home from './components/home/homeView';
 import Dashboard from './components/home/dashboardView';
-import Exhibition from './components/exhibition/exhibitionView';
 import Chat from './components/chat/chatView';
 import Event from './components/event/eventView';
 import Project from './components/project/projectView';
