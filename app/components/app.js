@@ -42,7 +42,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="container-fluid">
+      <div>
         <nav id="header" className="navbar navbar-toggleable-md navbar-light fixed-top row justify-content-between navbar-collapse">
           <Link className="col-4" to={Paths.home}><img id="brand-logo" src="resources/images/home-icon.svg" alt="Home" /></Link>
           <div id="nav-links" className="col-8 col-md-8 text-right">
