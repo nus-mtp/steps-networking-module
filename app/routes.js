@@ -51,7 +51,7 @@ const routes = {
     },
     {
       path: Paths.event,
-      component: Event,
+      component: Home,
     },
     {
       path: Paths.profile,
