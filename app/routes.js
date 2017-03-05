@@ -16,11 +16,12 @@ const routes = {
   childRoutes: [
     {
       path: Paths.home,
-      getComponent: (location, callback) => {
+      onEnter: (location, replace, callback) => {
         if (Auth.isUserAuthenticated()) {
-          callback(null, Dashboard);
-        } else {
           callback(null, Home);
+        } else {
+          replace(Path.login);
+          callback(null, Login);
         }
       }
     },
@@ -34,11 +35,12 @@ const routes = {
     },
     {
       path: Paths.logout,
-      onEnter: (nextState, replace) => {
+      onEnter: (nextState, replace, callback) => {
         Auth.deauthenticateUser();
 
         // change the current URL to /
-        replace('/');
+        replace(Paths.home);
+        callback(null, Login);
       }
     },
     {
