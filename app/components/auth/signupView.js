@@ -1,5 +1,6 @@
 import React from 'react';
 import Signup from './signup';
+import Auth from '../../database/auth';
 
 class SignupView extends React.Component {
   constructor(props, context) {
@@ -54,10 +55,13 @@ class SignupView extends React.Component {
           });
 
           // set a message
-          localStorage.setItem('successMessage', xhr.response.message);
+           Auth.authenticateUser({
+            token: xhr.response.token,
+            email,
+          });
 
           // change the current URL to /
-          this.context.router.replace('/login');
+          this.context.router.replace('/');
         } else {
           // failure
 

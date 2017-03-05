@@ -6,17 +6,8 @@ class LoginView extends React.Component {
   constructor(props, context) {
     super(props, context);
 
-    const storedMessage = localStorage.getItem('successMessage');
-    let successMessage = '';
-
-    if (storedMessage) {
-      successMessage = storedMessage;
-      localStorage.removeItem('successMessage');
-    }
-
     this.state = {
       errors: {},
-      successMessage,
       user: {
         email: '',
         password: '',
@@ -41,10 +32,10 @@ class LoginView extends React.Component {
        const formData = `email=${email}&password=${password}`;
 
        const xhr = new XMLHttpRequest();
-      xhr.open('post', '/auth/login');
-      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-      xhr.responseType = 'json';
-      xhr.addEventListener('load', () => {
+        xhr.open('post', '/auth/login');
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.responseType = 'json';
+        xhr.addEventListener('load', () => {
         if (xhr.status === 200) {
           // success
 
@@ -54,7 +45,10 @@ class LoginView extends React.Component {
           });
 
           // save the token
-          Auth.authenticateUser(xhr.response.token);
+          Auth.authenticateUser({
+            token: xhr.response.token,
+            email,
+          });
 
 
           // change the current URL to /
@@ -100,7 +94,6 @@ class LoginView extends React.Component {
         onChangePassword={this.handleUserPassword}
         onChangeEmail={this.handleUserEmail}
         errors={this.state.errors}
-        successMessage={this.state.successMessage}
         user={this.state.user}
       />
     );
