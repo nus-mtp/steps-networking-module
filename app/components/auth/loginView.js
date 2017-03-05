@@ -1,6 +1,7 @@
 import React from 'react';
 import Login from './login';
 import Auth from '../../database/auth';
+import Paths from '../../paths';
 
 class LoginView extends React.Component {
   constructor(props, context) {
@@ -52,7 +53,7 @@ class LoginView extends React.Component {
 
 
           // change the current URL to /
-          this.context.router.replace('/');
+          this.context.router.replace(Paths.event);
         } else {
           // failure
 
