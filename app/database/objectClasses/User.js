@@ -38,7 +38,6 @@ class User {
       skills : skill_sets,
       bookmarked_users : bookedmarked_users,
     });
-    console.log("constructor");
     this.ModelHandler.disconnect();
   }
 
@@ -76,18 +75,18 @@ class User {
    */
   saveUser(callback){
     User.connectDB();
-    this.userModelDoc.save(callback)
-    console.log("save user");
+    this.userModelDoc.save(function(err){
+      callback(err);
+    });
     User.disconnectDB();
   }
 
   /**
    * Remove the collection of Users from database
    */
-  static clearAllUser(){
+  static clearAllUser(callback){
     User.connectDB();
-    this.userModel.collection.remove({});
-    console.log("clearing users");
+    this.userModel.remove({}, callback);
     User.disconnectDB();
   }
 
@@ -111,7 +110,6 @@ class User {
         cb(null,userDoc);
       }
     });
-    console.log("all users");
     User.disconnectDB();
   }
 
@@ -153,8 +151,9 @@ class User {
    * @param {String} profile_pic: A url string which contains the profile picture.
    * @param {StringArray} skills_set: The skills that the user possess. Such as programming skills, management skills, etc
    * @param {StringArray} bookedmarked_users: A collection of users' emails that the current user wants to keep track of.
+   * @param {callback} for error checking
    */
-  static updateUser(email = "", name = "", description = "", password = "", will_notify = true, is_deleted = false, profile_pic = "", skill_sets = [], bookedmarked_users = []){
+  static updateUser(email = "", name = "", description = "", password = "", will_notify = true, is_deleted = false, profile_pic = "", skill_sets = [], bookedmarked_users = [], callback){
 
     //The list of  attributes that will be updated
     var update = {  email : email,
