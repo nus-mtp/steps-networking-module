@@ -22,19 +22,11 @@ class Event{
       event_picture: eventPicture,
       tags: tags,
     });
-    this.saveEvent(function callback(err){
-      if (err){
-        if (err.name === 'MongoError' && err.code === 11000) {
-          //Report and abort.
-          console.log("There is an existing event with the same eventName: "  + eventName);
-          //console.log(err);
-        }
-      }
-    });
     this.ModelHandler.disconnect();
   }
 
   saveEvent(callback){
+    Event.connectDB();
     this.eventModelDoc.save(function(err){
       if (err){
         callback(err);
@@ -42,6 +34,7 @@ class Event{
         console.log("Event is added");
       }
     });
+    Event.disconnectDB();
   }
 
   static connectDB(){
@@ -63,7 +56,7 @@ class Event{
     Event.connectDB();
     this.eventModel.findOneAndRemove({event_name: eventName}, function (err){
       if (err){
-        callback(err, null);
+        callback(err);
       }
     });
     Event.disconnectDB();
@@ -94,7 +87,7 @@ class Event{
     Event.disconnectDB();
   }
 
-  static updateEvent(eventName = "", eventDescription = "", startDate, endDate, location, map, eventPicture = "", tags=[]) {
+  static updateEvent(eventName = "", eventDescription = "", startDate, endDate, location, map, eventPicture = "", tags=[], callback) {
     Event.connectDB();
     var update = {event_name: eventName,
                   event_description: eventDescription,
@@ -109,6 +102,7 @@ class Event{
     this.eventModel.findOneAndUpdate({'event_name': eventName}, update, options, function (err, results){
       if (err){
         console.log("Unable to update Event");
+        callback(err);
       } else if (results) {
         console.log("Event is updated.");
       } else {
