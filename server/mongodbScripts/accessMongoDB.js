@@ -7,13 +7,17 @@
 const mongoose = require('mongoose');
 
 module.exports.connect = (host, port, database) => {
-    const db = mongoose.createConnection('mongodb://' + host + ':' + port + '/' + database);
+  const db = mongoose.createConnection('mongodb://' + host + ':' + port + '/' + database);
 
-    db.on('error', (err) => { if (err) throw err; });
+  db.on('error', (err) => {
+    if (err) {
+      throw err;
+    }
+  });
 
-    db.once('open', () => {
-        console.info('MongoDB ' + database + ' Connected Successfully.');
-    });
+  db.once('open', () => {
+    console.info('MongoDB ' + database + ' Connected Successfully.');
+  });
 
-    return db;
+  return db;
 };
