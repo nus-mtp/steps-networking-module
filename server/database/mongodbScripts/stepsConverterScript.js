@@ -27,58 +27,111 @@ const stepsGuest = StepsModels.getGuestModel();
 const stepsModule = StepsModels.getModuleModel();
 const stepsEvent = StepsModels.getEventModel();
 
-// Start
-// Note that the entire Transaction will fail silently if any one of the below generates an Error
+// Start Note that the entire Transaction will fail silently if any one of the
+// below generates an Error
 
-async.series(
-    [
+async.series([
+  (callback) => {
+    // Bring in Events
+    async.waterfall(
+      [
         (callback) => {
-
-            // Bring in Users
-
-            async.waterfall(
-                [
-                    (callback) => {
-                        stepsUser.find({}, (err, docs) => {
-                            if (err) console.log(err);
-
-                            callback(null, docs); // Get all Users from the STePs DB.
-                        });
-                    },
-                    (allUsers, callback) => {
-
-                        async.each(allUsers, (user, callback) => { // Iterate through allUsers in parallel
-
-                            const userEmail = user.get('email');
-                            const userName = user.get('name');
-                            const userPassword = '';
-
-                            const query = { email: userEmail };
-                            const update = { email: userEmail, name: userName, password: userPassword };
-
-                            User.findOneAndUpdate(query, update, { upsert: true }, (err, doc) => {
-                                if (err) console.log(err);
-
-                                console.log(doc); // This will print null the first time this function is run.
-
-                                callback();
-                            });
-
-                        }, (err) => {
-                            if (err) console.log(err);
-
-                            callback(null, '');
-                        });
-
-                    },
-                ], callback
-            );
-
-            // End: Bring in Users
+          stepsEvent.find({}, (err, docs) => {
+            if (err) {
+              console.log(err);
+            }
+            // console.log(docs);
+            callback(null, docs); // Get all Events from the STePs DB.
+          });
         },
-        (callback) => {
-            Models.disconnect(() => {});
-            StepsModels.disconnect(() => {});
+        (allEvents, callback) => {
+          async.each(allEvents, (event, callback) => { // Iterate through allEvents in parallel
+
+            const eventName = event.get('code');
+            const eventDescription = event.get('name') + '\n' + event.get('description');
+            const startDate = new Date(event.get('startTime'));
+            const endDate = new Date(event.get('endTime'));
+            const eventLocation = event.get('location');
+
+            const query = {
+              event_name: eventName,
+            };
+            const update = {
+              event_name: eventName,
+              event_description: eventDescription,
+              start_date: startDate,
+              end_date: endDate,
+              event_location: eventLocation,
+            };
+
+            Event.findOneAndUpdate(query, update, {
+              upsert: true,
+            }, (err, doc) => {
+              if (err) {
+                console.log(err);
+              }
+              // console.log(doc); // This will print null the first time this function is run.
+              callback();
+            });
+
+          }, (err) => { // Error Callback: Will be triggered for each error it encounters in async.each
+            if (err) {
+              console.log(err);
+            }
+            callback(null, '');
+          });
         },
-    ]
-);
+      ], callback);
+    // End: Bring in Events
+  },
+  (callback) => {
+    // Bring in _Users
+    async.waterfall([
+      (callback) => {
+        stepsUser.find({}, (err, docs) => {
+          if (err) {
+            console.log(err);
+          }
+          callback(null, docs); // Get all _Users from the STePs DB.
+        });
+      },
+      (allUsers, callback) => {
+        async.each(allUsers, (user, callback) => { // Iterate through allUsers in parallel
+          const userEmail = user.get('email');
+          const userName = user.get('name');
+          const userPassword = '';
+
+          const query = {
+            email: userEmail,
+          };
+          const update = {
+            email: userEmail,
+            name: userName,
+            password: userPassword,
+          };
+
+          User.findOneAndUpdate(query, update, {
+            upsert: true,
+          }, (err, doc) => {
+            if (err) {
+              console.log(err);
+            }
+            // console.log(doc); // This will print null the first time this function is run.
+            callback();
+          });
+        }, (err) => { // Error Callback: Will be triggered for each error it encounters in async.each
+          if (err) {
+            console.log(err);
+          }
+          callback(null, '');
+        });
+      },
+    ], callback);
+
+    // End: Bring in _Users
+  },
+  (callback) => {
+    Models.disconnect(() => {});
+    StepsModels.disconnect(() => {});
+  },
+]);
