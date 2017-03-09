@@ -4,7 +4,13 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var config = require('./config.json');
 
+<<<<<<< Updated upstream
 var db = require('./mongodbScripts/accessMongoDB').connect(config.devDbUri.host, config.devDbUri.port, config.devDbUri.database);
+=======
+var db = require('./database/mongodbScripts/accessMongoDB').connect(config.devDbUri.host, config.devDbUri.port, config.devDbUri.database);
+
+console.log(config.devDbUri.host);
+>>>>>>> Stashed changes
 
 var app = express();
 var port = 3000;
