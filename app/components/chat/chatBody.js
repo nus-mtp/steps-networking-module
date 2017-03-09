@@ -153,4 +153,5 @@ ChatBody.propTypes = {
   users: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
   current: React.PropTypes.number.isRequired,
   query: React.PropTypes.string.isRequired,
+  email: React.PropTypes.string.isRequired,
 };

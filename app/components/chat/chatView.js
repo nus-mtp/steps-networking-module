@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import MediaQuery from 'react-responsive';
 import ChatBody from './chatBody';
 import ChatTabs from './chatTabs';
+import Auth from '../../database/auth';
+import User from '../../database/objectClasses/User.js';
 
 export default class ChatView extends Component {
   constructor(props) {
@@ -34,6 +36,22 @@ export default class ChatView extends Component {
     this.query = 'screen and (min-width: ' + this.state.minWidth + ')';
     this.widthOfChatTabs = '25%';
   }
+  
+  componentWillMount() {
+    if(Auth.isUserAuthenticated) {
+      this.setState({
+        email: Auth.getToken().email,
+      });
+      User.getUser(Auth.getToken().email, function callback(err, userObj){
+        if(err){
+          console.log("No user desu");
+        } else {
+          let str = "UserObj is " + userObj.name;
+          console.log(str);
+        }
+      });
+    }
+  }
 
   changeConversation(index) {
     this.setState({ current: index });
@@ -49,6 +67,7 @@ export default class ChatView extends Component {
             users={this.state.users}
             current={this.state.current}
             changeConversation={this.changeConversation.bind(this)}
+            email={this.state.email}
           />
         </div>
       );
@@ -67,6 +86,7 @@ export default class ChatView extends Component {
           marginLeft={this.widthOfChatTabs}
           users={this.state.users}
           current={this.state.current}
+          email={this.state.email}
         />
       </div>
     );

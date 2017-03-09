@@ -69,6 +69,7 @@ ChatTabs.propTypes = {
   current: React.PropTypes.number.isRequired,
   width: React.PropTypes.string.isRequired,
   changeConversation: React.PropTypes.func.isRequired,
+  email: React.PropTypes.string.isRequired,
 };
 
 export default ChatTabs;
