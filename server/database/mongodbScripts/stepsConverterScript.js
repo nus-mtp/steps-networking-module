@@ -148,70 +148,77 @@ async.series([
             (collectedInformation, callback) => {
               // collectedInformation contains Event Name, Module Code, and the Project array for a single Module
               async.each(collectedInformation.projects, (project, callback) => {
-                // For a Project
-                // Extract out Relevant Information - the Exhibition Properties, and the Students involved in each Exhibition
-                // Upsert an Exhibition Listing
-                // Upsert an Attendance Listing for Each User involved in the Project
+                // For each Project
                 async.waterfall([
-                  (callback) => {
+                  (callback) => { // Extract out Relevant Information - the Exhibition Properties, and the Students involved in each Exhibition
                     const exhibitionName = project.get('name');
                     const studentsInvolved = project.get('members');
+                    const exhibitionDescription = project.get('description');
+
+                    const eventName = collectedInformation.eventName;
+
+                    let imagesList = [];
+                    const posterLink = project.get('posterLink');
+                    if (posterLink !== '') {
+                      imagesList.push(posterLink);
+                    }
+                    const imageLinks = project.get('imageLinks');
+                    if (imageLinks.length > 0) {
+                      imagesList = imagesList.concat(imageLinks);
+                    }
+
+                    let videosList = [];
+                    const videoLink = project.get('videoLink');
+                    if (videoLink !== '') {
+                      videosList.push(videoLink);
+                    }
+
+                    const websiteLink = project.get('urlLink');
+
+                    let tagsList = [];
+                    tagsList.push(eventName);
+                    tagsList.push(collectedInformation.tag);
+
+                    const exhibitionProperties = {
+                      exhibitionNameKey: exhibitionName,
+                      exhibitionDescriptionKey: exhibitionDescription,
+                      eventNameKey: eventName,
+                      imagesListKey: imagesList,
+                      videosListKey: videosList,
+                      websiteLinkKey: websiteLink,
+                      tagsListKey: tagsList,
+
+                    };
 
                     let valid = false;
 
                     // Ignore Invalid Name Projects
                     if ((exhibitionName !== 'Unknown') && (exhibitionName !== '')) {
                       valid = true;
+                    }
 
-                      const exhibitionDescription = project.get('description');
-
-                      const eventName = collectedInformation.eventName;
-
-                      let imagesList = [];
-                      const posterLink = project.get('posterLink');
-                      if (posterLink !== '') {
-                        imagesList.push(posterLink);
-                      }
-                      const imageLinks = project.get('imageLinks');
-                      if (imageLinks.length > 0) {
-                        imagesList = imagesList.concat(imageLinks);
-                      }
-
-                      let videosList = [];
-                      const videoLink = project.get('videoLink');
-                      if (videoLink !== '') {
-                        videosList.push(videoLink);
-                      }
-
-                      const websiteLink = project.get('urlLink');
-
-                      let tagsList = [];
-                      tagsList.push(eventName);
-                      tagsList.push(collectedInformation.tag);
-
+                    callback(null, exhibitionProperties, studentsInvolved, valid);
+                  },
+                  (exhibitionProperties, studentsInvolved, valid, callback) => { // Upsert an Exhibition Listing
+                    if (valid) {
                       const query = {
-                        event_name: eventName,
+                        event_name: exhibitionProperties.eventNameKey,
                       };
 
                       const update = {
-                        exhibition_name: exhibitionName,
-                        exhibition_description: exhibitionDescription,
-                        event_name: eventName,
-                        website: websiteLink,
+                        exhibition_name: exhibitionProperties.exhibitionNameKey,
+                        exhibition_description: exhibitionProperties.exhibitionDescriptionKey,
+                        event_name: exhibitionProperties.eventNameKey,
+                        website: exhibitionProperties.websiteLinkKey,
                       };
 
-                      callback(null, exhibitionName, studentsInvolved, valid);
-                    } else {
-                      callback(null, exhibitionName, studentsInvolved, valid);
+                      console.log(exhibitionProperties.exhibitionNameKey);
                     }
+                    
+                    callback(null, exhibitionProperties.name, studentsInvolved, valid);
                   },
-                  (exhibitionName, studentsInvolved, valid, callback) => {
-
-                    if (valid) {
-                      console.log(exhibitionName);
-                    }
-
-                    callback();
+                  (exhibitionName, studentsInvolved, valid, callback) => { // Upsert an Attendance Listing for Each User involved in the Project
+                    callback(null);
                   },
                 ], callback);
               }, (err) => {
