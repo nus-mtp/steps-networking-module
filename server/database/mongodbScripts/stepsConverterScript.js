@@ -149,6 +149,7 @@ async.series([
               // collectedInformation contains Event Name, Module Code, and the Project array for a single Module
               async.each(collectedInformation.projects, (project, callback) => {
                 // For a Project
+                // Extract out Relevant Information - the Exhibition Properties, and the Students involved in each Exhibition
                 // Upsert an Exhibition Listing
                 // Upsert an Attendance Listing for Each User involved in the Project
                 async.waterfall([
@@ -206,7 +207,7 @@ async.series([
                   },
                   (exhibitionName, studentsInvolved, valid, callback) => {
 
-                    console.log(exhibitionName);
+                    console.log(exhibitionName + " " + valid);
 
                     callback();
                   },
