@@ -1,4 +1,5 @@
-var ModelHandler = require("../mongodbscripts/models.js");
+const ModelHandler = require('../../../server/database/models/ourModels.js');
+
 const port = "27017";
 const host = "localhost";
 const dbName = "fake-data";
@@ -43,9 +44,7 @@ class Exhibition{
   saveExhibition(callback){
     Exhibition.connectDB();
     this.exhibModelDoc.save(function(err){
-      if (err){
-        callback(err);
-      }
+      callback(err);
     });
     Exhibition.disconnectDB();
   }
@@ -64,7 +63,7 @@ class Exhibition{
    *
    * @param {function} callback: used for error checking
    */
-  static clearAllExhibtions(callback){
+  static clearAllExhibitions(callback){
     Exhibition.connectDB();
     this.exhibModel.collection.remove({},callback);
     Exhibition.disconnectDB();
@@ -108,7 +107,7 @@ class Exhibition{
    *
    * @param {function} callback: used for error checking
    */
-  static getExhibiion (exhibitionName, callback){
+  static getExhibition (exhibitionName, callback){
     Exhibition.connectDB();
     this.exhibModel.findOne({'exhibition_name': exhibitionName},function (err, exhibObj){
       if (err){
@@ -165,7 +164,7 @@ class Exhibition{
    */
   static isExistingExhibition(exhibitionName, callback){
     Exhibition.connectDB();
-    this.exhibModel.findOne({'exhibition_name': exhibitiontName}, function (err, docs){
+    this.exhibModel.findOne({'exhibition_name': exhibitionName}, function (err, docs){
       if (err){
         callback(err, null)
       } else if (docs){
@@ -183,7 +182,7 @@ class Exhibition{
    * @param {String} eventName: unique identifer used to check against database
    * @param {function} callback: used for error checking
    */
-  static searchExhibitionByTag(tag, callback){
+  static searchExhibitionsByTag(tag, callback){
     Exhibition.connectDB();
     this.exhibModel.find({'tags': { $regex: new RegExp(tag.replace('+',"\\+"),"i")} }, function (err, docs){
       if (err){
