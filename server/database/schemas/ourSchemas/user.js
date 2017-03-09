@@ -8,7 +8,6 @@ const userSchema = new mongoose.Schema({
     trim: true,
     unique: true,
     required: 'Email is a Primary Key, and is therefore Required.',
-    index: true,
   },
   password: {
     type: String,
