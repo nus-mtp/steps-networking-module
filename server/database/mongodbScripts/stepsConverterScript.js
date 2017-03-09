@@ -131,7 +131,13 @@ async.series([
     // End: Bring in _Users
   },
   (callback) => {
-    Models.disconnect(() => {});
-    StepsModels.disconnect(() => {});
+    async.parallel([
+      (callback) => {
+        Models.disconnect(callback);
+      }, 
+      (callback) => {
+        StepsModels.disconnect(callback);
+      },
+    ], callback);
   },
 ]);
