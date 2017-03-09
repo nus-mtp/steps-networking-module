@@ -1,4 +1,4 @@
-var ModelHandler = require("../mongodbscripts/models.js");
+const ModelHandler = require("../mongodbscripts/models.js");
 const port = "27017";
 const host = "localhost";
 const dbName = "fake-data";
@@ -38,18 +38,24 @@ class User {
       skills : skill_sets,
       bookmarked_users : bookedmarked_users,
     });
-
-    this.saveUser(function callback(err){
-      if (err){
-        if (err.name === 'MongoError' && err.code === 11000) {
-          //Report and abort.
-          console.log("There is an existing user with the same Email.");
-        }
-      }
-    });
-
     this.ModelHandler.disconnect();
   }
+
+  /**
+   * Creates a connection to the database
+   */
+  static connectDB(){
+    this.ModelHandler = new ModelHandler (host, port, dbName);
+    this.userModel = this.ModelHandler.getUserModel();
+  }
+
+  /**
+   * Disconnects from the database
+   */
+  static disconnectDB(){
+    this.ModelHandler.disconnect();
+  }
+
 
   /**
   * Takes in password from user and checks the hashed version with the databse
@@ -58,7 +64,9 @@ class User {
   * @param {function} callback
   */
   comparePassword(password, callback){
+    User.connectDB();
     this.userModelDoc.comparePassword(password, callback);
+    User.disconnectDB();
   }
 
   /**
@@ -66,23 +74,20 @@ class User {
    * Report if there's any duplicate
    */
   saveUser(callback){
-    this.userModelDoc.save(function (err) {
-      if (err) {
-        callback(err);
-      } else {
-        console.log("Users are saved.");
-      }
-    })    
+    User.connectDB();
+    this.userModelDoc.save(function(err){
+      callback(err);
+    });
+    User.disconnectDB();
   }
 
   /**
    * Remove the collection of Users from database
    */
-  static clearAllUser(){
-    this.ModelHandler = new ModelHandler (host, port, dbName);
-    this.userModel = this.ModelHandler.getUserModel();
-    this.userModel.collection.remove({});
-    this.ModelHandler.disconnect();
+  static clearAllUser(callback){
+    User.connectDB();
+    this.userModel.remove({}, callback);
+    User.disconnectDB();
   }
 
   /**
@@ -97,8 +102,7 @@ class User {
    *  });
    */
   static getAllUsers(cb){
-    this.ModelHandler = new ModelHandler (host, port, dbName);
-    this.userModel = this.ModelHandler.getUserModel();
+    User.connectDB();
     this.userModel.find({},function (err,userDoc){
       if (err){
         cb(err,null);
@@ -106,7 +110,7 @@ class User {
         cb(null,userDoc);
       }
     });
-    this.ModelHandler.disconnect();
+    User.disconnectDB();
   }
 
   /**
@@ -125,15 +129,14 @@ class User {
    * @param {function} cb
    */
   static getUser(email, cb){
-    this.ModelHandler = new ModelHandler (host, port, dbName);
-    this.userModel = this.ModelHandler.getUserModel();
+    User.connectDB();
     this.userModel.findOne({ 'email': email }, function(err, docs) {
       if (err){
         cb(err, null)
-      }
-      cb(null,docs);
+      } else
+        cb(null,docs);
     });
-    this.ModelHandler.disconnect();
+    User.disconnectDB();
   }
 
   /**
@@ -148,8 +151,9 @@ class User {
    * @param {String} profile_pic: A url string which contains the profile picture.
    * @param {StringArray} skills_set: The skills that the user possess. Such as programming skills, management skills, etc
    * @param {StringArray} bookedmarked_users: A collection of users' emails that the current user wants to keep track of.
+   * @param {callback} for error checking
    */
-  static updateUser(email = "", name = "", description = "", password = "", will_notify = true, is_deleted = false, profile_pic = "", skill_sets = [], bookedmarked_users = []){
+  static updateUser(email = "", name = "", description = "", password = "", will_notify = true, is_deleted = false, profile_pic = "", skill_sets = [], bookedmarked_users = [], callback){
 
     //The list of  attributes that will be updated
     var update = {  email : email,
@@ -163,13 +167,12 @@ class User {
                   bookmarked_users : bookedmarked_users,
                  }
     var options = {new: true};
-    this.ModelHandler = new ModelHandler (host, port, dbName);
-    this.userModel = this.ModelHandler.getUserModel();
-    this.userModel.findOneAndUpdate({ 'email': email }, update, options, function(err, docs) {
+    User.connectDB();
+    this.userModel.findOneAndUpdate({ email: email }, update, options, function(err, docs) {
 
       // Did something went wrong?
       if (err){
-        console.log("Error with updating users.");
+        console.log ("Error with updating users.");
       } 
       // If not, is it existing?
       else if (docs) {
@@ -180,7 +183,7 @@ class User {
         console.log ("There is no such users.")
       }
     });
-    this.ModelHandler.disconnect();
+    User.disconnectDB();
   }
 
 
@@ -191,15 +194,14 @@ class User {
    * @param {function} callback (err, docs): errors are stored in err, results are stored in docs.
    */
   static searchUsersBySkills(skillToBeSearched, callback){
-    this.ModelHandler = new ModelHandler (host, port, dbName);
-    this.userModel = this.ModelHandler.getUserModel();
+    User.connectDB();
     this.userModel.find({ 'skills': { $regex: new RegExp(skillToBeSearched.replace('+',"\\+"),"i")} }, function(err, docs) {
       if (err){
         callback(err, null)
       }
       callback(null,docs);
     });
-    this.ModelHandler.disconnect();
+    User.disconnectDB();
   }
 
   /**
@@ -209,8 +211,7 @@ class User {
    * @param {function} callback (err,results): errors are stored in err, results is boolean
    */
   static isValidUser(email,callback){
-    this.ModelHandler = new ModelHandler (host, port, dbName);
-    this.userModel = this.ModelHandler.getUserModel();
+    User.connectDB();
     this.userModel.findOne({ 'email': email }, function (err, docs) {
       if (err){
         callback(err,null);
@@ -224,7 +225,7 @@ class User {
         callback(null, false);
       }
     });
-    this.ModelHandler.disconnect();
+    User.disconnectDB();
   }
 
   /**
@@ -236,9 +237,8 @@ class User {
   static setUserAsDeleted(email, boolDeleted, callback){
     var update = {is_deleted : boolDeleted};
     var options = {new: true};
-    this.ModelHandler = new ModelHandler (host, port, dbName);
-    this.userModel = this.ModelHandler.getUserModel();
-    this.userModel.findOneAndUpdate({ 'email': email },{$set: update}, options, function (err, docs) {
+    User.connectDB();
+    this.userModel.findOneAndUpdate({ email: email },{$set: update}, options, function (err, docs) {
       if (err){
         callback(err, null);
       } else {
@@ -246,9 +246,9 @@ class User {
       } 
 
     });
-    this.ModelHandler.disconnect();
+   User.disconnectDB();
   }
-  
-  
+
+
 }
 module.exports = User;
