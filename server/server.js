@@ -4,7 +4,9 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var config = require('./config.json');
 
-var db = require('./mongodbScripts/accessMongoDB').connect(config.herokuDbUri.host, config.herokuDbUri.port, config.herokuDbUri.database);
+var db = require('./database/mongodbScripts/accessMongoDB').connect(config.devDbUri.host, config.devDbUri.port, config.devDbUri.database);
+
+console.log(config.devDbUri.host);
 
 var app = express();
 var port = 3000;
