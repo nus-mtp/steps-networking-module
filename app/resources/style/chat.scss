@@ -3,14 +3,23 @@
   display: relative;
 }
 
+/* Wrapper for sidebar */
+#chat-sidebar-wrapper {
+  position:fixed;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  overflow-y: scroll;
+  z-index:1;
+}
+
 /* Sidebar to hold tabs when in desktop mode */
 #chat-sidebar {
   margin-top: 70px;
+  margin-bottom: 15px;
   padding-right: 5px;
-  position: fixed;
-  overflow: hidden;
-  overflow-y: scroll;
-  height: 85%;
+  position:relative;
+  height: calc(100%-80px);
 }
 
 /* Tab column/section */
@@ -29,6 +38,8 @@
 #chat-body {
   background-color: white;
   margin-left: 0;
+  z-index:2;
+  position: relative;
 }
 
 /* Name of person in the conversation */

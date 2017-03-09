@@ -43,12 +43,14 @@ export default class ChatView extends Component {
   showChatTabs(matches) {
     if (matches) {
       return (
-        <ChatTabs 
-          width={this.widthOfChatTabs} 
-          users={this.state.users} 
-          current={this.state.current} 
-          changeConversation={this.changeConversation.bind(this)} 
-        />
+        <div id="chat-sidebar-wrapper">
+          <ChatTabs 
+            width={this.widthOfChatTabs} 
+            users={this.state.users} 
+            current={this.state.current} 
+            changeConversation={this.changeConversation.bind(this)} 
+          />
+        </div>
       );
     } else {
       return (null);
