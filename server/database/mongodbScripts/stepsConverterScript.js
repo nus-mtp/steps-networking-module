@@ -18,7 +18,6 @@ const User = Models.getUserModel();
 const Event = Models.getEventModel();
 const Exhibition = Models.getExhibitionModel();
 const Attendance = Models.getAttendanceModel();
-const Comment = Models.getCommentModel();
 
 const StepsModels = new StepsModelHandler('localhost', '27017', 'steps-api-sanitised');
 
@@ -27,8 +26,7 @@ const stepsGuest = StepsModels.getGuestModel();
 const stepsModule = StepsModels.getModuleModel();
 const stepsEvent = StepsModels.getEventModel();
 
-// Start Note that the entire Transaction will fail silently if any one of the
-// below generates an Error
+// Start
 
 async.series([
   (callback) => {
@@ -131,6 +129,7 @@ async.series([
   },
   (callback) => {
     // Bring in Exhibitions
+    // Possible Integrity Issue: Projects which have the Same Name within the Same Module featuring in the Same Event will not be inserted correctly.
     async.waterfall([
       (callback) => {
         stepsModule.find({}, (err, docs) => {
@@ -147,24 +146,69 @@ async.series([
               callback(null, { eventName: module.get('event'), tag: module.get('code'), projects: module.get('projects') });
             },
             (collectedInformation, callback) => {
-              // collectedInformation contains Event ID, Event Name, Module Code, and the Project array for a single Module
+              // collectedInformation contains Event Name, Module Code, and the Project array for a single Module
               async.each(collectedInformation.projects, (project, callback) => {
                 // For a Project
                 // Upsert an Exhibition Listing
                 // Upsert an Attendance Listing for Each User involved in the Project
-                async.series([
+                async.waterfall([
                   (callback) => {
+                    const exhibitionName = project.get('name');
+                    const studentsInvolved = project.get('members');
+
+                    let valid = false;
+
                     // Ignore Invalid Name Projects
-                    if (project.get('name') !== 'Unknown') {
-                      console.log(project);
+                    if ((exhibitionName !== 'Unknown') && (exhibitionName !== '')) {
+                      valid = true;
+
+                      const exhibitionDescription = project.get('description');
+
+                      const eventName = collectedInformation.eventName;
+
+                      let imagesList = [];
+                      const posterLink = project.get('posterLink');
+                      if (posterLink !== '') {
+                        imagesList.push(posterLink);
+                      }
+                      const imageLinks = project.get('imageLinks');
+                      if (imageLinks.length > 0) {
+                        imagesList = imagesList.concat(imageLinks);
+                      }
+
+                      let videosList = [];
+                      const videoLink = project.get('videoLink');
+                      if (videoLink !== '') {
+                        videosList.push(videoLink);
+                      }
+
+                      const websiteLink = project.get('urlLink');
+
+                      let tagsList = [];
+                      tagsList.push(eventName);
+                      tagsList.push(collectedInformation.tag);
+
+                      const query = {
+                        event_name: eventName,
+                      };
+
+                      const update = {
+                        exhibition_name: exhibitionName,
+                        exhibition_description: exhibitionDescription,
+                        event_name: eventName,
+                        website: websiteLink,
+                      };
+
+                      callback(null, exhibitionName, studentsInvolved, valid);
+                    } else {
+                      callback(null, exhibitionName, studentsInvolved, valid);
                     }
-
-                    callback(null, '');
                   },
-                  (callback) => {
-                    console.log('');
+                  (exhibitionName, studentsInvolved, valid, callback) => {
 
-                    callback(null, '');
+                    console.log(exhibitionName);
+
+                    callback();
                   },
                 ], callback);
               }, (err) => {
