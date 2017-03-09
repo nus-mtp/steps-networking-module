@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 import Paths from '../../paths';
+import Auth from '../../database/auth';
 
 class ProfileView extends React.Component {
   constructor(props) {
@@ -18,6 +19,14 @@ class ProfileView extends React.Component {
     this.handleEdit = this.handleEdit.bind(this);
     this.changeEdit = this.changeEdit.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
+  }
+  
+  componentWillMount() {
+    if(Auth.isUserAuthenticated) {
+      this.setState({
+        email: Auth.getToken().email,
+      });
+    }
   }
   
   changeEdit(event) {

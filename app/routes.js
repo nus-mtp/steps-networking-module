@@ -1,6 +1,5 @@
 import App from './components/app'
 import Home from './components/home/homeView';
-import Dashboard from './components/home/dashboardView';
 import Chat from './components/chat/chatView';
 import Event from './components/event/eventView';
 import Project from './components/project/projectView';
@@ -16,11 +15,11 @@ const routes = {
   childRoutes: [
     {
       path: Paths.home,
-      getComponent: (location, callback) => {
+      getComponent: (nextState, callback) => {
         if (Auth.isUserAuthenticated()) {
-          callback(null, Dashboard);
-        } else {
           callback(null, Home);
+        } else {
+          callback(null, Login);
         }
       }
     },
@@ -34,11 +33,9 @@ const routes = {
     },
     {
       path: Paths.logout,
-      onEnter: (nextState, replace) => {
+      getComponent: (nextState, callback) => {
         Auth.deauthenticateUser();
-
-        // change the current URL to /
-        replace('/');
+        callback(null, Login);
       }
     },
     {
