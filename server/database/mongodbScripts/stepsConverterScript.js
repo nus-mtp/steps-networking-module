@@ -127,8 +127,63 @@ async.series([
         });
       },
     ], callback);
-
     // End: Bring in _Users
+  },
+  (callback) => {
+    // Bring in Exhibitions
+    async.waterfall([
+      (callback) => {
+        stepsModule.find({}, (err, docs) => {
+          if (err) {
+            console.log(err);
+          }
+          callback(null, docs);
+        });
+      },
+      (allModules, callback) => {
+        async.each(allModules, (module, callback) => { // Iterate through allModules in parallel
+          async.waterfall([
+            (callback) => {
+              callback(null, { eventName: module.get('event'), tag: module.get('code'), projects: module.get('projects') });
+            },
+            (collectedInformation, callback) => {
+              // collectedInformation contains Event ID, Event Name, Module Code, and the Project array for a single Module
+              async.each(collectedInformation.projects, (project, callback) => {
+                // For a Project
+                // Upsert an Exhibition Listing
+                // Upsert an Attendance Listing for Each User involved in the Project
+                async.series([
+                  (callback) => {
+                    // Ignore Invalid Name Projects
+                    if (project.get('name') !== 'Unknown') {
+                      console.log(project);
+                    }
+
+                    callback(null, '');
+                  },
+                  (callback) => {
+                    console.log('');
+
+                    callback(null, '');
+                  },
+                ], callback);
+              }, (err) => {
+                if (err) {
+                  console.log(err);
+                }
+                callback(null, '');
+              });
+            },
+          ], callback);
+        }, (err) => {
+          if (err) {
+            console.log(err);
+          }
+          callback(null, '');
+        });
+      },
+    ], callback);
+    // End: Bring in Exhibitions
   },
   (callback) => {
     async.parallel([
