@@ -203,6 +203,7 @@ async.series([
                     if (valid) {
                       const query = {
                         event_name: exhibitionProperties.eventNameKey,
+                        exhibition_name: exhibitionProperties.exhibitionNameKey,
                       };
 
                       const update = {
@@ -214,7 +215,7 @@ async.series([
 
                       console.log(exhibitionProperties.exhibitionNameKey);
                     }
-                    
+
                     callback(null, exhibitionProperties.name, studentsInvolved, valid);
                   },
                   (exhibitionName, studentsInvolved, valid, callback) => { // Upsert an Attendance Listing for Each User involved in the Project
