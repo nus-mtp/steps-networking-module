@@ -5,8 +5,10 @@ class Collapsable extends React.Component {
   constructor(props) {
     super(props);
     
+    let marginOffset = (this.props.width > 434) ? 135 : 35;
+    
     this.state = {
-      numberOfEventPerRow: Math.floor((window.innerWidth - 35) / this.props.width),
+      numberOfEventPerRow: Math.floor((window.innerWidth - marginOffset) / this.props.width),
       order: this.props.serial,
     };
   
@@ -23,8 +25,10 @@ class Collapsable extends React.Component {
   }
 
   updateLayout() {
+    let marginOffset = (this.props.width > 434) ? 135 : 35;
+    
     this.setState({
-      numberOfEventPerRow: Math.floor((window.innerWidth - 35) / this.props.width),
+      numberOfEventPerRow: Math.floor((window.innerWidth - marginOffset) / this.props.width),
     });
   }
   

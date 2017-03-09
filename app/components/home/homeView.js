@@ -79,7 +79,7 @@ class HomeView extends React.Component {
   render() {
     const containerWidth = 300;
     return (
-      <div className="home-body">
+      <div id="home-body">
         <Tabs />
         <div id="event-list" className="d-flex justify-content-center justify-content-md-start"> {
           this.state.events.map((file, i) =>
