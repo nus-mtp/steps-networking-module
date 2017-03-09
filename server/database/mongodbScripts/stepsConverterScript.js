@@ -9,8 +9,8 @@ const async = require('async');
 
 // Obtain the Models of the STePs DB
 
-const ModelHandler = require('../mongodbscripts/models.js');
-const StepsModelHandler = require('./STePsDBHandlers/stepsModels.js');
+const ModelHandler = require('../models/ourModels');
+const StepsModelHandler = require('../models/stepsModels');
 
 const Models = new ModelHandler('localhost', '27017', 'dev');
 

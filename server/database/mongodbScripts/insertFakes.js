@@ -9,7 +9,7 @@ const async = require('async');
 
 // Obtain our Models
 
-const ModelHandler = require('../../app/database/mongodbscripts/models.js');
+const ModelHandler = require('../models/ourModels');
 
 const Models = new ModelHandler('localhost', '27017', 'fake-data');
 

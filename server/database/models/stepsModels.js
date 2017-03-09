@@ -1,10 +1,12 @@
-const serverFilePath = '../../../../server/';
+const mongodbScriptsFilePath = '../mongodbScripts/';
+const STePsSchemasFilePath = '../schemas/STePsSchemas/';
 
-const mongoDBConnector = require(serverFilePath + 'mongodbScripts/accessMongoDB');
-const stepsUserSchema = require('./stepsUserSchema');
-const stepsGuestSchema = require('./stepsGuestSchema');
-const stepsModuleSchema = require('./stepsModuleSchema');
-const stepsEventSchema = require('./stepsEventSchema');
+const mongoDBConnector = require(mongodbScriptsFilePath + 'accessMongoDB');
+
+const stepsUserSchema = require(STePsSchemasFilePath + 'stepsUserSchema');
+const stepsGuestSchema = require(STePsSchemasFilePath + 'stepsGuestSchema');
+const stepsModuleSchema = require(STePsSchemasFilePath + 'stepsModuleSchema');
+const stepsEventSchema = require(STePsSchemasFilePath + 'stepsEventSchema');
 
 /*
     This file defines a Class Object that allows one to get the STePs Mongoose Models from a specified database.
