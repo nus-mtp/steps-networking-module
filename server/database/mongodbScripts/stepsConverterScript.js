@@ -207,7 +207,9 @@ async.series([
                   },
                   (exhibitionName, studentsInvolved, valid, callback) => {
 
-                    console.log(exhibitionName + " " + valid);
+                    if (valid) {
+                      console.log(exhibitionName);
+                    }
 
                     callback();
                   },
