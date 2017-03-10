@@ -6,8 +6,6 @@ var config = require('./config.json');
 
 var db = require('./database/mongodbScripts/accessMongoDB').connect(config.devDbUri.host, config.devDbUri.port, config.devDbUri.database);
 
-console.log(config.devDbUri.host);
-
 var app = express();
 var port = 3000;
 
