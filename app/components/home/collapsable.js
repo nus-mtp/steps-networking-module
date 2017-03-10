@@ -97,13 +97,42 @@ class Collapsable extends React.Component {
                 No
               </label>
             </div>
-            <div id="event-matches">
-              <span className="event-match-title">Matches: </span>
-              <nav className="nav">
-                <Link className="nav-link matches" to="/project">Project1</Link>
-                <Link className="nav-link matches" to="/project">Project2</Link>
-              </nav>
-            </div>
+            { (this.state.isAttended) ?
+              <div>
+                <hr />
+                <div id="event-reasons">
+                  <span className="event-reason-title">Reason: </span>
+                  <label className="custom-control custom-checkbox">
+                    <input type="checkbox" className="custom-control-input" />
+                    <span className="custom-control-indicator"></span>
+                    <span className="custom-control-description reasons">Co-founder</span>
+                  </label>
+                  <label className="custom-control custom-checkbox">
+                    <input type="checkbox" className="custom-control-input" />
+                    <span className="custom-control-indicator"></span>
+                    <span className="custom-control-description reasons">Intern</span>
+                  </label>
+                  <label className="custom-control custom-checkbox">
+                    <input type="checkbox" className="custom-control-input" />
+                    <span className="custom-control-indicator"></span>
+                    <span className="custom-control-description reasons">Full-time</span>
+                  </label>
+                  <label className="custom-control custom-checkbox">
+                    <input type="checkbox" className="custom-control-input" />
+                    <span className="custom-control-indicator"></span>
+                    <span className="custom-control-description reasons">Teammate</span>
+                  </label>
+                </div>
+                <div id="event-matches">
+                  <span className="event-match-title">Matches: </span>
+                  <nav className="nav">
+                    <Link className="nav-link matches" to="/project">Project1</Link>
+                    <Link className="nav-link matches" to="/project">Project2</Link>
+                  </nav>
+                </div>
+              </div>
+              : <div />
+            }
           </div>
         </div>
       </div>
