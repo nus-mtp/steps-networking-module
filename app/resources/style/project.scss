@@ -1,6 +1,5 @@
-#project-poster {
-  max-height: 480px;
-  margin-bottom: 30px;
+.project-poster {
+  max-height: 300px;
 }
 
 .list-group-item {
@@ -10,4 +9,32 @@
   button {
     margin: 10px;
   }
+}
+
+#match-project-poster-container {
+  margin-bottom: 15px;
+}
+
+.match-button {
+  max-width: 90px;
+  margin: 20px 5px 0 0;
+  font-size: 16px;
+  padding: 5px;
+}
+
+.project-name {
+  font-size: 20px;
+}
+
+.reason-tag {
+  margin: 2px;
+  font-size: 13px;
+}
+
+.more-info {
+  width: 100%;
+  font-size: 14px;
+  color: grey;
+  cursor: pointer;
+  margin-bottom: 10px;
 }
