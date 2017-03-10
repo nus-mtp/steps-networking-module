@@ -129,7 +129,7 @@ async.series([
   },
   (callback) => {
     // Bring in Exhibitions
-    // Possible Integrity Issue: Projects which have the Same Name within the Same Module featuring in the Same Event will not be inserted correctly.
+    // Possible Integrity Issue: Projects which have the Same Name within the Same Event will not be inserted correctly.
     async.waterfall([
       (callback) => {
         stepsModule.find({}, (err, docs) => {
