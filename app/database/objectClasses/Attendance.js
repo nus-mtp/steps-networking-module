@@ -16,7 +16,6 @@ class Attendance {
    * @param {String} reason: user's reason for attending the event. Each element has to be unique.
    */
   constructor(userEmail, attendanceName, attendanceType, reason) {
-    this.canSave = true;
     this.ModelHandler = new ModelHandler(host, port, dbName);
     this.AttenanceModel = this.ModelHandler.getAttendanceModel();
     this.attendanceModelDoc = new this.AttenanceModel({
