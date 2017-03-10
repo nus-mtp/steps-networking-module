@@ -41,7 +41,7 @@ function removeDuplicates(arr) {
 // Start
 
 async.series([
-  (callback) => { // Bring in Events 
+  (callback) => { // Bring in Events
     async.waterfall(
       [
         (callback) => {
@@ -137,7 +137,7 @@ async.series([
     ], callback);
     // End: Bring in _Users
   },
-  (callback) => { // Bring in Exhibitions and Create Attendance Documents for each Student Participant in each Project
+  (callback) => { // Bring in Projects and Create Attendance Documents for each Student Participant in each Project
     // Possible Integrity Issue: Projects which have the Same Name within the Same Event will not be inserted correctly.
     async.waterfall([
       (callback) => {
@@ -273,16 +273,30 @@ async.series([
                             console.log(err);
                             callback(null);
                           } else {
-                            const query = {
+                            const userQuery = {
                               email: student.email,
                             };
+                            const exhibitionQuery = {
+                              exhibition_name: exhibitionName,
+                            };
 
-                            User.where(query).findOne((err, user) => {
+                            User.where(userQuery).lean().findOne((err, user) => {
                               if (err) {
                                 console.log(err);
                                 callback(null, '');
+                              } else if (user) {
+                                Exhibition.where(exhibitionQuery).lean().findOne((err, exhibition) => {
+                                  if (err) {
+                                    console.log(err);
+                                    callback(null, '');
+                                  } else if (exhibition) {
+                                    callback(null, '');
+                                  } else {
+                                    console.log('Unable to create Attendance Record for Student under: ' + exhibitionName);
+                                    callback(null, '');
+                                  }
+                                });
                               } else {
-                                console.log(user);
                                 callback(null, '');
                               }
                             });
