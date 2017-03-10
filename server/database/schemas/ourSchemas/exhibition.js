@@ -4,13 +4,13 @@ const exhibitionSchema = new mongoose.Schema({
   exhibition_name: {
     type: String,
     trim: true,
-    required: 'The Exhibition Name is a Primary Key, and is therefore Required.',
+    required: 'The Exhibition Name is a part of a Composite Key, and is therefore Required.',
   },
 
   event_name: {
     type: String,
     trim: true,
-    required: 'The Name of the Event for which this Exhibition is hosted under is a Foreign Key' +
+    required: 'The Name of the Event for which this Exhibition is hosted under is part of a Composite Key' +
         ', and is therefore Required.',
   },
 
