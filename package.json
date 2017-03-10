@@ -60,7 +60,9 @@
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-router": "^3.0.2",
+    "react-swipe": "^5.0.6",
     "should": "^11.2.0",
+    "swipe-js-iso": "^2.0.3",
     "validator": "^6.2.1",
     "webpack": "^2.2.1",
     "webpack-stream": "^3.2.0"
