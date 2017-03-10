@@ -15,7 +15,7 @@ const attendanceSchema = new mongoose.Schema({
   },
   attendance_name: {
     type: String, // Event or Exhibition Name
-    required: 'The Name of the Event or Exhibition for which this Comment is posted under is us' +
+    required: 'The Name of the Event or Exhibition for the User is attending is us' +
         'ed as a Foreign Key, and is therefore Required.',
   },
   reason: [
