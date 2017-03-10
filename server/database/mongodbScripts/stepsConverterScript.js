@@ -156,8 +156,7 @@ async.series([
             },
             (collectedInformation, callback) => { // For each Module
               // collectedInformation contains Event Name, Module Code, and the Project array for a single Module
-              async.eachLimit(collectedInformation.projects, 5, (project, callback) => {
-                // For each Project in parallel, 5 at a time
+              async.eachLimit(collectedInformation.projects, 5, (project, callback) => { // For each Project in parallel, 5 at a time
                 async.waterfall([
                   (callback) => { // Extract out the relevant information in each Project - the Exhibition Properties, and the Students involved in each Exhibition
                     const exhibitionName = project.get('name');
@@ -268,9 +267,27 @@ async.series([
                   },
                   (exhibitionName, studentsInvolved, valid, callback) => { // Upsert an Attendance Listing for Each User involved in the Project, only if Project Information was valid
                     if (valid) {
-                      async.eachLimit(studentsInvolved, 5, (student, callback) => {
-                        console.log(student);
-                        callback(null);
+                      async.eachLimit(studentsInvolved, 5, (studentId, callback) => {
+                        stepsUser.findById(studentId).lean().exec((err, student) => {
+                          if (err) {
+                            console.log(err);
+                            callback(null);
+                          } else {
+                            const query = {
+                              email: student.email,
+                            };
+
+                            User.where(query).findOne((err, user) => {
+                              if (err) {
+                                console.log(err);
+                                callback(null, '');
+                              } else {
+                                console.log(user);
+                                callback(null, '');
+                              }
+                            });
+                          }
+                        });
                       }, (err) => {
                         if (err) {
                           console.log(err);
