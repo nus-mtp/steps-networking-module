@@ -187,7 +187,6 @@ async.series([
                       videosListKey: videosList,
                       websiteLinkKey: websiteLink,
                       tagsListKey: tagsList,
-
                     };
 
                     let valid = false;
@@ -213,31 +212,29 @@ async.series([
                         website: exhibitionProperties.websiteLinkKey,
                       };
 
-                      /*
-                      const exhibitionDoc = new Exhibition(update);
-
-                      exhibitionDoc.save((err, doc) => {
-                        if (err) {
-                          console.log(err);
-                        } else {
-                          console.log(doc);
-                        }
-                        callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
-                      });
-                      */
-
+                      // Upsert Exhibition
                       Exhibition.where(query).findOne((err, doc) => {
-                        if (err) {
+                        if (err) { // Unknown Error
                           console.log(err);
-                        } else if (doc) {
-                          // Exhibition was inserted previously
-                          console.log(doc);
-                        } else {
-                          // Exhibition is a potential new entry
-                          console.log('Non-Existant: \n' + query.exhibition_name + '\n');
+                          callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
+                        } else if (doc) { // Exhibition was Previously Inserted - Update
+                          console.log('Existant: \n' + query.exhibition_name + '\n');
+                          callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
+                        } else { // Exhibition is a Potential New Entry - Insert
+                          // console.log('Non-Existant: \n' + query.exhibition_name + '\n');
+                          const exhibitionDoc = new Exhibition(update);
+                          exhibitionDoc.set('images', exhibitionProperties.imagesListKey);
+                          exhibitionDoc.set('videos', exhibitionProperties.videosListKey);
+                          exhibitionDoc.set('tags', exhibitionProperties.tagsListKey);
+                          exhibitionDoc.save((err, doc) => {
+                            if (err) {
+                              console.log(err);
+                            } else {
+                              console.log(doc);
+                            }
+                            callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
+                          });
                         }
-
-                        callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
                       });
                     } else {
                         callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
