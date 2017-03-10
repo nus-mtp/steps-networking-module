@@ -11,10 +11,6 @@ class Login extends React.Component {
       <div id="login-form" className="card">
         <h3 className="card-header">Login</h3>
         <div className="card-block">
-          { (!this.props.errors.summary) ?
-            (this.props.successMessage && <div className="alert alert-success success-message"><strong>Registration successful! </strong>{this.props.successMessage}</div>) :
-            <div />
-           }
           { this.props.errors.summary && <div className="alert alert-danger error-message"><strong>Unable to login! </strong>{this.props.errors.summary}</div> }
           <form className="authentication-form">
             <div className="form-group has-warning">
