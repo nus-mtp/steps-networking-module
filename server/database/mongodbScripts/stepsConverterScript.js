@@ -49,7 +49,7 @@ async.series([
           });
         },
         (allEvents, callback) => {
-          async.each(allEvents, (event, callback) => { // Iterate through allEvents in parallel
+          async.eachLimit(allEvents, 15, (event, callback) => { // Iterate through allEvents in parallel, 15 at a time
 
             const eventName = event.get('code');
             const eventDescription = event.get('name') + '\n' + event.get('description');
@@ -100,7 +100,7 @@ async.series([
         });
       },
       (allUsers, callback) => {
-        async.each(allUsers, (user, callback) => { // Iterate through allUsers in parallel
+        async.eachLimit(allUsers, 15, (user, callback) => { // Iterate through allUsers in parallel, 15 at a time
           const userEmail = user.get('email');
           const userName = user.get('name');
           const userPassword = '';
