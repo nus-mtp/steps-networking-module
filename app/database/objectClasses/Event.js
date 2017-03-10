@@ -2,7 +2,7 @@ const ModelHandler = require('../../../server/database/models/ourModels.js');
 
 const port = '27017';
 const host = 'localhost';
-const dbName = 'fake-data';
+const dbName = 'dev';
 
 /**
  * This is the wrapper class used extract out and store information

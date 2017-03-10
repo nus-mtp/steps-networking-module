@@ -39,17 +39,20 @@ export default class ChatView extends Component {
   
   componentWillMount() {
     if(Auth.isUserAuthenticated) {
-      this.setState({
-        email: Auth.getToken().email,
-      });
-      User.getUser(Auth.getToken().email, function callback(err, userObj){
+      let email = Auth.getToken().email;
+      email = email.replace('%40', '@');
+      
+      this.setState({ email });
+      console.log(email);
+      //*
+      User.getUser(email, function callback(err, userObj){
         if(err){
           console.log("No user desu");
         } else {
           let str = "UserObj is " + userObj.name;
           console.log(str);
         }
-      });
+      });//*/
     }
   }
 
