@@ -40,6 +40,9 @@ function removeDuplicates(arr) {
 
 // Start
 
+// Possible Integrity Issue 1: Projects which have the Same Name within the Same Event will not be inserted correctly.
+// Possible Integrity Issue 2: Projects which change Names will spawn new Exhibition Entries and Attendance Records.
+
 async.series([
   (callback) => { // Bring in Events
     async.waterfall(
@@ -138,7 +141,6 @@ async.series([
     // End: Bring in _Users
   },
   (callback) => { // Bring in Projects and Create Attendance Documents for each Student Participant in each Project
-    // Possible Integrity Issue: Projects which have the Same Name within the Same Event will not be inserted correctly.
     async.waterfall([
       (callback) => {
         stepsModule.find({}, (err, docs) => {
@@ -279,6 +281,11 @@ async.series([
                             const exhibitionQuery = {
                               exhibition_name: exhibitionName,
                             };
+                            const attendanceQuery = {
+                              user_email: student.email,
+                              attendance_type: 'exhibition',
+                              attendance_name: exhibitionName,
+                            };
 
                             User.where(userQuery).lean().findOne((err, user) => {
                               if (err) {
@@ -289,8 +296,23 @@ async.series([
                                   if (err) {
                                     console.log(err);
                                     callback(null, '');
-                                  } else if (exhibition) {
-                                    callback(null, '');
+                                  } else if (exhibition) { // Both the User and Exhibition exist - Upsert Attendance Information
+                                    Attendance.where(attendanceQuery).findOne((err, attendance) => {
+                                      if (err) {
+                                        console.log(err);
+                                        callback(null, '');
+                                      } else if (attendance) { // The Attendance Information exists - don't need to Update
+                                        callback(null, '');
+                                      } else { // Attendance Information does not exist - Insert
+                                        const attendanceDoc = new Attendance(attendanceQuery);
+                                        attendanceDoc.save((err, doc) => {
+                                          if (err) {
+                                            console.log(err);
+                                          }
+                                          callback(null, '');
+                                        });
+                                      }
+                                    });
                                   } else {
                                     console.log('Unable to create Attendance Record for Student under: ' + exhibitionName);
                                     callback(null, '');
