@@ -4,7 +4,6 @@ const exhibitionSchema = new mongoose.Schema({
   exhibition_name: {
     type: String,
     trim: true,
-    unique: true,
     required: 'The Exhibition Name is a Primary Key, and is therefore Required.',
   },
   exhibition_description: String,
@@ -29,5 +28,7 @@ const exhibitionSchema = new mongoose.Schema({
     },
   ],
 });
+
+exhibitionSchema.index({ event_name: 1, exhibition_name: 1 }, { unique: true });
 
 module.exports = exhibitionSchema;
