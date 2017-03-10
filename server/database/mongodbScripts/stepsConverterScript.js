@@ -394,10 +394,53 @@ async.series([
               });
             },
             (userEmail, eventName, callback) => { // Upsert an Attendance Listing for Each Guest Per Event
-              async.setImmediate(() => {
-                callback(null);
+              const userQuery = {
+                email: userEmail, 
+              };
+              const eventQuery = {
+                event_name: eventName,
+              };
+              const attendanceQuery = {
+                user_email: userEmail, 
+                attendance_type: 'event',
+                attendance_name: eventName,
+              };
+
+              User.where(userQuery).lean().findOne((err, user) => {
+                if (err) {
+                  console.log(err);
+                  callback(null);
+                } else if (user) {
+                  Event.where(eventQuery).lean().findOne((err, event) => {
+                    if (err) {
+                      console.log(err);
+                      callback(null);
+                    } else if (event) { // User and Event found - Upsert Attendance Document
+                      Attendance.where(attendanceQuery).lean().findOne((err, attendance) => {
+                        if (err) {
+                          console.log(err);
+                          callback(null);
+                        } else if (attendance) { // Don't do anything if Attendance Document already exists
+                          callback(null);
+                        } else { // Attendance Document does not already exist - Insert
+                          const attendanceDoc = new Attendance(attendanceQuery);
+                          attendanceDoc.save((err, doc) => {
+                            if (err) {
+                              console.log(err);
+                            }
+                            callback(null);
+                          });
+                        }
+                      });
+                    } else {
+                      callback(null);
+                    }
+                  });
+                } else {
+                  callback(null);
+                }
               });
-            },  
+            },
           ], callback);
         }, (err) => {
           if (err) {
