@@ -353,6 +353,22 @@ async.series([
     ], callback);
     // End: Bring in Exhibitions
   },
+  (callback) => { // Bring in Guests and Create Attendance Documents for each Guest for each Event
+    async.waterfall([
+      (callback) => {
+        stepsGuest.find({}, (err, docs) => {
+          if (err) {
+            console.log(err);
+          }
+          callback(null, docs);
+        });
+      },
+      (allGuests, callback) => {
+        console.log(allGuests);
+        callback(null);
+      },
+    ], callback);
+  },
   (callback) => {
     async.parallel([
       (callback) => {
