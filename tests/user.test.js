@@ -1,10 +1,9 @@
-var User = require("../app/database/objectClasses/User.js");
-var assert = require('assert');
-var async = require ('async');
+const User = require("../app/database/objectClasses/User.js");
+const assert = require('assert');
 
 describe ("User Create",function() {
 
-  before(function(done){
+  before(function(done) {
     var userTest2 = new User("usertesting_2@user.com", 
                              "UserTest2", 
                              "I am the second test user.",

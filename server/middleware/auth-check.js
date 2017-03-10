@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken');
-const User = require('mongoose').model('User');
+const ModelHandler = require('../database/models/ourModels'); // require('mongoose').model('User');
 const config = require('../config.json');
 
+const ModelHandlerObj = new ModelHandler(config.herokuDbUri.host, config.herokuDbUri.port, config.herokuDbUri.database);
+const User = ModelHandlerObj.getUserModel();
 
 /**
  *  The Auth Checker middleware function.
