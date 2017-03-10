@@ -364,8 +364,47 @@ async.series([
         });
       },
       (allGuests, callback) => {
-        console.log(allGuests);
-        callback(null);
+        async.eachLimit(allGuests, 15, (guest, callback) => { // Iterate through all Guests in parallel, 5 at a time
+          async.waterfall([
+            (callback) => { // Upsert Guests
+              const userEmail = guest.get('_id') + '@temp.com'; // To accommodate for sanitized Emails in STePs DB
+              const userPassword = '';
+              const userName = guest.get('name');
+
+              const query = {
+                email: userEmail,
+              };
+
+              const update = {
+                email: userEmail,
+                name: userName, 
+                password: userPassword,
+              };
+
+              const eventName = guest.get('event');
+
+              User.findOneAndUpdate(query, update, {new: true, upsert: true}, (err, doc) => {
+                if (err) {
+                  console.log(err);
+                }
+
+                async.setImmediate(() => {
+                  callback(null, userEmail, eventName);
+                });
+              });
+            },
+            (userEmail, eventName, callback) => { // Upsert an Attendance Listing for Each Guest Per Event
+              async.setImmediate(() => {
+                callback(null);
+              });
+            },  
+          ], callback);
+        }, (err) => {
+          if (err) {
+            console.log(err);
+          }
+          callback(null);
+        });
       },
     ], callback);
   },
