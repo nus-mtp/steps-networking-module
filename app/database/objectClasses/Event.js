@@ -1,17 +1,19 @@
-var ModelHandler = require("../mongodbscripts/models.js");
-const port = "27017";
-const host = "localhost";
-const dbName = "fake-data";
+const ModelHandler = require('../../../server/database/models/ourModels.js');
+
+const port = '27017';
+const host = 'localhost';
+const dbName = 'fake-data';
 
 /**
- * This is the wrapper class used extract out and store information about the Events from the database between view and model
+ * This is the wrapper class used extract out and store information
+ * about the Events from the database between view and model
  *
  */
 
-class Event{
+class Event {
   /**
    * Creates an model instance.
-   * 
+   *
    * @param {String} eventName: Unique identifier for the object
    * @param {String} eventDescription: Description for the event
    * @param {Date} startDate: Date object to identify start of event
@@ -21,10 +23,10 @@ class Event{
    * @param {String} eventPicture: URL string expected
    * @param {String Array} tags: Tags used to identify events
    */
-  constructor(eventName = "", eventDescription = "", startDate, endDate, location, map, eventPicture = "", tags=[]) {
-    this.ModelHandler = new ModelHandler (host, port, dbName);
-    this.eventModel = this.ModelHandler.getEventModel();
-    this.eventModelDoc = new this.eventModel({  
+  constructor(eventName = '', eventDescription = '', startDate, endDate, location, map, eventPicture = '', tags = []) {
+    this.ModelHandler = new ModelHandler(host, port, dbName);
+    this.EventModel = this.ModelHandler.getEventModel();
+    this.eventModelDoc = new this.EventModel({
       event_name: eventName,
       event_description: eventDescription,
       start_date: startDate,
@@ -42,22 +44,20 @@ class Event{
    *
    * @param {function} callback: used for error checking
    */
-  saveEvent(callback){
+  saveEvent(callback) {
     Event.connectDB();
-    this.eventModelDoc.save(function(err){
-      if (err){
-        callback(err);
-      }
+    this.eventModelDoc.save(function cb(err) {
+      callback(err);
     });
     Event.disconnectDB();
   }
 
-  static connectDB(){
-    this.ModelHandler = new ModelHandler (host, port, dbName);
-    this.eventModel = this.ModelHandler.getEventModel();
+  static connectDB() {
+    this.ModelHandler = new ModelHandler(host, port, dbName);
+    this.EventModel = this.ModelHandler.getEventModel();
   }
 
-  static disconnectDB(){
+  static disconnectDB() {
     this.ModelHandler.disconnect();
   }
 
@@ -66,9 +66,9 @@ class Event{
    *
    * @param {function} callback: used for error checking
    */
-  static clearAllEvents(callback){
+  static clearAllEvents(callback) {
     Event.connectDB();
-    this.eventModel.collection.remove({},callback);
+    this.EventModel.collection.remove({}, callback);
     Event.disconnectDB();
   }
 
@@ -77,12 +77,10 @@ class Event{
    *
    * @param {function} callback: used for error checking
    */
-  static deleteEvent(eventName, callback){
+  static deleteEvent(eventName, callback) {
     Event.connectDB();
-    this.eventModel.findOneAndRemove({event_name: eventName}, function (err){
-      if (err){
-        callback(err);
-      }
+    this.EventModel.findOneAndRemove({ event_name: eventName }, function cb(err) {
+      callback(err);
     });
     Event.disconnectDB();
   }
@@ -92,13 +90,13 @@ class Event{
    *
    * @param {function} callback: used for error checking
    */
-  static getAllEvents(callback){
+  static getAllEvents(callback) {
     Event.connectDB();
-    this.eventModel.find({}, function(err, eventObj){
-      if (err){
-        callback(err,null);
+    this.EventModel.find({}, function cb(err, eventObj) {
+      if (err) {
+        callback(err, null);
       } else {
-        //eventObj is an array of Event objects
+        // eventObj is an array of Event objects
         callback(null, eventObj);
       }
     });
@@ -110,10 +108,10 @@ class Event{
    *
    * @param {function} callback: used for error checking
    */
-  static getEvent(eventName, callback){
+  static getEvent(eventName, callback) {
     Event.connectDB();
-    this.eventModel.findOne({'event_name': eventName},function (err, eventObj){
-      if (err){
+    this.EventModel.findOne({ event_name: eventName }, function cb(err, eventObj) {
+      if (err) {
         callback(err, null);
       } else {
         callback(null, eventObj);
@@ -124,7 +122,7 @@ class Event{
 
   /**
    * Updates an model instance.
-   * 
+   *
    * @param {String} eventName: Unique identifier for the object
    * @param {String} eventDescription: Description for the event
    * @param {Date} startDate: Date object to identify start of event
@@ -134,9 +132,9 @@ class Event{
    * @param {String} eventPicture: URL string expected
    * @param {String Array} tags: Tags used to identify events
    */
-  static updateEvent(eventName = "", eventDescription = "", startDate, endDate, location, map, eventPicture = "", tags=[], callback) {
+  static updateEvent(eventName = '', eventDescription = '', startDate, endDate, location, map, eventPicture = '', tags = [], callback) {
     Event.connectDB();
-    var update = {event_name: eventName,
+    const update = { event_name: eventName,
                   event_description: eventDescription,
                   start_date: startDate,
                   end_date: endDate,
@@ -144,16 +142,17 @@ class Event{
                   event_map: map,
                   event_picture: eventPicture,
                   tags: tags,
-                 };
-    var options = {new: true};
-    this.eventModel.findOneAndUpdate({'event_name': eventName}, update, options, function (err, results){
-      if (err){
-        console.log("Unable to update Event");
+                  };
+    const options = { new: true };
+    this.EventModel.findOneAndUpdate({ event_name: eventName }, update, options,
+                                     function cb(err, results) {
+      if (err) {
+        console.log('Unable to update Event');
         callback(err);
       } else if (results) {
-        console.log("Event is updated.");
+        console.log('Event is updated.');
       } else {
-        console.log("There is no such Event.");
+        console.log('There is no such Event.');
       }
     });
 
@@ -166,15 +165,15 @@ class Event{
    * @param {String} eventName: unique identifer used to check against database
    * @param {function} callback: used for error checking
    */
-  static isExistingEvent(eventName, callback){
+  static isExistingEvent(eventName, callback) {
     Event.connectDB();
-    this.eventModel.findOne({'event_name': eventName}, function (err, docs){
-      if (err){
-        callback(err, null)
-      } else if (docs){
-        callback (null, true);
+    this.EventModel.findOne({ event_name: eventName }, function cb(err, docs) {
+      if (err) {
+        callback(err, null);
+      } else if (docs) {
+        callback(null, true);
       } else {
-        callback (null, false);
+        callback(null, false);
       }
     });
     Event.disconnectDB();
@@ -186,13 +185,13 @@ class Event{
    * @param {String} eventName: unique identifer used to check against database
    * @param {function} callback: used for error checking
    */
-  static searchEventsByTag(tag, callback){
+  static searchEventsByTag(tag, callback) {
     Event.connectDB();
-    this.eventModel.find({'tags': { $regex: new RegExp(tag.replace('+',"\\+"),"i")} }, function (err, docs){
-      if (err){
-        callback (err, null);
+    this.EventModel.find({ tags: { $regex: new RegExp(tag.replace('+', '\\+'), 'i') } }, function cb(err, docs) {
+      if (err) {
+        callback(err, null);
       } else {
-        callback (null, docs);
+        callback(null, docs);
       }
     });
     Event.disconnectDB();
