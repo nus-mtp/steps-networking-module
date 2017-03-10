@@ -214,7 +214,7 @@ async.series([
                       };
 
                       /*
-                      var exhibitionDoc = new Exhibition(update);
+                      const exhibitionDoc = new Exhibition(update);
 
                       exhibitionDoc.save((err, doc) => {
                         if (err) {
