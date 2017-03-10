@@ -28,6 +28,12 @@ const stepsEvent = StepsModels.getEventModel();
 
 // Helper Functions
 
+/*
+  A function which removes all duplicates from a given Array.
+
+  @param {Array} arr: The given Array to remove duplicates from.
+  @return {Array}: A copy of the given Array that has no duplicates.
+*/
 function removeDuplicates(arr) {
   return Array.from(new Set(arr));
 }
@@ -35,8 +41,7 @@ function removeDuplicates(arr) {
 // Start
 
 async.series([
-  (callback) => {
-    // Bring in Events
+  (callback) => { // Bring in Events 
     async.waterfall(
       [
         (callback) => {
@@ -88,8 +93,7 @@ async.series([
       ], callback);
     // End: Bring in Events
   },
-  (callback) => {
-    // Bring in _Users
+  (callback) => { // Bring in _Users
     async.waterfall([
       (callback) => {
         stepsUser.find({}, (err, docs) => {
@@ -133,8 +137,7 @@ async.series([
     ], callback);
     // End: Bring in _Users
   },
-  (callback) => {
-    // Bring in Exhibitions and Create Attendance Documents for each Student Participant in each Project
+  (callback) => { // Bring in Exhibitions and Create Attendance Documents for each Student Participant in each Project
     // Possible Integrity Issue: Projects which have the Same Name within the Same Event will not be inserted correctly.
     async.waterfall([
       (callback) => {
@@ -264,7 +267,19 @@ async.series([
                     }
                   },
                   (exhibitionName, studentsInvolved, valid, callback) => { // Upsert an Attendance Listing for Each User involved in the Project, only if Project Information was valid
-                    callback(null);
+                    if (valid) {
+                      async.eachLimit(studentsInvolved, 5, (student, callback) => {
+                        console.log(student);
+                        callback(null);
+                      }, (err) => {
+                        if (err) {
+                          console.log(err);
+                        }
+                        callback(null, '');
+                      });
+                    } else {
+                      callback(null, '');
+                    }
                   },
                 ], callback);
               }, (err) => {
