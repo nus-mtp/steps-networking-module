@@ -134,7 +134,7 @@ async.series([
     // End: Bring in _Users
   },
   (callback) => {
-    // Bring in Exhibitions
+    // Bring in Exhibitions and Create Attendance Documents for each Student Participant in each Project
     // Possible Integrity Issue: Projects which have the Same Name within the Same Event will not be inserted correctly.
     async.waterfall([
       (callback) => {
