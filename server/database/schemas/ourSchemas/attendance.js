@@ -28,4 +28,6 @@ const attendanceSchema = new mongoose.Schema({
   ],
 });
 
+attendanceSchema.index({ user_email: 1, attendance_type: 1, attendance_name: 1 }, { unique: true });
+
 module.exports = attendanceSchema;
