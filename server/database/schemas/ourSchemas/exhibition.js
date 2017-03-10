@@ -6,7 +6,6 @@ const exhibitionSchema = new mongoose.Schema({
     trim: true,
     required: 'The Exhibition Name is a Primary Key, and is therefore Required.',
   },
-  exhibition_description: String,
 
   event_name: {
     type: String,
@@ -15,6 +14,9 @@ const exhibitionSchema = new mongoose.Schema({
         ', and is therefore Required.',
   },
 
+  exhibition_description: String,
+
+  poster: String,
   images: [String],
   videos: [String],
   website: String,
