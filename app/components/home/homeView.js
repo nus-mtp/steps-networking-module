@@ -49,7 +49,7 @@ class HomeView extends React.Component {
   }
 
   render() {
-    const containerWidth = 300;
+    const containerWidth = 290;
     return (
       <div id="home-body">
         <Tabs />

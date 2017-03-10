@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router';
 
+const scrollbarWidth = 15;
+const bodyMargin = 0.2 * window.innerWidth;
+const marginOffset = scrollbarWidth + bodyMargin;
+
 class Collapsable extends React.Component {
   constructor(props) {
     super(props);
-
-    let marginOffset = (window.innerWidth > 434) ? 135 : 35;
 
     this.state = {
       numberOfEventPerRow: Math.floor((window.innerWidth - marginOffset) / this.props.width),
@@ -29,8 +31,6 @@ class Collapsable extends React.Component {
   }
 
   updateLayout() {
-    let marginOffset = (window.innerWidth > 434) ? 135 : 35;
-
     this.setState({
       numberOfEventPerRow: Math.floor((window.innerWidth - marginOffset) / this.props.width),
     });
@@ -40,10 +40,10 @@ class Collapsable extends React.Component {
     let marginToDisplay = Math.abs(this.state.order % this.state.numberOfEventPerRow);
 
     return {
-      width: `${this.state.numberOfEventPerRow}00%`,
+      width: `calc(${this.state.numberOfEventPerRow}00% + ${(this.state.numberOfEventPerRow - 1) * 20}px)`,
       minWidth: '100%',
       borderTop: 'none',
-      marginLeft: `-${marginToDisplay}00%`,
+      marginLeft: `calc(-${marginToDisplay}00% - ${marginToDisplay * 20}px)`,
       marginTop: '-1px',
     };
   }

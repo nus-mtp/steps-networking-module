@@ -1,7 +1,7 @@
 @import 'mixin';
 
 #home-body {
-  margin: 20px 50px;
+  margin: 20px 10%;
 }
 
 #event-list {
@@ -11,8 +11,8 @@
 }
 
 #event-container {
-  width: 300px;
-  margin: 10px 0 0 0;
+  width: 270px;
+  margin: 10px 20px 0 0;
 }
 
 #event-image-container {
@@ -32,6 +32,7 @@
 
 .event-info-container {
   padding: 10px 20px;
+  min-height: 106px;
 }
 
 .attendance-badge {
@@ -88,6 +89,7 @@
   max-height: 0;
   visibility: hidden;
   opacity: 0;
+  @include box-shadow(2px, 2px, 15px, 0px, rgba(200,200,200,1));
 }
 
 .event-info {

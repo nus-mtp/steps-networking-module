@@ -23,12 +23,17 @@ class Event extends React.Component {
   }
 
   render() {
-    let style = (this.props.open[this.props.serial]) ? { borderBottom: 'none' } : {};
+    let style = (this.props.open[this.props.serial]) ?
+      {
+        borderBottom: 'none',
+        boxShadow: '2px 2px 15px 0px rgba(200,200,200,1)',
+        zIndex: 0, 
+      } : {};
 
     return (
       <div id="event-info">
-        <div onClick={this.handleClick} style={style} className="event-picture card" href={"#collapseExample"+this.props.serial}
-           aria-expanded={this.props.open[this.props.serial]} aria-controls={"collapseExample"+this.props.serial}>
+        <div onClick={this.handleClick} style={style} className="event-picture card"
+           aria-expanded={this.props.open[this.props.serial]}>
           <div id="event-image-container">
             <img id="event-poster" className="img-fluid text-center event-poster card-img-top" src="../../resources/images/dummy-poster.png" alt="Event picture" />
           </div>
