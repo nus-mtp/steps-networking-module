@@ -26,6 +26,12 @@ const stepsGuest = StepsModels.getGuestModel();
 const stepsModule = StepsModels.getModuleModel();
 const stepsEvent = StepsModels.getEventModel();
 
+// Helper Functions
+
+function removeDuplicates(arr) {
+  return Array.from(new Set(arr));
+}
+
 // Start
 
 async.series([
@@ -143,7 +149,7 @@ async.series([
         async.eachLimit(allModules, 5, (module, callback) => { // Iterate through allModules in parallel, 5 at a time
           async.waterfall([
             (callback) => { // Extract out the relevant information in each Module
-              callback(null, { eventName: module.get('event'), tag: module.get('code'), projects: module.get('projects') });
+              callback(null, { eventName: module.get('event'), tag: module.get('code').toLowerCase(), projects: module.get('projects') });
             },
             (collectedInformation, callback) => { // For each Module
               // collectedInformation contains Event Name, Module Code, and the Project array for a single Module
@@ -152,16 +158,12 @@ async.series([
                 async.waterfall([
                   (callback) => { // Extract out the relevant information in each Project - the Exhibition Properties, and the Students involved in each Exhibition
                     const exhibitionName = project.get('name');
-                    const studentsInvolved = project.get('members');
-                    const exhibitionDescription = project.get('description');
-
                     const eventName = collectedInformation.eventName;
 
-                    let imagesList = [];
+                    const exhibitionDescription = project.get('description');
                     const posterLink = project.get('posterLink');
-                    if (posterLink !== '') {
-                      imagesList.push(posterLink);
-                    }
+
+                    let imagesList = [];
                     const imageLinks = project.get('imageLinks');
                     if (imageLinks.length > 0) {
                       imagesList = imagesList.concat(imageLinks);
@@ -181,13 +183,16 @@ async.series([
 
                     const exhibitionProperties = {
                       exhibitionNameKey: exhibitionName,
-                      exhibitionDescriptionKey: exhibitionDescription,
                       eventNameKey: eventName,
+                      exhibitionDescriptionKey: exhibitionDescription,
+                      posterLinkKey: posterLink,
                       imagesListKey: imagesList,
                       videosListKey: videosList,
                       websiteLinkKey: websiteLink,
                       tagsListKey: tagsList,
                     };
+
+                    const studentsInvolved = project.get('members');
 
                     let valid = false;
 
@@ -207,8 +212,9 @@ async.series([
 
                       const update = {
                         exhibition_name: exhibitionProperties.exhibitionNameKey,
-                        exhibition_description: exhibitionProperties.exhibitionDescriptionKey,
                         event_name: exhibitionProperties.eventNameKey,
+                        exhibition_description: exhibitionProperties.exhibitionDescriptionKey,
+                        poster: exhibitionProperties.posterLinkKey,
                         website: exhibitionProperties.websiteLinkKey,
                       };
 
@@ -220,30 +226,21 @@ async.series([
                         } else if (doc) { // Exhibition was Previously Inserted - Update
                           // console.log('Existant: \n' + query.exhibition_name + '\n');
 
-                          doc.set('event_name', update.event_name);
                           doc.set('exhibition_name', update.exhibition_name);
+                          doc.set('event_name', update.event_name);
                           doc.set('exhibition_description', update.exhibition_description);
+                          doc.set('poster', update.poster);
                           doc.set('website', update.website);
 
-                          // The below uses ES6 Syntax
-
-                          const oldImageList = doc.get('images');
-                          const newImageList = [...new Set(oldImageList.concat(exhibitionProperties.imagesListKey))];
-                          doc.set('images', newImageList);
-
-                          const oldVideoList = doc.get('videos');
-                          const newVideoList = [...new Set(oldVideoList.concat(exhibitionProperties.videosListKey))];
-                          doc.set('videos', newVideoList);
-
-                          const oldTagList = doc.get('tags');
-                          const newTagList = [...new Set(oldTagList.concat(exhibitionProperties.tagsListKey))];
-                          doc.set('tags', newTagList);
+                          doc.set('images', removeDuplicates(doc.get('images').concat(exhibitionProperties.imagesListKey)));
+                          doc.set('videos', removeDuplicates(doc.get('videos').concat(exhibitionProperties.videosListKey)));
+                          doc.set('tags', removeDuplicates(doc.get('tags').concat(exhibitionProperties.tagsListKey)));
 
                           doc.save((err, doc) => {
                             if (err) {
                               console.log(err);
                             } else {
-                              console.log('Successfully Updated: ' + exhibitionProperties.exhibitionNameKey);
+                              // console.log('Successfully Updated: ' + exhibitionProperties.exhibitionNameKey);
                             }
                             callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
                           });
@@ -256,14 +253,14 @@ async.series([
                           exhibitionDoc.set('tags', exhibitionProperties.tagsListKey);
                           exhibitionDoc.save((err, doc) => {
                             if (err) {
-                              console.log(err);
+                              // console.log(err);
                             }
                             callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
                           });
                         }
                       });
                     } else {
-                        callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
+                      callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
                     }
                   },
                   (exhibitionName, studentsInvolved, valid, callback) => { // Upsert an Attendance Listing for Each User involved in the Project, only if Project Information was valid
