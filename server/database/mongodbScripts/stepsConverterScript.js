@@ -219,9 +219,23 @@ async.series([
                           callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
                         } else if (doc) { // Exhibition was Previously Inserted - Update
                           console.log('Existant: \n' + query.exhibition_name + '\n');
-                          callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
+
+                          doc.set('event_name', update.event_name);
+                          doc.set('exhibition_name', update.exhibition_name);
+                          doc.set('exhibition_description', update.exhibition_description);
+                          doc.set('website', update.website);
+
+                          doc.save((err, doc) => {
+                            if (err) {
+                              console.log(err);
+                            } else {
+                              console.log('Successfully Updated: ' + exhibitionProperties.exhibitionNameKey);
+                            }
+                            callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);                            
+                          });
                         } else { // Exhibition is a Potential New Entry - Insert
-                          // console.log('Non-Existant: \n' + query.exhibition_name + '\n');
+                          console.log('Non-Existant: \n' + query.exhibition_name + '\n');
+
                           const exhibitionDoc = new Exhibition(update);
                           exhibitionDoc.set('images', exhibitionProperties.imagesListKey);
                           exhibitionDoc.set('videos', exhibitionProperties.videosListKey);
@@ -230,7 +244,7 @@ async.series([
                             if (err) {
                               console.log(err);
                             } else {
-                              console.log(doc);
+                              // console.log(doc);
                             }
                             callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
                           });
