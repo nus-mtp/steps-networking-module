@@ -4,17 +4,15 @@ class ProjectView extends React.Component {
   render() {
     return (
       <div id="project-body">
-
         <div className="row justify-content-center">
           <div>
-            <img id="project-poster" className="img-fluid" src="../../resources/images/dummy-poster.png" alt="project-poster" />
+            <img className="img-fluid project-poster" src="../../resources/images/dummy-poster.png" alt="project-poster" />
           </div>
         </div>
-
         <div className="card">
           <div className="exhibition-info card-block">
             <div className="info-type">Project Title: </div>
-            <div id="project-name" className="project-info" />
+            <div className="project-name project-info" />
             <div className="info-type">Description: </div>
             <div id="project-desc" className="project-info" />
             <div className="info-type">Tags: </div>
