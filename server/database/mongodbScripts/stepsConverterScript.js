@@ -140,15 +140,15 @@ async.series([
         });
       },
       (allModules, callback) => {
-        async.each(allModules, (module, callback) => { // Iterate through allModules in parallel
+        async.eachLimit(allModules, 5, (module, callback) => { // Iterate through allModules in parallel, 5 at a time
           async.waterfall([
-            (callback) => {
+            (callback) => { // Extract out the relevant information in each Module
               callback(null, { eventName: module.get('event'), tag: module.get('code'), projects: module.get('projects') });
             },
-            (collectedInformation, callback) => {
+            (collectedInformation, callback) => { // For each Module
               // collectedInformation contains Event Name, Module Code, and the Project array for a single Module
-              async.each(collectedInformation.projects, (project, callback) => {
-                // For each Project
+              async.eachLimit(collectedInformation.projects, 5, (project, callback) => {
+                // For each Project in parallel, 5 at a time
                 async.waterfall([
                   (callback) => { // Extract out Relevant Information - the Exhibition Properties, and the Students involved in each Exhibition
                     const exhibitionName = project.get('name');
@@ -216,7 +216,7 @@ async.series([
                       console.log(exhibitionProperties.exhibitionNameKey);
                     }
 
-                    callback(null, exhibitionProperties.name, studentsInvolved, valid);
+                    callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
                   },
                   (exhibitionName, studentsInvolved, valid, callback) => { // Upsert an Attendance Listing for Each User involved in the Project
                     callback(null);
