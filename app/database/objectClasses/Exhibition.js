@@ -200,9 +200,9 @@ class Exhibition{
    * @param {String} eventName: unique identifer used to check against database
    * @param {function} callback: used for error checking
    */
-  static searchExhibitionByEvent(eventName, callback){
+  static searchExhibitionsByEvent(eventName, callback){
     Exhibition.connectDB();
-    this.exhibModel.find({'event_name': { $regex: new RegExp(tag.replace('+',"\\+"),"i")} }, function (err, docs){
+    this.exhibModel.find({'event_name': { $regex: new RegExp(eventName.replace('+',"\\+"),"i")} }, function (err, docs){
       if (err){
         callback (err, null);
       } else {
