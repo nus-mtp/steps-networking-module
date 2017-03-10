@@ -44,7 +44,7 @@ export default class ChatView extends Component {
       
       this.setState({ email });
       console.log(email);
-      //*
+      /*
       User.getUser(email, function callback(err, userObj){
         if(err){
           console.log("No user desu");
