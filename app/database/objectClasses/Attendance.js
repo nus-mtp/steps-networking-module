@@ -1,6 +1,4 @@
 const ModelHandler = require("../mongodbscripts/models.js");
-const User = require("./User.js");
-const Event = require("./Event.js");
 const port = "27017";
 const host = "localhost";
 const dbName = "fake-data";
@@ -24,39 +22,15 @@ class Attendance{
       attendance_type: attendanceType,
       reason: reason,
     });
-    //check if userEmail and event are existing
-    User.isValidUser(userEmail, function callback(err, boolValue){
-      if (err){
-        console.log("Invalid user error");
-      }
-      else if (!boolValue){
-        console.log (userEmail+" is not found in database.");
-        Attendance.canSave = false;
-      } else {
-        Event.isExistingEvent(attendanceName, function callback(err1, boolValue1){
-          if (err1){
-            console.log("Event does not exist error");
-          } else if (!boolValue1){
-            console.log(attendanceName + " does not exist in database");
-            Attendance.canSave = false;
-          }
-        });
-      }
-    });
-
   }
 
   saveAttendance(callback){
     Attendance.connectDB();
-    if (this.canSave){
-      this.attendanceModelDoc.save(function (err){
-        if (err){
-          callback(err);
-        }
-      });
-    } else {
-      console.log("Attendance is not saved");
-    }
+    this.attendanceModelDoc.save(function (err){
+      if (err){
+        callback(err);
+      }
+    });
     Attendance.disconnectDB();
   }
   static connectDB(){
@@ -101,8 +75,15 @@ class Attendance{
     Attendance.disconnectDB();
   }
 
-  static searchAttendance(){
+  static searchAttendanceByEvent(eventName, callback){
     Attendance.connectDB();
+    this.attendanceModel.find({attendance_name: eventName}, function (err, obj){
+      if (err){
+        callback(err, null)
+      } else {
+        callback(null, obj);
+      }
+    });
     Attendance.disconnectDB();
   }
 }
