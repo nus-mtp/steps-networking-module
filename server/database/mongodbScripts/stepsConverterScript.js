@@ -199,7 +199,7 @@ async.series([
 
                     callback(null, exhibitionProperties, studentsInvolved, valid);
                   },
-                  (exhibitionProperties, studentsInvolved, valid, callback) => { // Upsert an Exhibition Listing
+                  (exhibitionProperties, studentsInvolved, valid, callback) => { // Upsert an Exhibition Listing, only if Project Information was valid
                     if (valid) {
                       const query = {
                         event_name: exhibitionProperties.eventNameKey,
@@ -213,12 +213,37 @@ async.series([
                         website: exhibitionProperties.websiteLinkKey,
                       };
 
-                      console.log(exhibitionProperties.exhibitionNameKey);
-                    }
+                      /*
+                      var exhibitionDoc = new Exhibition(update);
 
-                    callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
+                      exhibitionDoc.save((err, doc) => {
+                        if (err) {
+                          console.log(err);
+                        } else {
+                          console.log(doc);
+                        }
+                        callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
+                      });
+                      */
+
+                      Exhibition.where(query).findOne((err, doc) => {
+                        if (err) {
+                          console.log(err);
+                        } else if (doc) {
+                          // Exhibition was inserted previously
+                          console.log(doc);
+                        } else {
+                          // Exhibition is a potential new entry
+                          console.log('Non-Existant: \n' + query.exhibition_name + '\n');
+                        }
+
+                        callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
+                      });
+                    } else {
+                        callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
+                    }
                   },
-                  (exhibitionName, studentsInvolved, valid, callback) => { // Upsert an Attendance Listing for Each User involved in the Project
+                  (exhibitionName, studentsInvolved, valid, callback) => { // Upsert an Attendance Listing for Each User involved in the Project, only if Project Information was valid
                     callback(null);
                   },
                 ], callback);
