@@ -150,7 +150,7 @@ async.series([
               async.eachLimit(collectedInformation.projects, 5, (project, callback) => {
                 // For each Project in parallel, 5 at a time
                 async.waterfall([
-                  (callback) => { // Extract out Relevant Information - the Exhibition Properties, and the Students involved in each Exhibition
+                  (callback) => { // Extract out the relevant information in each Project - the Exhibition Properties, and the Students involved in each Exhibition
                     const exhibitionName = project.get('name');
                     const studentsInvolved = project.get('members');
                     const exhibitionDescription = project.get('description');
@@ -218,12 +218,26 @@ async.series([
                           console.log(err);
                           callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
                         } else if (doc) { // Exhibition was Previously Inserted - Update
-                          console.log('Existant: \n' + query.exhibition_name + '\n');
+                          // console.log('Existant: \n' + query.exhibition_name + '\n');
 
                           doc.set('event_name', update.event_name);
                           doc.set('exhibition_name', update.exhibition_name);
                           doc.set('exhibition_description', update.exhibition_description);
                           doc.set('website', update.website);
+
+                          // The below uses ES6 Syntax
+
+                          const oldImageList = doc.get('images');
+                          const newImageList = [...new Set(oldImageList.concat(exhibitionProperties.imagesListKey))];
+                          doc.set('images', newImageList);
+
+                          const oldVideoList = doc.get('videos');
+                          const newVideoList = [...new Set(oldVideoList.concat(exhibitionProperties.videosListKey))];
+                          doc.set('videos', newVideoList);
+
+                          const oldTagList = doc.get('tags');
+                          const newTagList = [...new Set(oldTagList.concat(exhibitionProperties.tagsListKey))];
+                          doc.set('tags', newTagList);
 
                           doc.save((err, doc) => {
                             if (err) {
@@ -231,10 +245,10 @@ async.series([
                             } else {
                               console.log('Successfully Updated: ' + exhibitionProperties.exhibitionNameKey);
                             }
-                            callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);                            
+                            callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
                           });
                         } else { // Exhibition is a Potential New Entry - Insert
-                          console.log('Non-Existant: \n' + query.exhibition_name + '\n');
+                          // console.log('Non-Existant: \n' + query.exhibition_name + '\n');
 
                           const exhibitionDoc = new Exhibition(update);
                           exhibitionDoc.set('images', exhibitionProperties.imagesListKey);
@@ -243,8 +257,6 @@ async.series([
                           exhibitionDoc.save((err, doc) => {
                             if (err) {
                               console.log(err);
-                            } else {
-                              // console.log(doc);
                             }
                             callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
                           });
