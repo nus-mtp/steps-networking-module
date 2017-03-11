@@ -9,5 +9,15 @@
 		"port": "27017",
 		"database": "dev"
 	},
+  "stepsDbUri": {
+    "host": "localhost",
+		"port": "27017",
+		"database": "steps-api-sanitised"
+  },
+  "fakeDbUri": {
+    "host": "localhost",
+		"port": "27017",
+		"database": "fake-data"
+  },
   "jwtSecret": "secret-phrase"
 }

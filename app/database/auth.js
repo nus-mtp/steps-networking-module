@@ -3,10 +3,10 @@ class Auth {
   /**
    * Authenticate a user. Save a token string in Local Storage
    *
-   * @param {string} token
+   * @param {object} token
    */
   static authenticateUser(token) {
-    localStorage.setItem('token', token);
+    localStorage.setItem('token', JSON.stringify(token));
   }
 
   /**
@@ -29,11 +29,11 @@ class Auth {
   /**
    * Get a token value.
    *
-   * @returns {string}
+   * @returns {object}
    */
 
   static getToken() {
-    return localStorage.getItem('token');
+    return JSON.parse(localStorage.getItem('token'));
   }
 
 }
