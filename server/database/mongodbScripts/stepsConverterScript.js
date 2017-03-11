@@ -102,10 +102,207 @@ function upsertUser(stepsUserObj, callback) {
   });
 }
 
-// Start
+/*
+  An asynchronous function which Upserts information from a stepsModuleObj into our Exhibition and Attendances Collection.
 
-// Possible Integrity Issue 1: Projects which have the Same Name within the Same Event will not be inserted correctly.
-// Possible Integrity Issue 2: Projects which change Names will spawn new Exhibition Entries and Attendance Records.
+  Possible Integrity Issue 1: Projects which have the Same Name within the Same Event will not be inserted correctly.
+  Possible Integrity Issue 2: Projects which change Names will spawn new Exhibition Entries and Attendance Records.
+
+  @param {Object} stepsModuleObj: A plain JS Object containing a leaned stepsModule Document.
+  @param {function}: Callback to indicate when this asynchronous function has been completed.
+*/
+function upsertModule(stepsModuleObj, callback) {
+  async.waterfall([
+    (callback) => { // Extract out the relevant information in each Module
+      callback(null, { eventName: stepsModuleObj.event, tag: stepsModuleObj.code.toLowerCase(), projects: stepsModuleObj.projects });
+    },
+    (collectedInformation, callback) => { // For each Module
+      // collectedInformation contains Event Name, Module Code, and the Project array for a single Module
+      async.eachLimit(collectedInformation.projects, 5, (project, callback) => { // For each Project in parallel, 5 at a time
+        async.waterfall([
+          (callback) => { // Extract out the relevant information in each Project - the Exhibition Properties, and the Students involved in each Exhibition
+            const exhibitionName = project.name;
+            const eventName = collectedInformation.eventName;
+
+            const exhibitionDescription = project.description;
+            const posterLink = project.posterLink;
+
+            let imagesList = [];
+            const imageLinks = project.imageLinks;
+            if (imageLinks.length > 0) {
+              imagesList = imagesList.concat(imageLinks);
+            }
+
+            let videosList = [];
+            const videoLink = project.videoLink;
+            if (videoLink !== '') {
+              videosList.push(videoLink);
+            }
+
+            const websiteLink = project.urlLink;
+
+            let tagsList = [];
+            tagsList.push(eventName);
+            tagsList.push(collectedInformation.tag);
+
+            const exhibitionProperties = {
+              exhibitionNameKey: exhibitionName,
+              eventNameKey: eventName,
+              exhibitionDescriptionKey: exhibitionDescription,
+              posterLinkKey: posterLink,
+              imagesListKey: imagesList,
+              videosListKey: videosList,
+              websiteLinkKey: websiteLink,
+              tagsListKey: tagsList,
+            };
+
+            const studentsInvolved = project.members;
+
+            let valid = false;
+
+            // Ignore Invalid Name Projects
+            if ((exhibitionName !== 'Unknown') && (exhibitionName !== '')) {
+              valid = true;
+            }
+
+            callback(null, exhibitionProperties, studentsInvolved, valid);
+          },
+          (exhibitionProperties, studentsInvolved, valid, callback) => { // Upsert an Exhibition Listing, only if Project Information was valid
+            if (valid) {
+              const query = {
+                event_name: exhibitionProperties.eventNameKey,
+                exhibition_name: exhibitionProperties.exhibitionNameKey,
+              };
+
+              const update = {
+                exhibition_name: exhibitionProperties.exhibitionNameKey,
+                event_name: exhibitionProperties.eventNameKey,
+                exhibition_description: exhibitionProperties.exhibitionDescriptionKey,
+                poster: exhibitionProperties.posterLinkKey,
+                website: exhibitionProperties.websiteLinkKey,
+              };
+
+              // Upsert Exhibition
+              Exhibition.where(query).findOne((err, doc) => {
+                if (err) { // Unknown Error
+                  console.log(err);
+                  callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
+                } else if (doc) { // Exhibition was Previously Inserted - Update
+                  doc.set('exhibition_name', update.exhibition_name);
+                  doc.set('event_name', update.event_name);
+                  doc.set('exhibition_description', update.exhibition_description);
+                  doc.set('poster', update.poster);
+                  doc.set('website', update.website);
+
+                  doc.set('images', removeDuplicates(doc.get('images').concat(exhibitionProperties.imagesListKey)));
+                  doc.set('videos', removeDuplicates(doc.get('videos').concat(exhibitionProperties.videosListKey)));
+                  doc.set('tags', removeDuplicates(doc.get('tags').concat(exhibitionProperties.tagsListKey)));
+
+                  doc.save((err, doc) => {
+                    if (err) {
+                      console.log(err);
+                    } else {
+                      // console.log('Successfully Updated: ' + exhibitionProperties.exhibitionNameKey);
+                    }
+                    callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
+                  });
+                } else { // Exhibition is a Potential New Entry - Insert
+                  const exhibitionDoc = new Exhibition(update);
+                  exhibitionDoc.set('images', exhibitionProperties.imagesListKey);
+                  exhibitionDoc.set('videos', exhibitionProperties.videosListKey);
+                  exhibitionDoc.set('tags', exhibitionProperties.tagsListKey);
+                  exhibitionDoc.save((err, doc) => {
+                    if (err) {
+                      // console.log(err);
+                    }
+                    callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
+                  });
+                }
+              });
+            } else {
+              callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
+            }
+          },
+          (exhibitionName, studentsInvolved, valid, callback) => { // Upsert an Attendance Listing for Each User involved in the Project, only if Project Information was valid
+            if (valid) {
+              async.eachLimit(studentsInvolved, 5, (studentId, callback) => {
+                stepsUser.findById(studentId).lean().exec((err, student) => {
+                  if (err) {
+                    console.log(err);
+                    callback(null);
+                  } else {
+                    const userQuery = {
+                      email: student.email,
+                    };
+                    const exhibitionQuery = {
+                      exhibition_name: exhibitionName,
+                    };
+                    const attendanceQuery = {
+                      user_email: student.email,
+                      attendance_type: 'exhibition',
+                      attendance_name: exhibitionName,
+                    };
+
+                    User.where(userQuery).lean().findOne((err, user) => {
+                      if (err) {
+                        console.log(err);
+                        callback(null, '');
+                      } else if (user) {
+                        Exhibition.where(exhibitionQuery).lean().findOne((err, exhibition) => {
+                          if (err) {
+                            console.log(err);
+                            callback(null, '');
+                          } else if (exhibition) { // Both the User and Exhibition exist - Upsert Attendance Information
+                            Attendance.where(attendanceQuery).findOne((err, attendance) => {
+                              if (err) {
+                                console.log(err);
+                                callback(null, '');
+                              } else if (attendance) { // The Attendance Information exists - don't need to Update
+                                callback(null, '');
+                              } else { // Attendance Information does not exist - Insert
+                                const attendanceDoc = new Attendance(attendanceQuery);
+                                attendanceDoc.save((err, doc) => {
+                                  if (err) {
+                                    console.log(err);
+                                  }
+                                  callback(null, '');
+                                });
+                              }
+                            });
+                          } else {
+                            console.log('Unable to create Attendance Record for Student under: ' + exhibitionName);
+                            callback(null, '');
+                          }
+                        });
+                      } else {
+                        callback(null, '');
+                      }
+                    });
+                  }
+                });
+              }, (err) => {
+                if (err) {
+                  console.log(err);
+                }
+                callback(null, '');
+              });
+            } else {
+              callback(null, '');
+            }
+          },
+        ], callback);
+      }, (err) => {
+        if (err) {
+          console.log(err);
+        }
+        callback(null, '');
+      });
+    },
+  ], callback);
+}
+
+
+// Start
 
 async.series([
   (callback) => { // Bring in Events
@@ -156,211 +353,19 @@ async.series([
   (callback) => { // Bring in Projects and Create Attendance Documents for each Student Participant in each Project
     async.waterfall([
       (callback) => {
-        stepsModule.find({}, (err, docs) => {
+        stepsModule.where({}).find((err, allModules) => {
           if (err) {
             console.log(err);
           }
-          callback(null, docs);
+          callback(null, allModules);
         });
       },
       (allModules, callback) => {
-        async.eachLimit(allModules, 5, (module, callback) => { // Iterate through allModules in parallel, 5 at a time
-          async.waterfall([
-            (callback) => { // Extract out the relevant information in each Module
-              callback(null, { eventName: module.get('event'), tag: module.get('code').toLowerCase(), projects: module.get('projects') });
-            },
-            (collectedInformation, callback) => { // For each Module
-              // collectedInformation contains Event Name, Module Code, and the Project array for a single Module
-              async.eachLimit(collectedInformation.projects, 5, (project, callback) => { // For each Project in parallel, 5 at a time
-                async.waterfall([
-                  (callback) => { // Extract out the relevant information in each Project - the Exhibition Properties, and the Students involved in each Exhibition
-                    const exhibitionName = project.get('name');
-                    const eventName = collectedInformation.eventName;
-
-                    const exhibitionDescription = project.get('description');
-                    const posterLink = project.get('posterLink');
-
-                    let imagesList = [];
-                    const imageLinks = project.get('imageLinks');
-                    if (imageLinks.length > 0) {
-                      imagesList = imagesList.concat(imageLinks);
-                    }
-
-                    let videosList = [];
-                    const videoLink = project.get('videoLink');
-                    if (videoLink !== '') {
-                      videosList.push(videoLink);
-                    }
-
-                    const websiteLink = project.get('urlLink');
-
-                    let tagsList = [];
-                    tagsList.push(eventName);
-                    tagsList.push(collectedInformation.tag);
-
-                    const exhibitionProperties = {
-                      exhibitionNameKey: exhibitionName,
-                      eventNameKey: eventName,
-                      exhibitionDescriptionKey: exhibitionDescription,
-                      posterLinkKey: posterLink,
-                      imagesListKey: imagesList,
-                      videosListKey: videosList,
-                      websiteLinkKey: websiteLink,
-                      tagsListKey: tagsList,
-                    };
-
-                    const studentsInvolved = project.get('members');
-
-                    let valid = false;
-
-                    // Ignore Invalid Name Projects
-                    if ((exhibitionName !== 'Unknown') && (exhibitionName !== '')) {
-                      valid = true;
-                    }
-
-                    callback(null, exhibitionProperties, studentsInvolved, valid);
-                  },
-                  (exhibitionProperties, studentsInvolved, valid, callback) => { // Upsert an Exhibition Listing, only if Project Information was valid
-                    if (valid) {
-                      const query = {
-                        event_name: exhibitionProperties.eventNameKey,
-                        exhibition_name: exhibitionProperties.exhibitionNameKey,
-                      };
-
-                      const update = {
-                        exhibition_name: exhibitionProperties.exhibitionNameKey,
-                        event_name: exhibitionProperties.eventNameKey,
-                        exhibition_description: exhibitionProperties.exhibitionDescriptionKey,
-                        poster: exhibitionProperties.posterLinkKey,
-                        website: exhibitionProperties.websiteLinkKey,
-                      };
-
-                      // Upsert Exhibition
-                      Exhibition.where(query).findOne((err, doc) => {
-                        if (err) { // Unknown Error
-                          console.log(err);
-                          callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
-                        } else if (doc) { // Exhibition was Previously Inserted - Update
-                          // console.log('Existant: \n' + query.exhibition_name + '\n');
-
-                          doc.set('exhibition_name', update.exhibition_name);
-                          doc.set('event_name', update.event_name);
-                          doc.set('exhibition_description', update.exhibition_description);
-                          doc.set('poster', update.poster);
-                          doc.set('website', update.website);
-
-                          doc.set('images', removeDuplicates(doc.get('images').concat(exhibitionProperties.imagesListKey)));
-                          doc.set('videos', removeDuplicates(doc.get('videos').concat(exhibitionProperties.videosListKey)));
-                          doc.set('tags', removeDuplicates(doc.get('tags').concat(exhibitionProperties.tagsListKey)));
-
-                          doc.save((err, doc) => {
-                            if (err) {
-                              console.log(err);
-                            } else {
-                              // console.log('Successfully Updated: ' + exhibitionProperties.exhibitionNameKey);
-                            }
-                            callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
-                          });
-                        } else { // Exhibition is a Potential New Entry - Insert
-                          // console.log('Non-Existant: \n' + query.exhibition_name + '\n');
-
-                          const exhibitionDoc = new Exhibition(update);
-                          exhibitionDoc.set('images', exhibitionProperties.imagesListKey);
-                          exhibitionDoc.set('videos', exhibitionProperties.videosListKey);
-                          exhibitionDoc.set('tags', exhibitionProperties.tagsListKey);
-                          exhibitionDoc.save((err, doc) => {
-                            if (err) {
-                              // console.log(err);
-                            }
-                            callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
-                          });
-                        }
-                      });
-                    } else {
-                      callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
-                    }
-                  },
-                  (exhibitionName, studentsInvolved, valid, callback) => { // Upsert an Attendance Listing for Each User involved in the Project, only if Project Information was valid
-                    if (valid) {
-                      async.eachLimit(studentsInvolved, 5, (studentId, callback) => {
-                        stepsUser.findById(studentId).lean().exec((err, student) => {
-                          if (err) {
-                            console.log(err);
-                            callback(null);
-                          } else {
-                            const userQuery = {
-                              email: student.email,
-                            };
-                            const exhibitionQuery = {
-                              exhibition_name: exhibitionName,
-                            };
-                            const attendanceQuery = {
-                              user_email: student.email,
-                              attendance_type: 'exhibition',
-                              attendance_name: exhibitionName,
-                            };
-
-                            User.where(userQuery).lean().findOne((err, user) => {
-                              if (err) {
-                                console.log(err);
-                                callback(null, '');
-                              } else if (user) {
-                                Exhibition.where(exhibitionQuery).lean().findOne((err, exhibition) => {
-                                  if (err) {
-                                    console.log(err);
-                                    callback(null, '');
-                                  } else if (exhibition) { // Both the User and Exhibition exist - Upsert Attendance Information
-                                    Attendance.where(attendanceQuery).findOne((err, attendance) => {
-                                      if (err) {
-                                        console.log(err);
-                                        callback(null, '');
-                                      } else if (attendance) { // The Attendance Information exists - don't need to Update
-                                        callback(null, '');
-                                      } else { // Attendance Information does not exist - Insert
-                                        const attendanceDoc = new Attendance(attendanceQuery);
-                                        attendanceDoc.save((err, doc) => {
-                                          if (err) {
-                                            console.log(err);
-                                          }
-                                          callback(null, '');
-                                        });
-                                      }
-                                    });
-                                  } else {
-                                    console.log('Unable to create Attendance Record for Student under: ' + exhibitionName);
-                                    callback(null, '');
-                                  }
-                                });
-                              } else {
-                                callback(null, '');
-                              }
-                            });
-                          }
-                        });
-                      }, (err) => {
-                        if (err) {
-                          console.log(err);
-                        }
-                        callback(null, '');
-                      });
-                    } else {
-                      callback(null, '');
-                    }
-                  },
-                ], callback);
-              }, (err) => {
-                if (err) {
-                  console.log(err);
-                }
-                callback(null, '');
-              });
-            },
-          ], callback);
-        }, (err) => {
+        async.eachLimit(allModules, 5, upsertModule, (err) => {
           if (err) {
             console.log(err);
           }
-          callback(null, '');
+          callback(null);
         });
       },
     ], callback);
