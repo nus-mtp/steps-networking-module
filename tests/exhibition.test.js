@@ -1,80 +1,68 @@
 const Exhibition = require("../app/database/objectClasses/Exhibition.js");
-const Event = require("../app/database/objectClasses/Event.js");
 const assert = require('assert');
 
 describe ("Exhibition Create", function(){
   before(function(done){
-    var testevent1 = new Event("testingEvent_1",
-                               "description",
-                               new Date("October 13, 2014 11:13:00"),
-                               new Date("October 14, 2014 21:00:00"),
-                               "NUS",
-                               "map",
-                               "https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1", 
-                               ["game", "software engineering"]
-                              );
 
-    testevent1.saveEvent(function callback (err) {
-      if (err) {
-        //console.log(err);
-      }
-      var testexhibition1 = new Exhibition("exhibitionTest1",
-                                           "description",
-                                           "testingEvent_1", 
-                                           ["https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1", "https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1"], 
-                                           ["www.youtube.com","www.youtube.com"],
-                                           "url.com",
-                                           ["game", "software engineering"]
-                                          );
-      testexhibition1.saveExhibition(function callback (err){
-        console.log("saving");
-        if (err){
-          console.log(err);
-        }
-        done();
-      });
-    });
-  });
-
-after (function(done){
-    Exhibition.clearAllExhibitions(function(err) {
+    var testexhibition1 = new Exhibition("exhibitionTest1",
+                                         "description",
+                                         "testingEvent_1", 
+                                         "https://upload.wikimedia.org/wikipedia/en/0/02/My_Neighbor_Totoro_-_Tonari_no_Totoro_%28Movie_Poster%29.jpg",
+                                         ["https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1", "https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1"], 
+                                         ["www.youtube.com","www.youtube.com"],
+                                         "url.com",
+                                         ["game", "software engineering"]
+                                        );
+    testexhibition1.saveExhibition(function callback (err){
+      console.log("saving");
       if (err){
         console.log(err);
       }
       done();
     });
   });
- it ('Should be able to add a new Exhibition', function(done){
-    var testexhibition3 = new Exhibition("exhibitionTest3",
-                                         "description of the exhib",
-                                         "testingEvent_1", 
-                                         ["https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1", "https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1"], 
-                                         ["www.youtube.com","www.youtube.com"],
-                                         "url.com",
-                                         ["software engineering", "android"]
-                                        );
-    testexhibition3.saveExhibition(function callback (err){
+});
+
+after (function(done){
+  Exhibition.clearAllExhibitions(function(err) {
+    if (err){
+      console.log(err);
+    }
+    done();
+  });
+});
+it ('Should be able to add a new Exhibition', function(done){
+  var testexhibition3 = new Exhibition("exhibitionTest3",
+                                       "description of the exhib",
+                                       "testingEvent_1", 
+                                       "https://upload.wikimedia.org/wikipedia/en/0/02/My_Neighbor_Totoro_-_Tonari_no_Totoro_%28Movie_Poster%29.jpg",
+                                       ["https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1", "https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1"], 
+                                       ["www.youtube.com","www.youtube.com"],
+                                       "url.com",
+                                       ["software engineering", "android"]
+                                      );
+  testexhibition3.saveExhibition(function callback (err){
+    if (err){
+      console.log(err);
+    }
+    Exhibition.getExhibition("exhibitionTest3", function callback (err, doc){
       if (err){
-        console.log(err);
-      }
-      Exhibition.getExhibition("exhibitionTest3", function callback (err, doc){
-        if (err){
-          console.log("Unable to execute getExhibition function properly");
-        } 
-        assert.equal("exhibitionTest3", doc.exhibition_name);
-        done();
-      });
+        console.log("Unable to execute getExhibition function properly");
+      } 
+      assert.equal("exhibitionTest3", doc.exhibition_name);
+      done();
     });
   });
-
 });
+
 
 describe ("Exhibition Read", function(){
 
   before(function(done){
     var testexhibition2 = new Exhibition("exhibitionTest2",
                                          "This is another description",
-                                         "eventName2", 
+                                         "eventName2",
+                                         "https://upload.wikimedia.org/wikipedia/en/0/02/My_Neighbor_Totoro_-_Tonari_no_Totoro_%28Movie_Poster%29.jpg",
                                          ["https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1", "https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1"], 
                                          ["www.youtube.com","www.youtube.com"],
                                          "url.com",
@@ -144,8 +132,8 @@ describe ("Exhibition Read", function(){
       }
     });
   });
-  
-    it ('should be able to get a list of exhibitions by event name', function(){
+
+  it ('should be able to get a list of exhibitions by event name', function(){
     Exhibition.searchExhibitionsByEvent("eventname2", function callback(err, results){
       if (err){
         console.log("error with searching by event unit test");
@@ -163,7 +151,8 @@ describe("Exhibition Update", function(){
   before(function(done){
     var testexhibition2 = new Exhibition("exhibitionTest2",
                                          "This is another description",
-                                         "eventName2", 
+                                         "eventName2",
+                                         "https://upload.wikimedia.org/wikipedia/en/0/02/My_Neighbor_Totoro_-_Tonari_no_Totoro_%28Movie_Poster%29.jpg",
                                          ["https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1", "https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1"], 
                                          ["www.youtube.com","www.youtube.com"],
                                          "url.com",
@@ -190,7 +179,8 @@ describe("Exhibition Update", function(){
   it ('should be able to update an existing exhibition', function(done){
     Exhibition.updateExhibition("exhibitionTest2",
                                 "updated description",
-                                "eventName2", 
+                                "eventName2",
+                                "https://upload.wikimedia.org/wikipedia/en/0/02/My_Neighbor_Totoro_-_Tonari_no_Totoro_%28Movie_Poster%29.jpg",
                                 ["https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1", "https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1"], 
                                 ["www.youtube.com","www.youtube.com"],
                                 "url.com",
