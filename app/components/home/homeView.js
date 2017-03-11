@@ -2,6 +2,7 @@ import React from 'react';
 import Tabs from './tabs';
 import Event from './event';
 import Collapsable from './collapsable';
+import { sampleEvents, sampleAttendance } from './sampleData';
 
 class HomeView extends React.Component {
   constructor(props) {
@@ -15,50 +16,65 @@ class HomeView extends React.Component {
 
     this.state = {
       open: this.initial,
-      numOfEvents: numOfEvents
+      numOfEvents: numOfEvents,
+      events: sampleEvents,
+      attendance: sampleAttendance,
     };
+
+    this.openCollapsable = this.openCollapsable.bind(this);
+    this.changeAttendance = this.changeAttendance.bind(this);
   }
+
   openCollapsable(serial) {
     var new_status = this.initial.slice(); // ignore previous state and change all to false
     new_status[serial] = !this.state.open[serial];
     this.setState({ open: new_status });
   }
-  createView() {
-    var view = [];
-    var num = this.state.numOfEvents;
-    for (var i = 0; i < num; i++) {
-      if (i%2==0) {
-        view.push(
-          (<Event serial={i} open={this.state.open} openCollapsable={this.openCollapsable.bind(this)} />)
-        );
-        if (num%2==1 && i==num-1) {
-          view.push(
-            <Collapsable serial={i} open={this.state.open} openCollapsable={this.openCollapsable.bind(this)} />
-          );
-        }
-      } else {
-        view.push(
-          (<Event serial={i} open={this.state.open} openCollapsable={this.openCollapsable.bind(this)} />)
-        );
-        view.push(
-          <Collapsable serial={i-1} open={this.state.open} openCollapsable={this.openCollapsable.bind(this)} />
-        );
-        view.push(
-          <Collapsable serial={i} open={this.state.open} openCollapsable={this.openCollapsable.bind(this)} />
-        );
-       }
+
+  changeAttendance(event, attendance) {
+    // modify attendance data here
+    if (attendance) {
+      const newEvent = { name: event }
+      const newAttendance = this.state.attendance;
+      newAttendance.push(newEvent)
+      this.setState({
+        attendance: newAttendance,
+      });
+    } else {
+      const newAttendance = this.state.attendance.filter(attend => attend.name !== event)
+      this.setState({
+        attendance: newAttendance,
+      });
     }
-    return (
-      <div className="row events-section justify-content-center">
-        {view}
-      </div>
-    );
   }
+
   render() {
+    const containerWidth = 290;
     return (
-      <div className="home-body">
+      <div id="home-body">
         <Tabs />
-        {this.createView.bind(this).call()}
+        <div id="event-list" className="d-flex justify-content-center justify-content-md-start"> {
+          this.state.events.map((event, i) =>
+            <div id="event-container" key={i}>
+              <Event
+                serial={i}
+                open={this.state.open}
+                openCollapsable={this.openCollapsable}
+                event={event}
+                attendance={this.state.attendance}
+              />
+              <Collapsable
+                serial={i}
+                open={this.state.open}
+                openCollapsable={this.openCollapsable}
+                width={containerWidth}
+                event={event}
+                attendance={this.state.attendance}
+                changeAttendance={this.changeAttendance}
+              />
+            </div>
+          )}
+        </div>
       </div>
     );
   }

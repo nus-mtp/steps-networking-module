@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const PassportLocalStrategy = require('passport-local').Strategy;
+const config = require('../config.json');
+const ModelHandler = require('../database/models/ourModels');
 
 module.exports = (db) => new PassportLocalStrategy({
     usernameField: 'email',
@@ -11,27 +13,41 @@ module.exports = (db) => new PassportLocalStrategy({
       email: email.trim(),
       password: password.trim()
     };
-	const User = db.model('User');
+  
+  const ModelHandlerObj = new ModelHandler(db.host, db.port, db.name);
+	const User = ModelHandlerObj.getUserModel();
 	
   // find a user by email address
   return User.findOne({ email: userData.email }, (err, user) => {
-    if (err) { return done(err); }
+    if (err) { 
+      ModelHandlerObj.disconnect();
+      
+      return done(err); 
+    }
 
     if (!user) {
       const error = new Error('Incorrect email or password');
       error.name = 'IncorrectCredentialsError';
-
+      
+      ModelHandlerObj.disconnect();
+      
       return done(error);
     }
 
     // check if a hashed user's password is equal to a value saved in the database
     return user.comparePassword(userData.password, (passwordErr, isMatch) => {
-      if (err) { return done(err); }
+      if (err) { 
+        ModelHandlerObj.disconnect();
+        
+        return done(err); 
+      }
 
       if (!isMatch) {
         const error = new Error('Incorrect email or password');
         error.name = 'IncorrectCredentialsError';
-
+        
+        ModelHandlerObj.disconnect();
+        
         return done(error);
       }
 
@@ -44,6 +60,8 @@ module.exports = (db) => new PassportLocalStrategy({
       const data = {
         name: user.name
       };
+      
+      ModelHandlerObj.disconnect();
 
       return done(null, token, data);
     });
