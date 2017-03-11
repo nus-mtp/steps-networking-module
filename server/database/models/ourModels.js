@@ -5,6 +5,7 @@ const eventSchema = require('../schemas/ourSchemas/event');
 const exhibitionSchema = require('../schemas/ourSchemas/exhibition');
 const attendanceSchema = require('../schemas/ourSchemas/attendance');
 const commentSchema = require('../schemas/ourSchemas/comment');
+const messageSchema = require('../schemas/ourSchemas/message');
 
 /*
   This file defines a Class Object that allows one to get our
@@ -40,6 +41,9 @@ class ModelHandler {
     this.commentModel = this
       .db
       .model('comment', commentSchema);
+    this.messageModel = this
+      .db
+      .model('message', messageSchema);
   }
 
   /*
@@ -47,7 +51,7 @@ class ModelHandler {
     the parameters specified in the constructor.
 
     @return {Mongoose.Model} userModel: The Mongoose Model that
-      can be used to interact with the MongoDB backend.
+      can be used to interact with the Users stored in the MongoDB backend.
   */
   getUserModel() {
     return this.userModel;
@@ -58,7 +62,7 @@ class ModelHandler {
     the parameters specified in the constructor.
 
     @return {Mongoose.Model} eventModel: The Mongoose Model that
-      can be used to interact with the MongoDB backend.
+      can be used to interact with the Events stored in the MongoDB backend.
   */
   getEventModel() {
     return this.eventModel;
@@ -69,7 +73,7 @@ class ModelHandler {
     the parameters specified in the constructor.
 
     @return {Mongoose.Model} exhibitionModel: The Mongoose Model that
-      can be used to interact with the MongoDB backend.
+      can be used to interact with the Exhibitions stored in the MongoDB backend.
   */
   getExhibitionModel() {
     return this.exhibitionModel;
@@ -80,7 +84,7 @@ class ModelHandler {
     the parameters specified in the constructor.
 
     @return {Mongoose.Model} attendanceModel: The Mongoose Model that can
-      be used to interact with the MongoDB backend.
+      be used to interact with the Attendances stored in the MongoDB backend.
   */
   getAttendanceModel() {
     return this.attendanceModel;
@@ -91,10 +95,21 @@ class ModelHandler {
     the parameters specified in the constructor.
 
     @return {Mongoose.Model} commentModel: The Mongoose Model that can
-      be used to interact with the MongoDB backend.
+      be used to interact with the Comments stored in the MongoDB backend.
   */
   getCommentModel() {
     return this.commentModel;
+  }
+
+  /*
+    Returns a Message Mongoose Model Object - configured for
+    the parameters specified in the constructor.
+
+    @return {Mongoose.Model} messageModel: The Mongoose Model that can
+      be used to interact with the Messages stored in the MongoDB backend.
+  */
+  getMessageModel() {
+    return this.messageModel;
   }
 
   /*
