@@ -105,7 +105,7 @@ function upsertUser(stepsUserObj, callback) {
 /*
   An asynchronous function which Upserts information from a stepsModuleObj into our Exhibition and Attendances Collection.
 
-  Possible Integrity Issue 1: Projects which have the Same Name within the Same Event will not be inserted correctly.
+  Possible Integrity Issue 1: Projects which have the Same Name within the Same Module in the Same Event will not be inserted correctly.
   Possible Integrity Issue 2: Projects which change Names will spawn new Exhibition Entries and Attendance Records.
 
   @param {Object} stepsModuleObj: A plain JS Object containing a leaned stepsModule Document.
@@ -120,7 +120,7 @@ function upsertModule(stepsModuleObj, callback) {
       async.eachLimit(collectedInformation.projects, 5, (project, callback) => { // For each Project in parallel, 5 at a time
         async.waterfall([
           (callback) => { // Extract out the relevant information in each Project - the Exhibition Properties, and the Students involved in each Exhibition
-            const exhibitionName = project.name;
+            const exhibitionName = collectedInformation.tag.toUpperCase() + ": " + project.name;
             const eventName = collectedInformation.eventName;
 
             const exhibitionDescription = project.description;
@@ -160,7 +160,7 @@ function upsertModule(stepsModuleObj, callback) {
             let valid = false;
 
             // Ignore Invalid Name Projects
-            if ((exhibitionName !== 'Unknown') && (exhibitionName !== '')) {
+            if ((project.name !== 'Unknown') && (project.name !== '')) {
               valid = true;
             }
 
