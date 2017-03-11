@@ -2,7 +2,7 @@ const ModelHandler = require('../../../server/database/models/ourModels.js');
 
 const port = '27017';
 const host = 'localhost';
-const dbName = 'fake-data';
+const dbName = 'dev';
 
 /**
  * This is the wrapper class used extract out and store information
@@ -78,8 +78,8 @@ class User {
    */
   saveUser(callback) {
     User.connectDB();
-    this.userModelDoc.save(function(err){
-      callback(err)
+    this.userModelDoc.save(function cb(err) {
+      callback(err);
     });
     User.disconnectDB();
   }
@@ -104,13 +104,13 @@ class User {
    *     }
    *  });
    */
-  static getAllUsers(cb){
+  static getAllUsers(callback) {
     User.connectDB();
-    this.UserModel.find({},function (err,userDoc){
-      if (err){
-        cb(err,null);
+    this.UserModel.find({}, function cb(err, userDoc) {
+      if (err) {
+        callback(err, null);
       } else {
-        cb(null,userDoc);
+        callback(null, userDoc);
       }
     });
     User.disconnectDB();
@@ -118,7 +118,7 @@ class User {
 
   /**
    * This method takes in an email and returns a match in the database
-   * To use this function use 
+   * To use this function use
    * getUser(email, function functionName(err, docs){
    *     if (err){
    *      //error handling
@@ -127,63 +127,61 @@ class User {
    *    //To access attribute, use docs.[attribute];
    *    }
    *  });
-   *  
+   *
    * @param {String} email
    * @param {function} cb
    */
-  static getUser(email, cb){
+  static getUser(email, callback) {
     User.connectDB();
-    this.UserModel.findOne({ 'email': email }, function(err, docs) {
-      if (err){
-        cb(err, null)
-      } else
-        cb(null,docs);
+    this.UserModel.findOne({ email: email }, function cb(err, docs) {
+      if (err) {
+        callback(err, null);
+      } else {
+        callback(null, docs);
+      }
     });
     User.disconnectDB();
   }
 
   /**
-   * This method updates overwrites all the current attribute content (except email) with the user input content 
+   * This method updates overwrites all the current attribute content
+   * except email with the user input content
    *
    * @param {String} email: used as an identifer for the respective user instance
    * @param {String} name: name of user
    * @param {String} description: a summary of the user
    * @param {String} password: user's password in plain string
-   * @param {Boolean} will_notify: To determine if the user wants to be notified of new messages by email
+   * @param {Boolean} will_notify: To determine if the user wants to be notified
    * @param {Boolean} is_deleted: To determine if this user is still valid in the database
    * @param {String} profile_pic: A url string which contains the profile picture.
-   * @param {StringArray} skills_set: The skills that the user possess. Such as programming skills, management skills, etc
-   * @param {StringArray} bookedmarked_users: A collection of users' emails that the current user wants to keep track of.
+   * @param {StringArray} skills_set: The skills that the user possess.
+   * @param {StringArray} bookedmarked_users: A collection of emails that user keep track of.
    * @param {callback} for error checking
    */
-  static updateUser(email = "", name = "", description = "", password = "", willNotify = true, isDeleted = false, profilePic = "", skillSets = [], bookedmarkedUsers = [], callback){
-
-    //The list of  attributes that will be updated
-    var update = {  email : email,
-                  name : name,
-                  description : description,
-                  password : password,
-                  will_notify : willNotify,
-                  is_deleted : isDeleted,
-                  profile_picture : profilePic,
-                  skills : skillSets,
-                  bookmarked_users : bookedmarkedUsers,
-                 }
-    var options = {new: true};
+  static updateUser(email = '', name = '', description = '', password = '', willNotify = true, isDeleted = false, profilePic = '', skillSets = [], bookedmarkedUsers = [], callback) {
+    const update = {
+      email: email,
+      name: name,
+      description: description,
+      password: password,
+      will_notify: willNotify,
+      is_deleted: isDeleted,
+      profile_picture: profilePic,
+      skills: skillSets,
+      bookmarked_users: bookedmarkedUsers,
+    };
+    const options = { new: true };
     User.connectDB();
-    this.UserModel.findOneAndUpdate({ email: email }, update, options, function(err, docs) {
-
-      // Did something went wrong?
-      if (err){
-        console.log ("Error with updating users.");
-      } 
-      // If not, is it existing?
-      else if (docs) {
-        console.log ("User is updated successfully");
-      } 
-      // No errors, and no existing document
-      else {
-        console.log ("There is no such users.")
+    this.UserModel.findOneAndUpdate({ email: email }, update, options, function cb(err, docs) {
+      if (err) {
+        console.log('Error with updating users.');
+        callback(err, docs);
+      } else if (docs) {
+        console.log('User is updated successfully');
+        callback(null, docs);
+      } else {
+        console.log('There is no such users.');
+        callback(null, null);
       }
     });
     User.disconnectDB();
@@ -196,13 +194,13 @@ class User {
    * @param {string} skillToBeSearched: the skill that is to be matched in the database.
    * @param {function} callback (err, docs): errors are stored in err, results are stored in docs.
    */
-  static searchUsersBySkills(skillToBeSearched, callback){
+  static searchUsersBySkills(skillToBeSearched, callback) {
     User.connectDB();
-    this.UserModel.find({ 'skills': { $regex: new RegExp(skillToBeSearched.replace('+',"\\+"),"i")} }, function(err, docs) {
-      if (err){
-        callback(err, null)
+    this.UserModel.find({ skills: { $regex: new RegExp(skillToBeSearched.replace('+', '\\+'), 'i') } }, function cb(err, docs) {
+      if (err) {
+        callback(err, null);
       }
-      callback(null,docs);
+      callback(null, docs);
     });
     User.disconnectDB();
   }
@@ -213,13 +211,13 @@ class User {
    * @param {String} email: to be checked against database
    * @param {function} callback (err,results): errors are stored in err, results is boolean
    */
-  static isValidUser(email,callback){
+  static isValidUser(email, callback) {
     User.connectDB();
-    this.UserModel.findOne({ 'email': email }, function (err, docs) {
-      if (err){
-        callback(err,null);
+    this.UserModel.findOne({ email: email }, function cb(err, docs) {
+      if (err) {
+        callback(err, null);
       } else if (docs) {
-        if (!docs.is_deleted){
+        if (!docs.is_deleted) {
           callback(null, true);
         } else {
           callback(null, false);
@@ -237,21 +235,22 @@ class User {
    * @param {String} email:  the email used to match in the database
    * @param {function} callback (err): any error is returned here
    */
-  static setUserAsDeleted(email, boolDeleted, callback){
-    var update = {is_deleted : boolDeleted};
-    var options = {new: true};
+  static setUserAsDeleted(email, boolDeleted, callback) {
+    const update = { is_deleted: boolDeleted };
+    const options = { new: true };
     User.connectDB();
-    this.UserModel.findOneAndUpdate({ email: email },{$set: update}, options, function (err, docs) {
-      if (err){
-        callback(err, null);
-      } else {
-        callback(null, docs);
-      } 
-
-    });
+    this.UserModel.findOneAndUpdate(
+      { email: email },
+      { $set: update },
+      options,
+      function cb(err, docs) {
+        if (err) {
+          callback(err, null);
+        } else {
+          callback(null, docs);
+        }
+      });
     User.disconnectDB();
   }
-
-
 }
 module.exports = User;
