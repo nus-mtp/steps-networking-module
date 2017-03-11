@@ -3,13 +3,9 @@ const mongoose = require('mongoose');
 const attendanceSchema = new mongoose.Schema({
   user_email: {
     type: String,
-    required: 'The Email of the User who posted this Comment is used as a Foreign Key, and is t' +
+    trim: true,    
+    required: 'The Email of the User who is attending the Event / Exhibition is used as a Foreign Key, and is t' +
         'herefore Required.',
-  },
-  attendance_name: {
-    type: String, // Event or Exhibition Name
-    required: 'The Name of the Event or Exhibition for which this Comment is posted under is us' +
-        'ed as a Foreign Key, and is therefore Required.',
   },
   attendance_type: {
     type: String,
@@ -17,6 +13,12 @@ const attendanceSchema = new mongoose.Schema({
       'exhibition', 'event',
     ],
     required: true,
+  },
+  attendance_name: {
+    type: String, // Event or Exhibition Name
+    trim: true,
+    required: 'The Name of the Event or Exhibition for the User is attending is us' +
+        'ed as a Foreign Key, and is therefore Required.',
   },
   reason: [
     {
@@ -27,5 +29,7 @@ const attendanceSchema = new mongoose.Schema({
     },
   ],
 });
+
+attendanceSchema.index({ user_email: 1, attendance_type: 1, attendance_name: 1 }, { unique: true });
 
 module.exports = attendanceSchema;
