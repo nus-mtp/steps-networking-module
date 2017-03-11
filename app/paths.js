@@ -6,7 +6,8 @@ const Paths = {
   project: '/project',
   event: '/event',
   chat: '/chat',
-  profile: '/profile'
+  profile: '/profile',
+  match: '/match',
 };
 
 export default Paths;
