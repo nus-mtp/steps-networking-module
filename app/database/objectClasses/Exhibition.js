@@ -2,7 +2,7 @@ const ModelHandler = require('../../../server/database/models/ourModels.js');
 
 const port = "27017";
 const host = "localhost";
-const dbName = "fake-data";
+const dbName = "dev";
 
 /**
  * This is the wrapper class used extract out and store information about the Exhibitions from the database between view and model
@@ -16,18 +16,20 @@ class Exhibition{
    * @param {String} exhibitionName: Unique identifier for the object
    * @param {String} exhibitionDescription: Description for the event
    * @param {String} eventName: Name of the event that the exhibition is found in
+   * @param {String} PosterURL: url string for where poster is hosted.
    * @param {StringArray} images: list of url for images to be found.
    * @param {StringArray} videos: list of url for videos to be found.
    * @param {String} website: url for the exhibition page
    * @param {String Array} tags: Tags used to identify exhibitions
    */
-  constructor(exhibitionName = "", exhibitionDescription = "", eventName, images, videos, website, tags) {
-    this.ModelHandler = new ModelHandler (host, port, dbName);
-    this.exhibModel = this.ModelHandler.getExhibitionModel();
-    this.exhibModelDoc = new this.exhibModel({  
+  constructor(exhibitionName = "", exhibitionDescription = "", eventName, posterURL, images, videos, website, tags) {
+    this.ModelHandler = new ModelHandler(host, port, dbName);
+    this.ExhibModel = this.ModelHandler.getExhibitionModel();
+    this.exhibModelDoc = new this.ExhibModel({  
       exhibition_name: exhibitionName,
       exhibition_description:exhibitionDescription,
       event_name: eventName,
+      poster: posterURL,
       images: images,
       videos: videos,
       website: website,
@@ -51,7 +53,7 @@ class Exhibition{
 
   static connectDB(){
     this.ModelHandler = new ModelHandler (host, port, dbName);
-    this.exhibModel = this.ModelHandler.getExhibitionModel();
+    this.ExhibModel = this.ModelHandler.getExhibitionModel();
   }
 
   static disconnectDB(){
@@ -65,7 +67,7 @@ class Exhibition{
    */
   static clearAllExhibitions(callback){
     Exhibition.connectDB();
-    this.exhibModel.collection.remove({},callback);
+    this.ExhibModel.collection.remove({},callback);
     Exhibition.disconnectDB();
   }
 
@@ -76,7 +78,7 @@ class Exhibition{
    */
   static deleteExhibition(exhibitionName, callback){
     Exhibition.connectDB();
-    this.exhibModel.findOneAndRemove({exhibition_name: exhibitionName}, function (err){
+    this.ExhibModel.findOneAndRemove({exhibition_name: exhibitionName}, function (err){
       if (err){
         callback(err);
       }
@@ -91,7 +93,7 @@ class Exhibition{
    */
   static getAllExhibition(callback){
     Exhibition.connectDB();
-    this.exhibModel.find({}, function(err, exhibtObj){
+    this.ExhibModel.find({}, function(err, exhibtObj){
       if (err){
         callback(err,null);
       } else {
@@ -109,7 +111,7 @@ class Exhibition{
    */
   static getExhibition (exhibitionName, callback){
     Exhibition.connectDB();
-    this.exhibModel.findOne({'exhibition_name': exhibitionName},function (err, exhibObj){
+    this.ExhibModel.findOne({'exhibition_name': exhibitionName},function (err, exhibObj){
       if (err){
         callback(err, null);
       } else {
@@ -125,24 +127,26 @@ class Exhibition{
    * @param {String} exhibitionName: Unique identifier for the object
    * @param {String} exhibitionDescription: Description for the event
    * @param {String} eventName: Name of the event that the exhibition is found in
+   * @param {String} posterURL: string for where poster is hosted
    * @param {StringArray} images: list of url for images to be found.
    * @param {StringArray} videos: list of url for videos to be found.
    * @param {String} website: url for the exhibition page
    * @param {String Array} tags: Tags used to identify exhibitions
    * @param {function} callback: used for error checking
    */
-  static updateExhibition(exhibitionName = "", exhibitionDescription = "", eventName, images, videos, website, tags, callback) {
+  static updateExhibition(exhibitionName = "", exhibitionDescription = "", eventName, posterURL, images, videos, website, tags, callback) {
     Exhibition.connectDB();
     var update = {exhibition_name: exhibitionName,
                   exhibition_description:exhibitionDescription,
                   event_name: eventName,
+                  poster: posterURL,
                   images: images,
                   videos: videos,
                   website: website,
                   tags: tags
                  };
     var options = {new: true};
-    this.exhibModel.findOneAndUpdate({'exhibition_name': exhibitionName}, update, options, function (err, results){
+    this.ExhibModel.findOneAndUpdate({'exhibition_name': exhibitionName}, update, options, function (err, results){
       if (err){
         console.log("Unable to update exhibition");
         callback(err);
@@ -164,7 +168,7 @@ class Exhibition{
    */
   static isExistingExhibition(exhibitionName, callback){
     Exhibition.connectDB();
-    this.exhibModel.findOne({'exhibition_name': exhibitionName}, function (err, docs){
+    this.ExhibModel.findOne({'exhibition_name': exhibitionName}, function (err, docs){
       if (err){
         callback(err, null)
       } else if (docs){
@@ -184,7 +188,7 @@ class Exhibition{
    */
   static searchExhibitionsByTag(tag, callback){
     Exhibition.connectDB();
-    this.exhibModel.find({'tags': { $regex: new RegExp(tag.replace('+',"\\+"),"i")} }, function (err, docs){
+    this.ExhibModel.find({'tags': { $regex: new RegExp(tag.replace('+',"\\+"),"i")} }, function (err, docs){
       if (err){
         callback (err, null);
       } else {
@@ -202,7 +206,7 @@ class Exhibition{
    */
   static searchExhibitionsByEvent(eventName, callback){
     Exhibition.connectDB();
-    this.exhibModel.find({'event_name': { $regex: new RegExp(eventName.replace('+',"\\+"),"i")} }, function (err, docs){
+    this.ExhibModel.find({'event_name': { $regex: new RegExp(eventName.replace('+',"\\+"),"i")} }, function (err, docs){
       if (err){
         callback (err, null);
       } else {
