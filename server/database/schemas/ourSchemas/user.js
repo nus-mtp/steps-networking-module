@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: 'Password is Required for Security Reasons.'
+    required: 'Password is Required for Security Reasons.',
   },
   name: {
     type: String,
@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema({
       unique: true,
     },
   ],
-  bookmarked_users: [String]
+  bookmarked_users: [String],
 });
 
 userSchema.methods.get_id = function () {

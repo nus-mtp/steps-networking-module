@@ -1,5 +1,5 @@
 /*
-    This file contains a script to populate the dev database with information that can be used for our own App based on information on the STePs DB.
+    This file contains a script to populate the dev database with information that can be used for our own App based on all the information on the STePs DB.
     Ensure that a MongoDB local server connection is running before executing.
 */
 
@@ -64,7 +64,7 @@ function upsertEvent(stepsEventObj, callback) {
 
   Event.findOneAndUpdate(query, update, {
     upsert: true,
-  }, (err, event) => {
+  }, (err) => {
     if (err) {
       console.log(err);
     }
@@ -94,7 +94,7 @@ function upsertUser(stepsUserObj, callback) {
 
   User.findOneAndUpdate(query, update, {
     upsert: true,
-  }, (err, doc) => {
+  }, (err) => {
     if (err) {
       console.log(err);
     }
@@ -197,7 +197,7 @@ function upsertModule(stepsModuleObj, callback) {
                   doc.set('videos', removeDuplicates(doc.get('videos').concat(exhibitionProperties.videosListKey)));
                   doc.set('tags', removeDuplicates(doc.get('tags').concat(exhibitionProperties.tagsListKey)));
 
-                  doc.save((err, doc) => {
+                  doc.save((err) => {
                     if (err) {
                       console.log(err);
                     }
@@ -208,7 +208,7 @@ function upsertModule(stepsModuleObj, callback) {
                   exhibitionDoc.set('images', exhibitionProperties.imagesListKey);
                   exhibitionDoc.set('videos', exhibitionProperties.videosListKey);
                   exhibitionDoc.set('tags', exhibitionProperties.tagsListKey);
-                  exhibitionDoc.save((err, doc) => {
+                  exhibitionDoc.save((err) => {
                     if (err) {
                       console.log(err);
                     }
@@ -258,7 +258,7 @@ function upsertModule(stepsModuleObj, callback) {
                                 callback(null);
                               } else { // Attendance Information does not exist - Insert
                                 const attendanceDoc = new Attendance(attendanceQuery);
-                                attendanceDoc.save((err, doc) => {
+                                attendanceDoc.save((err) => {
                                   if (err) {
                                     console.log(err);
                                   }
@@ -317,13 +317,13 @@ function upsertGuests(stepsGuestObj, callback) {
 
       const update = {
         email: userEmail,
-        name: userName, 
+        name: userName,
         password: userPassword,
       };
 
       const eventName = String(stepsGuestObj.event).trim();
 
-      User.findOneAndUpdate(query, update, {new: true, upsert: true}, (err, doc) => {
+      User.findOneAndUpdate(query, update, {new: true, upsert: true}, (err) => {
         if (err) {
           console.log(err);
         }
@@ -335,13 +335,13 @@ function upsertGuests(stepsGuestObj, callback) {
     },
     (userEmail, eventName, callback) => { // Upsert an Attendance Listing for Each Guest Per Event
       const userQuery = {
-        email: userEmail, 
+        email: userEmail,
       };
       const eventQuery = {
         event_name: eventName,
       };
       const attendanceQuery = {
-        user_email: userEmail, 
+        user_email: userEmail,
         attendance_type: 'event',
         attendance_name: eventName,
       };
@@ -364,7 +364,7 @@ function upsertGuests(stepsGuestObj, callback) {
                   callback(null);
                 } else { // Attendance Document does not already exist - Insert
                   const attendanceDoc = new Attendance(attendanceQuery);
-                  attendanceDoc.save((err, doc) => {
+                  attendanceDoc.save((err) => {
                     if (err) {
                       console.log(err);
                     }
@@ -417,11 +417,11 @@ async.series([
           if (err) {
             console.log(err);
           }
-          callback(null, allUsers); 
+          callback(null, allUsers);
         });
       },
       (allUsers, callback) => {
-        async.eachLimit(allUsers, 15, upsertUser, 
+        async.eachLimit(allUsers, 15, upsertUser,
         (err) => {
           if (err) {
             console.log(err);
@@ -477,7 +477,7 @@ async.series([
     async.parallel([
       (callback) => {
         Models.disconnect(callback);
-      }, 
+      },
       (callback) => {
         StepsModels.disconnect(callback);
       },
