@@ -4,11 +4,9 @@ const bcrypt = require('bcrypt-nodejs');
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
-    lowercase: true,
     trim: true,
     unique: true,
     required: 'Email is a Primary Key, and is therefore Required.',
-    index: true,
   },
   password: {
     type: String,
