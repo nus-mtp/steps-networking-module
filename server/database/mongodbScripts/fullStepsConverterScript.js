@@ -45,7 +45,7 @@ function removeDuplicates(arr) {
   @param {function}: Callback to indicate when this asynchronous function has been completed.
 */
 function upsertEvent(stepsEventObj, callback) {
-  const eventName = stepsEventObj.code;
+  const eventName = String(stepsEventObj.code).trim();
   const eventDescription = stepsEventObj.name + '\n' + stepsEventObj.description;
   const startDate = new Date(stepsEventObj.startTime);
   const endDate = new Date(stepsEventObj.endTime);
@@ -79,7 +79,7 @@ function upsertEvent(stepsEventObj, callback) {
   @param {function}: Callback to indicate when this asynchronous function has been completed.
 */
 function upsertUser(stepsUserObj, callback) {
-  const userEmail = stepsUserObj.email;
+  const userEmail = String(stepsUserObj.email).trim();
   const userName = stepsUserObj.name;
   const userPassword = '';
 
@@ -114,14 +114,14 @@ function upsertUser(stepsUserObj, callback) {
 function upsertModule(stepsModuleObj, callback) {
   async.waterfall([
     (callback) => { // Extract out the relevant information in each Module
-      callback(null, { eventName: stepsModuleObj.event, tag: stepsModuleObj.code.toLowerCase(), projects: stepsModuleObj.projects });
+      callback(null, { eventName: String(stepsModuleObj.event).trim(), tag: stepsModuleObj.code.toLowerCase().trim(), projects: stepsModuleObj.projects });
     },
     (collectedInformation, callback) => { 
       async.eachLimit(collectedInformation.projects, 5, (project, callback) => { // For each Project in parallel, 5 at a time
         async.waterfall([
           (callback) => { // Extract out the relevant information in each Project - the Exhibition Properties, and the Students involved in each Exhibition
             const exhibitionName = String(collectedInformation.tag.toUpperCase() + ": " + project.name).trim();
-            const eventName = collectedInformation.eventName;
+            const eventName = String(collectedInformation.eventName).trim();
 
             const exhibitionDescription = project.description;
             const posterLink = project.posterLink;
@@ -229,15 +229,15 @@ function upsertModule(stepsModuleObj, callback) {
                     callback(null);
                   } else {
                     const userQuery = {
-                      email: student.email,
+                      email: String(student.email).trim(),
                     };
                     const exhibitionQuery = {
-                      exhibition_name: exhibitionName,
+                      exhibition_name: String(exhibitionName).trim(),
                     };
                     const attendanceQuery = {
-                      user_email: student.email,
+                      user_email: String(student.email).trim(),
                       attendance_type: 'exhibition',
-                      attendance_name: exhibitionName,
+                      attendance_name: String(exhibitionName).trim(),
                     };
 
                     User.where(userQuery).lean().findOne((err, user) => {
@@ -307,7 +307,7 @@ function upsertModule(stepsModuleObj, callback) {
 function upsertGuests(stepsGuestObj, callback) {
   async.waterfall([
     (callback) => { // Upsert Guests
-      const userEmail = stepsGuestObj._id + '@temp.com'; // To accommodate for sanitized Emails in STePs DB
+      const userEmail = String(stepsGuestObj._id + '@temp.com').trim(); // To accommodate for sanitized Emails in STePs DB
       const userPassword = '';
       const userName = stepsGuestObj.name;
 
@@ -321,7 +321,7 @@ function upsertGuests(stepsGuestObj, callback) {
         password: userPassword,
       };
 
-      const eventName = stepsGuestObj.event;
+      const eventName = String(stepsGuestObj.event).trim();
 
       User.findOneAndUpdate(query, update, {new: true, upsert: true}, (err, doc) => {
         if (err) {
