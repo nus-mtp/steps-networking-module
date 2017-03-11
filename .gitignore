@@ -12,8 +12,4 @@ server/server.bundle.js
 lint.txt
 
 # VSCode files
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
+.vscode/
