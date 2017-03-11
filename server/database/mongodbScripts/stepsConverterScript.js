@@ -116,8 +116,7 @@ function upsertModule(stepsModuleObj, callback) {
     (callback) => { // Extract out the relevant information in each Module
       callback(null, { eventName: stepsModuleObj.event, tag: stepsModuleObj.code.toLowerCase(), projects: stepsModuleObj.projects });
     },
-    (collectedInformation, callback) => { // For each Module
-      // collectedInformation contains Event Name, Module Code, and the Project array for a single Module
+    (collectedInformation, callback) => { 
       async.eachLimit(collectedInformation.projects, 5, (project, callback) => { // For each Project in parallel, 5 at a time
         async.waterfall([
           (callback) => { // Extract out the relevant information in each Project - the Exhibition Properties, and the Students involved in each Exhibition
@@ -201,8 +200,6 @@ function upsertModule(stepsModuleObj, callback) {
                   doc.save((err, doc) => {
                     if (err) {
                       console.log(err);
-                    } else {
-                      // console.log('Successfully Updated: ' + exhibitionProperties.exhibitionNameKey);
                     }
                     callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
                   });
@@ -213,7 +210,7 @@ function upsertModule(stepsModuleObj, callback) {
                   exhibitionDoc.set('tags', exhibitionProperties.tagsListKey);
                   exhibitionDoc.save((err, doc) => {
                     if (err) {
-                      // console.log(err);
+                      console.log(err);
                     }
                     callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
                   });
@@ -246,36 +243,36 @@ function upsertModule(stepsModuleObj, callback) {
                     User.where(userQuery).lean().findOne((err, user) => {
                       if (err) {
                         console.log(err);
-                        callback(null, '');
+                        callback(null);
                       } else if (user) {
                         Exhibition.where(exhibitionQuery).lean().findOne((err, exhibition) => {
                           if (err) {
                             console.log(err);
-                            callback(null, '');
+                            callback(null);
                           } else if (exhibition) { // Both the User and Exhibition exist - Upsert Attendance Information
                             Attendance.where(attendanceQuery).findOne((err, attendance) => {
                               if (err) {
                                 console.log(err);
-                                callback(null, '');
+                                callback(null);
                               } else if (attendance) { // The Attendance Information exists - don't need to Update
-                                callback(null, '');
+                                callback(null);
                               } else { // Attendance Information does not exist - Insert
                                 const attendanceDoc = new Attendance(attendanceQuery);
                                 attendanceDoc.save((err, doc) => {
                                   if (err) {
                                     console.log(err);
                                   }
-                                  callback(null, '');
+                                  callback(null);
                                 });
                               }
                             });
                           } else {
                             console.log('Unable to create Attendance Record for Student under: ' + exhibitionName);
-                            callback(null, '');
+                            callback(null);
                           }
                         });
                       } else {
-                        callback(null, '');
+                        callback(null);
                       }
                     });
                   }
@@ -284,10 +281,10 @@ function upsertModule(stepsModuleObj, callback) {
                 if (err) {
                   console.log(err);
                 }
-                callback(null, '');
+                callback(null);
               });
             } else {
-              callback(null, '');
+              callback(null);
             }
           },
         ], callback);
@@ -295,7 +292,7 @@ function upsertModule(stepsModuleObj, callback) {
         if (err) {
           console.log(err);
         }
-        callback(null, '');
+        callback(null);
       });
     },
   ], callback);
