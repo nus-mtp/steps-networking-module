@@ -298,6 +298,91 @@ function upsertModule(stepsModuleObj, callback) {
   ], callback);
 }
 
+/*
+  An asynchronous function which Upserts information from a stepsGuestObj into our User and Attendances Collection.
+
+  @param {Object} stepsGuestObj: A plain JS Object containing a leaned stepsGuest Document.
+  @param {function}: Callback to indicate when this asynchronous function has been completed.
+*/
+function upsertGuests(stepsGuestObj, callback) {
+  async.waterfall([
+    (callback) => { // Upsert Guests
+      const userEmail = stepsGuestObj._id + '@temp.com'; // To accommodate for sanitized Emails in STePs DB
+      const userPassword = '';
+      const userName = stepsGuestObj.name;
+
+      const query = {
+        email: userEmail,
+      };
+
+      const update = {
+        email: userEmail,
+        name: userName, 
+        password: userPassword,
+      };
+
+      const eventName = stepsGuestObj.event;
+
+      User.findOneAndUpdate(query, update, {new: true, upsert: true}, (err, doc) => {
+        if (err) {
+          console.log(err);
+        }
+
+        async.setImmediate(() => {
+          callback(null, userEmail, eventName);
+        });
+      });
+    },
+    (userEmail, eventName, callback) => { // Upsert an Attendance Listing for Each Guest Per Event
+      const userQuery = {
+        email: userEmail, 
+      };
+      const eventQuery = {
+        event_name: eventName,
+      };
+      const attendanceQuery = {
+        user_email: userEmail, 
+        attendance_type: 'event',
+        attendance_name: eventName,
+      };
+
+      User.where(userQuery).lean().findOne((err, user) => {
+        if (err) {
+          console.log(err);
+          callback(null);
+        } else if (user) {
+          Event.where(eventQuery).lean().findOne((err, event) => {
+            if (err) {
+              console.log(err);
+              callback(null);
+            } else if (event) { // User and Event found - Upsert Attendance Document
+              Attendance.where(attendanceQuery).lean().findOne((err, attendance) => {
+                if (err) {
+                  console.log(err);
+                  callback(null);
+                } else if (attendance) { // Don't do anything if Attendance Document already exists
+                  callback(null);
+                } else { // Attendance Document does not already exist - Insert
+                  const attendanceDoc = new Attendance(attendanceQuery);
+                  attendanceDoc.save((err, doc) => {
+                    if (err) {
+                      console.log(err);
+                    }
+                    callback(null);
+                  });
+                }
+              });
+            } else {
+              callback(null);
+            }
+          });
+        } else {
+          callback(null);
+        }
+      });
+    },
+  ], callback);
+}
 
 // Start
 
@@ -371,93 +456,15 @@ async.series([
   (callback) => { // Bring in Guests and Create Attendance Documents for each Guest for each Event
     async.waterfall([
       (callback) => {
-        stepsGuest.find({}, (err, docs) => {
+        stepsGuest.where({}).lean().find((err, allGuests) => {
           if (err) {
             console.log(err);
           }
-          callback(null, docs);
+          callback(null, allGuests);
         });
       },
       (allGuests, callback) => {
-        async.eachLimit(allGuests, 15, (guest, callback) => { // Iterate through all Guests in parallel, 5 at a time
-          async.waterfall([
-            (callback) => { // Upsert Guests
-              const userEmail = guest.get('_id') + '@temp.com'; // To accommodate for sanitized Emails in STePs DB
-              const userPassword = '';
-              const userName = guest.get('name');
-
-              const query = {
-                email: userEmail,
-              };
-
-              const update = {
-                email: userEmail,
-                name: userName, 
-                password: userPassword,
-              };
-
-              const eventName = guest.get('event');
-
-              User.findOneAndUpdate(query, update, {new: true, upsert: true}, (err, doc) => {
-                if (err) {
-                  console.log(err);
-                }
-
-                async.setImmediate(() => {
-                  callback(null, userEmail, eventName);
-                });
-              });
-            },
-            (userEmail, eventName, callback) => { // Upsert an Attendance Listing for Each Guest Per Event
-              const userQuery = {
-                email: userEmail, 
-              };
-              const eventQuery = {
-                event_name: eventName,
-              };
-              const attendanceQuery = {
-                user_email: userEmail, 
-                attendance_type: 'event',
-                attendance_name: eventName,
-              };
-
-              User.where(userQuery).lean().findOne((err, user) => {
-                if (err) {
-                  console.log(err);
-                  callback(null);
-                } else if (user) {
-                  Event.where(eventQuery).lean().findOne((err, event) => {
-                    if (err) {
-                      console.log(err);
-                      callback(null);
-                    } else if (event) { // User and Event found - Upsert Attendance Document
-                      Attendance.where(attendanceQuery).lean().findOne((err, attendance) => {
-                        if (err) {
-                          console.log(err);
-                          callback(null);
-                        } else if (attendance) { // Don't do anything if Attendance Document already exists
-                          callback(null);
-                        } else { // Attendance Document does not already exist - Insert
-                          const attendanceDoc = new Attendance(attendanceQuery);
-                          attendanceDoc.save((err, doc) => {
-                            if (err) {
-                              console.log(err);
-                            }
-                            callback(null);
-                          });
-                        }
-                      });
-                    } else {
-                      callback(null);
-                    }
-                  });
-                } else {
-                  callback(null);
-                }
-              });
-            },
-          ], callback);
-        }, (err) => {
+        async.eachLimit(allGuests, 15, upsertGuests, (err) => {
           if (err) {
             console.log(err);
           }
