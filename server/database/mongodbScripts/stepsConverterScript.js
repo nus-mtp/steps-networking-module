@@ -38,6 +38,40 @@ function removeDuplicates(arr) {
   return Array.from(new Set(arr));
 }
 
+/*
+  An asynchronous function which Upserts a stepsEvent into an Event Collection.
+
+  @param {Object} stepsEventObj: A plain JS Object containing a leaned stepsEvent Document.
+  @param {function}: Callback to indicate when this asynchronous function has been completed.
+*/
+function upsertEvent(stepsEventObj, callback) {
+  const eventName = stepsEventObj.code;
+  const eventDescription = stepsEventObj.name + '\n' + stepsEventObj.description;
+  const startDate = new Date(stepsEventObj.startTime);
+  const endDate = new Date(stepsEventObj.endTime);
+  const eventLocation = stepsEventObj.location;
+
+  const query = {
+    event_name: eventName,
+  };
+  const update = {
+    event_name: eventName,
+    event_description: eventDescription,
+    start_date: startDate,
+    end_date: endDate,
+    event_location: eventLocation,
+  };
+
+  Event.findOneAndUpdate(query, update, {
+    upsert: true,
+  }, (err, event) => {
+    if (err) {
+      console.log(err);
+    }
+    callback(null);
+  });
+}
+
 // Start
 
 // Possible Integrity Issue 1: Projects which have the Same Name within the Same Event will not be inserted correctly.
@@ -47,50 +81,21 @@ async.series([
   (callback) => { // Bring in Events
     async.waterfall(
       [
-        (callback) => {
-          stepsEvent.find({}, (err, docs) => {
+        (callback) => { // Obtain all Events in the STePs DB
+          stepsEvent.where({}).lean().find((err, allEvents) => {
             if (err) {
               console.log(err);
             }
-            // console.log(docs);
-            callback(null, docs); // Get all Events from the STePs DB.
+            callback(null, allEvents);
           });
         },
-        (allEvents, callback) => {
-          async.eachLimit(allEvents, 15, (event, callback) => { // Iterate through allEvents in parallel, 15 at a time
-
-            const eventName = event.get('code');
-            const eventDescription = event.get('name') + '\n' + event.get('description');
-            const startDate = new Date(event.get('startTime'));
-            const endDate = new Date(event.get('endTime'));
-            const eventLocation = event.get('location');
-
-            const query = {
-              event_name: eventName,
-            };
-            const update = {
-              event_name: eventName,
-              event_description: eventDescription,
-              start_date: startDate,
-              end_date: endDate,
-              event_location: eventLocation,
-            };
-
-            Event.findOneAndUpdate(query, update, {
-              upsert: true,
-            }, (err, doc) => {
-              if (err) {
-                console.log(err);
-              }
-              // console.log(doc); // This will print null the first time this function is run.
-              callback();
-            });
-
-          }, (err) => { // Error Callback: Will be triggered for each error it encounters in async.each
+        (allEvents, callback) => { // Upsert each STePs Event into our Event Collection
+          async.eachLimit(allEvents, 15, upsertEvent,
+          (err) => {
             if (err) {
               console.log(err);
             }
-            callback(null, '');
+            callback(null);
           });
         },
       ], callback);
@@ -98,12 +103,12 @@ async.series([
   },
   (callback) => { // Bring in _Users
     async.waterfall([
-      (callback) => {
+      (callback) => { // Obtain all _Users from the STePs DB.
         stepsUser.find({}, (err, docs) => {
           if (err) {
             console.log(err);
           }
-          callback(null, docs); // Get all _Users from the STePs DB.
+          callback(null, docs); 
         });
       },
       (allUsers, callback) => {
