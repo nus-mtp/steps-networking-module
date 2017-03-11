@@ -39,7 +39,7 @@ function removeDuplicates(arr) {
 }
 
 /*
-  An asynchronous function which Upserts a stepsEvent into an Event Collection.
+  An asynchronous function which Upserts a stepsEventObj into our Event Collection.
 
   @param {Object} stepsEventObj: A plain JS Object containing a leaned stepsEvent Document.
   @param {function}: Callback to indicate when this asynchronous function has been completed.
@@ -65,6 +65,36 @@ function upsertEvent(stepsEventObj, callback) {
   Event.findOneAndUpdate(query, update, {
     upsert: true,
   }, (err, event) => {
+    if (err) {
+      console.log(err);
+    }
+    callback(null);
+  });
+}
+
+/*
+  An asynchronous function which Upserts a stepsUserObj into our User Collection.
+
+  @param {Object} stepsUserObj: A plain JS Object containing a leaned stepsUser Document.
+  @param {function}: Callback to indicate when this asynchronous function has been completed.
+*/
+function upsertUser(stepsUserObj, callback) {
+  const userEmail = stepsUserObj.email;
+  const userName = stepsUserObj.name;
+  const userPassword = '';
+
+  const query = {
+    email: userEmail,
+  };
+  const update = {
+    email: userEmail,
+    name: userName,
+    password: userPassword,
+  };
+
+  User.findOneAndUpdate(query, update, {
+    upsert: true,
+  }, (err, doc) => {
     if (err) {
       console.log(err);
     }
@@ -104,42 +134,20 @@ async.series([
   (callback) => { // Bring in _Users
     async.waterfall([
       (callback) => { // Obtain all _Users from the STePs DB.
-        stepsUser.find({}, (err, docs) => {
+        stepsUser.where({}).find((err, allUsers) => {
           if (err) {
             console.log(err);
           }
-          callback(null, docs); 
+          callback(null, allUsers); 
         });
       },
       (allUsers, callback) => {
-        async.eachLimit(allUsers, 15, (user, callback) => { // Iterate through allUsers in parallel, 15 at a time
-          const userEmail = user.get('email');
-          const userName = user.get('name');
-          const userPassword = '';
-
-          const query = {
-            email: userEmail,
-          };
-          const update = {
-            email: userEmail,
-            name: userName,
-            password: userPassword,
-          };
-
-          User.findOneAndUpdate(query, update, {
-            upsert: true,
-          }, (err, doc) => {
-            if (err) {
-              console.log(err);
-            }
-            // console.log(doc); // This will print null the first time this function is run.
-            callback();
-          });
-        }, (err) => { // Error Callback: Will be triggered for each error it encounters in async.each
+        async.eachLimit(allUsers, 15, upsertUser, 
+        (err) => {
           if (err) {
             console.log(err);
           }
-          callback(null, '');
+          callback(null);
         });
       },
     ], callback);
