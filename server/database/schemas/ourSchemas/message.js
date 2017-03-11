@@ -20,4 +20,6 @@ const messageSchema = new mongoose.Schema({
   },
 });
 
+messageSchema.index({ recipient_email: 1, sender_email: 1, timestamp: 1 }, { unique: true });
+
 module.exports = messageSchema;
