@@ -8,18 +8,18 @@
 const async = require('async');
 
 // Obtain the Models of the STePs DB
-
+const config = require('../../config.json');
 const ModelHandler = require('../models/ourModels');
 const StepsModelHandler = require('../models/stepsModels');
 
-const Models = new ModelHandler('localhost', '27017', 'dev');
+const Models = new ModelHandler(config.herokuDbUri.host, config.herokuDbUri.port, config.herokuDbUri.database);
 
 const User = Models.getUserModel();
 const Event = Models.getEventModel();
 const Exhibition = Models.getExhibitionModel();
 const Attendance = Models.getAttendanceModel();
 
-const StepsModels = new StepsModelHandler('localhost', '27017', 'steps-api-sanitised');
+const StepsModels = new StepsModelHandler(config.herokuDbUri.host, config.herokuDbUri.port, config.herokuDbUri.database);
 
 const stepsUser = StepsModels.getUserModel();
 const stepsGuest = StepsModels.getGuestModel();
@@ -116,7 +116,7 @@ function upsertModule(stepsModuleObj, callback) {
     (callback) => { // Extract out the relevant information in each Module
       callback(null, { eventName: String(stepsModuleObj.event).trim(), tag: stepsModuleObj.code.toLowerCase().trim(), projects: stepsModuleObj.projects });
     },
-    (collectedInformation, callback) => { 
+    (collectedInformation, callback) => {
       async.eachLimit(collectedInformation.projects, 5, (project, callback) => { // For each Project in parallel, 5 at a time
         async.waterfall([
           (callback) => { // Extract out the relevant information in each Project - the Exhibition Properties, and the Students involved in each Exhibition
