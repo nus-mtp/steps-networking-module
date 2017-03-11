@@ -126,8 +126,8 @@ class Collapsable extends React.Component {
                 <div id="event-matches">
                   <span className="event-match-title">Matches: </span>
                   <nav className="nav">
-                    <Link className="nav-link matches" to="/project">Project1</Link>
-                    <Link className="nav-link matches" to="/project">Project2</Link>
+                    <Link className="nav-link matches" to="/match">Project1</Link>
+                    <Link className="nav-link matches" to="/match">Project2</Link>
                   </nav>
                 </div>
               </div>
