@@ -134,27 +134,31 @@ class Event {
    */
   static updateEvent(eventName = '', eventDescription = '', startDate, endDate, location, map, eventPicture = '', tags = [], callback) {
     Event.connectDB();
-    const update = { event_name: eventName,
-                  event_description: eventDescription,
-                  start_date: startDate,
-                  end_date: endDate,
-                  event_location: location,
-                  event_map: map,
-                  event_picture: eventPicture,
-                  tags: tags,
-                  };
+    const update = { 
+      event_name: eventName,
+      event_description: eventDescription,
+      start_date: startDate,
+      end_date: endDate,
+      event_location: location,
+      event_map: map,
+      event_picture: eventPicture,
+      tags: tags,
+    };
     const options = { new: true };
-    this.EventModel.findOneAndUpdate({ event_name: eventName }, update, options,
-                                     function cb(err, results) {
-      if (err) {
-        console.log('Unable to update Event');
-        callback(err);
-      } else if (results) {
-        console.log('Event is updated.');
-      } else {
-        console.log('There is no such Event.');
-      }
-    });
+    this.EventModel.findOneAndUpdate(
+      {event_name: eventName },
+      update,
+      options,
+      function cb(err, results) {
+        if (err) {
+          console.log('Unable to update Event');
+          callback(err);
+        } else if (results) {
+          console.log('Event is updated.');
+        } else {
+          console.log('There is no such Event.');
+        }
+      });
 
     this.ModelHandler.disconnect();
   }
