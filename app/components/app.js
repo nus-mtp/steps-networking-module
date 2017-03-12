@@ -2,14 +2,13 @@ import React from 'react';
 import { Link } from 'react-router';
 import Auth from '../database/auth';
 import Paths from '../paths';
-import JQuery from '../../node_modules/jquery/dist/jquery';
 import Bootstrap from '../../node_modules/bootstrap/dist/js/bootstrap';
 
 class App extends React.Component {
   render() {
     return(
       <div>
-        <nav className="navbar fixed-top navbar-toggleable-md navbar-light bg-faded">
+        <nav className="navbar navbar-toggleable-md navbar-light bg-faded">
           <button className="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
           </button>
