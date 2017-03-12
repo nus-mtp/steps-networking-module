@@ -27,10 +27,10 @@ class StepsModelHandler {
                           that the MongoDB Server is running on.
     @param {String} port: The String containing the port number of the
                           MongoDB Server process on host.
-    @param {String} name: The String representing the name of the database to connect to.
+    @param {String} database: The String representing the name of the database to connect to.
   */
-  constructor(username, password, host, port, name) {
-    this.db = mongoDBConnector.connect(username, password, host, port, name);
+  constructor(username, password, host, port, database) {
+    this.db = mongoDBConnector.connect(username, password, host, port, database);
     this.userModel = this
       .db
       .model('_User', stepsUserSchema, '_User');
