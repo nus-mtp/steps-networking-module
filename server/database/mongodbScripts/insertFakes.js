@@ -1,6 +1,6 @@
 /*
-    This file contains a script to populate the fake-data database with documents.
-    Ensure that a MongoDB local server connection is running before executing.
+  This file contains a script to populate the fake-data database with documents.
+  Ensure that a MongoDB local server connection is running before executing.
 */
 
 const config = require('../../config');
