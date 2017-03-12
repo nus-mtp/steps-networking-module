@@ -3,6 +3,8 @@
     Ensure that a MongoDB local server connection is running before executing.
 */
 
+const config = require('../../config');
+
 // For ensuring all tasks are completed before db closes
 
 const async = require('async');
@@ -11,7 +13,9 @@ const async = require('async');
 
 const ModelHandler = require('../models/ourModels');
 
-const Models = new ModelHandler('localhost', '27017', 'fake-data');
+const Models = new ModelHandler(config.fakeDbUri.username, config.fakeDbUri.password,
+                                config.fakeDbUri.host, config.fakeDbUri.port,
+                                config.fakeDbUri.database);
 
 const User = Models.getUserModel();
 const Event = Models.getEventModel();
