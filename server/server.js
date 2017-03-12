@@ -4,7 +4,9 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var config = require('./config.json');
 
-var db = require('./database/mongodbScripts/accessMongoDB').connect(config.herokuDbUri.host, config.herokuDbUri.port, config.herokuDbUri.database);
+var db = require('./database/mongodbScripts/accessMongoDB').connect(config.herokuDbUri.username, config.herokuDbUri.password,
+                                                                    config.herokuDbUri.host, config.herokuDbUri.port,
+                                                                    config.herokuDbUri.database);
 
 var app = express();
 var port = 3000;
@@ -33,7 +35,7 @@ var apiRoutes = require('./routes/api');
 app.use('/auth', authRoutes);
 app.use('/api', apiRoutes);
 
-app.listen(process.env.PORT || port, function(){
+app.listen(process.env.PORT || port, function() {
   var listeningPort = process.env.PORT || port;
   console.log(`Running on ${listeningPort}`);
 });
