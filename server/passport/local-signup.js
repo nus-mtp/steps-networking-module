@@ -1,5 +1,5 @@
 const PassportLocalStrategy = require('passport-local');
-const userSchema = require('../database/schemas/ourSchemas/user');
+const ModelHandler = require('../database/models/ourModels');
 
 module.exports = db => new PassportLocalStrategy({
   usernameField: 'email',
@@ -7,7 +7,7 @@ module.exports = db => new PassportLocalStrategy({
   session: false,
   passReqToCallback: true,
 }, (req, email, password, done) => {
-  const User = db.model('user', userSchema);
+  const User = new ModelHandler().initWithConnection(db).getUserModel();
 
   const userData = {
     name: req
