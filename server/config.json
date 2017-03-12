@@ -1,20 +1,28 @@
 {
     "herokuDbUri": {
-        "host": "xorcerors",
-        "port": "xorcerors3283@ds153719.mlab.com:53719",
+        "username": "xorcerors",
+        "password": "xorcerors3283",
+        "host": "ds153719.mlab.com",
+        "port": "53719",
         "database": "heroku_5gpljgmd"
     },
     "devDbUri": {
+        "username": "",
+        "password": "",
         "host": "localhost",
         "port": "27017",
         "database": "dev"
     },
     "stepsDbUri": {
+        "username": "",
+        "password": "",
         "host": "localhost",
         "port": "27017",
         "database": "steps-api-sanitised"
     },
     "fakeDbUri": {
+        "username": "",
+        "password": "",
         "host": "localhost",
         "port": "27017",
         "database": "fake-data"
