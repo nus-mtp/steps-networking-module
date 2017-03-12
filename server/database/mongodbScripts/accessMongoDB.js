@@ -1,13 +1,18 @@
 /*
-    This file defines a function that returns a connection to a specified MongoDB database upon execution.
-    Ensure that a MongoDB local server connection is running before executing.
+  This file defines a function that returns a connection to a specified MongoDB database upon execution.
+  Ensure that a MongoDB local server connection is running before executing.
 
-    Note that running this script by itself will not terminate the process.
+  Note that running this script by itself will not terminate the process.
 */
 const mongoose = require('mongoose');
 
-module.exports.connect = (host, port, database) => {
-  const db = mongoose.createConnection('mongodb://' + host + ':' + port + '/' + database);
+module.exports.connect = (username, password, host, port, database) => {
+  let loginCredentials;
+  if (username !== '' || (username !== '' && password !== '')) {
+    loginCredentials = `${username}:${password}@`;
+  }
+
+  const db = mongoose.createConnection(`mongodb://${loginCredentials}${host}:${port}/${database}`);
 
   db.on('error', (err) => {
     if (err) {
@@ -16,7 +21,7 @@ module.exports.connect = (host, port, database) => {
   });
 
   db.once('open', () => {
-    console.info('MongoDB ' + database + ' Connected Successfully.');
+    console.info(`MongoDB ${database} Connected Successfully.`);
   });
 
   return db;
