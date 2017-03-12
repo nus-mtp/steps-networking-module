@@ -7,7 +7,7 @@
 const mongoose = require('mongoose');
 
 module.exports.connect = (username, password, host, port, database) => {
-  let loginCredentials;
+  let loginCredentials = '';
   if (username !== '' || (username !== '' && password !== '')) {
     loginCredentials = `${username}:${password}@`;
   }
