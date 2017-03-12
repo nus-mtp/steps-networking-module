@@ -1,14 +1,14 @@
 const mongodbScriptsFilePath = '../mongodbScripts/';
 const ourSchemasFilePath = '../schemas/ourSchemas/';
 
-const mongoDBConnector = require(`${mongodbScriptsFilePath}accessMongoDB`);
+const mongoDBConnector = require('../mongodbScripts/accessMongoDB');
 
-const userSchema = require(`${ourSchemasFilePath}user`);
-const eventSchema = require(`${ourSchemasFilePath}event`);
-const exhibitionSchema = require(`${ourSchemasFilePath}exhibition`);
-const attendanceSchema = require(`${ourSchemasFilePath}attendance`);
-const commentSchema = require(`${ourSchemasFilePath}comment`);
-const messageSchema = require(`${ourSchemasFilePath}message`);
+const userSchema = require('../schemas/ourSchemas/user');
+const eventSchema = require('../schemas/ourSchemas/event');
+const exhibitionSchema = require('../schemas/ourSchemas/exhibition');
+const attendanceSchema = require('../schemas/ourSchemas/attendance');
+const commentSchema = require('../schemas/ourSchemas/comment');
+const messageSchema = require('../schemas/ourSchemas/message');
 
 /*
   This file defines a Class Object that allows one to get our

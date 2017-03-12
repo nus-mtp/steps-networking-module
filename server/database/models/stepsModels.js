@@ -1,12 +1,12 @@
 const mongodbScriptsFilePath = '../mongodbScripts/';
 const STePsSchemasFilePath = '../schemas/STePsSchemas/';
 
-const mongoDBConnector = require(`${mongodbScriptsFilePath}accessMongoDB`);
+const mongoDBConnector = require('../mongodbScripts/accessMongoDB');
 
-const stepsUserSchema = require(`${STePsSchemasFilePath}stepsUserSchema`);
-const stepsGuestSchema = require(`${STePsSchemasFilePath}stepsGuestSchema`);
-const stepsModuleSchema = require(`${STePsSchemasFilePath}stepsModuleSchema`);
-const stepsEventSchema = require(`${STePsSchemasFilePath}stepsEventSchema`);
+const stepsUserSchema = require('../schemas/STePsSchemas/stepsUserSchema');
+const stepsGuestSchema = require('../schemas/STePsSchemas/stepsGuestSchema');
+const stepsModuleSchema = require('../schemas/STePsSchemas/stepsModuleSchema');
+const stepsEventSchema = require('../schemas/STePsSchemas/stepsEventSchema');
 
 /*
   This file defines a Class Object that allows one to get
