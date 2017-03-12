@@ -1,11 +1,14 @@
-const mongoDBConnector = require('../mongodbScripts/accessMongoDB');
+const mongodbScriptsFilePath = '../mongodbScripts/';
+const ourSchemasFilePath = '../schemas/ourSchemas/';
 
-const userSchema = require('../schemas/ourSchemas/user');
-const eventSchema = require('../schemas/ourSchemas/event');
-const exhibitionSchema = require('../schemas/ourSchemas/exhibition');
-const attendanceSchema = require('../schemas/ourSchemas/attendance');
-const commentSchema = require('../schemas/ourSchemas/comment');
-const messageSchema = require('../schemas/ourSchemas/message');
+const mongoDBConnector = require(`${mongodbScriptsFilePath}accessMongoDB`);
+
+const userSchema = require(`${ourSchemasFilePath}user`);
+const eventSchema = require(`${ourSchemasFilePath}event`);
+const exhibitionSchema = require(`${ourSchemasFilePath}exhibition`);
+const attendanceSchema = require(`${ourSchemasFilePath}attendance`);
+const commentSchema = require(`${ourSchemasFilePath}comment`);
+const messageSchema = require(`${ourSchemasFilePath}message`);
 
 /*
   This file defines a Class Object that allows one to get our
@@ -18,14 +21,18 @@ class ModelHandler {
 
     Starts a connection to the backend implicitly.
 
+    @param {String} username: The String containing a part of the login
+                              credentials required to access the DB.
+    @param {String} password: The String containing a part of the login
+                              credentials required to access the DB.
     @param {String} host: The String containing the name of the host
                           that the MongoDB Server is running on.
     @param {String} port: The String containing the port number of the
                           MongoDB Server process on host.
     @param {String} name: The String representing the name of the database to connect to.
   */
-  constructor(host, port, name) {
-    this.db = mongoDBConnector.connect(host, port, name);
+  constructor(username, password, host, port, name) {
+    this.db = mongoDBConnector.connect(username, password, host, port, name);
     this.userModel = this
       .db
       .model('user', userSchema);
