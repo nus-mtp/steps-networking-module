@@ -73,7 +73,7 @@ async.series([
       },
       (callback) => {
         const User6 = new User({ email: 'user6@user.com', name: 'user6', description: 'I am user6.', password: 'user6' }).save(callback);
-      }
+      },
     ], callback);
   },
   (callback) => {
@@ -109,7 +109,6 @@ async.series([
         }).save(callback);
       },
     ], callback);
-
   },
   (callback) => {
     // Test environment
@@ -120,7 +119,6 @@ async.series([
       if (err) {
         console.log(err);
       }
-      
       console.log(docs[0].toJSON());
 
       callback(null, '');
