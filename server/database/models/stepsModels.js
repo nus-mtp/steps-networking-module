@@ -21,6 +21,7 @@ class StepsModelHandler {
     through the argument passed in. Does not validate the argument in any way.
 
     @param {Mongoose.Connection} db: The connection to the DB.
+    @return {ModelHandler} this: This instance.
   */
   initWithConnection(db) {
     this.db = db;
@@ -35,7 +36,8 @@ class StepsModelHandler {
       .model('Module', stepsModuleSchema, 'Module');
     this.eventModel = this
       .db
-      .model('Event', stepsEventSchema, 'Event');   
+      .model('Event', stepsEventSchema, 'Event');
+    return this; 
   }
 
   /*
@@ -52,6 +54,7 @@ class StepsModelHandler {
     @param {String} port: The String containing the port number of the
                           MongoDB Server process on host.
     @param {String} database: The String representing the name of the database to connect to.
+    @return {ModelHandler} this: This instance.
   */
   initWithParameters(username, password, host, port, database) {
     this.db = mongoDBConnector.connect(username, password, host, port, database);
@@ -67,6 +70,7 @@ class StepsModelHandler {
     this.eventModel = this
       .db
       .model('Event', stepsEventSchema, 'Event');
+    return this;
   }
 
   /*
