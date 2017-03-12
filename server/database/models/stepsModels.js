@@ -14,6 +14,30 @@ const stepsEventSchema = require(`${STePsSchemasFilePath}stepsEventSchema`);
 */
 class StepsModelHandler {
 
+  /* 
+    Initializes the ModelHandler with references to Mongoose Models.
+
+    Assumes the connection has already been established to the backend externally,
+    through the argument passed in. Does not validate the argument in any way.
+
+    @param {Mongoose.Connection} db: The connection to the DB.
+  */
+  initWithConnection(db) {
+    this.db = db;
+    this.userModel = this
+      .db
+      .model('_User', stepsUserSchema, '_User');
+    this.guestModel = this
+      .db
+      .model('Guest', stepsGuestSchema, 'Guest');
+    this.moduleModel = this
+      .db
+      .model('Module', stepsModuleSchema, 'Module');
+    this.eventModel = this
+      .db
+      .model('Event', stepsEventSchema, 'Event');   
+  }
+
   /*
     Initializes the ModelHandler with references to Mongoose Models.
 
@@ -29,7 +53,7 @@ class StepsModelHandler {
                           MongoDB Server process on host.
     @param {String} database: The String representing the name of the database to connect to.
   */
-  constructor(username, password, host, port, database) {
+  initWithParameters(username, password, host, port, database) {
     this.db = mongoDBConnector.connect(username, password, host, port, database);
     this.userModel = this
       .db

@@ -16,6 +16,36 @@ const messageSchema = require(`${ourSchemasFilePath}message`);
 */
 class ModelHandler {
 
+  /* 
+    Initializes the ModelHandler with references to Mongoose Models.
+
+    Assumes the connection has already been established to the backend externally,
+    through the argument passed in. Does not validate the argument in any way.
+
+    @param {Mongoose.Connection} db: The connection to the DB.
+  */
+  initWithConnection(db) {
+    this.db = db;
+    this.userModel = this
+      .db
+      .model('user', userSchema);
+    this.eventModel = this
+      .db
+      .model('event', eventSchema);
+    this.exhibitionModel = this
+      .db
+      .model('exhibition', exhibitionSchema);
+    this.attendanceModel = this
+      .db
+      .model('attendance', attendanceSchema);
+    this.commentModel = this
+      .db
+      .model('comment', commentSchema);
+    this.messageModel = this
+      .db
+      .model('message', messageSchema);    
+  }
+
   /*
     Initializes the ModelHandler with references to Mongoose Models.
 
@@ -31,7 +61,7 @@ class ModelHandler {
                           MongoDB Server process on host.
     @param {String} database: The String representing the name of the database to connect to.
   */
-  constructor(username, password, host, port, database) {
+  initWithParameters(username, password, host, port, database) {
     this.db = mongoDBConnector.connect(username, password, host, port, database);
     this.userModel = this
       .db
