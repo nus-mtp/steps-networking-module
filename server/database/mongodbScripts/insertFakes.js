@@ -13,9 +13,9 @@ const async = require('async');
 
 const ModelHandler = require('../models/ourModels');
 
-const Models = new ModelHandler(config.fakeDbUri.username, config.fakeDbUri.password,
-                                config.fakeDbUri.host, config.fakeDbUri.port,
-                                config.fakeDbUri.database);
+const Models = new ModelHandler().initWithParameters(config.fakeDbUri.username, config.fakeDbUri.password,
+                                                      config.fakeDbUri.host, config.fakeDbUri.port,
+                                                      config.fakeDbUri.database);
 
 const User = Models.getUserModel();
 const Event = Models.getEventModel();
