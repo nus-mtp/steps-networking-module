@@ -1,25 +1,30 @@
 /*
-    This file contains a script to populate the dev database with information that can be used for our own App based on all the information on the STePs DB.
-    Ensure that a MongoDB local server connection is running before executing.
+  This file contains a script to populate the dev database with information that can be used for our own App based on all the information on the STePs DB.
+  Ensure that a MongoDB local server connection is running before executing.
 */
+
+const config = require('../../config');
 
 // For ensuring all tasks are completed before db closes
 
 const async = require('async');
 
 // Obtain the Models of the STePs DB
-const config = require('../../config.json');
 const ModelHandler = require('../models/ourModels');
 const StepsModelHandler = require('../models/stepsModels');
 
-const Models = new ModelHandler(config.herokuDbUri.host, config.herokuDbUri.port, config.herokuDbUri.database);
+const Models = new ModelHandler(config.devDbUri.username, config.devDbUri.password,
+                                config.devDbUri.host, config.devDbUri.port, 
+                                config.devDbUri.database);
 
 const User = Models.getUserModel();
 const Event = Models.getEventModel();
 const Exhibition = Models.getExhibitionModel();
 const Attendance = Models.getAttendanceModel();
 
-const StepsModels = new StepsModelHandler(config.herokuDbUri.host, config.herokuDbUri.port, config.herokuDbUri.database);
+const StepsModels = new StepsModelHandler(config.stepsDbUri.username, config.stepsDbUri.password,
+                                          config.stepsDbUri.host, config.stepsDbUri.port, 
+                                          config.stepsDbUri.database);
 
 const stepsUser = StepsModels.getUserModel();
 const stepsGuest = StepsModels.getGuestModel();
