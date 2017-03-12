@@ -5,14 +5,19 @@ import Paths from '../paths';
 import Bootstrap from '../../node_modules/bootstrap/dist/js/bootstrap';
 
 class App extends React.Component {
+
+  onClick() {
+    document.getElementById("navbarSupportedContent").classList.remove("show");
+  }
+
   render() {
     return(
       <div>
         <nav className="navbar navbar-toggleable-md navbar-light bg-faded">
-          <button className="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <button id="abc" className="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
           </button>
-          <Link to={Paths.home}><img id="brand-logo" src="resources/images/home.svg" alt="Home"/></Link>
+          <Link  onClick={this.onClick.bind(this)} to={Paths.home}><img id="brand-logo" src="resources/images/home.svg" alt="Home"/></Link>
 
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <form className="form-inline my-2 my-lg-0">
@@ -22,24 +27,24 @@ class App extends React.Component {
             <ul className="navbar-nav">
               <li className="nav-item">
                 { Auth.isUserAuthenticated() ?
-                  <Link className="link nav-link" to={Paths.profile}>Profile</Link> :
+                  <Link onClick={this.onClick.bind(this)} className="link nav-link" to={Paths.profile}>Profile</Link> :
                   <Link></Link> }
               </li>
               <li className="nav-item">
                 { Auth.isUserAuthenticated() ?
-                  <Link className="link nav-link" to={Paths.event}>Event</Link> :
+                  <Link onClick={this.onClick.bind(this)} className="link nav-link" to={Paths.event}>Event</Link> :
                   <Link></Link> }
               </li>
               <li className="nav-item">
                 { Auth.isUserAuthenticated() ?
-                  <Link className="link nav-link" to={Paths.chat}>Chat</Link> :
+                  <Link onClick={this.onClick.bind(this)} className="link nav-link" to={Paths.chat}>Chat</Link> :
                   <Link></Link> }
 
               </li>
               <li className="nav-item">
                 { Auth.isUserAuthenticated() ?
-                  <Link id="logout" className="link nav-link" to={Paths.logout}>Logout</Link> :
-                  <Link id="login" className="link nav-link" to={Paths.login}>Login</Link> }
+                  <Link onClick={this.onClick.bind(this)} id="logout" className="link nav-link" to={Paths.logout}>Logout</Link> :
+                  <Link onClick={this.onClick.bind(this)} id="login" className="link nav-link" to={Paths.login}>Login</Link> }
               </li>
             </ul>
           </div>
