@@ -1,21 +1,21 @@
 const SampleProjects = [
   {
     exhibitionName: "Monalisa",
-    eventName: "Test",
+    eventName: "New Year Wild Party",
     tags: [
       "intern", "co-founder",
     ],
   },
   {
     exhibitionName: "Alan Turing's Apple",
-    eventName: "Test",
+    eventName: "New Year Wild Party",
     tags: [
       "intern", "full-time",
     ],
   },
   {
     exhibitionName: "Donald Trump's Hair",
-    eventName: "Test",
+    eventName: "Food Trail",
     tags: [
       "full-time",
     ],
