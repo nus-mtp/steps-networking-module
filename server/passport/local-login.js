@@ -1,22 +1,28 @@
 const jwt = require('jsonwebtoken');
 const PassportLocalStrategy = require('passport-local').Strategy;
-const config = require('../config.json');
+const config = require('../config');
+const userSchema = require('../database/schemas/ourSchemas/user');
 
-module.exports = (db) => new PassportLocalStrategy({
-    usernameField: 'email',
-    passwordField: 'password',
-    session: false,
-    passReqToCallback: true
-  }, (req, email, password, done) => {
-    const userData = {
-      email: email.trim(),
-      password: password.trim()
-    };
-	const User = db.model('User');
+module.exports = db => new PassportLocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password',
+  session: false,
+  passReqToCallback: true,
+}, (req, email, password, done) => {
+  const userData = {
+    email: email.trim(),
+    password: password.trim(),
+  };
+
+  const User = db.model('user', userSchema);
 
   // find a user by email address
-  return User.findOne({ email: userData.email }, (err, user) => {
-    if (err) { return done(err); }
+  return User.findOne({
+    email: userData.email,
+  }, (err, user) => {
+    if (err) {
+      return done(err);
+    }
 
     if (!user) {
       const error = new Error('Incorrect email or password');
@@ -27,7 +33,9 @@ module.exports = (db) => new PassportLocalStrategy({
 
     // check if a hashed user's password is equal to a value saved in the database
     return user.comparePassword(userData.password, (passwordErr, isMatch) => {
-      if (err) { return done(err); }
+      if (err) {
+        return done(err);
+      }
 
       if (!isMatch) {
         const error = new Error('Incorrect email or password');
@@ -37,13 +45,13 @@ module.exports = (db) => new PassportLocalStrategy({
       }
 
       const payload = {
-        sub: user._id
+        sub: user.get('_id'),
       };
 
       // create a token string
       const token = jwt.sign(payload, config.jwtSecret);
       const data = {
-        name: user.name
+        name: user.name,
       };
 
       return done(null, token, data);

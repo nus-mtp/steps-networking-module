@@ -1,12 +1,12 @@
 import App from './components/app'
 import Home from './components/home/homeView';
-import Dashboard from './components/home/dashboardView';
 import Chat from './components/chat/chatView';
 import Event from './components/event/eventView';
 import Project from './components/project/projectView';
 import Profile from './components/profile/profileView';
 import Login from './components/auth/loginView';
 import Signup from './components/auth/signupView';
+import Match from './components/project/match';
 import Auth from './database/auth';
 import Paths from './paths';
 
@@ -16,11 +16,11 @@ const routes = {
   childRoutes: [
     {
       path: Paths.home,
-      getComponent: (location, callback) => {
+      getComponent: (nextState, callback) => {
         if (Auth.isUserAuthenticated()) {
           callback(null, Home);
         } else {
-          callback(null, Home);
+          callback(null, Login);
         }
       }
     },
@@ -34,11 +34,9 @@ const routes = {
     },
     {
       path: Paths.logout,
-      onEnter: (nextState, replace) => {
+      getComponent: (nextState, callback) => {
         Auth.deauthenticateUser();
-
-        // change the current URL to /
-        replace('/');
+        callback(null, Login);
       }
     },
     {
@@ -51,11 +49,15 @@ const routes = {
     },
     {
       path: Paths.event,
-      component: Event,
+      component: Home,
     },
     {
       path: Paths.profile,
       component: Profile,
+    },
+    {
+      path: Paths.match,
+      component: Match,
     },
   ]
 };

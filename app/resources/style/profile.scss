@@ -1,0 +1,54 @@
+.profile-info {
+  margin: 15px;
+}
+
+.info-type {
+  font-weight: 600;
+  font-size: 18px;
+  display: inline;
+  margin: 0 10px 0 0;
+}
+
+.card-title {
+  margin: 0 0 20px 0;
+}
+
+.user-info {
+  font-size: 16px;
+  color: grey;
+}
+
+#edit-icon-container, #chat-icon-container {
+  background: orange;
+  color: #fff;
+  border: none;
+  border-radius: 1000px;
+  min-width: 70px;
+  max-width: 70px;
+  min-height: 70px;
+  max-height: 70px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  cursor: pointer;
+  outline: none;
+  margin: 0;
+}
+
+#chat-icon a, #edit-icon a {
+  display: flex;
+  align-content: center;
+}
+
+
+#edit-icon, #chat-icon {
+  width: 48px;
+  height: 70px;
+}
+
+.form-control {
+  margin: 3px;
+  font-size: 16px;
+}
+
+.post-edit {
+  margin: 5px;
+}

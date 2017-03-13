@@ -6,18 +6,49 @@ import Paths from '../paths';
 class App extends React.Component {
   constructor(props) {
     super(props);
-
+    this.state = {
+      profileActive: '',
+      loginActive: '',
+      eventActive: '',
+      chatActive: '',
+    };
     this.removeDropdown = this.removeDropdown;
+    this.handleLinks = this.handleLinks.bind(this);
+  }
+
+  componentWillReceiveProps() {
+    this.handleLinks();
   }
 
   removeDropdown() {
     document.getElementById("navbarSupportedContent").classList.remove("show");
   }
 
+  handleLinks() {
+    const baseState = {
+      profileActive: '',
+      loginActive: '',
+      eventActive: '',
+      chatActive: '',
+    };
+
+    if (this.props.location.pathname === Paths.profile) {
+      baseState.profileActive = 'active';
+    } else if (this.props.location.pathname === Paths.login) {
+      baseState.loginActive = 'active';
+    } else if (this.props.location.pathname === Paths.event) {
+      baseState.eventActive = 'active';
+    } else if (this.props.location.pathname === Paths.chat) {
+      baseState.chatActive = 'active';
+    } // Else base state is empty
+
+    this.setState(baseState);
+  }
+
   render() {
-    return(
+    return (
       <div>
-        <nav className="navbar navbar-toggleable-md navbar-light bg-faded">
+        <nav id="header" className="navbar navbar-toggleable-md navbar-light fixed-top row justify-content-between navbar-collapse">
           <button id="hamburger-toggle" className="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
           </button>
@@ -30,23 +61,23 @@ class App extends React.Component {
             <ul id="navbar-links" className="navbar-nav">
               <li className="nav-item">
                 { Auth.isUserAuthenticated() ?
-                  <Link onClick={this.removeDropdown.bind(this)} className="link nav-link" to={Paths.profile}>Profile</Link> :
+                  <Link onClick={this.removeDropdown.bind(this)} className={`navbar-buttons ${this.state.profileActive} to={Paths.profile}>Profile</Link> :
                   <Link></Link> }
               </li>
               <li className="nav-item">
                 { Auth.isUserAuthenticated() ?
-                  <Link onClick={this.removeDropdown.bind(this)} className="link nav-link" to={Paths.event}>Event</Link> :
+                  <Link onClick={this.removeDropdown.bind(this)} className={`navbar-buttons ${this.state.eventActive} to={Paths.event}>Event</Link> :
                   <Link></Link> }
               </li>
               <li className="nav-item">
                 { Auth.isUserAuthenticated() ?
-                  <Link onClick={this.removeDropdown.bind(this)} className="link nav-link" to={Paths.chat}>Chat</Link> :
+                  <Link onClick={this.removeDropdown.bind(this)} className={`navbar-buttons ${this.state.chatActive} to={Paths.chat}>Chat</Link> :
                   <Link></Link> }
               </li>
               <li className="nav-item">
                 { Auth.isUserAuthenticated() ?
-                  <Link onClick={this.removeDropdown.bind(this)} id="logout" className="link nav-link" to={Paths.logout}>Logout</Link> :
-                  <Link onClick={this.removeDropdown.bind(this)} id="login" className="link nav-link" to={Paths.login}>Login</Link> }
+                  <Link onClick={this.removeDropdown.bind(this)} id="logout" className={`navbar-buttons ${this.state.logoutActive} to={Paths.logout}>Logout</Link> :
+                  <Link onClick={this.removeDropdown.bind(this)} id="login" className={`navbar-buttons ${this.state.loginActive} to={Paths.login}>Login</Link> }
               </li>
             </ul>
           </div>
@@ -61,6 +92,7 @@ class App extends React.Component {
 
 App.propTypes = {
   children: React.PropTypes.element.isRequired,
+  location: React.PropTypes.object.isRequired,
 };
 
 export default App;
