@@ -1,6 +1,18 @@
+@import 'mixin';
+
 #app-body {
   position: relative;
+  margin-top: 10px;
+}
+
+.collapse-show {
+  top: 240px;
+  @include transition(all 0.3s);
+}
+
+.collapse-hide {
   top: 80px;
+  @include transition(all 0.3s);
 }
 
 .authentication-form {
@@ -16,5 +28,5 @@
 }
 
 .navbar {
-  background-color: red;
+  background-color: #3CB371;
 }

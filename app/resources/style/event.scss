@@ -50,14 +50,6 @@
   width: 20px;
 }
 
-.collapse {
-  width: 90vw;
-}
-
-.collapsing {
-  width: 90vw;
-}
-
 .event-picture {
   z-index: 10;
 }
@@ -75,7 +67,7 @@
   border: 3px solid green;
 }
 
-.collapse.show {
+#event-container > .collapse.show {
   display: inherit;
   visibility: visible;
   opacity: 1;
@@ -83,8 +75,9 @@
   max-height: 400px;
 }
 
-.collapse {
+#event-container > .collapse {
   display: inherit;
+  width: 90vw;
   @include transition(all 0.2s);
   max-height: 0;
   visibility: hidden;
