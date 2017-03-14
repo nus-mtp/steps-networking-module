@@ -1,5 +1,7 @@
 const ModelHandler = require('../../../server/database/models/ourModels.js');
 
+const username = '';
+const password = '';
 const port = '27017';
 const host = 'localhost';
 const dbName = 'dev';
@@ -28,7 +30,7 @@ class User {
    *                                            the current user wants to keep track of.
    */
   constructor(userEmail = '', userName = '', userDescription = '', userPassword = '', willNotify = true, isDeleted = false, profilePic = '', skillSets = [], bookedmarkedUsers = []) {
-    this.ModelHandler = new ModelHandler(host, port, dbName);
+    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
     this.UserModel = this.ModelHandler.getUserModel();
     this.userModelDoc = new this.UserModel({
       email: userEmail,
@@ -48,7 +50,7 @@ class User {
    * Creates a connection to the database
    */
   static connectDB() {
-    this.ModelHandler = new ModelHandler(host, port, dbName);
+    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
     this.UserModel = this.ModelHandler.getUserModel();
   }
 

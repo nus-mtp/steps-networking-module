@@ -1,5 +1,7 @@
 const ModelHandler = require('../../../server/database/models/ourModels.js');
 
+const username = '';
+const password = '';
 const port = '27017';
 const host = 'localhost';
 const dbName = 'dev';
@@ -24,7 +26,7 @@ class Exhibition {
    * @param {String Array} tags: Tags used to identify exhibitions
    */
   constructor(exhibitionName = '', exhibitionDescription = '', eventName, posterURL, images, videos, website, tags) {
-    this.ModelHandler = new ModelHandler(host, port, dbName);
+    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
     this.ExhibModel = this.ModelHandler.getExhibitionModel();
     this.exhibModelDoc = new this.ExhibModel({
       exhibition_name: exhibitionName,
@@ -53,7 +55,7 @@ class Exhibition {
   }
 
   static connectDB() {
-    this.ModelHandler = new ModelHandler (host, port, dbName);
+    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
     this.ExhibModel = this.ModelHandler.getExhibitionModel();
   }
 

@@ -1,5 +1,7 @@
 const ModelHandler = require('../../../server/database/models/ourModels.js');
 
+const username = '';
+const password = '';
 const port = '27017';
 const host = 'localhost';
 const dbName = 'dev';
@@ -16,7 +18,7 @@ class Attendance {
    * @param {String} reason: user's reason for attending the event. Each element has to be unique.
    */
   constructor(userEmail, attendanceName, attendanceType, reason) {
-    this.ModelHandler = new ModelHandler(host, port, dbName);
+    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
     this.AttenanceModel = this.ModelHandler.getAttendanceModel();
     this.attendanceModelDoc = new this.AttenanceModel({
       user_email: userEmail,
@@ -41,7 +43,7 @@ class Attendance {
   }
 
   static connectDB() {
-    this.ModelHandler = new ModelHandler(host, port, dbName);
+    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
     this.AttenanceModel = this.ModelHandler.getAttendanceModel();
   }
 
