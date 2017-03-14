@@ -1,5 +1,7 @@
 const ModelHandler = require('../../../server/database/models/ourModels.js');
 
+const username = '';
+const password = '';
 const port = '27017';
 const host = 'localhost';
 const dbName = 'dev';
@@ -24,7 +26,7 @@ class Event {
    * @param {String Array} tags: Tags used to identify events
    */
   constructor(eventName = '', eventDescription = '', startDate, endDate, location, map, eventPicture = '', tags = []) {
-    this.ModelHandler = new ModelHandler(host, port, dbName);
+    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
     this.EventModel = this.ModelHandler.getEventModel();
     this.eventModelDoc = new this.EventModel({
       event_name: eventName,
@@ -53,7 +55,7 @@ class Event {
   }
 
   static connectDB() {
-    this.ModelHandler = new ModelHandler(host, port, dbName);
+    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
     this.EventModel = this.ModelHandler.getEventModel();
   }
 
