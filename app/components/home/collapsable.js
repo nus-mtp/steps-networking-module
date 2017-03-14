@@ -128,10 +128,13 @@ class Collapsable extends React.Component {
                 </div>
                 <div id="event-matches">
                   <span className="event-match-title">Matches: </span>
-                  <nav className="nav">
-                  {
-                    this.state.projects.map((project, i) => <Link key={i} className="nav-link matches" to="/match">{project.exhibitionName}</Link>
-                  )}
+                  <nav className="nav d-flex flex-row justify-content-between">
+                    <div id="match-container">
+                    {
+                      this.state.projects.map((project, i) => <Link key={i} className="nav-link matches" to="/match">{project.exhibitionName}</Link>
+                    )}
+                    </div>
+                    <button id="all-projects" className="btn btn-secondary"><Link to="/match">See More</Link></button>
                   </nav>
                 </div>
               </div>
