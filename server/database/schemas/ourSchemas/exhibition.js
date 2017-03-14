@@ -4,20 +4,19 @@ const exhibitionSchema = new mongoose.Schema({
   exhibition_name: {
     type: String,
     trim: true,
-    unique: true,
-    required: 'The Exhibition Name is a Primary Key, and is therefore Required.',
-    index: true,
+    required: 'The Exhibition Name is a part of a Composite Key, and is therefore Required.',
   },
-  exhibition_description: String,
 
   event_name: {
     type: String,
     trim: true,
-    required: 'The Name of the Event for which this Exhibition is hosted under is a Foreign Key' +
+    required: 'The Name of the Event for which this Exhibition is hosted under is part of a Composite Key' +
         ', and is therefore Required.',
-    index: true,
   },
 
+  exhibition_description: String,
+
+  poster: String,
   images: [String],
   videos: [String],
   website: String,
@@ -31,5 +30,7 @@ const exhibitionSchema = new mongoose.Schema({
     },
   ],
 });
+
+exhibitionSchema.index({ event_name: 1, exhibition_name: 1 }, { unique: true });
 
 module.exports = exhibitionSchema;

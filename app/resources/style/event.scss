@@ -1,13 +1,7 @@
-.event-poster {
-  min-width: 300px;
-}
+@import 'mixin';
 
-.collapse {
-  width: 90vw;
-}
-
-.collapsing {
-  width: 90vw;
+#home-body {
+  margin: 20px 10%;
 }
 
 #event-list {
@@ -17,25 +11,111 @@
 }
 
 #event-container {
-  width: 300px;
-  margin: 10px 0 0 0;
+  width: 270px;
+  margin: 10px 20px 0 0;
+}
+
+#event-image-container {
+  display: block;
+  text-align: center;
+  background: black;
+}
+
+#event-description {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.event-poster {
+  max-height: 200px;
+}
+
+.event-info-container {
+  padding: 10px 20px;
+  min-height: 106px;
+}
+
+.attendance-badge {
+  height: 20px;
+  font-size: 16px;
+  color: lightgreen;
+  margin-bottom: 5px;
+  display: flex;
+}
+
+#attendance-badge-image {
+  margin-right: 5px;
+  border: 2px solid lightgreen;
+  border-radius: 20px;
+  width: 20px;
 }
 
 .event-picture {
   z-index: 10;
 }
 
+.attendance-indicator {
+  margin: 0;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+}
+
+.attendance-indicator-container > .active {
+  font-weight: 700;
+  border: 3px solid green;
+}
+
+#event-container > .collapse.show {
+  display: inherit;
+  visibility: visible;
+  opacity: 1;
+  @include transition(all 0.2s);
+  max-height: 400px;
+}
+
+#event-container > .collapse {
+  display: inherit;
+  width: 90vw;
+  @include transition(all 0.2s);
+  max-height: 0;
+  visibility: hidden;
+  opacity: 0;
+  @include box-shadow(2px, 2px, 15px, 0px, rgba(200,200,200,1));
+}
+
 .event-info {
-  font-size: 14px;
+  font-size: 12px;
   color: grey;
 }
 
 .event-title {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 700;
+  margin: 0;
 }
 
-.event-match-title {
-  margin: 15px 0 0 0;
+.event-attendance-title {
+  margin: 0 15px 0 0;
   font-weight: 100;
+  font-size: 16px;
+}
+
+.event-match-title, .event-reason-title {
+  margin: 15px 5px 0 0;
+  font-weight: 100;
+  font-size: 16px;
+}
+
+.matches {
+  padding: 5px 20px 0 0;
+  font-size: 18px;
+}
+
+.reasons {
+  padding: 0;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
 }

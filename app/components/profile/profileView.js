@@ -45,7 +45,7 @@ class ProfileView extends React.Component {
       });
     }
   }
-  
+
   handleEdit() {
     this.setState({
       isContentEditable: !this.state.isContentEditable,
@@ -59,7 +59,7 @@ class ProfileView extends React.Component {
       },
     });
   }
-  
+
   handleCancel() {
     this.setState({
       email: this.state.pastUserData.email,
@@ -98,21 +98,21 @@ class ProfileView extends React.Component {
               <h4 id="user-name" className="card-title">Anonymous</h4>
               <div>
                 <span className="info-type">Email: </span>
-                { (this.state.isContentEditable) ? 
+                { (this.state.isContentEditable) ?
                   <input id="new-user-email" type="email" className="form-control" value={this.state.email} onChange={this.changeEdit} /> :
                   <span id="user-email" className="user-info">{this.state.email}</span>
                 }
               </div>
               <div>
                 <span className="info-type">Description: </span>
-                { (this.state.isContentEditable) ? 
+                { (this.state.isContentEditable) ?
                   <input id="new-user-description" className="form-control" type="text" value={this.state.description} onChange={this.changeEdit} /> :
                   <span id="user-desc" className="user-info">{this.state.description}</span>
                 }
               </div>
               <div>
                 <span className="info-type">Links: </span>
-                { (this.state.isContentEditable) ? 
+                { (this.state.isContentEditable) ?
                   <input id="new-user-links" className="form-control" type="text" value={this.state.links} onChange={this.changeEdit} /> :
                   <span id="user-links" className="user-info">{this.state.links}</span>
                 }
@@ -130,7 +130,7 @@ class ProfileView extends React.Component {
             </li>
             <li className="list-group-item">
               <div className="info-type">What am I Looking For? </div>
-              { (this.state.isContentEditable) ? 
+              { (this.state.isContentEditable) ?
                 <select className="form-control" id="new-user-interest">
                   <option>{this.state.interestedOpportunities}</option>
                   <option>2</option>
@@ -139,10 +139,10 @@ class ProfileView extends React.Component {
               }
             </li>
           </ul>
-          { (this.state.isContentEditable) ? 
+          { (this.state.isContentEditable) ?
             <div className="card-block text-right">
-              <button className="btn btn-primary" onClick={this.handleEdit}>Save</button>
-              <button className="btn btn-secondary" onClick={this.handleCancel}>Cancel</button>
+              <button className="btn btn-primary post-edit" onClick={this.handleEdit}>Save</button>
+              <button className="btn btn-secondary post-edit" onClick={this.handleCancel}>Cancel</button>
             </div> :
             <div />
           }
