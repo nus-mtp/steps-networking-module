@@ -329,7 +329,7 @@ function upsertGuests(stepsGuestObj, callback) {
           } else if (matchedUsers && matchedUsers.length === 1) { // If Name is Unique
             userEmail = matchedUsers[0].email.trim();
             callback(null, userEmail, userPassword, userName, eventName, true);
-          } else { // Name not Unique
+          } else { // Name not Unique or User non-existing
             userEmail = String(`${stepsGuestObj._id}@temp.com`).trim();
             callback(null, userEmail, userPassword, userName, eventName, true);
           }
@@ -340,73 +340,129 @@ function upsertGuests(stepsGuestObj, callback) {
       }
     },    
     (userEmail, userPassword, userName, eventName, valid, callback) => { // Upsert Guests into User Collection
-      const query = {
-        email: userEmail,
-      };
+      if (valid) {
+        const query = {
+          email: userEmail,
+        };
 
-      const update = {
-        email: userEmail,
-        name: userName,
-        password: userPassword,
-      };
+        const update = {
+          email: userEmail,
+          name: userName,
+          password: userPassword,
+        };
 
-      User.findOneAndUpdate(query, update, { new: true, upsert: true, setDefaultsOnInsert: true }, (err) => {
-        if (err) {
-          console.log(err);
-        }
+        User.findOneAndUpdate(query, update, { new: true, upsert: true, setDefaultsOnInsert: true }, (err) => {
+          if (err) {
+            console.log(err);
+          }
 
-        async.setImmediate(() => {
-          callback(null, userEmail, eventName);
-        });
-      });
-    },
-    (userEmail, eventName, callback) => { // Upsert an Attendance Listing for Each Guest Per Event
-      const userQuery = {
-        email: userEmail,
-      };
-      const eventQuery = {
-        event_name: eventName,
-      };
-      const attendanceQuery = {
-        user_email: userEmail,
-        attendance_type: 'event',
-        attendance_name: eventName,
-      };
-
-      User.where(userQuery).lean().findOne((err, user) => {
-        if (err) { // Unknown Error
-          console.log(err);
-          callback(null);
-        } else if (user) { // User was Previously Inserted
-          Event.where(eventQuery).lean().findOne((err, event) => {
-            if (err) { // Unknown Error
-              console.log(err);
-              callback(null);
-            } else if (event) { // User and Event found - Upsert Attendance Document
-              Attendance.where(attendanceQuery).lean().findOne((err, attendance) => {
-                if (err) { // Unknown Error
-                  console.log(err);
-                  callback(null);
-                } else if (attendance) { // Don't do anything if Attendance Document already exists
-                  callback(null);
-                } else { // Attendance Document does not already exist - Insert
-                  const attendanceDoc = new Attendance(attendanceQuery);
-                  attendanceDoc.save((err) => {
-                    if (err) {
-                      console.log(err);
-                    }
-                    callback(null);
-                  });
-                }
-              });
-            } else { // Event was not Previously Inserted
-              callback(null);
-            }
+          async.setImmediate(() => {
+            callback(null, userEmail, eventName, valid);
           });
-        } else { // User was not Previously Inserted
-          callback(null);
-        }
-      });
+        });
+      } else {
+        callback(null, userEmail, eventName, valid);
+      }
+    },
+    (userEmail, eventName, valid, callback) => { // Upsert an Attendance Listing for Each Guest Per Event
+      if (valid) {
+        const userQuery = {
+          email: userEmail,
+        };
+        const eventQuery = {
+          event_name: eventName,
+        };
+        const attendanceEventQuery = {
+          user_email: userEmail,
+          attendance_type: 'event',
+          attendance_name: eventName,
+        };
+
+        User.where(userQuery).lean().findOne((err, user) => {
+          if (err) { // Unknown Error
+            console.log(err);
+            callback(null);
+          } else if (user) { // User was Previously Inserted
+            Event.where(eventQuery).lean().findOne((err, event) => {
+              if (err) { // Unknown Error
+                console.log(err);
+                callback(null);
+              } else if (event) { // User and Event found - Upsert Attendance Document
+                Attendance.where(attendanceEventQuery).lean().findOne((err, eventAttendance) => {
+                  if (err) { // Unknown Error
+                    console.log(err);
+                    callback(null);
+                  } else if (eventAttendance) { // Don't do anything if Attendance Document already exists
+                    callback(null);
+                  } else { // Attendance Document may not exist - Insert only if User isn't already participating in one of the Exhibitions in the Event
+                    const attendanceExhibitionQuery = {
+                      user_email: userEmail,
+                      attendance_type: 'exhibition',
+                    };
+
+                    Attendance.where(attendanceExhibitionQuery).lean().find((err, exhibitionAttendances) => {
+                      if (err) { // Unknown Error
+                        callback(null);
+                      } else if (exhibitionAttendances && exhibitionAttendances.length > 0) { // User has participated in Exhibitions before
+                        async.waterfall([
+                          (callback) => {
+                            async.eachLimit(exhibitionAttendances, 5, (exhibitionAttendance, callback) => { // For each Exhibition Attendance in Parallel, 5 at a time
+                              const exhibitionQuery = {
+                                exhibition_name: exhibitionAttendance.attendance_name,
+                                event_name: eventName,
+                              };
+                              
+                              Exhibition.where(exhibitionQuery).lean().findOne((err, exhibition) => {
+                                if (err) { // Unknown Error
+                                  console.log(err);
+                                  callback(true); // Stop the Parallel Search
+                                } else if (exhibition) { // User is already participating in the current Event as Exhibitor
+                                  callback(true); // Stop the Parallel Search
+                                } else { // The current event 
+                                  callback(null);
+                                }
+                              });
+                            }, (isExhibitorForCurrentEvent) => {
+                              callback(null, isExhibitorForCurrentEvent);
+                            });
+                          }, 
+                          (isExhibitorForCurrentEvent, callback) => {
+                            if (isExhibitorForCurrentEvent !== true) { // User has not participated in Exhibitions before - safe to insert Attendance for Event
+                              const attendanceDoc = new Attendance(attendanceEventQuery);
+                              attendanceDoc.save((err) => {
+                                if (err) {
+                                  console.log(err);
+                                }
+                                callback(null);
+                              });
+                            } else { // User is participating in current Event as Exhibitor - do not insert Event Attendance data
+                              callback(null);
+                            }
+                          },
+                        ], callback);
+                      } else { // User has not participated in Exhibitions before - safe to insert Attendance for Event
+                        const attendanceDoc = new Attendance(attendanceEventQuery);
+                        attendanceDoc.save((err) => {
+                          if (err) {
+                            console.log(err);
+                          }
+                          callback(null);
+                        });
+                      }
+                    });
+                  }
+                });
+              } else { // Event was not Previously Inserted
+                callback(null);
+              }
+            });
+          } else { // User was not Previously Inserted
+            callback(null);
+          }
+        });
+      } else {
+        callback(null);
+      }
     },
   ], callback);
 }
