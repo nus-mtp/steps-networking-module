@@ -13,9 +13,9 @@ const async = require('async');
 const ModelHandler = require('../models/ourModels');
 const StepsModelHandler = require('../models/stepsModels');
 
-const Models = new ModelHandler().initWithParameters(config.herokuDbUri.username, config.herokuDbUri.password,
-                                                      config.herokuDbUri.host, config.herokuDbUri.port,
-                                                      config.herokuDbUri.database);
+const Models = new ModelHandler().initWithParameters(config.devDbUri.username, config.devDbUri.password,
+                                                      config.devDbUri.host, config.devDbUri.port,
+                                                      config.devDbUri.database);
 
 const User = Models.getUserModel();
 const Event = Models.getEventModel();
@@ -314,18 +314,32 @@ function upsertModule(stepsModuleObj, callback) {
 */
 function upsertGuests(stepsGuestObj, callback) {
   async.waterfall([
-    (callback) => { // Upsert Guests
+    (callback) => { // Extract out relevant information from each Guest
+      const eventName = String(stepsGuestObj.event).trim();
+
+      const userName = stepsGuestObj.name.trim();
+      const userPassword = '';
 
       let userEmail = '';
       if (stepsGuestObj.email === 'abc@temp.com') { // To accommodate for sanitized Emails in STePs DB
-        userEmail = String(stepsGuestObj._id + '@temp.com').trim(); 
+        User.where({ name: userName }).lean().find((err, matchedUsers) => { // Try to get true Email via Name
+          if (err) { // Unknown Error
+            console.log(err);
+            callback(null, userEmail, userPassword, userName, eventName, false);
+          } else if (matchedUsers && matchedUsers.length === 1) { // If Name is Unique
+            userEmail = matchedUsers[0].email.trim();
+            callback(null, userEmail, userPassword, userName, eventName, true);
+          } else { // Name not Unique
+            userEmail = String(`${stepsGuestObj._id}@temp.com`).trim();
+            callback(null, userEmail, userPassword, userName, eventName, true);
+          }
+        });
       } else {
         userEmail = stepsGuestObj.email.trim();
+        callback(null, userEmail, userPassword, userName, eventName, true);
       }
-
-      const userPassword = '';
-      const userName = stepsGuestObj.name.trim();
-
+    },    
+    (userEmail, userPassword, userName, eventName, valid, callback) => { // Upsert Guests into User Collection
       const query = {
         email: userEmail,
       };
@@ -335,8 +349,6 @@ function upsertGuests(stepsGuestObj, callback) {
         name: userName,
         password: userPassword,
       };
-
-      const eventName = String(stepsGuestObj.event).trim();
 
       User.findOneAndUpdate(query, update, { new: true, upsert: true, setDefaultsOnInsert: true }, (err) => {
         if (err) {
