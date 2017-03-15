@@ -14,7 +14,7 @@ const ModelHandler = require('../models/ourModels');
 const StepsModelHandler = require('../models/stepsModels');
 
 const Models = new ModelHandler().initWithParameters(config.herokuDbUri.username, config.herokuDbUri.password,
-                                                      config.herokuDbUri.host, config.herokuDbUri.port, 
+                                                      config.herokuDbUri.host, config.herokuDbUri.port,
                                                       config.herokuDbUri.database);
 
 const User = Models.getUserModel();
@@ -23,7 +23,7 @@ const Exhibition = Models.getExhibitionModel();
 const Attendance = Models.getAttendanceModel();
 
 const StepsModels = new StepsModelHandler().initWithParameters(config.stepsDbUri.username, config.stepsDbUri.password,
-                                                                config.stepsDbUri.host, config.stepsDbUri.port, 
+                                                                config.stepsDbUri.host, config.stepsDbUri.port,
                                                                 config.stepsDbUri.database);
 
 const stepsUser = StepsModels.getUserModel();
@@ -51,7 +51,7 @@ function removeDuplicates(arr) {
 */
 function upsertEvent(stepsEventObj, callback) {
   const eventName = String(stepsEventObj.code).trim();
-  const eventDescription = stepsEventObj.name + '\n' + stepsEventObj.description;
+  const eventDescription = `${stepsEventObj.name} \n ${stepsEventObj.description}`;
   const startDate = new Date(stepsEventObj.startTime);
   const endDate = new Date(stepsEventObj.endTime);
   const eventLocation = stepsEventObj.location;
@@ -69,6 +69,7 @@ function upsertEvent(stepsEventObj, callback) {
 
   Event.findOneAndUpdate(query, update, {
     upsert: true,
+    setDefaultsOnInsert: true,
   }, (err) => {
     if (err) {
       console.log(err);
@@ -85,7 +86,7 @@ function upsertEvent(stepsEventObj, callback) {
 */
 function upsertUser(stepsUserObj, callback) {
   const userEmail = String(stepsUserObj.email).trim();
-  const userName = stepsUserObj.name;
+  const userName = stepsUserObj.name.trim();
   const userPassword = '';
 
   const query = {
@@ -99,6 +100,7 @@ function upsertUser(stepsUserObj, callback) {
 
   User.findOneAndUpdate(query, update, {
     upsert: true,
+    setDefaultsOnInsert: true,
   }, (err) => {
     if (err) {
       console.log(err);
@@ -245,18 +247,19 @@ function upsertModule(stepsModuleObj, callback) {
                       attendance_name: String(exhibitionName).trim(),
                     };
 
+                    // Upsert Attendance
                     User.where(userQuery).lean().findOne((err, user) => {
-                      if (err) {
+                      if (err) { // Unknown Error
                         console.log(err);
                         callback(null);
-                      } else if (user) {
+                      } else if (user) { // User Previously Inserted
                         Exhibition.where(exhibitionQuery).lean().findOne((err, exhibition) => {
-                          if (err) {
+                          if (err) { // Unknown Error
                             console.log(err);
                             callback(null);
                           } else if (exhibition) { // Both the User and Exhibition exist - Upsert Attendance Information
                             Attendance.where(attendanceQuery).findOne((err, attendance) => {
-                              if (err) {
+                              if (err) { // Unknown Error
                                 console.log(err);
                                 callback(null);
                               } else if (attendance) { // The Attendance Information exists - don't need to Update
@@ -271,12 +274,12 @@ function upsertModule(stepsModuleObj, callback) {
                                 });
                               }
                             });
-                          } else {
-                            console.log('Unable to create Attendance Record for Student under: ' + exhibitionName);
+                          } else { // The User was Inserted before, but the Exhibition has not been inserted in the Previous Step
+                            console.log(`Unable to create Attendance Record for Student under: ${exhibitionName}`);
                             callback(null);
                           }
                         });
-                      } else {
+                      } else { // User not Inserted Before - should have been inserted when reading in the STePs _User Collection
                         callback(null);
                       }
                     });
@@ -312,9 +315,16 @@ function upsertModule(stepsModuleObj, callback) {
 function upsertGuests(stepsGuestObj, callback) {
   async.waterfall([
     (callback) => { // Upsert Guests
-      const userEmail = String(stepsGuestObj._id + '@temp.com').trim(); // To accommodate for sanitized Emails in STePs DB
+
+      let userEmail = '';
+      if (stepsGuestObj.email === 'abc@temp.com') { // To accommodate for sanitized Emails in STePs DB
+        userEmail = String(stepsGuestObj._id + '@temp.com').trim(); 
+      } else {
+        userEmail = stepsGuestObj.email.trim();
+      }
+
       const userPassword = '';
-      const userName = stepsGuestObj.name;
+      const userName = stepsGuestObj.name.trim();
 
       const query = {
         email: userEmail,
@@ -328,7 +338,7 @@ function upsertGuests(stepsGuestObj, callback) {
 
       const eventName = String(stepsGuestObj.event).trim();
 
-      User.findOneAndUpdate(query, update, {new: true, upsert: true}, (err) => {
+      User.findOneAndUpdate(query, update, { new: true, upsert: true, setDefaultsOnInsert: true }, (err) => {
         if (err) {
           console.log(err);
         }
@@ -352,17 +362,17 @@ function upsertGuests(stepsGuestObj, callback) {
       };
 
       User.where(userQuery).lean().findOne((err, user) => {
-        if (err) {
+        if (err) { // Unknown Error
           console.log(err);
           callback(null);
-        } else if (user) {
+        } else if (user) { // User was Previously Inserted
           Event.where(eventQuery).lean().findOne((err, event) => {
-            if (err) {
+            if (err) { // Unknown Error
               console.log(err);
               callback(null);
             } else if (event) { // User and Event found - Upsert Attendance Document
               Attendance.where(attendanceQuery).lean().findOne((err, attendance) => {
-                if (err) {
+                if (err) { // Unknown Error
                   console.log(err);
                   callback(null);
                 } else if (attendance) { // Don't do anything if Attendance Document already exists
@@ -377,11 +387,11 @@ function upsertGuests(stepsGuestObj, callback) {
                   });
                 }
               });
-            } else {
+            } else { // Event was not Previously Inserted
               callback(null);
             }
           });
-        } else {
+        } else { // User was not Previously Inserted
           callback(null);
         }
       });
