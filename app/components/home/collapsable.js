@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
+import sampleProjects from '../project/sampleData';
 
 const scrollbarWidth = 15;
 const bodyMargin = 0.2 * window.innerWidth;
@@ -8,11 +9,13 @@ const marginOffset = scrollbarWidth + bodyMargin;
 class Collapsable extends React.Component {
   constructor(props) {
     super(props);
+    const currentProjects = sampleProjects.filter(project => project.eventName == this.props.event.name);
 
     this.state = {
       numberOfEventPerRow: Math.floor((window.innerWidth - marginOffset) / this.props.width),
       order: this.props.serial,
       isAttended: false,
+      projects: currentProjects,
     };
 
     this.setLayout = this.setLayout.bind(this);
@@ -125,9 +128,13 @@ class Collapsable extends React.Component {
                 </div>
                 <div id="event-matches">
                   <span className="event-match-title">Matches: </span>
-                  <nav className="nav">
-                    <Link className="nav-link matches" to="/match">Project1</Link>
-                    <Link className="nav-link matches" to="/match">Project2</Link>
+                  <nav className="nav d-flex flex-row justify-content-between">
+                    <div id="match-container">
+                    {
+                      this.state.projects.map((project, i) => <Link key={i} className="nav-link matches" to="/match">{project.exhibitionName}</Link>
+                    )}
+                    </div>
+                    <button id="all-projects" className="btn btn-secondary"><Link to="/match">See More</Link></button>
                   </nav>
                 </div>
               </div>
@@ -148,7 +155,7 @@ Collapsable.propTypes = {
   width: React.PropTypes.number.isRequired,
   event: React.PropTypes.object,
   attendance: React.PropTypes.array,
-  //changeAttendance: React.PropTypes.element,
+  //changeAttendance: React.PropTypes.function,
 };
 
 export default Collapsable;
