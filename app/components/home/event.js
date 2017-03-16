@@ -65,7 +65,7 @@ class Event extends React.Component {
 
 Event.propTypes = {
   serial: React.PropTypes.number.isRequired,
-  open: React.PropTypes.arrayOf(React.PropTypes.number).isRequired,
+  open: React.PropTypes.arrayOf(React.PropTypes.bool).isRequired,
   openCollapsable: React.PropTypes.func.isRequired,
   event: React.PropTypes.objectOf(React.PropTypes.string).isRequired,
   attendance: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,

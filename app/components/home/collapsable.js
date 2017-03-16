@@ -143,7 +143,7 @@ class Collapsable extends React.Component {
                   <nav className="nav d-flex flex-row justify-content-between">
                     <div id="match-container">
                       {
-                        this.state.projects.map(({ project }) =>
+                        this.state.projects.map((project, i) =>
                           <Link key={project.exhibitionName} className="nav-link matches" to="/match">{project.exhibitionName}</Link>,
                       )}
                     </div>
@@ -163,7 +163,7 @@ class Collapsable extends React.Component {
 
 Collapsable.propTypes = {
   serial: React.PropTypes.number.isRequired,
-  open: React.PropTypes.arrayOf(React.PropTypes.number).isRequired,
+  open: React.PropTypes.arrayOf(React.PropTypes.any).isRequired,
   width: React.PropTypes.number.isRequired,
   event: React.PropTypes.objectOf(React.PropTypes.string).isRequired,
   attendance: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
