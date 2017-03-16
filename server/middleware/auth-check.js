@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+
 const ModelHandler = require('../database/models/ourModels'); // require('mongoose').model('User');
 const config = require('../config.json');
 
@@ -20,14 +21,15 @@ module.exports = (req, res, next) => {
 
     const userId = decoded.sub;
 
-    const ModelHandlerObj = new ModelHandler(config.devDbUri.host, config.devDbUri.port, config.devDbUri.database);
-    const User = ModelHandlerObj.getUserModel();    
-    
+    const ModelHandlerObj = new ModelHandler(config.herokuDbUri.username, config.herokuDbUri.password,
+                                              config.herokuDbUri.host, config.herokuDbUri.port,
+                                              config.herokuDbUri.database);
+    const User = ModelHandlerObj.getUserModel();
+
     // check if a user exists
     return User.findById(userId, (userErr, user) => {
-      
       ModelHandlerObj.disconnect();
-      
+
       if (userErr || !user) {
         return res.status(401).end();
       }

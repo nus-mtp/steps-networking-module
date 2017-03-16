@@ -8,23 +8,25 @@ const eventSchema = require('../schemas/ourSchemas/event');
 const exhibitionSchema = require('../schemas/ourSchemas/exhibition');
 const attendanceSchema = require('../schemas/ourSchemas/attendance');
 const commentSchema = require('../schemas/ourSchemas/comment');
+const messageSchema = require('../schemas/ourSchemas/message');
 
 /*
-    This file defines a Class Object that allows one to get our Mongoose Models from a specified database.
+  This file defines a Class Object that allows one to get our
+  Mongoose Models from a specified database.
 */
 class ModelHandler {
 
-  /*
-        Initializes the ModelHandler with references to Mongoose Models.
+  /* 
+    Initializes the ModelHandler with references to Mongoose Models.
 
-        Starts a connection to the backend implicitly.
+    Assumes the connection has already been established to the backend externally,
+    through the argument passed in. Does not validate the argument in any way.
 
-        @param {String} host: The String containing the name of the host that the MongoDB Server is running on.
-        @param {String} port: The String containing the port number of the MongoDB Server process on host.
-        @param {String} name: The String representing the name of the database to connect to.
-    */
-  constructor(host, port, name) {
-    this.db = mongoDBConnector.connect(host, port, name);
+    @param {Mongoose.Connection} db: The connection to the DB.
+    @return {ModelHandler} this: This instance.
+  */
+  initWithConnection(db) {
+    this.db = db;
     this.userModel = this
       .db
       .model('user', userSchema);
@@ -40,59 +42,124 @@ class ModelHandler {
     this.commentModel = this
       .db
       .model('comment', commentSchema);
+    this.messageModel = this
+      .db
+      .model('message', messageSchema);
+    return this;
   }
 
   /*
-        Returns a User Mongoose Model Object - configured for the parameters specified in the constructor.
+    Initializes the ModelHandler with references to Mongoose Models.
 
-        @return {Mongoose.Model} userModel: The Mongoose Model that can be used to interact with the MongoDB backend.
-    */
+    Starts a connection to the backend implicitly.
+
+    @param {String} username: The String containing a part of the login
+                              credentials required to access the DB.
+    @param {String} password: The String containing a part of the login
+                              credentials required to access the DB.
+    @param {String} host: The String containing the name of the host
+                          that the MongoDB Server is running on.
+    @param {String} port: The String containing the port number of the
+                          MongoDB Server process on host.
+    @param {String} database: The String representing the name of the database to connect to.
+    @return {ModelHandler} this: This instance.
+  */
+  initWithParameters(username, password, host, port, database) {
+    this.db = mongoDBConnector.connect(username, password, host, port, database);
+    this.userModel = this
+      .db
+      .model('user', userSchema);
+    this.eventModel = this
+      .db
+      .model('event', eventSchema);
+    this.exhibitionModel = this
+      .db
+      .model('exhibition', exhibitionSchema);
+    this.attendanceModel = this
+      .db
+      .model('attendance', attendanceSchema);
+    this.commentModel = this
+      .db
+      .model('comment', commentSchema);
+    this.messageModel = this
+      .db
+      .model('message', messageSchema);
+    return this;
+  }
+
+  /*
+    Returns a User Mongoose Model Object - configured for
+    the parameters specified in the constructor.
+
+    @return {Mongoose.Model} userModel: The Mongoose Model that
+      can be used to interact with the Users stored in the MongoDB backend.
+  */
   getUserModel() {
     return this.userModel;
   }
 
   /*
-        Returns a Event Mongoose Model Object - configured for the parameters specified in the constructor.
+    Returns a Event Mongoose Model Object - configured for
+    the parameters specified in the constructor.
 
-        @return {Mongoose.Model} eventModel: The Mongoose Model that can be used to interact with the MongoDB backend.
-    */
+    @return {Mongoose.Model} eventModel: The Mongoose Model that
+      can be used to interact with the Events stored in the MongoDB backend.
+  */
   getEventModel() {
     return this.eventModel;
   }
 
   /*
-        Returns a Exhibition Mongoose Model Object - configured for the parameters specified in the constructor.
+    Returns a Exhibition Mongoose Model Object - configured for
+    the parameters specified in the constructor.
 
-        @return {Mongoose.Model} exhibitionModel: The Mongoose Model that can be used to interact with the MongoDB backend.
-    */
+    @return {Mongoose.Model} exhibitionModel: The Mongoose Model that
+      can be used to interact with the Exhibitions stored in the MongoDB backend.
+  */
   getExhibitionModel() {
     return this.exhibitionModel;
   }
 
   /*
-        Returns a Attendance Mongoose Model Object - configured for the parameters specified in the constructor.
+    Returns a Attendance Mongoose Model Object - configured for
+    the parameters specified in the constructor.
 
-        @return {Mongoose.Model} attendanceModel: The Mongoose Model that can be used to interact with the MongoDB backend.
-    */
+    @return {Mongoose.Model} attendanceModel: The Mongoose Model that can
+      be used to interact with the Attendances stored in the MongoDB backend.
+  */
   getAttendanceModel() {
     return this.attendanceModel;
   }
 
   /*
-        Returns a Comment Mongoose Model Object - configured for the parameters specified in the constructor.
+    Returns a Comment Mongoose Model Object - configured for
+    the parameters specified in the constructor.
 
-        @return {Mongoose.Model} commentModel: The Mongoose Model that can be used to interact with the MongoDB backend.
-    */
+    @return {Mongoose.Model} commentModel: The Mongoose Model that can
+      be used to interact with the Comments stored in the MongoDB backend.
+  */
   getCommentModel() {
     return this.commentModel;
   }
 
   /*
-        Closes the implicit backend connection.
-        Needs to be called in order for the Node script to terminate.
+    Returns a Message Mongoose Model Object - configured for
+    the parameters specified in the constructor.
 
-        @param {function} callback: An optional function that can be sent in to execute after the db closes.
-    */
+    @return {Mongoose.Model} messageModel: The Mongoose Model that can
+      be used to interact with the Messages stored in the MongoDB backend.
+  */
+  getMessageModel() {
+    return this.messageModel;
+  }
+
+  /*
+    Closes the implicit backend connection.
+    Needs to be called in order for the Node script to terminate.
+
+    @param {function} callback: An optional function that can
+      be sent in to execute after the db closes.
+  */
   disconnect(callback) {
     this
       .db

@@ -10,3 +10,6 @@ node_modules
 dist
 server/server.bundle.js
 lint.txt
+
+# VSCode files
+.vscode/

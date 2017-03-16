@@ -1,29 +1,66 @@
 #header {
   display: flex;
-  flex-direction: row;
   box-shadow: 0px 3px 5px #888888;
   background-color: mediumseagreen;
 
-  #brand-logo {
-    height: 50px;
+  #hamburger-toggle {
+    top: 10px;
+    border: none;
+    cursor: pointer;
+  }
+
+  #navbar-supported-content {
+    box-shadow: none;
+  }
+
+  #search-input {
+    border-radius: 10px 0 0 10px;
+    font-size: 16px;
+    margin: 0;
+  }
+
+  #search-container {
+    margin-bottom: 5px;
+  }
+
+  #search-submit {
+    border-radius: 0 10px 10px 0;
+    font-size: 16px;
+    padding: 10px;
   }
 
   #login, #signin, #logout, .navbar-buttons {
-    padding: 10px 20px 0 20px;
+    padding: 10px;
     border-radius: 20px;
     color: white;
   }
 
-  a {
-    text-decoration: none;
+  #brand-logo {
+    height: 50px;
+    margin-right: 20px
   }
+}
 
-  #nav-links {
-    display: flex;
-    justify-content: flex-end;
+
+a {
+  text-decoration: none;
+}
+
+#navbar-links {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 16px;
+
+  .nav-item {
+    margin: 5px;
+
+    .navbar-buttons {
+      padding: 5px 10px;
+    }
 
     .active {
       background-color: teal;
+      border-radius: 0;
     }
   }
 }
