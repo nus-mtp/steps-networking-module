@@ -26,6 +26,12 @@ class EventView extends React.Component {
     this.setState({
       showEventMap: !this.state.showEventMap,
     });
+    // Also forcefully open Projects
+    if (!this.state.showEventMap) {
+      this.setState({
+        isDisplayProjects: true,
+      });
+    }
   }
 
   render() {
@@ -63,7 +69,7 @@ class EventView extends React.Component {
                 <div>
                 {
                   this.state.projects.map((project, i) =>
-                  <div className="d-flex flex-row mb-1" key={i}>
+                  <div className="d-flex flex-row mb-1" key={i} id={i}>
                     <img className="img-fluid project-thumbnail mr-2" src="../../resources/images/dummy-poster.png" alt="event-poster" />
                     <div>
                       <div>{project.exhibitionName}</div>
