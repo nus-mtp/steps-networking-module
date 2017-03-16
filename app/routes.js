@@ -1,4 +1,4 @@
-import App from './components/app'
+import App from './components/app';
 import Home from './components/home/homeView';
 import Chat from './components/chat/chatView';
 import Event from './components/event/eventView';
@@ -22,7 +22,7 @@ const routes = {
         } else {
           callback(null, Login);
         }
-      }
+      },
     },
     {
       path: Paths.login,
@@ -37,7 +37,7 @@ const routes = {
       getComponent: (nextState, callback) => {
         Auth.deauthenticateUser();
         callback(null, Login);
-      }
+      },
     },
     {
       path: Paths.project,
@@ -59,7 +59,7 @@ const routes = {
       path: Paths.match,
       component: Match,
     },
-  ]
+  ],
 };
 
 export default routes;

@@ -1,25 +1,25 @@
 const SampleProjects = [
   {
-    exhibitionName: "Monalisa",
-    eventName: "New Year Wild Party",
+    exhibitionName: 'Monalisa',
+    eventName: 'New Year Wild Party',
     tags: [
-      "intern", "co-founder",
+      'intern', 'co-founder',
     ],
   },
   {
-    exhibitionName: "Alan Turing's Apple",
-    eventName: "New Year Wild Party",
+    exhibitionName: 'Alan Turings Apple',
+    eventName: 'New Year Wild Party',
     tags: [
-      "intern", "full-time",
+      'intern', 'full-time',
     ],
   },
   {
-    exhibitionName: "Donald Trump's Hair",
-    eventName: "Food Trail",
+    exhibitionName: 'Donald Trumps Hair',
+    eventName: 'Food Trail',
     tags: [
-      "full-time",
+      'full-time',
     ],
   },
-]
+];
 
 export default SampleProjects;
