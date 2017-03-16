@@ -1,12 +1,16 @@
+import currentdb from './currentdb';
+
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
 var passport = require('passport');
 var config = require('./config.json');
 
-var db = require('./database/mongodbScripts/accessMongoDB').connect(config.herokuDbUri.username, config.herokuDbUri.password,
-                                                                    config.herokuDbUri.host, config.herokuDbUri.port,
-                                                                    config.herokuDbUri.database);
+var db = require('./database/mongodbScripts/accessMongoDB').connect(config[currentdb].username,
+                                                                    config[currentdb].password,
+                                                                    config[currentdb].host,
+                                                                    config[currentdb].port,
+                                                                    config[currentdb].database);
 
 var app = express();
 var port = 3000;

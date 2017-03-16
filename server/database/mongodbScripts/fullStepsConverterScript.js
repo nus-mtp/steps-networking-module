@@ -14,7 +14,7 @@ const ModelHandler = require('../models/ourModels');
 const StepsModelHandler = require('../models/stepsModels');
 
 const Models = new ModelHandler().initWithParameters(config.herokuDbUri.username, config.herokuDbUri.password,
-                                                      config.herokuDbUri.host, config.herokuDbUri.port, 
+                                                      config.herokuDbUri.host, config.herokuDbUri.port,
                                                       config.herokuDbUri.database);
 
 const User = Models.getUserModel();
@@ -23,7 +23,7 @@ const Exhibition = Models.getExhibitionModel();
 const Attendance = Models.getAttendanceModel();
 
 const StepsModels = new StepsModelHandler().initWithParameters(config.stepsDbUri.username, config.stepsDbUri.password,
-                                                                config.stepsDbUri.host, config.stepsDbUri.port, 
+                                                                config.stepsDbUri.host, config.stepsDbUri.port,
                                                                 config.stepsDbUri.database);
 
 const stepsUser = StepsModels.getUserModel();
@@ -51,7 +51,7 @@ function removeDuplicates(arr) {
 */
 function upsertEvent(stepsEventObj, callback) {
   const eventName = String(stepsEventObj.code).trim();
-  const eventDescription = stepsEventObj.name + '\n' + stepsEventObj.description;
+  const eventDescription = `${stepsEventObj.name} \n ${stepsEventObj.description}`;
   const startDate = new Date(stepsEventObj.startTime);
   const endDate = new Date(stepsEventObj.endTime);
   const eventLocation = stepsEventObj.location;
@@ -69,6 +69,7 @@ function upsertEvent(stepsEventObj, callback) {
 
   Event.findOneAndUpdate(query, update, {
     upsert: true,
+    setDefaultsOnInsert: true,
   }, (err) => {
     if (err) {
       console.log(err);
@@ -85,7 +86,7 @@ function upsertEvent(stepsEventObj, callback) {
 */
 function upsertUser(stepsUserObj, callback) {
   const userEmail = String(stepsUserObj.email).trim();
-  const userName = stepsUserObj.name;
+  const userName = stepsUserObj.name.trim();
   const userPassword = '';
 
   const query = {
@@ -99,6 +100,7 @@ function upsertUser(stepsUserObj, callback) {
 
   User.findOneAndUpdate(query, update, {
     upsert: true,
+    setDefaultsOnInsert: true,
   }, (err) => {
     if (err) {
       console.log(err);
@@ -245,18 +247,19 @@ function upsertModule(stepsModuleObj, callback) {
                       attendance_name: String(exhibitionName).trim(),
                     };
 
+                    // Upsert Attendance
                     User.where(userQuery).lean().findOne((err, user) => {
-                      if (err) {
+                      if (err) { // Unknown Error
                         console.log(err);
                         callback(null);
-                      } else if (user) {
+                      } else if (user) { // User Previously Inserted
                         Exhibition.where(exhibitionQuery).lean().findOne((err, exhibition) => {
-                          if (err) {
+                          if (err) { // Unknown Error
                             console.log(err);
                             callback(null);
                           } else if (exhibition) { // Both the User and Exhibition exist - Upsert Attendance Information
                             Attendance.where(attendanceQuery).findOne((err, attendance) => {
-                              if (err) {
+                              if (err) { // Unknown Error
                                 console.log(err);
                                 callback(null);
                               } else if (attendance) { // The Attendance Information exists - don't need to Update
@@ -271,12 +274,12 @@ function upsertModule(stepsModuleObj, callback) {
                                 });
                               }
                             });
-                          } else {
-                            console.log('Unable to create Attendance Record for Student under: ' + exhibitionName);
+                          } else { // The User was Inserted before, but the Exhibition has not been inserted in the Previous Step
+                            console.log(`Unable to create Attendance Record for Student under: ${exhibitionName}`);
                             callback(null);
                           }
                         });
-                      } else {
+                      } else { // User not Inserted Before - should have been inserted when reading in the STePs _User Collection
                         callback(null);
                       }
                     });
@@ -311,80 +314,155 @@ function upsertModule(stepsModuleObj, callback) {
 */
 function upsertGuests(stepsGuestObj, callback) {
   async.waterfall([
-    (callback) => { // Upsert Guests
-      const userEmail = String(stepsGuestObj._id + '@temp.com').trim(); // To accommodate for sanitized Emails in STePs DB
-      const userPassword = '';
-      const userName = stepsGuestObj.name;
-
-      const query = {
-        email: userEmail,
-      };
-
-      const update = {
-        email: userEmail,
-        name: userName,
-        password: userPassword,
-      };
-
+    (callback) => { // Extract out relevant information from each Guest
       const eventName = String(stepsGuestObj.event).trim();
 
-      User.findOneAndUpdate(query, update, {new: true, upsert: true}, (err) => {
-        if (err) {
-          console.log(err);
-        }
+      const userName = stepsGuestObj.name.trim();
+      const userPassword = '';
 
-        async.setImmediate(() => {
-          callback(null, userEmail, eventName);
+      let userEmail = '';
+      if (stepsGuestObj.email === 'abc@temp.com') { // To accommodate for sanitized Emails in STePs DB
+        User.where({ name: userName }).lean().find((err, matchedUsers) => { // Try to get true Email via Name
+          if (err) { // Unknown Error
+            console.log(err);
+            callback(null, userEmail, userPassword, userName, eventName, false);
+          } else if (matchedUsers && matchedUsers.length === 1) { // If Name is Unique
+            userEmail = matchedUsers[0].email.trim();
+            callback(null, userEmail, userPassword, userName, eventName, true);
+          } else { // Name not Unique or User non-existing
+            userEmail = String(`${stepsGuestObj._id}@temp.com`).trim();
+            callback(null, userEmail, userPassword, userName, eventName, true);
+          }
         });
-      });
-    },
-    (userEmail, eventName, callback) => { // Upsert an Attendance Listing for Each Guest Per Event
-      const userQuery = {
-        email: userEmail,
-      };
-      const eventQuery = {
-        event_name: eventName,
-      };
-      const attendanceQuery = {
-        user_email: userEmail,
-        attendance_type: 'event',
-        attendance_name: eventName,
-      };
+      } else {
+        userEmail = stepsGuestObj.email.trim();
+        callback(null, userEmail, userPassword, userName, eventName, true);
+      }
+    },    
+    (userEmail, userPassword, userName, eventName, valid, callback) => { // Upsert Guests into User Collection
+      if (valid) {
+        const query = {
+          email: userEmail,
+        };
 
-      User.where(userQuery).lean().findOne((err, user) => {
-        if (err) {
-          console.log(err);
-          callback(null);
-        } else if (user) {
-          Event.where(eventQuery).lean().findOne((err, event) => {
-            if (err) {
-              console.log(err);
-              callback(null);
-            } else if (event) { // User and Event found - Upsert Attendance Document
-              Attendance.where(attendanceQuery).lean().findOne((err, attendance) => {
-                if (err) {
-                  console.log(err);
-                  callback(null);
-                } else if (attendance) { // Don't do anything if Attendance Document already exists
-                  callback(null);
-                } else { // Attendance Document does not already exist - Insert
-                  const attendanceDoc = new Attendance(attendanceQuery);
-                  attendanceDoc.save((err) => {
-                    if (err) {
-                      console.log(err);
-                    }
-                    callback(null);
-                  });
-                }
-              });
-            } else {
-              callback(null);
-            }
+        const update = {
+          email: userEmail,
+          name: userName,
+          password: userPassword,
+        };
+
+        User.findOneAndUpdate(query, update, { new: true, upsert: true, setDefaultsOnInsert: true }, (err) => {
+          if (err) {
+            console.log(err);
+          }
+
+          async.setImmediate(() => {
+            callback(null, userEmail, eventName, valid);
           });
-        } else {
-          callback(null);
-        }
-      });
+        });
+      } else {
+        callback(null, userEmail, eventName, valid);
+      }
+    },
+    (userEmail, eventName, valid, callback) => { // Upsert an Attendance Listing for Each Guest Per Event
+      if (valid) {
+        const userQuery = {
+          email: userEmail,
+        };
+        const eventQuery = {
+          event_name: eventName,
+        };
+        const attendanceEventQuery = {
+          user_email: userEmail,
+          attendance_type: 'event',
+          attendance_name: eventName,
+        };
+
+        User.where(userQuery).lean().findOne((err, user) => {
+          if (err) { // Unknown Error
+            console.log(err);
+            callback(null);
+          } else if (user) { // User was Previously Inserted
+            Event.where(eventQuery).lean().findOne((err, event) => {
+              if (err) { // Unknown Error
+                console.log(err);
+                callback(null);
+              } else if (event) { // User and Event found - Upsert Attendance Document
+                Attendance.where(attendanceEventQuery).lean().findOne((err, eventAttendance) => {
+                  if (err) { // Unknown Error
+                    console.log(err);
+                    callback(null);
+                  } else if (eventAttendance) { // Don't do anything if Attendance Document already exists
+                    callback(null);
+                  } else { // Attendance Document may not exist - Insert only if User isn't already participating in one of the Exhibitions in the Event
+                    const attendanceExhibitionQuery = {
+                      user_email: userEmail,
+                      attendance_type: 'exhibition',
+                    };
+
+                    Attendance.where(attendanceExhibitionQuery).lean().find((err, exhibitionAttendances) => {
+                      if (err) { // Unknown Error
+                        callback(null);
+                      } else if (exhibitionAttendances && exhibitionAttendances.length > 0) { // User has participated in Exhibitions before
+                        async.waterfall([
+                          (callback) => {
+                            async.eachLimit(exhibitionAttendances, 5, (exhibitionAttendance, callback) => { // For each Exhibition Attendance in Parallel, 5 at a time
+                              const exhibitionQuery = {
+                                exhibition_name: exhibitionAttendance.attendance_name,
+                                event_name: eventName,
+                              };
+                              
+                              Exhibition.where(exhibitionQuery).lean().findOne((err, exhibition) => {
+                                if (err) { // Unknown Error
+                                  console.log(err);
+                                  callback(true); // Stop the Parallel Search
+                                } else if (exhibition) { // User is already participating in the current Event as Exhibitor
+                                  callback(true); // Stop the Parallel Search
+                                } else { // The current event 
+                                  callback(null);
+                                }
+                              });
+                            }, (isExhibitorForCurrentEvent) => {
+                              callback(null, isExhibitorForCurrentEvent);
+                            });
+                          }, 
+                          (isExhibitorForCurrentEvent, callback) => {
+                            if (isExhibitorForCurrentEvent !== true) { // User has not participated in Exhibitions before - safe to insert Attendance for Event
+                              const attendanceDoc = new Attendance(attendanceEventQuery);
+                              attendanceDoc.save((err) => {
+                                if (err) {
+                                  console.log(err);
+                                }
+                                callback(null);
+                              });
+                            } else { // User is participating in current Event as Exhibitor - do not insert Event Attendance data
+                              callback(null);
+                            }
+                          },
+                        ], callback);
+                      } else { // User has not participated in Exhibitions before - safe to insert Attendance for Event
+                        const attendanceDoc = new Attendance(attendanceEventQuery);
+                        attendanceDoc.save((err) => {
+                          if (err) {
+                            console.log(err);
+                          }
+                          callback(null);
+                        });
+                      }
+                    });
+                  }
+                });
+              } else { // Event was not Previously Inserted
+                callback(null);
+              }
+            });
+          } else { // User was not Previously Inserted
+            callback(null);
+          }
+        });
+      } else {
+        callback(null);
+      }
     },
   ], callback);
 }

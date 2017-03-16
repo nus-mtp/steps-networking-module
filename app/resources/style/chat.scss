@@ -1,16 +1,68 @@
-#chat-body {
-  max-width: 750px;
-  width: 100%;
-  background-color: white;
+/* Overall chatpage div */
+#chat {
+  display: relative;
 }
 
-#chat-content-container {
-  max-width: 750px;
+/* Wrapper for sidebar */
+#chat-sidebar-wrapper {
+  position:fixed;
+  height: 100%;
   width: 100%;
+  overflow: hidden;
+  overflow-y: scroll;
+  z-index:1;
+}
+
+/* Sidebar to hold tabs when in desktop mode */
+#chat-sidebar {
+  margin-top: 70px;
+  margin-bottom: 15px;
+  padding-right: 5px;
+  position:relative;
+  height: calc(100%-80px);
+}
+
+/* Tab column/section */
+#chat-tabs {
+  width: 100%;
+}
+
+/* Individual tabs */
+#chat-tab {
+  margin-bottom: 5px;
+  word-wrap: break-word;
+  text-align: left;
+}
+
+/* Main chat function */
+#chat-body {
+  background-color: white;
+  margin-left: 0;
+  z-index:2;
+  position: relative;
+}
+
+/* Name of person in the conversation */
+#chat-name-header {
+  background-color: mediumslateblue;
+  color: white;
+  padding: 5px;
+  margin-bottom: 10px;
+  max-width: 100%;
+  width: 80%;
+  border-radius: .25rem;
+  word-wrap: break-word;
+  text-align: center;
+}
+
+/* Actual messages in the chat */
+#chat-content-container {
   background-color: white;
   margin-bottom: 105px;
+  margin-left:0;
 }
 
+/* Messages sent by other user */
 #chat-other {
   background-color:lightgray;
   margin-left:0;
@@ -21,6 +73,7 @@
   max-width: 100%;
 }
 
+/* Messages sent by user */
 #chat-self {
   background-color:palegreen;
   margin-left: auto;
@@ -31,20 +84,22 @@
   max-width: 100%;
 }
 
+/* Textbox to submit messages */
 #chat-form-container {
-  max-width: 750px;
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
+  margin-left:inherit;
+  padding-left: inherit;
+  margin-right: 0;
   height: 100px;
   display:flex;
 }
 
+/* Textbox settings */
 #chat-input {
   display:inline-block;
   resize: none;
 }
 
+/* Settings for submit button */
 #chat-submit-button {
   display:inline-block;
 }
