@@ -28,8 +28,7 @@ class Message{
     this.messageModelDoc = new this.MessageModel({
       recipient_email: recipientEmail,
       sender_email: senderEmail,
-      content: content,
-      timestamp: timestamp,
+      messages:  { content: content ,  timestamp: timestamp } ,
     });
     this.ModelHandler.disconnect();
   }
@@ -105,9 +104,9 @@ class Message{
       recipient_email: recipientEmail,
       sender_email: senderEmail,
     };
-    const update = {$push: { content: content, timestamp: timestamp } };
+    const update = { $push: { messages: { content: content,  timestamp: timestamp }}};
     const options = { new: true };
-    this.MessageModel.findOne(query, update, options, function cb(err, results) {
+    this.MessageModel.findOneAndUpdate(query, update, options, function cb(err, results) {
       if (err) {
         callback(err, null);
       } else {if (results) {

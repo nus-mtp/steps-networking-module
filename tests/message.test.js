@@ -41,7 +41,7 @@ describe('Message Create', function(){
         if (err){
           console.log("error with getting message from user");
         } else {
-          assert.equal(messageObj[0].content, 'Hi!'); //ask if is there only one object between user1 and user2s
+          assert.equal(messageObj[0].messages[0].content, 'Hi!'); //ask if is there only one object between user1 and user2s
         }
       });
       done();
@@ -79,7 +79,7 @@ describe('Message Read', function(){
       if (err){
         console.log("can't get existing message");
       } else {
-        assert.equal(msgObj[0].content, 'Dammit');
+        assert.equal(msgObj[0].messages[0].content, 'Dammit');
       }
       done();
     });
@@ -90,7 +90,7 @@ describe('Message Read', function(){
       if (err){
         console.log("can't get existing message");
       } else {
-        assert.equal(msgObj[0].content, 'Dammit');
+        assert.equal(msgObj[0].messages[0].content, 'Dammit');
       }
     });
   });
@@ -103,5 +103,47 @@ describe('Message Read', function(){
         assert.equal(msgObj[0], null);
       }
     });
+  });
+});
+
+describe('Message Update', function(){
+  before(function(done) {
+    var testmessage1 = new Message('user3@user.com',
+                                   'user4@user.com',
+                                   'Dammit',
+                                   new Date('October 14, 2014 21:00:00'),
+                                  );
+
+    testmessage1.saveMessage(function callback(err) {
+      if (err) {
+        console.log(err);
+      }
+      done();
+    });
+  });
+
+  after (function(done) {
+    Message.clearAllMessage(function cb(err) {
+      if (err) {
+        console.log(err);
+      }
+      done();
+    });
+  });
+
+  it ('should be able to append more messages into the object', function(){
+    Message.addMessage(
+      'user3@user.com',
+      'user4@user.com',
+      'Are you serious?!',
+      new Date('October 15, 2014 21:00:00'),
+      function cb(err, results){
+        if (err){
+          console.log (err);
+        } else {
+          assert.equal(results.messages[1].content, 'Are you serious?!');
+        }
+      }
+    );
   });
 });
