@@ -1,14 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router';
 import sampleProjects from '../project/sampleData';
+import EventMap from './eventMap';
 
 class EventView extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      isDisplayProjects: false,
       projects: sampleProjects,
+      isDisplayProjects: false,
+      showEventMap: false,
     }
 
     this.displayAllProjects = this.displayAllProjects.bind(this);
@@ -17,6 +19,12 @@ class EventView extends React.Component {
   displayAllProjects() {
     this.setState({
       isDisplayProjects: !this.state.isDisplayProjects,
+    });
+  }
+  
+  displayEventMap() {
+    this.setState({
+      showEventMap: !this.state.showEventMap,
     });
   }
 
@@ -43,8 +51,13 @@ class EventView extends React.Component {
                     (this.state.isDisplayProjects) ? "Hide Projects" : "Show Projects"
                   }
                 </button>
-                <button className="btn btn-secondary">Sitemap</button>
+                <button className="btn btn-secondary" onClick={this.displayEventMap.bind(this)}>Sitemap</button>
               </div>
+
+              <EventMap
+                showEventMap={this.state.showEventMap}
+              />
+
               {
                 (this.state.isDisplayProjects) ?
                 <div>
