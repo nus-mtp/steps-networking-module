@@ -1,13 +1,13 @@
 const ModelHandler = require('../models/ourModels.js');
 
 const config = require('../../config.json');
-const currentDb = require('../../currentdb');
+const currentdb = require('../../currentdb');
 
-const username = config[currentDb].username;
-const password = config[currentDb].password;
-const host = config[currentDb].host;
-const port = config[currentDb].port;
-const dbName = config[currentDb].database;
+const username = config[currentdb].username;
+const password = config[currentdb].password;
+const host = config[currentdb].host;
+const port = config[currentdb].port;
+const dbName = config[currentdb].database;
 
 /**
  * This is the wrapper class used extract out and store information
