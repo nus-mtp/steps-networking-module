@@ -36,7 +36,11 @@ class Event extends React.Component {
         <div onClick={this.handleClick} style={style} className="event-picture card"
            aria-expanded={this.props.open[this.props.serial]}>
           <div id="event-image-container">
-            <Link to="/event"><button className="btn btn-danger event-img-button">+</button></Link>
+            <Link to="/event">
+              <button className="btn btn-danger event-img-button">
+                <img src="../../resources/images/pageview-icon.svg" />
+              </button>
+            </Link>
             <img id="event-poster" className="img-fluid text-center event-poster card-img-top" src="../../resources/images/dummy-poster.png" alt="Event picture" />
           </div>
           <div className="card-block event-info-container">
