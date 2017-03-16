@@ -1,4 +1,4 @@
-const Event = require('../app/database/objectClasses/Event.js');
+const Event = require('../server/database/objectClasses/Event.js');
 const assert = require('assert');
 
 describe ('Event Create', function() {
