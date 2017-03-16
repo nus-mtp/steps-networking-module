@@ -7,18 +7,15 @@ const attendanceSchema = new mongoose.Schema({
     required: 'The Email of the User who is attending the Event / Exhibition is used as a Foreign Key, and is t' +
         'herefore Required.',
   },
-  attendance_type: {
-    type: String,
-    enum: [
-      'exhibition', 'event',
-    ],
-    required: true,
-  },
   attendance_name: {
-    type: String, // Event or Exhibition Name
+    type: String,
     trim: true,
-    required: 'The Name of the Event or Exhibition for the User is attending is us' +
-        'ed as a Foreign Key, and is therefore Required.',
+    required: 'The Exhibition / Event that this User is attending is used as a Foreign Key, and it is therefore Required.', 
+  },
+  attendance_type: {
+      type: String,
+      enum: ['event', 'exhibition'], 
+      default: 'event',
   },
   reason: [
     {
