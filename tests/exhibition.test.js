@@ -1,4 +1,4 @@
-const Exhibition = require("../app/database/objectClasses/Exhibition.js");
+const Exhibition = require("../server/database/objectClasses/Exhibition.js");
 const assert = require('assert');
 
 describe ("Exhibition Create", function(){
