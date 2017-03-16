@@ -19,8 +19,7 @@ class Comment{
     this.commentModelDoc = new this.CommentModel({
       user_email: userEmail,
       exhibition: exhibitionName,
-      comment: comment,
-      date: date,
+      comments: {content: comment, timestamp: date},
     });
     this.ModelHandler.disconnect();
   }
@@ -83,7 +82,7 @@ class Comment{
       user_email: userEmail,
       exhibition_name: exhibitionName,
     };
-    const update = {$push: { content: content, date: date } };
+    const update = {$push: {comments: { content: comment, timestamp: date }}};
     const options = { new: true };
     this.CommentModel.findOne(query, update, options, function cb(err, results) {
       if (err) {

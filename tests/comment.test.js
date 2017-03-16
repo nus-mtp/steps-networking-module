@@ -5,7 +5,7 @@ describe('Comment Create', function(){
   before(function(done) {
     var testcomment1 = new Comment('user1@user.com',
                                    'MAMA! LAVA!',
-                                   'awesome!', //ask sean, will comment and date become array too?
+                                   'awesome!',
                                    new Date('October 14, 2014 21:00:00'),
                                   );
 
@@ -41,7 +41,7 @@ describe('Comment Create', function(){
         if (err){
           console.log("error with getting comment for an event");
         } else {
-          assert.equal(commentObj[1].comment,'hey man thanks!');
+          assert.equal(commentObj[1].comments[0].content,'hey man thanks!');
         }
         done();
       });
@@ -79,7 +79,7 @@ describe('Comment Read', function(){
       if (err){
         console.log("error with getting comment for an event");
       } else {
-        assert.equal(commentObj[0].comment,'Could use work');
+        assert.equal(commentObj[0].comments[0].content,'Could use work');
       }
     });
   });
@@ -95,7 +95,6 @@ describe('Comment Read', function(){
   });
 });
 
-/* Update is not completed yet
 describe('Comment Update', function(){
   before(function(done) {
     var testcomment3 = new Comment('user4@user.com',
@@ -120,4 +119,19 @@ describe('Comment Update', function(){
       done();
     });
   });
-*/
+
+  it ('should be able to append more comments into the object', function(){
+    Comment.addCommentForExhibition(
+      'user2@user.com',
+      'NAME',
+      'I agree',
+      new Date('October 14, 2014 22:20:20'),
+      function cb(err, results){
+        if (err){
+          console.log(err);
+        } else {
+          assert.equal(results[0].comments[0].content, 'I agree');
+        }
+      });
+  });
+});
