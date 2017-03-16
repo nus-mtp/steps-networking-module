@@ -1,9 +1,11 @@
 // Comment out appropriate db based on which db is being used
 
+let currentdb = '';
+
 // Use this db in release
-// const currentdb = "herokuDbUri";
+// currentdb = 'herokuDbUri';
 
 // Use this db while in development
-const currentdb = "devDbUri";
+currentdb = 'devDbUri';
 
-export default currentdb;
+module.exports = currentdb;
