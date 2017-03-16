@@ -143,7 +143,7 @@ class Collapsable extends React.Component {
                   <nav className="nav d-flex flex-row justify-content-between">
                     <div id="match-container">
                       {
-                        this.state.projects.map((project, i) =>
+                        this.state.projects.map(project =>
                           <Link key={project.exhibitionName} className="nav-link matches" to="/match">{project.exhibitionName}</Link>,
                       )}
                     </div>
