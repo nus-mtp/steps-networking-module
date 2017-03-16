@@ -1,10 +1,13 @@
 const ModelHandler = require('../models/ourModels.js');
 
-const username = '';
-const password = '';
-const port = '27017';
-const host = 'localhost';
-const dbName = 'dev';
+const config = require('../../config.json');
+const currentDb = require('../../currentdb');
+
+const username = config[currentDb].username;
+const password = config[currentDb].password;
+const host = config[currentDb].host;
+const port = config[currentDb].port;
+const dbName = config[currentDb].database;
 
 class Attendance {
   /**

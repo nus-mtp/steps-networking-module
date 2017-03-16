@@ -1,10 +1,13 @@
 const ModelHandler = require('../models/ourModels.js');
 
-const port = '27017';
-const host = 'localhost';
-const dbName = 'dev';
-const username = '';
-const password = '';
+const config = require('../../config.json');
+const currentDb = require('../../currentdb');
+
+const username = config[currentDb].username;
+const password = config[currentDb].password;
+const host = config[currentDb].host;
+const port = config[currentDb].port;
+const dbName = config[currentDb].database;
 
 /**
  * This is the wrapper class used extract out and store information
@@ -12,7 +15,7 @@ const password = '';
  * Deletion of Message Object is not supported
  *
  */
-class Message{
+class Message {
 
   /**
    * Creates a Message model instance.

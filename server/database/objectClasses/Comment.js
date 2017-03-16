@@ -1,17 +1,20 @@
 const ModelHandler = require('../models/ourModels.js');
 
-const port = '27017';
-const host = 'localhost';
-const dbName = 'dev';
-const username = '';
-const password = '';
+const config = require('../../config.json');
+const currentDb = require('../../currentdb');
+
+const username = config[currentDb].username;
+const password = config[currentDb].password;
+const host = config[currentDb].host;
+const port = config[currentDb].port;
+const dbName = config[currentDb].database;
 
 /**
  * This is the wrapper class used extract out and store information
  * about the comments from the database between view and model
  *
  */
-class Comment{
+class Comment {
 
   constructor(userEmail, exhibitionName, comment, date) {
     this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
