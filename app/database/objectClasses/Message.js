@@ -9,7 +9,7 @@ const password = '';
 /**
  * This is the wrapper class used extract out and store information
  * about the Messages from the database between view and model
- * Users are not allowed to delete the Message Object
+ * Deletion of Message Object is not supported
  *
  */
 class Message{
@@ -22,7 +22,7 @@ class Message{
    * @param {String} content: message to be saved
    * @param {Date} timeStamp: Date object to map when was message sent
    */
-  constructor(recipientEmail, senderEmail, content, timestamp) {
+  constructor(senderEmail, recipientEmail, content, timestamp) {
     this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
     this.MessageModel = this.ModelHandler.getMessageModel();
     this.messageModelDoc = new this.MessageModel({
@@ -67,11 +67,11 @@ class Message{
   }
 
   /**
-  * Retrieve Message by recipients
-  *
-  * @param {String} senderEmail: Email string of receiver
-  * @param {Function} callback: Used for error checking and storing of Message Array
-  */
+   * Retrieve Message by recipients
+   *
+   * @param {String} senderEmail: Email string of receiver
+   * @param {Function} callback: Used for error checking and storing of Message Array
+   */
   static getMessageForUser(recipientEmail, callback) {
     Message.connectDB();
     this.MessageModel.find({ recipient_email: recipientEmail }, callback);
@@ -79,14 +79,31 @@ class Message{
   }
 
   /**
-  * Retrieve Message by sender
-  *
-  * @param {String} senderEmail: Email string of sender
-  * @param {Function} callback: Used for error checking and storing of Message Array
-  */
+   * Retrieve Message by sender
+   *
+   * @param {String} senderEmail: Email string of sender
+   * @param {Function} callback: Used for error checking and storing of Message Array
+   */
   static getMessageFromUser(senderEmail, callback) {
     Message.connectDB();
     this.MessageModel.find({ sender_email: senderEmail }, callback);
+    Message.disconnectDB();
+  }
+
+  /**
+   * Retrieve the messages sent by sender to recipient
+   *
+   * @param {String} senderEmail: Email string of sender
+   * @param {String} senderEmail: Email string of receiver
+   * @param {Function} callback: Used for error checking and storing of Message Array
+   */
+  static getConversation(senderEmail, recipientEmail, callback) {
+    Message.connectDB();
+    const query = {
+      recipient_email: recipientEmail,
+      sender_email: senderEmail,
+    };
+    this.MessageModel.findOne({ sender_email: senderEmail }, callback);
     Message.disconnectDB();
   }
 
@@ -98,7 +115,7 @@ class Message{
    * @param {String} content: message to be saved
    * @param {Date} timeStamp: Date object to map when was message sent
    */
-  static addMessage(recipientEmail, senderEmail, content, timestamp, callback) { //yet to test
+  static addMessage(senderEmail, recipientEmail, content, timestamp, callback) {
     Message.connectDB();
     const query = {
       recipient_email: recipientEmail,

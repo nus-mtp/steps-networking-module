@@ -3,8 +3,8 @@ const assert = require('assert');
 
 describe('Message Create', function(){
   before(function(done) {
-    var testmessage1 = new Message('user1@user.com',
-                                   'user2@user.com',
+    var testmessage1 = new Message('user2@user.com',
+                                   'user1@user.com',
                                    'HELLO!',
                                    new Date('October 14, 2014 21:00:00'),
                                   );
@@ -27,8 +27,8 @@ describe('Message Create', function(){
   });
 
   it('should be able to add a new message object', function(done){
-    var testmessage2 = new Message('user2@user.com',
-                                   'user1@user.com',
+    var testmessage2 = new Message('user1@user.com',
+                                   'user2@user.com',
                                    'Hi!',
                                    new Date('October 14, 2014 21:01:00'),
                                   );
@@ -41,7 +41,7 @@ describe('Message Create', function(){
         if (err){
           console.log("error with getting message from user");
         } else {
-          assert.equal(messageObj[0].messages[0].content, 'Hi!'); //ask if is there only one object between user1 and user2s
+          assert.equal(messageObj[0].messages[0].content, 'Hi!');
         }
       });
       done();
@@ -51,8 +51,8 @@ describe('Message Create', function(){
 
 describe('Message Read', function(){
   before(function(done) {
-    var testmessage1 = new Message('user3@user.com',
-                                   'user4@user.com',
+    var testmessage1 = new Message('user4@user.com',
+                                   'user3@user.com',
                                    'Dammit',
                                    new Date('October 14, 2014 21:00:00'),
                                   );
@@ -73,7 +73,16 @@ describe('Message Read', function(){
       done();
     });
   });
-
+  it('should be able to read message FROM a specified user TO another specified user', function (done){
+    Message.getConversation('user4@user.com', 'user3@user.com', function cb(err, msgObj){
+      if (err){
+        console.log("can't get existing message");
+      } else {
+        assert.equal(msgObj.messages[0].content, 'Dammit');
+      }
+      done();
+    });
+  });
   it('should be able to read message FROM a specified user', function (done){
     Message.getMessageFromUser('user4@user.com', function cb(err, msgObj){
       if (err){
@@ -108,8 +117,8 @@ describe('Message Read', function(){
 
 describe('Message Update', function(){
   before(function(done) {
-    var testmessage1 = new Message('user3@user.com',
-                                   'user4@user.com',
+    var testmessage1 = new Message('user4@user.com',
+                                   'user3@user.com',
                                    'Dammit',
                                    new Date('October 14, 2014 21:00:00'),
                                   );
@@ -133,8 +142,8 @@ describe('Message Update', function(){
 
   it ('should be able to append more messages into the object', function(){
     Message.addMessage(
-      'user3@user.com',
       'user4@user.com',
+      'user3@user.com',
       'Are you serious?!',
       new Date('October 15, 2014 21:00:00'),
       function cb(err, results){
