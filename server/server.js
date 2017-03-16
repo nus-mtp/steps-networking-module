@@ -45,6 +45,21 @@ app.use('/api', apiRoutes);
 var userRoutes = require('./routes/user');
 app.use('/user', userRoutes);
 
+var eventRoutes = require('./routes/event');
+app.use('/event', eventRoutes);
+
+var exhibitionRoutes = require('./routes/exhibition');
+app.use('/exhibition', exhibitionRoutes);
+
+var attendanceRoutes = require('./routes/attendance');
+app.use('/attendance', attendanceRoutes);
+
+var commentRoutes = require('./routes/comment');
+app.use('/comment', commentRoutes);
+
+var messageRoutes = require('./routes/message');
+app.use('/message', messageRoutes);
+
 app.listen(process.env.PORT || port, function() {
   var listeningPort = process.env.PORT || port;
   console.log(`Running on ${listeningPort}`);
