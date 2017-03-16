@@ -42,6 +42,9 @@ var apiRoutes = require('./routes/api');
 app.use('/auth', authRoutes);
 app.use('/api', apiRoutes);
 
+var userRoutes = require('./routes/user');
+app.use('/user', userRoutes);
+
 app.listen(process.env.PORT || port, function() {
   var listeningPort = process.env.PORT || port;
   console.log(`Running on ${listeningPort}`);
