@@ -1,4 +1,4 @@
-const Comment = require("../app/database/objectClasses/Comment.js");
+const Comment = require("../server/database/objectClasses/Comment.js");
 const assert = require('assert');
 
 describe('Comment Create', function(){

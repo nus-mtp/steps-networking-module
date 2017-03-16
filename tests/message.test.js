@@ -1,4 +1,4 @@
-const Message = require("../app/database/objectClasses/Message.js");
+const Message = require("../server/database/objectClasses/Message.js");
 const assert = require('assert');
 
 describe('Message Create', function(){

@@ -1,4 +1,4 @@
-const User = require('../app/database/objectClasses/User.js');
+const User = require('../server/database/objectClasses/User.js');
 const assert = require('assert');
 
 describe ('User Create',function() {

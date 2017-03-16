@@ -1,4 +1,4 @@
-const ModelHandler = require('../../../server/database/models/ourModels.js');
+const ModelHandler = require('../models/ourModels.js');
 
 const port = '27017';
 const host = 'localhost';
