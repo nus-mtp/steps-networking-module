@@ -13,8 +13,10 @@ router.get('/get/name/:email', (req = {}, res, next) => {
     if (err) {
       console.log(err);
       res.status(500).json('Unable to fetch data!');
+    } else if (user) {
+      res.status(200).json(user.name);
     } else {
-      res.status(200).json(user);
+      res.status(404).json('Nothing found!');
     }
 
     next();
