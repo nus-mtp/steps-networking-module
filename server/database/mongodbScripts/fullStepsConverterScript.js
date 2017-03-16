@@ -38,6 +38,7 @@ const stepsEvent = StepsModels.getEventModel();
 
 /**
  * A function which removes all duplicates from a given Array.
+ *
  * @param arr: The given Array to remove duplicates from.
  * @returns {Array}: A copy of the given Array that has no duplicates.
  */
@@ -82,6 +83,7 @@ function upsertEvent(stepsEventObj, callback) {
 
 /**
  * An asynchronous function which Upserts a stepsUserObj into our User Collection.
+ *
  * @param stepsUserObj: A plain JS Object containing a leaned stepsUser Document.
  * @param callback: Callback to indicate when this asynchronous function has been completed.
  */
