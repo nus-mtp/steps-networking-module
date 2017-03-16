@@ -1,4 +1,4 @@
-const Attendance = require('../app/database/objectClasses/Attendance.js');
+const Attendance = require('../server/database/objectClasses/Attendance.js');
 const assert = require('assert');
 
 describe('Attendance Create', function() {

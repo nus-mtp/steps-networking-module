@@ -1,4 +1,4 @@
-const ModelHandler = require('../../../server/database/models/ourModels.js');
+const ModelHandler = require('../models/ourModels.js');
 
 const username = '';
 const password = '';
