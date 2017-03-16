@@ -27,6 +27,4 @@ router.get('/grabAll', (req = {}, res, next) => {
   });
 });
 
-router.post();
-
 module.exports = router;
