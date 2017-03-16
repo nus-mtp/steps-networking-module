@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const postSchema = require('./post');
 
 const commentSchema = new mongoose.Schema({
   user_email: {
@@ -11,14 +12,12 @@ const commentSchema = new mongoose.Schema({
     required: 'The Name of the Exhibition for which this Comment is posted under is used as a F' +
         'oreign Key, and is therefore Required.',
   },
-  comment: {
-    type: String,
-    trim: true,
-  },
-  date: {
-    type: Date,
-    default: Date.now,
-  },
+
+  comments: [
+    postSchema,
+  ],
 });
+
+commentSchema.index({ user_email: 1, exhibition: 1 }, { unique: true });
 
 module.exports = commentSchema;
