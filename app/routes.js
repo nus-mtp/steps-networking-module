@@ -6,7 +6,7 @@ import Project from './components/project/projectView';
 import Profile from './components/profile/profileView';
 import Login from './components/auth/loginView';
 import Signup from './components/auth/signupView';
-import Match from './components/project/match';
+import Match from './components/profile/match';
 import Auth from './database/auth';
 import Paths from './paths';
 
