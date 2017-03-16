@@ -1,7 +1,7 @@
 const ModelHandler = require('../models/ourModels.js');
 
 const config = require('../../config.json');
-const currentdb = require('../../currentdb');
+const currentdb = require('../../currentdb.js');
 
 const username = config[currentdb].username;
 const password = config[currentdb].password;
@@ -13,7 +13,6 @@ const dbName = config[currentdb].database;
  * This is the wrapper class used extract out and store information
  * about the Users from the database between view and model
  */
-
 
 class User {
 

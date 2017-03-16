@@ -1,7 +1,7 @@
 const ModelHandler = require('../models/ourModels.js');
 
 const config = require('../../config.json');
-const currentdb = require('../../currentdb');
+const currentdb = require('../../currentdb.js');
 
 const username = config[currentdb].username;
 const password = config[currentdb].password;
