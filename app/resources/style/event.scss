@@ -157,3 +157,15 @@
     font-size: 15px;
   }
 }
+
+/* Event map */
+#event-map {
+  background-image: url(../images/sitemap.png);
+  background-repeat: no-repeat;
+  background-position: center 40%;
+  background-size: 100% 100%;
+  width: 100%;
+  height: 326px;
+  padding: 0px;
+  box-sizing: border-box;
+}

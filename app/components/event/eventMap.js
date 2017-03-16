@@ -10,8 +10,8 @@ class EventMap extends React.Component {
       <div>
       {
         (this.props.showEventMap) ?
-        <div className="mb-3">
-          Stuff happens here.
+        <div className="mb-3" id="event-map">
+          Turkey is delicious
         </div>
         : <div />
       }
