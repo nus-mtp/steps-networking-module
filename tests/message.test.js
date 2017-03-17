@@ -43,8 +43,8 @@ describe('Message Create', function(){
         } else {
           assert.equal(messageObj[0].messages[0].content, 'Hi!');
         }
+        done();
       });
-      done();
     });
   });
 });
@@ -73,6 +73,7 @@ describe('Message Read', function(){
       done();
     });
   });
+  
   it('should be able to read message FROM a specified user TO another specified user', function (done){
     Message.getConversation('user4@user.com', 'user3@user.com', function cb(err, msgObj){
       if (err){
@@ -83,6 +84,7 @@ describe('Message Read', function(){
       done();
     });
   });
+  
   it('should be able to read message FROM a specified user', function (done){
     Message.getMessageFromUser('user4@user.com', function cb(err, msgObj){
       if (err){
@@ -94,23 +96,25 @@ describe('Message Read', function(){
     });
   });
 
-  it('should be able to read message TO a specified user', function (){
+  it('should be able to read message TO a specified user', function (done){
     Message.getMessageForUser('user3@user.com', function cb(err, msgObj){
       if (err){
         console.log("can't get existing message");
       } else {
         assert.equal(msgObj[0].messages[0].content, 'Dammit');
       }
+      done();
     });
   });
 
-  it('should not be able to read message with a non-existant user', function (){
+  it('should not be able to read message with a non-existant user', function (done){
     Message.getMessageForUser('user5@user.com', function cb(err, msgObj){
       if (err){
         console.log("can't get existing message");
       } else {
         assert.equal(msgObj[0], null);
       }
+      done();
     });
   });
 });
@@ -140,7 +144,7 @@ describe('Message Update', function(){
     });
   });
 
-  it ('should be able to append more messages into the object', function(){
+  it ('should be able to append more messages into the object', function(done){
     Message.addMessage(
       'user4@user.com',
       'user3@user.com',
@@ -152,6 +156,7 @@ describe('Message Update', function(){
         } else {
           assert.equal(results.messages[1].content, 'Are you serious?!');
         }
+        done();
       }
     );
   });
