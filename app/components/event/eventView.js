@@ -47,45 +47,43 @@ class EventView extends React.Component {
           </div>
         </div>
         <div className="row mb-4">
-          <div className="card col-md-7 col-12 mr-4">
-            <div className="event-info card-block">
-              <div className="info-type mb-2">Event Description</div>
-              <hr/>
-              <div className="mb-3">
-                <button className="btn btn-success mr-2" onClick={this.displayAllProjects}>
-                  {
-                    (this.state.isDisplayProjects) ? "Hide Projects" : "Show Projects"
-                  }
-                </button>
-                <button className="btn btn-secondary" onClick={this.displayEventMap.bind(this)}>Sitemap</button>
-              </div>
-
-              <EventMap
-                showEventMap={this.state.showEventMap}
-              />
-
-              {
-                (this.state.isDisplayProjects) ?
-                <div>
+          <div className="card col-md-7 col-12 mr-4 event-info card-block">
+            <div className="info-type mb-2">Event Description</div>
+            <hr/>
+            <div className="mb-3">
+              <button className="btn btn-success mr-2" onClick={this.displayAllProjects}>
                 {
-                  this.state.projects.map((project, i) =>
-                  <div className="d-flex flex-row mb-1" key={i} id={i}>
-                    <img className="img-fluid project-thumbnail mr-2" src="../../resources/images/dummy-poster.png" alt="event-poster" />
+                  (this.state.isDisplayProjects) ? "Hide Projects" : "Show Projects"
+                }
+              </button>
+              <button className="btn btn-secondary" onClick={this.displayEventMap.bind(this)}>Sitemap</button>
+            </div>
+
+            <EventMap
+              showEventMap={this.state.showEventMap}
+            />
+
+            {
+              (this.state.isDisplayProjects) ?
+              <div>
+              {
+                this.state.projects.map((project, i) =>
+                <div className="d-flex flex-row mb-1" key={i} id={i}>
+                  <img className="img-fluid project-thumbnail mr-2" src="../../resources/images/dummy-poster.png" alt="event-poster" />
+                  <div>
+                    <div>{project.exhibitionName}</div>
                     <div>
-                      <div>{project.exhibitionName}</div>
-                      <div>
-                      {
-                        project.tags.map((tag, i) =>
-                          <div key={i} className="badge badge-pill badge-info">{tag}</div>
-                      )}
-                      </div>
+                    {
+                      project.tags.map((tag, i) =>
+                        <div key={i} className="badge badge-pill badge-info">{tag}</div>
+                    )}
                     </div>
                   </div>
-                )}
                 </div>
-                : <div />
-              }
-            </div>
+              )}
+              </div>
+              : <div />
+            }
           </div>
           <div className="card col-md-4 col-12">
             <div className="event-info card-block">
