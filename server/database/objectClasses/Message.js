@@ -18,6 +18,21 @@ const dbName = config[currentdb].database;
 class Message {
 
   /**
+   * Creates a connection to the database
+   */
+  static connectDB() {
+    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
+    this.MessageModel = this.ModelHandler.getMessageModel();
+  }
+
+  /**
+   * Disconnects from the database
+   */
+  static disconnectDB() {
+    this.ModelHandler.disconnect();
+  }
+
+  /**
    * Creates a Message model instance.
    *
    * @param {String} recipientEmail: Email string of receiver
@@ -39,58 +54,42 @@ class Message {
   /**
    * saves message into Database
    *
-   * @param {function} callback: used for error checking
+   * @param {function} callback: A function that is executed once the operation is done.
    */
   saveMessage(callback) {
     Message.connectDB();
     this.messageModelDoc.save(function cb(err) {
+      Message.disconnectDB();
       callback(err);
     });
-    Message.disconnectDB();
   }
-
-  static connectDB() {
-    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
-    this.MessageModel = this.ModelHandler.getMessageModel();
-  }
-
-  static disconnectDB() {
-    this.ModelHandler.disconnect();
-  }
-
-  /**
-   * Removes all messages from the Database
-   *
-   * @param {function} callback: used for error checking
-   */
-  static clearAllMessage(callback) {
-    Message.connectDB();
-    this.MessageModel.collection.remove({}, callback);
-    Message.disconnectDB();
-  }
-
+  
   /**
    * Retrieve Message by recipients
    *
    * @param {String} senderEmail: Email string of receiver
-   * @param {Function} callback: Used for error checking and storing of Message Array
+   * @param {function} callback: A function that is executed once the operation is done.
    */
   static getMessageForUser(recipientEmail, callback) {
     Message.connectDB();
-    this.MessageModel.find({ recipient_email: recipientEmail }, callback);
-    Message.disconnectDB();
+    this.MessageModel.find({ recipient_email: recipientEmail }, (err, msgObjs) => {
+      Message.disconnectDB();
+      callback(err, msgObjs)
+    });
   }
 
   /**
    * Retrieve Message by sender
    *
    * @param {String} senderEmail: Email string of sender
-   * @param {Function} callback: Used for error checking and storing of Message Array
+   * @param {function} callback: A function that is executed once the operation is done.
    */
   static getMessageFromUser(senderEmail, callback) {
     Message.connectDB();
-    this.MessageModel.find({ sender_email: senderEmail }, callback);
-    Message.disconnectDB();
+    this.MessageModel.find({ sender_email: senderEmail }, (err, msbObjs) => {
+      Message.disconnectDB();
+      callback(err, msbObjs);
+    });
   }
 
   /**
@@ -98,7 +97,7 @@ class Message {
    *
    * @param {String} senderEmail: Email string of sender
    * @param {String} senderEmail: Email string of receiver
-   * @param {Function} callback: Used for error checking and storing of Message Array
+   * @param {function} callback: A function that is executed once the operation is done.
    */
   static getConversation(senderEmail, recipientEmail, callback) {
     Message.connectDB();
@@ -106,8 +105,10 @@ class Message {
       recipient_email: recipientEmail,
       sender_email: senderEmail,
     };
-    this.MessageModel.findOne({ sender_email: senderEmail }, callback);
-    Message.disconnectDB();
+    this.MessageModel.findOne({ sender_email: senderEmail }, (err, msgObj) => {
+      Message.disconnectDB();
+      callback(err, msgObj);
+    });
   }
 
   /**
@@ -126,16 +127,24 @@ class Message {
     };
     const update = { $push: { messages: { content: content,  timestamp: timestamp }}};
     const options = { new: true };
-    this.MessageModel.findOneAndUpdate(query, update, options, function cb(err, results) {
-      if (err) {
-        callback(err, null);
-      } else {if (results) {
-        callback(null, results);
-      } else {
-        callback(null, null);
-      }}
+    this.MessageModel.findOneAndUpdate(query, update, options, (err, results) => {
+      Message.disconnectDB();
+      callback(err, results);
     });
-    Message.disconnectDB();
   }
+  
+  /**
+   * Removes all messages from the Database
+   *
+   * @param {function} callback: A function that is executed once the operation is done.
+   */
+  static clearAllMessage(callback) {
+    Message.connectDB();
+    this.MessageModel.collection.remove({}, (err) => {
+      Message.disconnectDB();
+      callback(err);
+    });
+  }
+
 }
 module.exports = Message;
