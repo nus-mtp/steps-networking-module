@@ -53,8 +53,8 @@ class Exhibition {
   saveExhibition(callback) {
     Exhibition.connectDB();
     this.exhibModelDoc.save((err) => {
-      callback(err);
       Exhibition.disconnectDB();
+      callback(err);
     });
   }
 
