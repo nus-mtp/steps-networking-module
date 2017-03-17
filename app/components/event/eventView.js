@@ -8,12 +8,13 @@ class EventView extends React.Component {
 
     this.state = {
       isDisplayProjects: false,
-      projects: sampleProjects,
-      checkedButtons: [true, false, false] // All, Internship, Partnership
+      projects: sampleProjects, // This is for all projects
+      displayProjects: sampleProjects // This is for the displayed projects
     }
 
     this.displayAllProjects = this.displayAllProjects.bind(this);
     this.onClick = this.onClick.bind(this);
+    this.updateDisplayedProjects = this.updateDisplayedProjects.bind(this);
   }
 
   displayAllProjects() {
@@ -22,21 +23,45 @@ class EventView extends React.Component {
     });
   }
 
-  onClick(e) {
-    let newStateArray;
-    const targetId = e.target.id;
-    if (targetId === "all") {
-      document.getElementById("internship").checked = false;
-      document.getElementById("partnership").checked = false;
-      newStateArray = [true, false, false];
-    } else if (targetId === "internship") {
-      document.getElementById("all").checked = false;
-      newStateArray = [false, this.state.checkedButtons[1], true];
+  updateDisplayedProjects(id) {
+    if (id === "all") {
+      this.setState({displayProjects: this.state.projects});
     } else {
-      document.getElementById("all").checked = false;
-      newStateArray = [false, true, this.state.checkedButtons[2]];
+      const remainder = this.state.projects.slice();
+      const result = remainder.filter((project) => {
+        if (project.tags.includes(id))
+            return project;
+      });
+    this.setState({displayProjects: result});
     }
-    this.setState({checkedButtons: newStateArray});
+  }
+
+  onClick(e) {
+    switch (e.target.id) {
+      case "all":
+        document.getElementById("internship").checked = false;
+        document.getElementById("partnership").checked = false;
+        document.getElementById("full-time").checked = false;
+        break;
+      case "internship":
+        document.getElementById("all").checked = false;
+        document.getElementById("partnership").checked = false;
+        document.getElementById("full-time").checked = false;
+        break;
+      case "partnership":
+        document.getElementById("all").checked = false;
+        document.getElementById("internship").checked = false;
+        document.getElementById("full-time").checked = false;
+        break;
+      case "full-time":
+        document.getElementById("all").checked = false;
+        document.getElementById("internship").checked = false;
+        document.getElementById("partnership").checked = false;
+        break;
+      default:
+        alert("Unknown");
+    }
+    this.updateDisplayedProjects(e.target.id);
   }
 
   render() {
@@ -77,9 +102,12 @@ class EventView extends React.Component {
                       <span className="input-group-addon">
                         <input id="partnership" type="checkbox" onClick={this.onClick}/>Partnership
                       </span>
+                      <span className="input-group-addon">
+                        <input id="full-time" type="checkbox" onClick={this.onClick}/>Full time
+                      </span>
                     </div>
                     <br/>
-                    {this.state.projects.map((project, i) => <div className="d-flex flex-row mb-1" key={i}>
+                    {this.state.displayProjects.map((project, i) => <div className="d-flex flex-row mb-1" key={i}>
                       <img className="img-fluid project-thumbnail mr-2" src="../../resources/images/dummy-poster.png" alt="event-poster"/>
                       <div>
                         <div>{project.exhibitionName}</div>
