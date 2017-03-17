@@ -16,6 +16,29 @@ const dbName = config[currentdb].database;
  */
 class Comment {
 
+  /**
+   * Creates a connection to the database
+   */
+  static connectDB() {
+    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
+    this.CommentModel = this.ModelHandler.getCommentModel();
+  }
+
+  /**
+   * Disconnect from database
+   */
+  static disconnectDB() {
+    this.ModelHandler.disconnect();
+  }
+
+  /**
+   * Creates a Comment model instance
+   *
+   * @param {String} userEmail: User that made the comment
+   * @param {String} exhibitionName: name of exhibition with the comment
+   * @param {String} comment: string content of the comment
+   * @param {Date} date: date object to indicate when the comment is made 
+   */
   constructor(userEmail, exhibitionName, comment, date) {
     this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
     this.CommentModel = this.ModelHandler.getCommentModel();
@@ -31,71 +54,77 @@ class Comment {
   /**
    * saves comment into Database
    *
-   * @param {function} callback: used for error checking
+   * @param {function} callback: A function that is executed once the operation is done.
    */
   saveComment(callback) {
     Comment.connectDB();
     this.commentModelDoc.save(function cb(err) {
+      Comment.disconnectDB();
       callback(err);
     });
-    Comment.disconnectDB();
-  }
-
-  static connectDB() {
-    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
-    this.CommentModel = this.ModelHandler.getCommentModel();
-  }
-
-  static disconnectDB() {
-    this.ModelHandler.disconnect();
   }
 
   /**
-   * Removes all event from the Database
+   * Removes all Comment from the Database
    *
-   * @param {function} callback: used for error checking
+   * @param {function} callback: A function that is executed once the operation is done.
    */
   static clearAllComment(callback) {
     Comment.connectDB();
-    this.CommentModel.collection.remove({}, callback);
-    Comment.disconnectDB();
+    this.CommentModel.collection.remove({}, (err) =>{
+      Comment.disconnectDB();
+      callback(err);
+    });
   }
 
+  /**
+   * Removes Comment for specific exhibition
+   *
+   * @param {String} exhibitionName: name of exhibition to clear comments
+   * @param {function} callback: A function that is executed once the operation is done.
+   */
   static clearCommentsForExhibition(exhibitionName, callback){
     Comment.connectDB();
-    this.CommentModel.findOneAndRemove({ exhibition: exhibitionName }, callback);
-    Comment.disconnectDB();
+    this.CommentModel.findOneAndRemove({ exhibition: exhibitionName }, (err) => {
+      Comment.disconnectDB();
+      callback(err);
+    });
   }
 
+  /**
+   * Retrieve list of comments for a specific exhibition
+   *
+   * @param {String} exhibitionName: name of exhibition to retrieve comments for.
+   * @param {function} callback: A function that is executed once the operation is done.
+   */
   static getCommentForExhibition(exhibitionName, callback) {
     Comment.connectDB();
-    this.CommentModel.find({ exhibition: exhibitionName }, function cb(err, commentArr){
-      if (err){
-        callback(err, null);
-      } else {
-        callback(null, commentArr);
-      }
+    this.CommentModel.find({ exhibition: exhibitionName }, (err, commentArr) => {
+      Comment.disconnectDB();
+      callback(err, commentArr);
     });
-    Comment.disconnectDB();
   }
 
-  static addCommentForExhibition(userEmail, exhibitionName, comment, date, callback){ //does this mean can onli have one unique object with userEmail and exhibition?
+  /**
+   * Updates the messages made by a specific user of a Comment model instance
+   *
+   * @param {String} userEmail: User that made the comment.
+   * @param {String} exhibitionName: name of exhibition with the comment.
+   * @param {String} comment: string content of the comment.
+   * @param {Date} date: date object to indicate when the comment is made.
+   * @param {function} callback: A function that is executed once the operation is done.
+   */
+  static addCommentForExhibition(userEmail, exhibitionName, comment, date, callback){
     Comment.connectDB();
     const query = {
       user_email: userEmail,
-      exhibition_name: exhibitionName,
+      exhibition: exhibitionName,
     };
-    const update = {$push: {comments: { content: comment, timestamp: date }}};
+    const update = { $push: { comments: { content: comment, timestamp: date }}};
     const options = { new: true };
-    this.CommentModel.findOne(query, update, options, function cb(err, results) {
-      if (err) {
-        callback(err, null);
-      } else {if (results) {
-        callback(null, results);
-      } else {
-        callback(null, null);
-      }}
+    this.CommentModel.findOneAndUpdate(query, update, options, (err, results) => {
+      Comment.disconnectDB();
+      callback(err, results);
     });
-    Comment.disconnectDB();
   }
 } module.exports = Comment;
