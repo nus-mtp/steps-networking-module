@@ -8,6 +8,8 @@ import currentdb from '../currentdb';
 const config = require('../config.json');
 const ModelHandler = require('../database/models/ourModels');
 
+// All Routes prefixed with 'user/'
+
 router.get('/get/name/:email', (req = {}, res, next) => {
   User.getUser(req.params.email, (err, user) => {
     if (err) {
