@@ -225,12 +225,12 @@ class Exhibition {
   static searchExhibitionsByEvent(eventName, callback) {
     Exhibition.connectDB();
     this.ExhibModel.find({ event_name: { $regex: new RegExp(eventName.replace('+', '\\+'), 'i') } }, (err, docs) => {
+      Exhibition.disconnectDB();
       if (err) {
         callback(err, null);
       } else {
         callback(null, docs);
       }
-      Exhibition.disconnectDB();
     });
   }
 }
