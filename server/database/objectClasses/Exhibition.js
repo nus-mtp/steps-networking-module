@@ -1,10 +1,13 @@
 const ModelHandler = require('../models/ourModels.js');
 
-const username = '';
-const password = '';
-const port = '27017';
-const host = 'localhost';
-const dbName = 'dev';
+const config = require('../../config.json');
+const currentdb = require('../../currentdb.js');
+
+const username = config[currentdb].username;
+const password = config[currentdb].password;
+const host = config[currentdb].host;
+const port = config[currentdb].port;
+const dbName = config[currentdb].database;
 
 /**
  * This is the wrapper class used extract out and store information about the
@@ -50,8 +53,8 @@ class Exhibition {
     Exhibition.connectDB();
     this.exhibModelDoc.save(function cb(err) {
       callback(err);
+      Exhibition.disconnectDB();
     });
-    Exhibition.disconnectDB();
   }
 
   static connectDB() {
@@ -85,8 +88,8 @@ class Exhibition {
       if (err) {
         callback(err);
       }
+      Exhibition.disconnectDB();
     });
-    Exhibition.disconnectDB();
   }
 
   /**
@@ -96,15 +99,15 @@ class Exhibition {
    */
   static getAllExhibition(callback) {
     Exhibition.connectDB();
-    this.ExhibModel.find({}, function(err, exhibtObj) {
+    this.ExhibModel.find({}, function(err, exhibObj) {
       if (err) {
         callback(err, null);
       } else {
         //exhibObj is an array of Exhibition objects
         callback(null, exhibObj);
       }
+      Exhibition.disconnectDB();
     });
-    Exhibition.disconnectDB();
   }
 
   /**
@@ -120,8 +123,8 @@ class Exhibition {
       } else {
         callback(null, exhibObj);
       }
+      Exhibition.disconnectDB();
     });
-    Exhibition.disconnectDB();
   }
 
   /**
@@ -158,9 +161,8 @@ class Exhibition {
       } else {
         console.log('There is no such exhibition.');
       }
+      Exhibition.disconnectDB();
     });
-
-    this.ModelHandler.disconnect();
   }
 
   /**
@@ -179,8 +181,8 @@ class Exhibition {
       } else {
         callback (null, false);
       }
+      Exhibition.disconnectDB();
     });
-    Exhibition.disconnectDB();
   }
 
   /**
@@ -197,11 +199,11 @@ class Exhibition {
       } else {
         callback (null, docs);
       }
+      Exhibition.disconnectDB();
     });
-    Exhibition.disconnectDB();
   }
-  
-    /**
+
+  /**
    * Retrieve all the event with the specificed tag listed in the database
    *
    * @param {String} eventName: unique identifer used to check against database
@@ -215,8 +217,8 @@ class Exhibition {
       } else {
         callback (null, docs);
       }
+      Exhibition.disconnectDB();
     });
-    Exhibition.disconnectDB();
   }
 }
 module.exports = Exhibition;
