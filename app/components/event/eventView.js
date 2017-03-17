@@ -8,16 +8,35 @@ class EventView extends React.Component {
 
     this.state = {
       isDisplayProjects: false,
-      projects: sampleProjects
+      projects: sampleProjects,
+      checkedButtons: [true, false, false] // All, Internship, Partnership
     }
 
     this.displayAllProjects = this.displayAllProjects.bind(this);
+    this.onClick = this.onClick.bind(this);
   }
 
   displayAllProjects() {
     this.setState({
       isDisplayProjects: !this.state.isDisplayProjects
     });
+  }
+
+  onClick(e) {
+    let newStateArray;
+    const targetId = e.target.id;
+    if (targetId === "all") {
+      document.getElementById("internship").checked = false;
+      document.getElementById("partnership").checked = false;
+      newStateArray = [true, false, false];
+    } else if (targetId === "internship") {
+      document.getElementById("all").checked = false;
+      newStateArray = [false, this.state.checkedButtons[1], true];
+    } else {
+      document.getElementById("all").checked = false;
+      newStateArray = [false, true, this.state.checkedButtons[2]];
+    }
+    this.setState({checkedButtons: newStateArray});
   }
 
   render() {
@@ -50,13 +69,13 @@ class EventView extends React.Component {
                 ? <div>
                     <div className="row">
                       <span className="input-group-addon">
-                        <input type="checkbox"/>All
+                        <input id="all" type="checkbox" onClick={this.onClick} defaultChecked/>All
                       </span>
                       <span className="input-group-addon">
-                        <input type="checkbox"/>Internship
+                        <input id="internship" type="checkbox" onClick={this.onClick}/>Internship
                       </span>
                       <span className="input-group-addon">
-                        <input type="checkbox"/>Partnership
+                        <input id="partnership" type="checkbox" onClick={this.onClick}/>Partnership
                       </span>
                     </div>
                     <br/>
