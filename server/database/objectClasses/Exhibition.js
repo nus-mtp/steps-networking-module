@@ -19,14 +19,14 @@ class Exhibition {
   /**
    * Creates an Exhibition Document and stores it internally.
    *
-   * @param exhibitionName: Unique identifier for the object
-   * @param exhibitionDescription: Description for the event
-   * @param eventName: Name of the event that the exhibition is found in
-   * @param posterURL: url string for where poster is hosted.
-   * @param images: list of url for images to be found.
-   * @param videos: list of url for videos to be found.
-   * @param website: url for the exhibition page
-   * @param tags: Tags used to identify exhibitions
+   * @param exhibitionName: Unique identifier for the Exhibition.
+   * @param exhibitionDescription: Description for the Exhibition.
+   * @param eventName: Name of the Event that the Exhibition is found in.
+   * @param posterURL: URL string representing where the poster of the Exhibition is hosted.
+   * @param images: list of URL strings for images to be found.
+   * @param videos: list of URL strings for videos to be found.
+   * @param website: URL string linking to the Exhibition external webpage.
+   * @param tags: Tags used to identify Exhibitions.
    */
   constructor(exhibitionName = '', exhibitionDescription = '', eventName, posterURL, images, videos, website, tags) {
     this.ModelHandler = new ModelHandler()
