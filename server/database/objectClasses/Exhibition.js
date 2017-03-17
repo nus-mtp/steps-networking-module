@@ -164,7 +164,8 @@ class Exhibition {
    */
   static updateExhibition(exhibitionName = '', exhibitionDescription = '', eventName, posterURL, images, videos, website, tags, callback) {
     Exhibition.connectDB();
-    const update = { exhibition_name: exhibitionName,
+    const update = {
+      exhibition_name: exhibitionName,
       exhibition_description: exhibitionDescription,
       event_name: eventName,
       poster: posterURL,
