@@ -99,7 +99,7 @@ class Exhibition {
    */
   static getAllExhibition(callback) {
     Exhibition.connectDB();
-    this.ExhibModel.find({}, function(err, exhibtObj) {
+    this.ExhibModel.find({}, function(err, exhibObj) {
       if (err) {
         callback(err, null);
       } else {
