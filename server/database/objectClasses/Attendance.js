@@ -40,9 +40,9 @@ class Attendance {
   saveAttendance(callback) {
     Attendance.connectDB();
     this.attendanceModelDoc.save(function cb(err) {
+      Attendance.disconnectDB();
       callback(err);
     });
-    Attendance.disconnectDB();
   }
 
   static connectDB() {
@@ -63,13 +63,13 @@ class Attendance {
   static getAllAttendance(callback) {
     Attendance.connectDB();
     this.AttenanceModel.find({}, function cb(err, userDoc) {
+      Attendance.disconnectDB();
       if (err) {
         callback(err, null);
       } else {
         callback(null, userDoc);
       }
     });
-    Attendance.disconnectDB();
   }
 
   /**
@@ -79,8 +79,10 @@ class Attendance {
    */
   static clearAllAttendance(callback) {
     Attendance.connectDB();
-    this.AttenanceModel.collection.remove({}, callback);
-    Attendance.disconnectDB();
+    this.AttenanceModel.collection.remove({}, (err, obj) => {
+      Attendance.disconnectDB();
+      callback(err, obj);
+    });
   }
 
   /**
@@ -99,13 +101,13 @@ class Attendance {
                    attendance_type: attendanceType,
                   };
     this.AttenanceModel.findOne(query, function cb(err, obj) {
+      Attendance.disconnectDB();
       if (err) {
         callback(err, null);
       } else {
         callback(null, obj);
       }
     });
-    Attendance.disconnectDB();
   }
 
   /**
@@ -117,13 +119,13 @@ class Attendance {
   static searchAttendanceByUser(userEmail, callback) {
     Attendance.connectDB();
     this.AttenanceModel.find({ user_email: userEmail }, function cb(err, obj) {
+      Attendance.disconnectDB();
       if (err) {
         callback(err, null);
       } else {
         callback(null, obj);
       }
     });
-    Attendance.disconnectDB();
   }
 
   /**
@@ -135,13 +137,35 @@ class Attendance {
   static searchAttendanceByEvent(eventName, callback) {
     Attendance.connectDB();
     this.AttenanceModel.find({ attendance_name: eventName }, function cb(err, obj) {
+      Attendance.disconnectDB();
       if (err) {
         callback(err, null);
       } else {
         callback(null, obj);
       }
     });
-    Attendance.disconnectDB();
+  }
+
+  /**
+   * Retrieve the attendance object using attendance name and type
+   *
+   * @param {String} userEmail: the unique identifer to search in the database
+   * @param {Function} callback: used to return an array ofAttendance Object and error checking
+   */
+  static getAttendanceByType(attendanceName, attendanceType, callback) {
+    Attendance.connectDB();
+    const query = {
+      attendance_name: attendanceName,
+      attendance_type: attendanceType,
+    }
+    this.AttenanceModel.find(query, function cb(err, obj) {
+      Attendance.disconnectDB();
+      if (err) {
+        callback(err, null);
+      } else {
+        callback(null, obj);
+      }
+    });
   }
 
   /**
@@ -153,13 +177,14 @@ class Attendance {
   static searchAttendanceByReason(reason, callback) {
     Attendance.connectDB();
     this.AttenanceModel.find({ reason: { $regex: new RegExp(reason.replace('+', '\\+'), 'i') } }, function cb(err, obj) {
+      Attendance.disconnectDB();
       if (err) {
         callback(err, null);
       } else {
         callback(null, obj);
       }
+
     });
-    Attendance.disconnectDB();
   }
 
   /**
@@ -175,13 +200,13 @@ class Attendance {
                    reason: { $regex: new RegExp(reason.replace('+', '\\+'), 'i') },
                   };
     this.AttenanceModel.find(query, function cb(err, obj) {
+      Attendance.disconnectDB();
       if (err) {
         callback(err, null);
       } else {
         callback(null, obj);
       }
     });
-    Attendance.disconnectDB();
   }
 
   /**
@@ -199,10 +224,11 @@ class Attendance {
                    attendance_name: attendanceName,
                    attendance_type: attendanceType,
                   };
-    const update = { reason: reason };
+    const update = { $set: { reason: reason } };
     const options = { new: true };
     this.AttenanceModel.findOneAndUpdate(query, update, options,
                                          function cb(err, results) {
+      Attendance.disconnectDB();
       if (err) {
         console.log('Unable to update reasons');
         callback(err);
@@ -211,8 +237,6 @@ class Attendance {
         callback(null, results);
       }
     });
-
-    Attendance.disconnectDB();
   }
 
   /**
@@ -220,16 +244,16 @@ class Attendance {
    *
    *
    */
-  static deleteAttendace(userEmail, attendanceName, attendanceType, callback) {
+  static deleteAttendance(userEmail, attendanceName, attendanceType, callback) {
     const query = { user_email: userEmail,
                    attendance_name: attendanceName,
                    attendance_type: attendanceType,
                   };
     Attendance.connectDB();
     this.AttenanceModel.findOneAndRemove(query, function cb(err) {
+      Attendance.disconnectDB();
       callback(err);
     });
-    Attendance.disconnectDB();
   }
 
 }

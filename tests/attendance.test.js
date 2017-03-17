@@ -87,6 +87,39 @@ describe('Attendance Read', function() {
     });
   });
 
+  it('should be able to get the list of attendees in an event', function(done) {
+    Attendance.getAttendanceByType('eventNumber2', 'event', function(err, obj) {
+      if (err) {
+        console.log("unable to get attendance object");
+      } else {
+        assert.equal(obj[0], null);
+      }
+      done();
+    });
+  });
+  
+    it('should be able to get the list of exhibitioners in an event', function(done) {
+    Attendance.getAttendanceByType('eventNumber2', 'exhibition', function(err, obj) {
+      if (err) {
+        console.log("unable to get attendance object");
+      } else {
+        assert.equal(obj[0].user_email, 'usertesting_2@user.com');
+      }
+      done();
+    });
+  });
+  
+    it('should be able to get the list of exhibitioners', function(done) {
+    Attendance.searchAttendanceByUser('usertesting_2@user.com', function(err, obj) {
+      if (err) {
+        console.log("unable to get attendance object");
+      } else {
+        assert.equal(obj[0].attendance_name, 'eventNumber2');
+      }
+      done();
+    });
+  });
+
   it('should be able to retrieve an array of AttendanceObj by event name', function(done) {
     Attendance.searchAttendanceByEvent('eventNumber2', function(err, obj) {
       if (err) {
@@ -202,7 +235,7 @@ describe('Attendance Delete', function(){
   });
 
   it ('should be able to delete attendance', function(done) {
-    Attendance.deleteAttendace('usertesting_2@user.com', 
+    Attendance.deleteAttendance('usertesting_2@user.com', 
                                'eventNumber2', 'exhibition', 
                                function (err) {
       if (err) {
