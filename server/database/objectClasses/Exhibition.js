@@ -35,14 +35,14 @@ class Exhibition {
   /**
    * Creates an Exhibition Document and stores it internally.
    *
-   * @param exhibitionName: Unique identifier for the Exhibition.
-   * @param exhibitionDescription: Description for the Exhibition.
-   * @param eventName: Name of the Event that the Exhibition is found in.
+   * @param exhibitionName: The name for the Exhibition.
+   * @param exhibitionDescription: The description for the Exhibition.
+   * @param eventName: The name of the Event that the Exhibition is found in.
    * @param posterURL: URL string representing where the poster of the Exhibition is hosted.
-   * @param images: list of URL strings for images to be found.
-   * @param videos: list of URL strings for videos to be found.
-   * @param website: URL string linking to the Exhibition external webpage.
-   * @param tags: Tags used to identify Exhibitions.
+   * @param images: List of URL strings representing images related to the Exhibition.
+   * @param videos: List of URL strings representing videos related to the Exhibition.
+   * @param website: URL string linking to the Exhibition's external webpage.
+   * @param tags: List of tags that can be used to search for Exhibitions.
    */
   constructor(exhibitionName = '', exhibitionDescription = '', eventName, posterURL, images, videos, website, tags) {
     this.ModelHandler = new ModelHandler()
@@ -77,7 +77,7 @@ class Exhibition {
   /**
    * Checks whether the Exhibition exists within the Database. Will callback a boolean value.
    *
-   * @param exhibitionName: Unique Identifier for the Exhibition.
+   * @param exhibitionName: The name of the Exhibition to search for.
    * @param callback: A function that is executed once the operation is done.
    */
   static isExistingExhibition(exhibitionName, callback) {
@@ -122,9 +122,9 @@ class Exhibition {
   }
 
   /**
-   * Retrieve all the Exhibitions tagged with the specified Tag.
+   * Retrieve all the Exhibitions tagged with the specified tag.
    *
-   * @param tag: The Tag to check each Exhibition for.
+   * @param tag: The tag to check each Exhibition for.
    * @param callback: A function that is executed once the operation is done.
    */
   static searchExhibitionsByTag(tag, callback) {
@@ -138,7 +138,7 @@ class Exhibition {
   /**
    * Retrieve all the Exhibitions that is hosted under a single Event.
    *
-   * @param eventName: Unique identifier for the Event to search under.
+   * @param eventName: The unique name of the Event to search under.
    * @param callback: A function that is executed once the operation is done.
    */
   static searchExhibitionsByEvent(eventName, callback) {
@@ -150,16 +150,16 @@ class Exhibition {
   }
 
   /**
-   * Updates the Exhibition Document stored within this Object.
+   * Updates the all information in a specified Exhibition - except the exhibitionName.
    *
-   * @param exhibitionName: Unique Identifier for this Exhibition.
-   * @param exhibitionDescription: Description for the Exhibition.
-   * @param eventName: Name of the Event that the Exhibition is found in.
-   * @param posterURL: String for where the Exhibition's poster is hosted.
-   * @param images: List of URL for Exhibition's Images.
-   * @param videos: List of URL for Exhibition's Videos.
-   * @param website: URL to the Exhibition's external Website.
-   * @param tags: Tags used to identify this Exhibition.
+   * @param exhibitionName: The name of the Exhibition to update.
+   * @param exhibitionDescription: The description of the Exhibition.
+   * @param eventName: The name of the Event that the Exhibition is found in.
+   * @param posterURL: URL string representing where the poster of the Exhibition is hosted.
+   * @param images: List of URL strings representing images related to the Exhibition.
+   * @param videos: List of URL strings representing videos related to the Exhibition.
+   * @param website: URL string linking to the Exhibition's external webpage.
+   * @param tags: List of tags that can be used to search for Exhibitions.
    * @param callback: A function that is executed once the operation is done.
    */
   static updateExhibition(exhibitionName = '', exhibitionDescription = '', eventName, posterURL, images, videos, website, tags, callback) {
