@@ -1,23 +1,51 @@
 const SampleProjects = [
   {
-    exhibitionName: "Monalisa",
-    eventName: "New Year Wild Party",
+    exhibitionName: "Searchparty VR",
+    eventName: "VR Fantasy 2017",
     tags: [
-      "intern", "co-founder",
+      "internship", "partnership",
     ],
   },
   {
-    exhibitionName: "Alan Turing's Apple",
-    eventName: "New Year Wild Party",
+    exhibitionName: "Reality Escape Room",
+    eventName: "VR Fantasy 2017",
     tags: [
-      "intern", "full-time",
+      "internship"
     ],
   },
   {
-    exhibitionName: "Donald Trump's Hair",
-    eventName: "Food Trail",
+    exhibitionName: "Space Invaders 3D",
+    eventName: "VR Fantasy 2017",
     tags: [
-      "full-time",
+      "full-time"
+    ],
+  },
+  {
+    exhibitionName: "Mama! Lava!",
+    eventName: "VR Fantasy 2017",
+    tags: [
+      "partnership"
+    ],
+  },
+  {
+    exhibitionName: "VR Realism",
+    eventName: "VR Fantasy 2017",
+    tags: [
+      "full-time"
+    ],
+  },
+  {
+    exhibitionName: "Mario VR",
+    eventName: "VR Fantasy 2017",
+    tags: [
+      "internship"
+    ],
+  },
+  {
+    exhibitionName: "Dangaronpa VR",
+    eventName: "VR Fantasy 2017",
+    tags: [
+      "internship", "full-time",
     ],
   },
 ]
