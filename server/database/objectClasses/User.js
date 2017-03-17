@@ -20,7 +20,7 @@ class User {
    */
   static connectDB() {
     this.ModelHandler = new ModelHandler()
-          .initWithParameters(username, password, host, port, dbName);
+      .initWithParameters(username, password, host, port, dbName);
     this.userModel = this.ModelHandler.getUserModel();
   }
 
@@ -47,9 +47,9 @@ class User {
    *  userEmails that the User has bookmarked.
    */
   constructor(userEmail = '', userName = '', userDescription = '', userPassword = '',
-    willNotify = true, isDeleted = false, profilePic = '', skillSets = [], bookedmarkedUsers = []) {
+               willNotify = true, isDeleted = false, profilePic = '', skillSets = [], bookedmarkedUsers = []) {
     this.ModelHandler = new ModelHandler()
-        .initWithParameters(username, password, host, port, dbName);
+      .initWithParameters(username, password, host, port, dbName);
     this.userModel = this.ModelHandler.getUserModel();
     this.userModelDoc = new this.userModel({
       email: userEmail,
@@ -173,13 +173,13 @@ class User {
    *  userEmails that the User has bookmarked.
    * @param callback: A function that is executed once the operation is done.
    */
-  static updateUser(userEmail = '', userName = '', userDescription = '', userPassword = '',
-    willNotify = true, isDeleted = false, profilePic = '', skillSets = [], bookedmarkedUsers = [], callback) {
+  static updateUser(email = '', name = '', description = '', password = '',
+                     willNotify = true, isDeleted = false, profilePic = '', skillSets = [], bookedmarkedUsers = [], callback) {
     const update = {
-      userEmail,
-      userName,
-      userDescription,
-      userPassword,
+      email,
+      name,
+      description,
+      password,
       will_notify: willNotify,
       is_deleted: isDeleted,
       profile_picture: profilePic,
@@ -188,7 +188,7 @@ class User {
     };
     const options = { new: true };
     User.connectDB();
-    this.userModel.findOneAndUpdate({ userEmail }, update, options, (err, results) => {
+    this.userModel.findOneAndUpdate({ email }, update, options, (err, results) => {
       User.disconnectDB();
       callback(err, results);
     });

@@ -74,22 +74,20 @@ describe ('User Create',function() {
     userTestDup.saveUser(function (err){
       if (err){
         //duplicate error expected
+      } else {
+        User.getUser('usertesting_2@user.com', function(err1, results){
+          if (err1) {
+            console.log(err);
+          }
+          else {
+            assert.notEqual(results, null);
+            assert.equal(results.name, 'UserTest2');
+          }
+        });
       }
-      User.getUser('usertesting_2@user.com', function(err1, results){
-        if (err1) {
-          console.log(err);
-        }
-        else if(results){
-          assert.equal(results.name, 'UserTest2');
-        }
-        else {
-          console.log('THERE IS NO SUCH RESULTS');
-        }
-        done();
-      })
+      done();
     });
   });
-
 });
 
 
@@ -136,8 +134,8 @@ describe ('User Read',function() {
       } else { 
         console.log('User does not exist');
       }
+      done();
     });
-    done()
   });
 
   it('Should not be able to get an non-existing user', function(done){
@@ -145,13 +143,13 @@ describe ('User Read',function() {
       if(err){
         console.log('Something went wrong with getting user function');
         //console.log(err);
+      } else {
+        assert.equal(null, userObj);
       }
-      assert.equal(null, userObj);
+      done();
     });
-    done();
   });
 });
-
 
 
 describe ('User Update',function() {
@@ -197,20 +195,15 @@ describe ('User Update',function() {
       'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1', 
       ['c++', 'C#', 'java'],
       [],
-      function(err){
+      function(err, results){
         if (err){
           console.log(err);
+        } else {
+          assert.notEqual(results, null);
+          assert.equal('my description is updated', results.description);
         }
-        User.getUser('usertesting_1@user.com', function(err, results){
-          if (err){
-            console.log('USER UPDATES TEST: '+err);
-          } else{
-            assert.notEqual(results, null);
-            assert.equal('my description is updated', results.description);
-          }
-        });
+        done();
       });
-    done();
   });
 
   it ('Should not be able to update a non-existing user', function(done){
@@ -224,15 +217,14 @@ describe ('User Update',function() {
       'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1', 
       ['c++', 'C#', 'java'],
       [],
-      function(err){
+      function(err, results){
         if (err){
-          // no such users error expected
+          console.log(err);
+        } else {
+          assert.equal(null, results);
+          done();
         }
-        User.getUser('user2000@user.com', function(err,doc){
-          assert.equal(null,doc);
-        });
       });
-    done();
   });
 });
 
@@ -264,6 +256,7 @@ describe ('User Delete',function() {
       done();
     });
   });
+
   it ('should be able to mark an existing user as deleted', function(done){
     User.setUserAsDeleted('usertesting_2@user.com', true, function callback(err, result){
       if (err){
@@ -271,8 +264,8 @@ describe ('User Delete',function() {
       } else {
         assert.equal(true, result.is_deleted);
       }
+      done();
     });
-    done();
   });
 
   it ('should be able to mark an "deleted" user as existing', function(done){
@@ -282,7 +275,7 @@ describe ('User Delete',function() {
       } else if (result){
         assert.equal(false, result.is_deleted);
       }
+      done();
     });
-    done();
   });
 });
