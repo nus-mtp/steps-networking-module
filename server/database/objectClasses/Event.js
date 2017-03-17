@@ -16,8 +16,24 @@ const dbName = config[currentdb].database;
  */
 
 class Event {
+
   /**
-   * Creates an model instance.
+   * Creates a connection to the database
+   */
+  static connectDB() {
+    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
+    this.EventModel = this.ModelHandler.getEventModel();
+  }
+
+  /**
+   * Disconnects from the database
+   */
+  static disconnectDB() {
+    this.ModelHandler.disconnect();
+  }
+
+  /**
+   * Creates an Event model instance.
    *
    * @param {String} eventName: Unique identifier for the object
    * @param {String} eventDescription: Description for the event
@@ -47,95 +63,88 @@ class Event {
   /**
    * saves event into Database
    *
-   * @param {function} callback: used for error checking
+   * @param {function} callback: A function that is executed once the operation has completed.
    */
   saveEvent(callback) {
     Event.connectDB();
-    this.eventModelDoc.save(function cb(err) {
+    this.eventModelDoc.save((err) => {
+      Event.disconnectDB();
       callback(err);
     });
-    Event.disconnectDB();
-  }
-
-  static connectDB() {
-    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
-    this.EventModel = this.ModelHandler.getEventModel();
-  }
-
-  static disconnectDB() {
-    this.ModelHandler.disconnect();
   }
 
   /**
-   * Removes all event from the Database
+   * Retrieve all Events listed in the database
    *
-   * @param {function} callback: used for error checking
-   */
-  static clearAllEvents(callback) {
-    Event.connectDB();
-    this.EventModel.collection.remove({}, callback);
-    Event.disconnectDB();
-  }
-
-  /**
-   * Removes a specific event from the Database
-   *
-   * @param {function} callback: used for error checking
-   */
-  static deleteEvent(eventName, callback) {
-    Event.connectDB();
-    this.EventModel.findOneAndRemove({ event_name: eventName }, function cb(err) {
-      callback(err);
-    });
-    Event.disconnectDB();
-  }
-
-  /**
-   * Retrieve all the event listed in the database
-   *
-   * @param {function} callback: used for error checking
+   * @param {function} callback: A function that is executed once the operation has completed.
    */
   static getAllEvents(callback) {
     Event.connectDB();
-    this.EventModel.find({}, function cb(err, eventObj) {
-      if (err) {
-        callback(err, null);
-      } else {
-        // eventObj is an array of Event objects
-        callback(null, eventObj);
-      }
+    this.EventModel.find({}, (err, eventObj) => {
+      Event.disconnectDB();
+      callback(err, eventObj);
     });
-    Event.disconnectDB();
   }
 
   /**
    * Retrieve a specific event listed in the database
    *
-   * @param {function} callback: used for error checking
+   * @param {function} callback: A function that is executed once the operation has completed.
    */
   static getEvent(eventName, callback) {
     Event.connectDB();
-    this.EventModel.findOne({ event_name: eventName }, function cb(err, eventObj) {
+    this.EventModel.findOne({ event_name: eventName }, (err, eventObj) => {
+      Event.disconnectDB();  
+      callback(err, eventObj);
+    });
+  }
+
+  /**
+   * Checks whether the event is existing within the database. Will callback a boolean value.
+   *
+   * @param {String} eventName: unique identifer used to check against database
+   * @param {function} callback: A function that is executed once the operation has completed.
+   */
+  static isExistingEvent(eventName, callback) {
+    Event.connectDB();
+    this.EventModel.findOne({ event_name: eventName }, (err, docs) => {
+      Event.disconnectDB();
       if (err) {
         callback(err, null);
+      } else if (docs) {
+        callback(null, true);
       } else {
-        callback(null, eventObj);
+        callback(null, false);
       }
     });
-    Event.disconnectDB();
+  }
+
+  /**
+   * Retrieve all the event with the specificed tag listed in the database
+   *
+   * @param {String} eventName: unique identifer used to check against database.
+   * @param {function} callback: A function that is executed once the operation has completed.
+   */
+  static searchEventsByTag(tag, callback) {
+    Event.connectDB();
+    this.EventModel.find({ tags: { $regex: new RegExp(tag.replace('+', '\\+'), 'i') } }, (err, docs) => {
+      Event.disconnectDB();
+      callback(err, docs);
+    });
   }
 
   /**
    * Updates an model instance.
    *
-   * @param {String} eventName: Unique identifier for the object
-   * @param {String} eventDescription: Description for the event
-   * @param {Date} startDate: Date object to identify start of event
-   * @param {Date} endDate: Date object to identify end of event
-   * @param {String} location: Description of location, e.g how to get there
-   * @param {Object} map: Object for an interactive map
-   * @param {String} eventPicture: URL string expected
-   * @param {String Array} tags: Tags used to identify events
+   * @param {String} eventName: Unique identifier for the object.
+   * @param {String} eventDescription: Description for the event.
+   * @param {Date} startDate: Date object to identify start of event.
+   * @param {Date} endDate: Date object to identify end of event.
+   * @param {String} location: Description of location, e.g how to get there.
+   * @param {Object} map: Object for an interactive map.
+   * @param {String} eventPicture: URL string expected.
+   * @param {String Array} tags: Tags used to identify events.
+   * @param {function} callback: A function that is executed once the operation has completed.
    */
   static updateEvent(eventName = '', eventDescription = '', startDate, endDate, location, map, eventPicture = '', tags = [], callback) {
     Event.connectDB();
@@ -154,56 +163,36 @@ class Event {
       {event_name: eventName },
       update,
       options,
-      function cb(err, results) {
-        if (err) {
-          console.log('Unable to update Event');
-          callback(err);
-        } else if (results) {
-          console.log('Event is updated.');
-        } else {
-          console.log('There is no such Event.');
-        }
+      (err, results) => {
+        Event.disconnectDB();
+        callback(err,results);
       });
-
-    this.ModelHandler.disconnect();
   }
 
   /**
-   * Checks whether the event is existing within the database. Will callback a boolean value.
+   * Removes all event from the Database
    *
-   * @param {String} eventName: unique identifer used to check against database
-   * @param {function} callback: used for error checking
+   * @param {function} callback: A function that is executed once the operation has completed.
    */
-  static isExistingEvent(eventName, callback) {
+  static clearAllEvents(callback) {
     Event.connectDB();
-    this.EventModel.findOne({ event_name: eventName }, function cb(err, docs) {
-      if (err) {
-        callback(err, null);
-      } else if (docs) {
-        callback(null, true);
-      } else {
-        callback(null, false);
-      }
+    this.EventModel.collection.remove({}, (err) => {
+      Event.disconnectDB();
+      callback(err);
     });
-    Event.disconnectDB();
   }
 
   /**
-   * Retrieve all the event with the specificed tag listed in the database
+   * Removes a specific event from the Database
    *
-   * @param {String} eventName: unique identifer used to check against database
-   * @param {function} callback: used for error checking
+   * @param {function} callback: A function that is executed once the operation has completed.
    */
-  static searchEventsByTag(tag, callback) {
+  static deleteEvent(eventName, callback) {
     Event.connectDB();
-    this.EventModel.find({ tags: { $regex: new RegExp(tag.replace('+', '\\+'), 'i') } }, function cb(err, docs) {
-      if (err) {
-        callback(err, null);
-      } else {
-        callback(null, docs);
-      }
+    this.EventModel.findOneAndRemove({ event_name: eventName }, (err) => {
+      Event.disconnectDB();
+      callback(err);
     });
-    Event.disconnectDB();
   }
 }
 module.exports = Event;
