@@ -48,7 +48,7 @@ class Exhibition {
     this.ModelHandler = new ModelHandler()
         .initWithParameters(username, password, host, port, dbName);
     this.exhibitionModel = this.ModelHandler.getExhibitionModel();
-    this.exhibition = new this.Exhibition({
+    this.exhibition = new this.exhibitionModel({
       exhibition_name: exhibitionName,
       exhibition_description: exhibitionDescription,
       event_name: eventName,
