@@ -12,10 +12,26 @@ const dbName = config[currentdb].database;
 /**
  * This is the wrapper class used extract out and store information about the
  * Exhibitions from the Database between view and model.
- *
  */
 
 class Exhibition {
+
+  /**
+   * Creates a connection to the Database
+   */
+  static connectDB() {
+    this.ModelHandler = new ModelHandler()
+          .initWithParameters(username, password, host, port, dbName);
+    this.exhibitionModel = this.ModelHandler.getExhibitionModel();
+  }
+
+  /**
+   * Disconnects from the database
+   */
+  static disconnectDB() {
+    this.ModelHandler.disconnect();
+  }
+
   /**
    * Creates an Exhibition Document and stores it internally.
    *
@@ -31,8 +47,8 @@ class Exhibition {
   constructor(exhibitionName = '', exhibitionDescription = '', eventName, posterURL, images, videos, website, tags) {
     this.ModelHandler = new ModelHandler()
         .initWithParameters(username, password, host, port, dbName);
-    this.ExhibModel = this.ModelHandler.getExhibitionModel();
-    this.exhibModelDoc = new this.ExhibModel({
+    this.exhibitionModel = this.ModelHandler.getExhibitionModel();
+    this.exhibition = new this.Exhibition({
       exhibition_name: exhibitionName,
       exhibition_description: exhibitionDescription,
       event_name: eventName,
@@ -48,71 +64,32 @@ class Exhibition {
   /**
    * Saves Exhibition Document stored internally to the Database.
    *
-   * @param callback: used for error checking
+   * @param callback: A function that is executed once the operation is done.
    */
   saveExhibition(callback) {
     Exhibition.connectDB();
-    this.exhibModelDoc.save((err) => {
+    this.exhibition.save((err) => {
       Exhibition.disconnectDB();
       callback(err);
     });
   }
 
-  static connectDB() {
-    this.ModelHandler = new ModelHandler()
-        .initWithParameters(username, password, host, port, dbName);
-    this.ExhibModel = this.ModelHandler.getExhibitionModel();
-  }
-
-  static disconnectDB() {
-    this.ModelHandler.disconnect();
-  }
-
   /**
-   * Removes all Exhibitions from the Database.
+   * Checks whether the Exhibition exists within the Database. Will callback a boolean value.
    *
-   * @param callback: used for error checking
+   * @param exhibitionName: Unique Identifier for the Exhibition.
+   * @param callback: A function that is executed once the operation is done.
    */
-  static clearAllExhibitions(callback) {
+  static isExistingExhibition(exhibitionName, callback) {
     Exhibition.connectDB();
-    this.ExhibModel.collection.remove({}, (err) => {
+    this.exhibitionModel.findOne({ exhibition_name: exhibitionName }, (err, exhibition) => {
       Exhibition.disconnectDB();
       if (err) {
-        callback(err);
-      }
-    });
-  }
-
-  /**
-   * Removes a specific Exhibition from the Database.
-   *
-   * @param exhibitionName: The name of the Exhibition to delete for.
-   * @param callback: used for error checking
-   */
-  static deleteExhibition(exhibitionName, callback) {
-    Exhibition.connectDB();
-    this.ExhibModel.findOneAndRemove({ exhibition_name: exhibitionName }, (err) => {
-      Exhibition.disconnectDB();
-      if (err) {
-        callback(err);
-      }
-    });
-  }
-
-  /**
-   * Retrieve all the Exhibitions in the current Database.
-   *
-   * @param callback: used for error checking
-   */
-  static getAllExhibition(callback) {
-    Exhibition.connectDB();
-    this.ExhibModel.find({}, (err, exhibObj) => {
-      Exhibition.disconnectDB();
-      if (err) {
-        callback(err, null);
+        callback(err, false);
+      } else if (exhibition) {
+        callback(null, true);
       } else {
-        // exhibObj is an array of Exhibition objects
-        callback(null, exhibObj);
+        callback(null, false);
       }
     });
   }
@@ -121,17 +98,54 @@ class Exhibition {
    * Retrieve a specific Exhibition in the Database.
    *
    * @param exhibitionName: The name of the Exhibition to retrieve from the Database.
-   * @param callback: used for error checking
+   * @param callback: A function that is executed once the operation is done.
    */
   static getExhibition(exhibitionName, callback) {
     Exhibition.connectDB();
-    this.ExhibModel.findOne({ exhibition_name: exhibitionName }, (err, exhibObj) => {
+    this.exhibitionModel.findOne({ exhibition_name: exhibitionName }, (err, exhibition) => {
       Exhibition.disconnectDB();
-      if (err) {
-        callback(err, null);
-      } else {
-        callback(null, exhibObj);
-      }
+      callback(err, exhibition);
+    });
+  }
+
+  /**
+   * Retrieve all Exhibitions in the current Database.
+   *
+   * @param callback: A function that is executed once the operation is done.
+   */
+  static getAllExhibition(callback) {
+    Exhibition.connectDB();
+    this.exhibitionModel.find({}, (err, allExhibitions) => {
+      Exhibition.disconnectDB();
+      callback(err, allExhibitions);
+    });
+  }
+
+  /**
+   * Retrieve all the Exhibitions tagged with the specified Tag.
+   *
+   * @param tag: The Tag to check each Exhibition for.
+   * @param callback: A function that is executed once the operation is done.
+   */
+  static searchExhibitionsByTag(tag, callback) {
+    Exhibition.connectDB();
+    this.exhibitionModel.find({ tags: { $regex: new RegExp(tag.replace('+', '\\+'), 'i') } }, (err, matchedExhibitions) => {
+      Exhibition.disconnectDB();
+      callback(err, matchedExhibitions);
+    });
+  }
+
+  /**
+   * Retrieve all the Exhibitions that is hosted under a single Event.
+   *
+   * @param eventName: Unique identifier for the Event to search under.
+   * @param callback: A function that is executed once the operation is done.
+   */
+  static searchExhibitionsByEvent(eventName, callback) {
+    Exhibition.connectDB();
+    this.exhibitionModel.find({ event_name: { $regex: new RegExp(eventName.replace('+', '\\+'), 'i') } }, (err, docs) => {
+      Exhibition.disconnectDB();
+      callback(err, docs);
     });
   }
 
@@ -144,9 +158,9 @@ class Exhibition {
    * @param posterURL: String for where the Exhibition's poster is hosted.
    * @param images: List of URL for Exhibition's Images.
    * @param videos: List of URL for Exhibition's Videos.
-   * @param website: URL to the Exhibition's external website.
+   * @param website: URL to the Exhibition's external Website.
    * @param tags: Tags used to identify this Exhibition.
-   * @param callback: used for error checking
+   * @param callback: A function that is executed once the operation is done.
    */
   static updateExhibition(exhibitionName = '', exhibitionDescription = '', eventName, posterURL, images, videos, website, tags, callback) {
     Exhibition.connectDB();
@@ -160,77 +174,41 @@ class Exhibition {
       tags,
     };
     const options = { new: true };
-    this.ExhibModel
+    this.exhibitionModel
         .findOneAndUpdate({ exhibition_name: exhibitionName },
             update,
             options,
             (err, results) => {
               Exhibition.disconnectDB();
-              if (err) {
-                console.log('Unable to update exhibition');
-                callback(err);
-              } else if (results) {
-                console.log('Exhibition is updated.');
-              } else {
-                console.log('There is no such exhibition.');
-              }
+              callback(err, results);
             },
     );
   }
 
   /**
-   * Checks whether the Exhibition exists within the Database. Will callback a boolean value.
+   * Removes a specific Exhibition from the Database.
    *
-   * @param exhibitionName: Unique Identifier for the Exhibition.
-   * @param callback: used for error checking
+   * @param exhibitionName: The name of the Exhibition to delete for.
+   * @param callback: A function that is executed once the operation has completed.
    */
-  static isExistingExhibition(exhibitionName, callback) {
+  static deleteExhibition(exhibitionName, callback) {
     Exhibition.connectDB();
-    this.ExhibModel.findOne({ exhibition_name: exhibitionName }, (err, docs) => {
+    this.exhibitionModel.findOneAndRemove({ exhibition_name: exhibitionName }, (err) => {
       Exhibition.disconnectDB();
-      if (err) {
-        callback(err, null);
-      } else if (docs) {
-        callback(null, true);
-      } else {
-        callback(null, false);
-      }
+      callback(err);
     });
   }
 
   /**
-   * Retrieve all the Exhibitions tagged with the specified Tag.
+   * Removes all Exhibitions from the Database.
    *
-   * @param tag: The Tag to check each Exhibition for.
-   * @param callback: used for error checking
+   * @param callback: A function that is executed once the operation is done.
    */
-  static searchExhibitionsByTag(tag, callback) {
+  static clearAllExhibitions(callback) {
     Exhibition.connectDB();
-    this.ExhibModel.find({ tags: { $regex: new RegExp(tag.replace('+', '\\+'), 'i') } }, (err, docs) => {
+    this.exhibitionModel.collection.remove({}, (err) => {
       Exhibition.disconnectDB();
-      if (err) {
-        callback(err, null);
-      } else {
-        callback(null, docs);
-      }
-    });
-  }
-
-  /**
-   * Retrieve all the Exhibitions that is hosted under a single Event.
-   *
-   * @param eventName: Unique identifier for the Event to search under.
-   * @param callback: used for error checking
-   */
-  static searchExhibitionsByEvent(eventName, callback) {
-    Exhibition.connectDB();
-    this.ExhibModel.find({ event_name: { $regex: new RegExp(eventName.replace('+', '\\+'), 'i') } }, (err, docs) => {
-      Exhibition.disconnectDB();
-      if (err) {
-        callback(err, null);
-      } else {
-        callback(null, docs);
-      }
+      callback(err);
     });
   }
 }
