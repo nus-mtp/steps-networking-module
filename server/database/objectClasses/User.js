@@ -1,16 +1,18 @@
 const ModelHandler = require('../models/ourModels.js');
 
-const username = '';
-const password = '';
-const port = '27017';
-const host = 'localhost';
-const dbName = 'dev';
+const config = require('../../config.json');
+const currentdb = require('../../currentdb.js');
+
+const username = config[currentdb].username;
+const password = config[currentdb].password;
+const host = config[currentdb].host;
+const port = config[currentdb].port;
+const dbName = config[currentdb].database;
 
 /**
  * This is the wrapper class used extract out and store information
  * about the Users from the database between view and model
  */
-
 
 class User {
 
