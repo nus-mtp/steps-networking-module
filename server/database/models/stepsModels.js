@@ -119,8 +119,7 @@ class StepsModelHandler {
    *
    * Needs to be called in order for the Node script to terminate.
    *
-   * @param callback: An optional function that can
-   *  be sent in to execute after the db closes.
+   * @param callback: A function that is executed once the disconnect completes.
    */
   disconnect(callback) {
     this
@@ -131,7 +130,7 @@ class StepsModelHandler {
         }
 
         if (typeof callback === 'function') {
-          callback();
+          callback(err);
         }
       });
   }
