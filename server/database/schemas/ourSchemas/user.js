@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema({
   bookmarked_users: [String],
 });
 
-userSchema.methods.get_id = function () {
+userSchema.methods.get_id = () => {
   return this._id;
 };
 
