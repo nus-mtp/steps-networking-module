@@ -44,7 +44,7 @@ describe('Exhibition Create', () => {
       if (err) {
         console.log(err);
       }
-      Exhibition.getExhibition('exhibitionTest3', (err, doc) => {
+      Exhibition.getExhibition('exhibitionTest3', 'testingEvent_1', (err, doc) => {
         if (err) {
           console.log('Unable to execute getExhibition function properly');
         }
@@ -86,7 +86,7 @@ describe('Exhibition Read', () => {
 
 
   it('Should be able to retrieve an existing object', (done) => {
-    Exhibition.getExhibition('exhibitionTest2', (err, doc) => {
+    Exhibition.getExhibition('exhibitionTest2','eventName2', (err, doc) => {
       if (err) {
         console.log('Unable to execute getExhibition function properly');
       } else {
@@ -97,7 +97,7 @@ describe('Exhibition Read', () => {
   });
 
   it('Should not be able to retrieve a non-existing object', (done) => {
-    Exhibition.getExhibition('exhibitionTest4', (err, doc) => {
+    Exhibition.getExhibition('exhibitionTest4', 'eventName2', (err, doc) => {
       if (err) {
         console.log('Unable to execute getExhibition function properly');
       } else {
@@ -108,7 +108,7 @@ describe('Exhibition Read', () => {
   });
 
   it('should be able to identify if its an existing exhibition', (done) => {
-    Exhibition.isExistingExhibition('exhibitionTest2', (err, doc) => {
+    Exhibition.isExistingExhibition('exhibitionTest2', 'eventName2', (err, doc) => {
       if (err) {
         console.log('error with isExisting');
       } else {
@@ -119,7 +119,7 @@ describe('Exhibition Read', () => {
   });
 
   it('should be able to identify if its an existing exhibition', (done) => {
-    Exhibition.isExistingExhibition('exhibitionTest4', (err, doc) => {
+    Exhibition.isExistingExhibition('exhibitionTest4', 'eventName2', (err, doc) => {
       if (err) {
         console.log('error with isExisting');
       } else {
@@ -196,7 +196,7 @@ describe('Exhibition Update', () => {
       if (err) {
         console.log('unable to update');
       }
-      Exhibition.getExhibition('exhibitionTest2', (err, obj) => {
+      Exhibition.getExhibition('exhibitionTest2', 'eventName2', (err, obj) => {
         if (err) {
           console.log('unable to get exhibition in update existing unit test');
         }
@@ -209,7 +209,16 @@ describe('Exhibition Update', () => {
 
 describe('Exhibition Delete', () => {
   before((done) => {
-    const testexhibition1 = new Exhibition('exhibitionTest1', 'description', new Date('October 13, 2014 11:13:00'), new Date('October 14, 2014 21:00:00'), 'NUS', 'map', 'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1', ['game', 'software engineering']);
+    const testexhibition1 = new Exhibition(
+      'exhibitionTest1',
+      'This is another description',
+      'eventName2',
+      'https://upload.wikimedia.org/wikipedia/en/0/02/My_Neighbor_Totoro_-_Tonari_no_Totoro_%28Movie_Poster%29.jpg',
+      ['https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1', 'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1'],
+      ['www.youtube.com', 'www.youtube.com'],
+      'url.com',
+      ['software engineering', 'android'],
+    );
     testexhibition1.saveExhibition((err) => {
       if (err) {
         console.log(err);
@@ -228,13 +237,13 @@ describe('Exhibition Delete', () => {
   });
 
   it('should be able to remove an exhibition from the database', (done) => {
-    Exhibition.deleteExhibition('exhibitionTest1', (err) => {
+    Exhibition.deleteExhibition('exhibitionTest1', 'eventName2', (err) => {
       if (err) {
         console.log(err);
       }
 
       // Checks to see if it's removed
-      Exhibition.getExhibition('exhibitionTest1', (err, obj) => {
+      Exhibition.getExhibition('exhibitionTest1', 'eventName2', (err, obj) => {
         if (err) {
           console.log('unable to get exhibition in update existing unit test');
         } else {

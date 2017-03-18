@@ -20,7 +20,7 @@ class Exhibition {
    */
   static connectDB() {
     this.ModelHandler = new ModelHandler()
-          .initWithParameters(username, password, host, port, dbName);
+      .initWithParameters(username, password, host, port, dbName);
     this.ExhibitionModel = this.ModelHandler.getExhibitionModel();
   }
 
@@ -46,7 +46,7 @@ class Exhibition {
    */
   constructor(exhibitionName = '', exhibitionDescription = '', eventName, posterURL, images, videos, website, tags) {
     this.ModelHandler = new ModelHandler()
-        .initWithParameters(username, password, host, port, dbName);
+      .initWithParameters(username, password, host, port, dbName);
     this.ExhibitionModel = this.ModelHandler.getExhibitionModel();
     this.exhibitionModelDoc = new this.ExhibitionModel({
       exhibition_name: exhibitionName,
@@ -80,9 +80,13 @@ class Exhibition {
    * @param {String} exhibitionName: The name of the Exhibition to search for.
    * @param {function} callback: A function that is executed once the operation is done.
    */
-  static isExistingExhibition(exhibitionName, callback) {
+  static isExistingExhibition(exhibitionName, eventName, callback) {
+    const query = {
+      exhibition_name: exhibitionName,
+      event_name: eventName,
+    };
     Exhibition.connectDB();
-    this.ExhibitionModel.findOne({ exhibition_name: exhibitionName }, (err, exhibition) => {
+    this.ExhibitionModel.findOne(query, (err, exhibition) => {
       Exhibition.disconnectDB();
       if (err) {
         callback(err, false);
@@ -100,9 +104,13 @@ class Exhibition {
    * @param {String} exhibitionName: The name of the Exhibition to retrieve from the Database.
    * @param {function} callback: A function that is executed once the operation is done.
    */
-  static getExhibition(exhibitionName, callback) {
+  static getExhibition(exhibitionName, eventName, callback) {
+    const query = {
+      exhibition_name: exhibitionName,
+      event_name: eventName,
+    };
     Exhibition.connectDB();
-    this.ExhibitionModel.findOne({ exhibition_name: exhibitionName }, (err, exhibition) => {
+    this.ExhibitionModel.findOne(query, (err, exhibition) => {
       Exhibition.disconnectDB();
       callback(err, exhibition);
     });
@@ -165,10 +173,12 @@ class Exhibition {
    */
   static updateExhibition(exhibitionName = '', exhibitionDescription = '', eventName, posterURL, images, videos, website, tags, callback) {
     Exhibition.connectDB();
-    const update = {
+    const query = {
       exhibition_name: exhibitionName,
-      exhibition_description: exhibitionDescription,
       event_name: eventName,
+    }
+    const update = {
+      exhibition_description: exhibitionDescription,
       poster: posterURL,
       images,
       videos,
@@ -177,13 +187,14 @@ class Exhibition {
     };
     const options = { new: true };
     this.ExhibitionModel
-        .findOneAndUpdate({ exhibition_name: exhibitionName },
-            update,
-            options,
-            (err, results) => {
-              Exhibition.disconnectDB();
-              callback(err, results);
-            },
+      .findOneAndUpdate(
+      query,
+      update,
+      options,
+      (err, results) => {
+        Exhibition.disconnectDB();
+        callback(err, results);
+      },
     );
   }
 
@@ -194,9 +205,13 @@ class Exhibition {
    * @param {String} exhibitionName: The name of the Exhibition to delete for.
    * @param {function} callback: A function that is executed once the operation has completed.
    */
-  static deleteExhibition(exhibitionName, callback) {
+  static deleteExhibition(exhibitionName, eventName, callback) {
+    const query = {
+      exhibition_name: exhibitionName,
+      event_name: eventName,
+    }
     Exhibition.connectDB();
-    this.ExhibitionModel.findOneAndRemove({ exhibition_name: exhibitionName }, (err) => {
+    this.ExhibitionModel.findOneAndRemove(query, (err) => {
       Exhibition.disconnectDB();
       callback(err);
     });
