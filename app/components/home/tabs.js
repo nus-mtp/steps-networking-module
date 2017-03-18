@@ -23,9 +23,3 @@ class Tabs extends React.Component {
 }
 
 export default Tabs;
-
-/*<div className="tab-content">
-  <div className="tab-pane active" id="ongoing" role="tabpanel"></div>
-  <div className="tab-pane" id="upcoming" role="tabpanel"></div>
-  <div className="tab-pane" id="past" role="tabpanel"></div>
-</div>*/
