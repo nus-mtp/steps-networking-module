@@ -471,7 +471,7 @@ function upsertGuests(stepsGuestObj, callback) {
                                 (exhibitionAttendance, callback) => {
                                   // For each Exhibition Attendance in Parallel, 5 at a time
                                   const exhibitionQuery = {
-                                    _id: exhibitionAttendance._id,
+                                    _id: exhibitionAttendance.attendance_key,
                                     event_name: eventName,
                                   };
 
