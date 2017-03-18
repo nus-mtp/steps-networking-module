@@ -212,7 +212,8 @@ function upsertModule(stepsModuleObj, callback) {
               Exhibition.where(query).findOne((err, doc) => {
                 if (err) { // Unknown Error
                   console.log(err);
-                  callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
+                  callback(null, exhibitionProperties.exhibitionNameKey,
+                      exhibitionProperties.eventNameKey, studentsInvolved, valid);
                 } else if (doc) { // Exhibition was Previously Inserted - Update
                   doc.set('exhibition_name', update.exhibition_name);
                   doc.set('event_name', update.event_name);
@@ -228,7 +229,8 @@ function upsertModule(stepsModuleObj, callback) {
                     if (err) {
                       console.log(err);
                     }
-                    callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
+                    callback(null, exhibitionProperties.exhibitionNameKey,
+                        exhibitionProperties.eventNameKey, studentsInvolved, valid);
                   });
                 } else { // Exhibition is a Potential New Entry - Insert
                   const exhibitionDoc = new Exhibition(update);
@@ -239,15 +241,17 @@ function upsertModule(stepsModuleObj, callback) {
                     if (err) {
                       console.log(err);
                     }
-                    callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
+                    callback(null, exhibitionProperties.exhibitionNameKey,
+                        exhibitionProperties.eventNameKey, studentsInvolved, valid);
                   });
                 }
               });
             } else {
-              callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
+              callback(null, exhibitionProperties.exhibitionNameKey,
+                  exhibitionProperties.eventNameKey, studentsInvolved, valid);
             }
           },
-          (exhibitionName, studentsInvolved, valid, callback) => {
+          (exhibitionName, eventName, studentsInvolved, valid, callback) => {
             // Upsert an Attendance Listing for Each User involved in the Project,
             // only if Project Information was valid
             if (valid) {
@@ -261,12 +265,8 @@ function upsertModule(stepsModuleObj, callback) {
                       email: String(student.email).trim(),
                     };
                     const exhibitionQuery = {
+                      event_name: String(eventName).trim(),
                       exhibition_name: String(exhibitionName).trim(),
-                    };
-                    const attendanceQuery = {
-                      user_email: String(student.email).trim(),
-                      attendance_type: 'exhibition',
-                      attendance_name: String(exhibitionName).trim(),
                     };
 
                     // Upsert Attendance
@@ -284,6 +284,11 @@ function upsertModule(stepsModuleObj, callback) {
                             callback(null);
                           } else if (exhibition) {
                             // Both the User and Exhibition exist - Upsert Attendance Information
+                            const attendanceQuery = {
+                              user_email: String(student.email).trim(),
+                              attendance_key: exhibition._id,
+                              attendance_type: 'exhibition',
+                            };
                             Attendance.where(attendanceQuery).findOne((err, attendance) => {
                               if (err) {
                                 // Unknown Error
@@ -415,11 +420,6 @@ function upsertGuests(stepsGuestObj, callback) {
         const eventQuery = {
           event_name: eventName,
         };
-        const attendanceEventQuery = {
-          user_email: userEmail,
-          attendance_type: 'event',
-          attendance_name: eventName,
-        };
 
         User.where(userQuery).lean().findOne((err, user) => {
           if (err) {
@@ -435,6 +435,12 @@ function upsertGuests(stepsGuestObj, callback) {
                 callback(null);
               } else if (event) {
                 // User and Event found - Upsert Attendance Document
+                const attendanceEventQuery = {
+                  user_email: userEmail,
+                  attendance_key: event._id,
+                  attendance_type: 'event',
+                };
+
                 Attendance.where(attendanceEventQuery).lean().findOne((err, eventAttendance) => {
                   if (err) {
                     // Unknown Error
@@ -465,7 +471,7 @@ function upsertGuests(stepsGuestObj, callback) {
                                 (exhibitionAttendance, callback) => {
                                   // For each Exhibition Attendance in Parallel, 5 at a time
                                   const exhibitionQuery = {
-                                    exhibition_name: exhibitionAttendance.attendance_name,
+                                    _id: exhibitionAttendance._id,
                                     event_name: eventName,
                                   };
 
