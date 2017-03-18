@@ -220,7 +220,7 @@ class User {
    *
    * @param callback: A function that executes once the operation is done.
    */
-  static clearAllUser(callback) {
+  static clearAllUsers(callback) {
     User.connectDB();
     this.userModel.remove({}, (err) => {
       User.disconnectDB();

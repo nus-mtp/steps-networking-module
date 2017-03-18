@@ -22,7 +22,7 @@ describe ('User Create',function() {
   });
 
   after (function(done){
-    User.clearAllUser(function(err){
+    User.clearAllUsers(function(err){
       if (err){
         console.log(err);
       }
@@ -115,7 +115,7 @@ describe ('User Read',function() {
   });
 
   after (function(done){
-    User.clearAllUser(function(err){
+    User.clearAllUsers(function(err){
       if (err){
         console.log(err);
       }
@@ -176,7 +176,7 @@ describe ('User Update',function() {
   });
 
   after (function(done){
-    User.clearAllUser(function(err){
+    User.clearAllUsers(function(err){
       if (err){
         console.log(err);
       }
@@ -249,7 +249,7 @@ describe ('User Delete',function() {
   });
 
   after (function(done){
-    User.clearAllUser(function(err){
+    User.clearAllUsers(function(err){
       if (err){
         console.log(err);
       }
