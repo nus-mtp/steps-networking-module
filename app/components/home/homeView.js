@@ -14,11 +14,17 @@ class HomeView extends React.Component {
       this.initial.push(false);
     }
 
+    let currentEvents = sampleEvents.slice();
+    const current = currentEvents.filter((event) => {
+      if (event.date === nowDate.toDateString())
+        return event;
+    });
+
     this.state = {
       open: this.initial,
       numOfEvents: numOfEvents,
       events: sampleEvents,
-      displayedEvents: sampleEvents,
+      displayedEvents: current,
       attendance: sampleAttendance,
     };
 
