@@ -3,17 +3,18 @@ const assert = require('assert');
 
 describe ('Event Create', function() {
   before(function(done) {
-    var testevent1 = new Event('eventTest1',
-                               'description',
-                               new Date('October 13, 2014 11:13:00'),
-                               new Date('October 14, 2014 21:00:00'),
-                               'NUS',
-                               'map',
-                               'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
-                               ['game', 'software engineering'],
-                              );
+    var testevent1 = new Event(
+      'eventTest1',
+      'description',
+      new Date('October 13, 2014 11:13:00'),
+      new Date('October 14, 2014 21:00:00'),
+      'NUS',
+      'map',
+      'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
+      ['game', 'software engineering'],
+    );
 
-    testevent1.saveEvent(function callback(err) {
+    testevent1.saveEvent((err)  =>  {
       if (err) {
         console.log(err);
       }
@@ -22,7 +23,7 @@ describe ('Event Create', function() {
   });
 
   after (function(done) {
-    Event.clearAllEvents(function cb(err) {
+    Event.clearAllEvents((err) => {
       if (err) {
         console.log(err);
       }
@@ -31,19 +32,20 @@ describe ('Event Create', function() {
   });
 
   it ('Should be able to add a new Event', function(done) {
-    var testevent3 = new Event('eventTest3',
-                               'description',
-                               new Date('June 25, 2017 00:00:00'),
-                               new Date('October 31, 2017 23:59:59'),
-                               'Someone House',
-                               'map','https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
-                               ['event test 3'],
-                              );
-    testevent3.saveEvent(function callback(err) {
+    var testevent3 = new Event(
+      'eventTest3',
+      'description',
+      new Date('June 25, 2017 00:00:00'),
+      new Date('October 31, 2017 23:59:59'),
+      'Someone House',
+      'map','https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
+      ['event test 3'],
+    );
+    testevent3.saveEvent((err)  =>  {
       if (err) {
         console.log(err);
       }
-      Event.getEvent('eventTest3', function callback(err1, doc) {
+      Event.getEvent('eventTest3', (err1, doc) => {
         if (err1){
           console.log('Unable to execute getEvent function properly');
         } 
@@ -63,12 +65,12 @@ describe ('Event Create', function() {
                                'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
                                ['game']
                               );
-    testevent2.saveEvent(function callback(err) {
+    testevent2.saveEvent((err)  =>  {
       //expect duplicate error to be thrown
       assert.notEqual(err, null);
 
       //Old data should still be retained
-      Event.getEvent('eventTest1', function callback(err1, doc) {
+      Event.getEvent('eventTest1', (err1, doc) => {
         if (err1) {
           console.log('Unable to execute getEvent function properly');
         } 
@@ -91,7 +93,7 @@ describe ('Event Read', function() {
       'NUS', 'map','https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
       ['software engineering']
     );
-    testevent2.saveEvent(function callback (err){
+    testevent2.saveEvent((err) => {
       if (err){
         console.log(err);
       }
@@ -100,7 +102,7 @@ describe ('Event Read', function() {
   });
 
   after (function(done){
-    Event.clearAllEvents(function(err){
+    Event.clearAllEvents((err) => {
       if (err){
         console.log(err);
       }
@@ -109,50 +111,57 @@ describe ('Event Read', function() {
   });
 
 
-  it ('Should be able to retrieve an existing object', function() {
-    Event.getEvent('eventTest2', function callback (err, doc){
+  it ('Should be able to retrieve an existing object', function(done) {
+    Event.getEvent('eventTest2', (err,  doc) => {
       if (err){
         console.log('Unable to execute getEvent function properly');
       } 
       assert.equal(doc.event_name, 'eventTest2');
+      done();
     });
   });
 
-  it ('Should not be able to retrieve a non-existing object', function() {
-    Event.getEvent('eventTest4', function callback (err, doc){
+  it ('Should not be able to retrieve a non-existing object', function(done) {
+    Event.getEvent('eventTest4', (err,  doc) => {
       if (err){
         console.log('Unable to execute getEvent function properly');
       } 
       assert.equal(doc, null);
+      done();
     });
   });
 
-  it ('should be able to identify if its an existing event', function(){
+  it ('should be able to identify if its an existing event', function(done){
 
-    Event.isExistingEvent('eventTest2', function callback(err,doc){
+    Event.isExistingEvent('eventTest2', (err, doc) => {
       if (err){
         console.log('error with isExisting');
       } else{
         assert.equal(true, doc)
       }
+      done();
     });
+  });
 
-    Event.isExistingEvent('eventTest4', function callback(err,doc){
+  it ('should be able to identify if its an existing event', function(done){
+    Event.isExistingEvent('eventTest4', (err, doc) => {
       if (err){
         console.log('error with isExisting');
       } else{
         assert.equal(false, doc)
       }
+      done();
     });
   });
 
-  it ('should be able to get a list of events by tag', function(){
-    Event.searchEventsByTag('engineering', function callback(err, results){
+  it ('should be able to get a list of events by tag', function(done){
+    Event.searchEventsByTag('engineering', (err,  results) => {
       if (err){
         console.log('error with searching by tag unit test');
       } else {
         assert.notEqual(results, null);
       }
+      done();
     });
   });
 
@@ -171,7 +180,7 @@ describe('Event Update', function(){
       'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
       ['software engineering']
     );
-    testevent2.saveEvent(function callback(err) {
+    testevent2.saveEvent((err)  =>  {
       if (err) {
         console.log('Unable to save Event obj');
         console.log(err);
@@ -181,7 +190,7 @@ describe('Event Update', function(){
   });
 
   after (function(done) {
-    Event.clearAllEvents(function(err) {
+    Event.clearAllEvents((err) => {
       if (err) {
         console.log(err);
       }
@@ -199,18 +208,14 @@ describe('Event Update', function(){
       'map',
       'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
       ['engineering', 'database'],
-      function callback(err){
+      (err,  results) => {
         if (err) {
           console.log('unable to update');
+        } else {
+          assert.equal('This is an updated description', results.event_description);
         }
-        Event.getEvent('eventTest2', function callback(err, obj) {
-          if (err) {
-            console.log('unable to get event in update existing unit test');
-          } 
-          assert.equal('This is an updated description', obj.event_description);
-        });
+        done();
       });
-    done();
   });
 });
 
@@ -227,7 +232,7 @@ describe ('Event Delete', function() {
       'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
       ['game', 'software engineering']
     );
-    testevent1.saveEvent(function callback (err){
+    testevent1.saveEvent((err) => {
       if (err){
         console.log(err);
       }
@@ -236,7 +241,7 @@ describe ('Event Delete', function() {
   });
 
   after (function(done) {
-    Event.clearAllEvents(function(err){
+    Event.clearAllEvents((err) => {
       if (err){
         console.log(err);
       }
@@ -244,18 +249,20 @@ describe ('Event Delete', function() {
     });
   });
 
-  it('should be able to remove an event from the database',function() {
-    Event.deleteEvent('eventTest1', function callback(err) {
+  it('should be able to remove an event from the database',function(done) {
+    Event.deleteEvent('eventTest1', (err)  =>  {
       if (err){
         console.log(err);
       }
 
       // Checks to see if it's removed
-      Event.getEvent('eventTest1', function callback(err, obj) {
+      Event.getEvent('eventTest1', (err, obj) => {
         if (err) {
           console.log('unable to get event in update existing unit test');
-        } 
-        assert.equal(null, obj);
+        } else {
+          assert.equal(null, obj);
+        }
+        done();
       });
     });
   });

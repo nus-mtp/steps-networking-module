@@ -18,12 +18,17 @@ module.exports.connect = (username, password, host, port, database) => {
 
   db.on('error', (err) => {
     if (err) {
-      throw err;
+      console.info(`MongoDB ${database} has encountered a problem.`);
+      console.errLogToConsole(err);
     }
   });
 
   db.once('open', () => {
     console.info(`MongoDB ${database} Connected Successfully.`);
+  });
+
+  db.once('close', () => {
+    console.info(`MongoDB ${database} Disconnected Successfully.`);
   });
 
   return db;
