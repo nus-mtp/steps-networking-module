@@ -37,7 +37,7 @@ describe('Comment Create', function(){
         console.log(err);
       }
       // check that its inside the databse
-      Comment.getCommentForExhibition('MAMA! LAVA!', function cb(err, commentObj){
+      Comment.getCommentsForExhibition('MAMA! LAVA!', function cb(err, commentObj){
         if (err){
           console.log("error with getting comment for an event");
         } else {
@@ -75,7 +75,7 @@ describe('Comment Read', function(done){
   });
 
   it('Should be able to obtain date from an existing exhibition', function(done){
-    Comment.getCommentForExhibition('ExI', function cb(err, commentObj){
+    Comment.getCommentsForExhibition('ExI', function cb(err, commentObj){
       if (err){
         console.log("error with getting comment for an event");
       } else {
@@ -86,7 +86,7 @@ describe('Comment Read', function(done){
   });
 
   it('Should not be able to obtain date from a non-existing exhibition', function(done){
-    Comment.getCommentForExhibition('Exo', function cb(err, commentObj){
+    Comment.getCommentsForExhibition('Exo', function cb(err, commentObj){
       if (err){
         console.log("error with getting comment for an event");
       } else {
