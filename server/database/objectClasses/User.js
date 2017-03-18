@@ -21,7 +21,7 @@ class User {
   static connectDB() {
     this.ModelHandler = new ModelHandler()
       .initWithParameters(username, password, host, port, dbName);
-    this.userModel = this.ModelHandler.getUserModel();
+    this.UserModel = this.ModelHandler.getUserModel();
   }
 
   /**
@@ -48,11 +48,11 @@ class User {
    *    userEmails that the User has bookmarked.
    */
   constructor(userEmail = '', userName = '', userDescription = '', userPassword = '',
-               willNotify = true, isDeleted = false, profilePic = '', skillSets = [], bookedmarkedUsers = []) {
+    willNotify = true, isDeleted = false, profilePic = '', skillSets = [], bookedmarkedUsers = []) {
     this.ModelHandler = new ModelHandler()
       .initWithParameters(username, password, host, port, dbName);
-    this.userModel = this.ModelHandler.getUserModel();
-    this.userModelDoc = new this.userModel({
+    this.UserModel = this.ModelHandler.getUserModel();
+    this.userModelDoc = new this.UserModel({
       email: userEmail,
       name: userName,
       description: userDescription,
@@ -80,6 +80,20 @@ class User {
   }
 
   /**
+   * Takes in password from User and checks the hashed version with the Database.
+   *
+   * @param {String} testPassword: The password to test for.
+   * @param {function} callback: A function that executes once the operation is done.
+   */
+  comparePassword(testPassword, callback) {
+    User.connectDB();
+    this.userModelDoc.comparePassword(testPassword, (err, result) => {
+      User.disconnectDB();
+      callback(err, result);
+    });
+  }
+
+  /**
    * A function that checks whether a User exists, and if it does, has it been marked as deleted.
    *
    * @param {String} userEmail: The email of the User to check for.
@@ -87,7 +101,7 @@ class User {
    */
   static isValidUser(userEmail, callback) {
     User.connectDB();
-    this.userModel.findOne({ email: userEmail }, (err, user) => {
+    this.UserModel.findOne({ email: userEmail }, (err, user) => {
       User.disconnectDB();
       if (err) {
         callback(err, null);
@@ -104,20 +118,6 @@ class User {
   }
 
   /**
-  * Takes in password from User and checks the hashed version with the Database.
-  *
-  * @param {String} testPassword: The password to test for.
-  * @param {function} callback: A function that executes once the operation is done.
-  */
-  comparePassword(testPassword, callback) {
-    User.connectDB();
-    this.userModelDoc.comparePassword(testPassword, (err, result) => {
-      User.disconnectDB();
-      callback(err, result);
-    });
-  }
-
-  /**
    * A function that returns a User from the Database based on the email supplied.
    *
    * @param {String} userEmail: The email of the User to search for.
@@ -125,7 +125,7 @@ class User {
    */
   static getUser(userEmail, callback) {
     User.connectDB();
-    this.userModel.findOne({ email: userEmail }, (err, user) => {
+    this.UserModel.findOne({ email: userEmail }, (err, user) => {
       User.disconnectDB();
       callback(err, user);
     });
@@ -138,7 +138,7 @@ class User {
    */
   static getAllUsers(callback) {
     User.connectDB();
-    this.userModel.find({}, (err, users) => {
+    this.UserModel.find({}, (err, users) => {
       User.disconnectDB();
       callback(err, users);
     });
@@ -152,7 +152,7 @@ class User {
    */
   static searchUsersBySkills(skillToBeSearched, callback) {
     User.connectDB();
-    this.userModel.find({ skills: { $regex: new RegExp(skillToBeSearched.replace('+', '\\+'), 'i') } }, (err, matchedUsers) => {
+    this.UserModel.find({ skills: { $regex: new RegExp(skillToBeSearched.replace('+', '\\+'), 'i') } }, (err, matchedUsers) => {
       User.disconnectDB();
       callback(err, matchedUsers);
     });
@@ -176,7 +176,7 @@ class User {
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static updateUser(email = '', name = '', description = '', password = '',
-                     willNotify = true, isDeleted = false, profilePic = '', skillSets = [], bookedmarkedUsers = [], callback) {
+    willNotify = true, isDeleted = false, profilePic = '', skillSets = [], bookedmarkedUsers = [], callback) {
     const update = {
       email,
       name,
@@ -190,7 +190,7 @@ class User {
     };
     const options = { new: true };
     User.connectDB();
-    this.userModel.findOneAndUpdate({ email }, update, options, (err, results) => {
+    this.UserModel.findOneAndUpdate({ email }, update, options, (err, results) => {
       User.disconnectDB();
       callback(err, results);
     });
@@ -207,7 +207,7 @@ class User {
     const update = { is_deleted: isDeleted };
     const options = { new: true };
     User.connectDB();
-    this.userModel.findOneAndUpdate(
+    this.UserModel.findOneAndUpdate(
       { email: userEmail },
       { $set: update },
       options,
@@ -224,7 +224,7 @@ class User {
    */
   static clearAllUsers(callback) {
     User.connectDB();
-    this.userModel.remove({}, (err) => {
+    this.UserModel.remove({}, (err) => {
       User.disconnectDB();
       callback(err);
     });

@@ -15,14 +15,13 @@ const dbName = config[currentdb].database;
  */
 
 class Exhibition {
-
   /**
    * Creates a connection to the Database
    */
   static connectDB() {
     this.ModelHandler = new ModelHandler()
           .initWithParameters(username, password, host, port, dbName);
-    this.exhibitionModel = this.ModelHandler.getExhibitionModel();
+    this.ExhibitionModel = this.ModelHandler.getExhibitionModel();
   }
 
   /**
@@ -48,8 +47,8 @@ class Exhibition {
   constructor(exhibitionName = '', exhibitionDescription = '', eventName, posterURL, images, videos, website, tags) {
     this.ModelHandler = new ModelHandler()
         .initWithParameters(username, password, host, port, dbName);
-    this.exhibitionModel = this.ModelHandler.getExhibitionModel();
-    this.exhibition = new this.exhibitionModel({
+    this.ExhibitionModel = this.ModelHandler.getExhibitionModel();
+    this.exhibitionModelDoc = new this.ExhibitionModel({
       exhibition_name: exhibitionName,
       exhibition_description: exhibitionDescription,
       event_name: eventName,
@@ -69,7 +68,7 @@ class Exhibition {
    */
   saveExhibition(callback) {
     Exhibition.connectDB();
-    this.exhibition.save((err) => {
+    this.exhibitionModelDoc.save((err) => {
       Exhibition.disconnectDB();
       callback(err);
     });
@@ -83,7 +82,7 @@ class Exhibition {
    */
   static isExistingExhibition(exhibitionName, callback) {
     Exhibition.connectDB();
-    this.exhibitionModel.findOne({ exhibition_name: exhibitionName }, (err, exhibition) => {
+    this.ExhibitionModel.findOne({ exhibition_name: exhibitionName }, (err, exhibition) => {
       Exhibition.disconnectDB();
       if (err) {
         callback(err, false);
@@ -103,7 +102,7 @@ class Exhibition {
    */
   static getExhibition(exhibitionName, callback) {
     Exhibition.connectDB();
-    this.exhibitionModel.findOne({ exhibition_name: exhibitionName }, (err, exhibition) => {
+    this.ExhibitionModel.findOne({ exhibition_name: exhibitionName }, (err, exhibition) => {
       Exhibition.disconnectDB();
       callback(err, exhibition);
     });
@@ -116,7 +115,7 @@ class Exhibition {
    */
   static getAllExhibitions(callback) {
     Exhibition.connectDB();
-    this.exhibitionModel.find({}, (err, allExhibitions) => {
+    this.ExhibitionModel.find({}, (err, allExhibitions) => {
       Exhibition.disconnectDB();
       callback(err, allExhibitions);
     });
@@ -130,7 +129,7 @@ class Exhibition {
    */
   static searchExhibitionsByTag(tag, callback) {
     Exhibition.connectDB();
-    this.exhibitionModel.find({ tags: { $regex: new RegExp(tag.replace('+', '\\+'), 'i') } }, (err, matchedExhibitions) => {
+    this.ExhibitionModel.find({ tags: { $regex: new RegExp(tag.replace('+', '\\+'), 'i') } }, (err, matchedExhibitions) => {
       Exhibition.disconnectDB();
       callback(err, matchedExhibitions);
     });
@@ -144,7 +143,7 @@ class Exhibition {
    */
   static searchExhibitionsByEvent(eventName, callback) {
     Exhibition.connectDB();
-    this.exhibitionModel.find({ event_name: { $regex: new RegExp(eventName.replace('+', '\\+'), 'i') } }, (err, docs) => {
+    this.ExhibitionModel.find({ event_name: { $regex: new RegExp(eventName.replace('+', '\\+'), 'i') } }, (err, docs) => {
       Exhibition.disconnectDB();
       callback(err, docs);
     });
@@ -177,7 +176,7 @@ class Exhibition {
       tags,
     };
     const options = { new: true };
-    this.exhibitionModel
+    this.ExhibitionModel
         .findOneAndUpdate({ exhibition_name: exhibitionName },
             update,
             options,
@@ -197,7 +196,7 @@ class Exhibition {
    */
   static deleteExhibition(exhibitionName, callback) {
     Exhibition.connectDB();
-    this.exhibitionModel.findOneAndRemove({ exhibition_name: exhibitionName }, (err) => {
+    this.ExhibitionModel.findOneAndRemove({ exhibition_name: exhibitionName }, (err) => {
       Exhibition.disconnectDB();
       callback(err);
     });
@@ -210,7 +209,7 @@ class Exhibition {
    */
   static clearAllExhibitions(callback) {
     Exhibition.connectDB();
-    this.exhibitionModel.collection.remove({}, (err) => {
+    this.ExhibitionModel.collection.remove({}, (err) => {
       Exhibition.disconnectDB();
       callback(err);
     });

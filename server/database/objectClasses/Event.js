@@ -11,7 +11,7 @@ const dbName = config[currentdb].database;
 
 /**
  * This is the wrapper class used extract out and store information
- * about the Events from the database between view and model
+ * about the Events from the Database between view and model.
  *
  */
 
@@ -40,7 +40,7 @@ class Event {
    * @param {Date} startDate: Date object to identify start of Event.
    * @param {Date} endDate: Date object to identify end of Event.
    * @param {String} location: The description of location, e.g how to get there
-   * @param {Object} map: Object for an interactive map.
+   * @param {String} map: URL String representing an externally hosted interactive map.
    * @param {String} eventPicture:
    *    URL String representing an externally hosted depiction of the Event.
    * @param {Array} tags: A list of tags used to identify Events.
@@ -63,9 +63,9 @@ class Event {
   }
 
   /**
-   * saves event into Database
+   * Commits the internally stored Event Document to the Database.
    *
-   * @param {function} callback: A function that is executed once the operation has completed.
+   * @param {function} callback: A function that executes after the operation is done.
    */
   saveEvent(callback) {
     Event.connectDB();
@@ -90,7 +90,7 @@ class Event {
   }
 
   /**
-   * Commits the internally stored Event Document to the Database.
+   * Retrieve all Events from the Database.
    *
    * @param {function} callback: A function that executes after the operation is done.
    */
@@ -135,14 +135,14 @@ class Event {
   }
 
   /**
-   * Updates an model instance.
+   * Updates the all information in a specified Event - except the eventName.
    *
    * @param {String} eventName: The unique email for this Event.
    * @param {String} eventDescription: The description for the Event.
    * @param {Date} startDate: Date object to identify start of Event.
    * @param {Date} endDate: Date object to identify end of Event.
    * @param {String} location: The description of location, e.g how to get there
-   * @param {Object} map: Object for an interactive map.
+   * @param {Object} map: URL String representing an externally hosted interactive map.
    * @param {String} eventPicture:
    *    URL String representing an externally hosted depiction of the Event.
    * @param {Array} tags: A list of tags used to identify Events.
