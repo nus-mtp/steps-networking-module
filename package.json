@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "gulp test",
-    "start": "node ./server/server.js",
+    "start": "node ./server/server.bundle.js",
     "postinstall": "gulp buildServer && gulp buildClient"
   },
   "repository": {
