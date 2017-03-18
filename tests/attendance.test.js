@@ -17,7 +17,7 @@ describe('Attendance Create', function() {
   });
 
   after(function(done) {
-    Attendance.clearAllAttendance(function callback(err) {
+    Attendance.clearAllAttendances(function callback(err) {
       if (err) {
         console.log(err);
       }
@@ -35,7 +35,7 @@ describe('Attendance Create', function() {
       if (err) {
         console.log(err);
       }
-      Attendance.searchAttendanceByUser('usertesting_1@user.com', function(err1, attendanceObj) {
+      Attendance.searchAttendancesByUser('usertesting_1@user.com', function(err1, attendanceObj) {
         if (err1) {
           console.log('not able to get object');
           console.log(err1);
@@ -68,7 +68,7 @@ describe('Attendance Read', function() {
   });
 
   after(function(done) {
-    Attendance.clearAllAttendance(function callback(err) {
+    Attendance.clearAllAttendances(function callback(err) {
       if (err) {
         console.log(err);
       }
@@ -77,7 +77,7 @@ describe('Attendance Read', function() {
   });
 
   it('should be able to retrieve an array AttendanceObj by user email', function(done) {
-    Attendance.searchAttendanceByUser('usertesting_2@user.com', function(err, obj) {
+    Attendance.searchAttendancesByUser('usertesting_2@user.com', function(err, obj) {
       if (err) {
         console.log("unable to get attendance object");
       } else {
@@ -88,7 +88,7 @@ describe('Attendance Read', function() {
   });
 
   it('should be able to get the list of attendees in an event', function(done) {
-    Attendance.getAttendanceByType('eventNumber2', 'event', function(err, obj) {
+    Attendance.searchAttendancesByNameAndType('eventNumber2', 'event', function(err, obj) {
       if (err) {
         console.log("unable to get attendance object");
       } else {
@@ -99,7 +99,7 @@ describe('Attendance Read', function() {
   });
   
     it('should be able to get the list of exhibitioners in an event', function(done) {
-    Attendance.getAttendanceByType('eventNumber2', 'exhibition', function(err, obj) {
+    Attendance.searchAttendancesByNameAndType('eventNumber2', 'exhibition', function(err, obj) {
       if (err) {
         console.log("unable to get attendance object");
       } else {
@@ -110,7 +110,7 @@ describe('Attendance Read', function() {
   });
   
     it('should be able to get the list of exhibitioners', function(done) {
-    Attendance.searchAttendanceByUser('usertesting_2@user.com', function(err, obj) {
+    Attendance.searchAttendancesByUser('usertesting_2@user.com', function(err, obj) {
       if (err) {
         console.log("unable to get attendance object");
       } else {
@@ -121,7 +121,7 @@ describe('Attendance Read', function() {
   });
 
   it('should be able to retrieve an array of AttendanceObj by event name', function(done) {
-    Attendance.searchAttendanceByEvent('eventNumber2', function(err, obj) {
+    Attendance.searchAttendancesByName('eventNumber2', function(err, obj) {
       if (err) {
         console.log("unable to get attendance object");
       } else {
@@ -132,7 +132,7 @@ describe('Attendance Read', function() {
   });
 
   it('should be able to retrieve an array of AttendanceObj by reasons', function(done) {
-    Attendance.searchAttendanceByReason('investors', function(err, obj) {
+    Attendance.searchAttendancesByReason('investors', function(err, obj) {
       if (err) {
         console.log("unable to get attendance object");
       } else {
@@ -143,7 +143,7 @@ describe('Attendance Read', function() {
   });
 
   it('should be able to retrieve an array of AttendanceObj by attendance name and reasons', function(done){
-    Attendance.searchAttendanceByEventAndReason('eventNumber2', 'investor', function(err, obj) {
+    Attendance.searchAttendanceByNameAndReason('eventNumber2', 'investor', function(err, obj) {
       if (err) {
         console.log("unable to get attendance object");
       } else {
@@ -155,7 +155,7 @@ describe('Attendance Read', function() {
 
 
   it('should be able to obtain a specific AttedanceObj using email, event/exhibit name and type', function(done){
-    Attendance.getAttendanceObj('usertesting_2@user.com','eventNumber2','exhibition', function(err, obj) {
+    Attendance.getAttendance('usertesting_2@user.com','eventNumber2','exhibition', function(err, obj) {
       if (err) {
         console.log(err);
       } else {
@@ -182,7 +182,7 @@ describe('Attendance Update', function() {
   });
 
   after(function(done) {
-    Attendance.clearAllAttendance(function callback(err) {
+    Attendance.clearAllAttendances(function callback(err) {
       if (err) {
         console.log(err);
       }
@@ -226,7 +226,7 @@ describe('Attendance Delete', function(){
   });
 
   after(function(done) {
-    Attendance.clearAllAttendance(function callback(err) {
+    Attendance.clearAllAttendances(function callback(err) {
       if (err) {
         console.log(err);
       }
@@ -242,7 +242,7 @@ describe('Attendance Delete', function(){
         console.log("unable to delete");
       }
       //check to see if it exist
-      Attendance.getAttendanceObj('usertesting_2@user.com', 
+      Attendance.getAttendance('usertesting_2@user.com',
                                   'eventNumber2', 'exhibition', function(err2, obj) {
         if (err2) {
           console.log("ERROR: unable to retrieve");
