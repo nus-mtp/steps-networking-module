@@ -35,14 +35,15 @@ class Exhibition {
   /**
    * Creates an Exhibition Document and stores it internally.
    *
-   * @param exhibitionName: The name for the Exhibition.
-   * @param exhibitionDescription: The description for the Exhibition.
-   * @param eventName: The name of the Event that the Exhibition is found in.
-   * @param posterURL: URL string representing where the poster of the Exhibition is hosted.
-   * @param images: List of URL strings representing images related to the Exhibition.
-   * @param videos: List of URL strings representing videos related to the Exhibition.
-   * @param website: URL string linking to the Exhibition's external webpage.
-   * @param tags: List of tags that can be used to search for Exhibitions.
+   * @param {String} exhibitionName: The name for the Exhibition.
+   * @param {String} exhibitionDescription: The description for the Exhibition.
+   * @param {String} eventName: The name of the Event that the Exhibition is found in.
+   * @param {String} posterURL:
+   *    URL string representing where the poster of the Exhibition is hosted.
+   * @param {Array} images: List of URL strings representing images related to the Exhibition.
+   * @param {Array} videos: List of URL strings representing videos related to the Exhibition.
+   * @param {String} website: URL string linking to the Exhibition's external webpage.
+   * @param {Array} tags: List of tags that can be used to search for Exhibitions.
    */
   constructor(exhibitionName = '', exhibitionDescription = '', eventName, posterURL, images, videos, website, tags) {
     this.ModelHandler = new ModelHandler()
@@ -64,7 +65,7 @@ class Exhibition {
   /**
    * Saves Exhibition Document stored internally to the Database.
    *
-   * @param callback: A function that is executed once the operation is done.
+   * @param {Function} callback: A function that is executed once the operation is done.
    */
   saveExhibition(callback) {
     Exhibition.connectDB();
@@ -77,8 +78,8 @@ class Exhibition {
   /**
    * Checks whether the Exhibition exists within the Database. Will callback a boolean value.
    *
-   * @param exhibitionName: The name of the Exhibition to search for.
-   * @param callback: A function that is executed once the operation is done.
+   * @param {String} exhibitionName: The name of the Exhibition to search for.
+   * @param {Function} callback: A function that is executed once the operation is done.
    */
   static isExistingExhibition(exhibitionName, callback) {
     Exhibition.connectDB();
@@ -97,8 +98,8 @@ class Exhibition {
   /**
    * Retrieve a specific Exhibition in the Database.
    *
-   * @param exhibitionName: The name of the Exhibition to retrieve from the Database.
-   * @param callback: A function that is executed once the operation is done.
+   * @param {String} exhibitionName: The name of the Exhibition to retrieve from the Database.
+   * @param {Function} callback: A function that is executed once the operation is done.
    */
   static getExhibition(exhibitionName, callback) {
     Exhibition.connectDB();
@@ -111,7 +112,7 @@ class Exhibition {
   /**
    * Retrieve all Exhibitions in the current Database.
    *
-   * @param callback: A function that is executed once the operation is done.
+   * @param {Function} callback: A function that is executed once the operation is done.
    */
   static getAllExhibitions(callback) {
     Exhibition.connectDB();
@@ -124,8 +125,8 @@ class Exhibition {
   /**
    * Retrieve all the Exhibitions tagged with the specified tag.
    *
-   * @param tag: The tag to check each Exhibition for.
-   * @param callback: A function that is executed once the operation is done.
+   * @param {String} tag: The tag to check each Exhibition for.
+   * @param {Function} callback: A function that is executed once the operation is done.
    */
   static searchExhibitionsByTag(tag, callback) {
     Exhibition.connectDB();
@@ -138,8 +139,8 @@ class Exhibition {
   /**
    * Retrieve all the Exhibitions that is hosted under a single Event.
    *
-   * @param eventName: The unique name of the Event to search under.
-   * @param callback: A function that is executed once the operation is done.
+   * @param {String} eventName: The unique name of the Event to search under.
+   * @param {Function} callback: A function that is executed once the operation is done.
    */
   static searchExhibitionsByEvent(eventName, callback) {
     Exhibition.connectDB();
@@ -152,15 +153,16 @@ class Exhibition {
   /**
    * Updates the all information in a specified Exhibition - except the exhibitionName.
    *
-   * @param exhibitionName: The name of the Exhibition to update.
-   * @param exhibitionDescription: The description of the Exhibition.
-   * @param eventName: The name of the Event that the Exhibition is found in.
-   * @param posterURL: URL string representing where the poster of the Exhibition is hosted.
-   * @param images: List of URL strings representing images related to the Exhibition.
-   * @param videos: List of URL strings representing videos related to the Exhibition.
-   * @param website: URL string linking to the Exhibition's external webpage.
-   * @param tags: List of tags that can be used to search for Exhibitions.
-   * @param callback: A function that is executed once the operation is done.
+   * @param {String} exhibitionName: The name for the Exhibition.
+   * @param {String} exhibitionDescription: The description for the Exhibition.
+   * @param {String} eventName: The name of the Event that the Exhibition is found in.
+   * @param {String} posterURL:
+   *    URL string representing where the poster of the Exhibition is hosted.
+   * @param {Array} images: List of URL strings representing images related to the Exhibition.
+   * @param {Array} videos: List of URL strings representing videos related to the Exhibition.
+   * @param {String} website: URL string linking to the Exhibition's external webpage.
+   * @param {Array} tags: List of tags that can be used to search for Exhibitions.
+   * @param {Function} callback: A function that is executed once the operation is done.
    */
   static updateExhibition(exhibitionName = '', exhibitionDescription = '', eventName, posterURL, images, videos, website, tags, callback) {
     Exhibition.connectDB();
@@ -190,8 +192,8 @@ class Exhibition {
    * Deletes a specific Exhibition from the Database.
    * Does NOT delete any Attendance Document that references it.
    *
-   * @param exhibitionName: The name of the Exhibition to delete for.
-   * @param callback: A function that is executed once the operation has completed.
+   * @param {String} exhibitionName: The name of the Exhibition to delete for.
+   * @param {Function} callback: A function that is executed once the operation has completed.
    */
   static deleteExhibition(exhibitionName, callback) {
     Exhibition.connectDB();
@@ -204,7 +206,7 @@ class Exhibition {
   /**
    * Removes all Exhibitions from the Database.
    *
-   * @param callback: A function that is executed once the operation is done.
+   * @param {Function} callback: A function that is executed once the operation is done.
    */
   static clearAllExhibitions(callback) {
     Exhibition.connectDB();
