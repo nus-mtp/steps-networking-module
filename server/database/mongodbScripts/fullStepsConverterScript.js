@@ -39,7 +39,7 @@ const stepsEvent = StepsModels.getEventModel();
 /**
  * A function which removes all duplicates from a given Array.
  *
- * @param arr: The given Array to remove duplicates from.
+ * @param {Array} arr: The given Array to remove duplicates from.
  * @returns {Array}: A copy of the given Array that has no duplicates.
  */
 function removeDuplicates(arr) {
@@ -49,8 +49,9 @@ function removeDuplicates(arr) {
 /**
  * An asynchronous function which Upserts a stepsEventObj into our Event Collection.
  *
- * @param stepsEventObj: A plain JS Object containing a leaned stepsEvent Document.
- * @param callback: Callback to indicate when this asynchronous function has been completed.
+ * @param {Object} stepsEventObj: A plain JS Object containing a leaned stepsEvent Document.
+ * @param {Function} callback: Callback to indicate when
+ *    this asynchronous function has been completed.
  */
 function upsertEvent(stepsEventObj, callback) {
   const eventName = String(stepsEventObj.code).trim();
@@ -84,8 +85,9 @@ function upsertEvent(stepsEventObj, callback) {
 /**
  * An asynchronous function which Upserts a stepsUserObj into our User Collection.
  *
- * @param stepsUserObj: A plain JS Object containing a leaned stepsUser Document.
- * @param callback: Callback to indicate when this asynchronous function has been completed.
+ * @param {Object} stepsUserObj: A plain JS Object containing a leaned stepsUser Document.
+ * @param {Function} callback: Callback to indicate when
+ *    this asynchronous function has been completed.
  */
 function upsertUser(stepsUserObj, callback) {
   const userEmail = String(stepsUserObj.email).trim();
@@ -124,8 +126,9 @@ function upsertUser(stepsUserObj, callback) {
  * Projects which change Names will spawn new
  * Exhibition Entries and Attendance Records.
  *
- * @param stepsModuleObj: A plain JS Object containing a leaned stepsModule Document.
- * @param callback: Callback to indicate when this asynchronous function has been completed.
+ * @param {Object} stepsModuleObj: A plain JS Object containing a leaned stepsModule Document.
+ * @param {Function} callback: Callback to indicate when
+ *    this asynchronous function has been completed.
  */
 function upsertModule(stepsModuleObj, callback) {
   async.waterfall([
@@ -137,9 +140,12 @@ function upsertModule(stepsModuleObj, callback) {
       });
     },
     (collectedInformation, callback) => {
-      async.eachLimit(collectedInformation.projects, 5, (project, callback) => { // For each Project in parallel, 5 at a time
+      async.eachLimit(collectedInformation.projects, 5, (project, callback) => {
+        // For each Project in parallel, 5 at a time
         async.waterfall([
-          (callback) => { // Extract out the relevant information in each Project - the Exhibition Properties, and the Students involved in each Exhibition
+          (callback) => {
+            // Extract out the relevant information in each Project -
+            // the Exhibition Properties, and the Students involved in each Exhibition
             const exhibitionName = String(`${collectedInformation.tag.toUpperCase()}: ${project.name}`).trim();
             const eventName = String(collectedInformation.eventName).trim();
 
@@ -179,14 +185,15 @@ function upsertModule(stepsModuleObj, callback) {
 
             let valid = false;
 
-                        // Ignore Invalid Name Projects
+            // Ignore Invalid Name Projects
             if ((project.name !== 'Unknown') && (project.name !== '')) {
               valid = true;
             }
 
             callback(null, exhibitionProperties, studentsInvolved, valid);
           },
-          (exhibitionProperties, studentsInvolved, valid, callback) => { // Upsert an Exhibition Listing, only if Project Information was valid
+          (exhibitionProperties, studentsInvolved, valid, callback) => {
+            // Upsert an Exhibition Listing, only if Project Information was valid
             if (valid) {
               const query = {
                 event_name: exhibitionProperties.eventNameKey,
@@ -201,7 +208,7 @@ function upsertModule(stepsModuleObj, callback) {
                 website: exhibitionProperties.websiteLinkKey,
               };
 
-                            // Upsert Exhibition
+              // Upsert Exhibition
               Exhibition.where(query).findOne((err, doc) => {
                 if (err) { // Unknown Error
                   console.log(err);
@@ -218,29 +225,31 @@ function upsertModule(stepsModuleObj, callback) {
                   doc.set('tags', removeDuplicates(doc.get('tags').concat(exhibitionProperties.tagsListKey)));
 
                   doc.save((err) => {
-                      if (err) {
-                          console.log(err);
-                        }
-                      callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
-                    });
+                    if (err) {
+                      console.log(err);
+                    }
+                    callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
+                  });
                 } else { // Exhibition is a Potential New Entry - Insert
                   const exhibitionDoc = new Exhibition(update);
                   exhibitionDoc.set('images', exhibitionProperties.imagesListKey);
                   exhibitionDoc.set('videos', exhibitionProperties.videosListKey);
                   exhibitionDoc.set('tags', exhibitionProperties.tagsListKey);
                   exhibitionDoc.save((err) => {
-                      if (err) {
-                          console.log(err);
-                        }
-                      callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
-                    });
+                    if (err) {
+                      console.log(err);
+                    }
+                    callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
+                  });
                 }
               });
             } else {
               callback(null, exhibitionProperties.exhibitionNameKey, studentsInvolved, valid);
             }
           },
-          (exhibitionName, studentsInvolved, valid, callback) => { // Upsert an Attendance Listing for Each User involved in the Project, only if Project Information was valid
+          (exhibitionName, studentsInvolved, valid, callback) => {
+            // Upsert an Attendance Listing for Each User involved in the Project,
+            // only if Project Information was valid
             if (valid) {
               async.eachLimit(studentsInvolved, 5, (studentId, callback) => {
                 stepsUser.findById(studentId).lean().exec((err, student) => {
@@ -249,53 +258,64 @@ function upsertModule(stepsModuleObj, callback) {
                     callback(null);
                   } else {
                     const userQuery = {
-                        email: String(student.email).trim(),
-                      };
+                      email: String(student.email).trim(),
+                    };
                     const exhibitionQuery = {
-                        exhibition_name: String(exhibitionName).trim(),
-                      };
+                      exhibition_name: String(exhibitionName).trim(),
+                    };
                     const attendanceQuery = {
-                        user_email: String(student.email).trim(),
-                        attendance_type: 'exhibition',
-                        attendance_name: String(exhibitionName).trim(),
-                      };
+                      user_email: String(student.email).trim(),
+                      attendance_type: 'exhibition',
+                      attendance_name: String(exhibitionName).trim(),
+                    };
 
-                                        // Upsert Attendance
+                    // Upsert Attendance
                     User.where(userQuery).lean().findOne((err, user) => {
-                        if (err) { // Unknown Error
+                      if (err) {
+                        // Unknown Error
+                        console.log(err);
+                        callback(null);
+                      } else if (user) {
+                        // User Previously Inserted
+                        Exhibition.where(exhibitionQuery).lean().findOne((err, exhibition) => {
+                          if (err) {
+                            // Unknown Error
                             console.log(err);
                             callback(null);
-                          } else if (user) { // User Previously Inserted
-                              Exhibition.where(exhibitionQuery).lean().findOne((err, exhibition) => {
-                                  if (err) { // Unknown Error
-                                      console.log(err);
-                                      callback(null);
-                                    } else if (exhibition) { // Both the User and Exhibition exist - Upsert Attendance Information
-                                        Attendance.where(attendanceQuery).findOne((err, attendance) => {
-                                            if (err) { // Unknown Error
-                                                console.log(err);
-                                                callback(null);
-                                              } else if (attendance) { // The Attendance Information exists - don't need to Update
-                                                  callback(null);
-                                                } else { // Attendance Information does not exist - Insert
-                                                  const attendanceDoc = new Attendance(attendanceQuery);
-                                                  attendanceDoc.save((err) => {
-                                                      if (err) {
-                                                          console.log(err);
-                                                        }
-                                                      callback(null);
-                                                    });
-                                                }
-                                          });
-                                      } else { // The User was Inserted before, but the Exhibition has not been inserted in the Previous Step
-                                        console.log(`Unable to create Attendance Record for Student under: ${exhibitionName}`);
-                                        callback(null);
-                                      }
+                          } else if (exhibition) {
+                            // Both the User and Exhibition exist - Upsert Attendance Information
+                            Attendance.where(attendanceQuery).findOne((err, attendance) => {
+                              if (err) {
+                                // Unknown Error
+                                console.log(err);
+                                callback(null);
+                              } else if (attendance) {
+                                // The Attendance Information exists - don't need to Update
+                                callback(null);
+                              } else {
+                                // Attendance Information does not exist - Insert
+                                const attendanceDoc = new Attendance(attendanceQuery);
+                                attendanceDoc.save((err) => {
+                                  if (err) {
+                                    console.log(err);
+                                  }
+                                  callback(null);
                                 });
-                            } else { // User not Inserted Before - should have been inserted when reading in the STePs _User Collection
-                              callback(null);
-                            }
-                      });
+                              }
+                            });
+                          } else {
+                            // The User was Inserted before -
+                            // but the Exhibition has not been inserted in the Previous Step
+                            console.log(`Unable to create Attendance Record for Student under: ${exhibitionName}`);
+                            callback(null);
+                          }
+                        });
+                      } else {
+                        // User not Inserted before -
+                        // should have been inserted when reading in the STePs _User Collection
+                        callback(null);
+                      }
+                    });
                   }
                 });
               }, (err) => {
@@ -323,8 +343,9 @@ function upsertModule(stepsModuleObj, callback) {
  * An asynchronous function which Upserts information from a stepsGuestObj
  * into our User and Attendances Collection.
  *
- * @param stepsGuestObj: A plain JS Object containing a leaned stepsGuest Document.
- * @param callback: Callback to indicate when this asynchronous function has been completed.
+ * @param {Object} stepsGuestObj: A plain JS Object containing a leaned stepsGuest Document.
+ * @param {Function} callback: Callback to indicate when
+ *    this asynchronous function has been completed.
  */
 function upsertGuests(stepsGuestObj, callback) {
   async.waterfall([
@@ -335,15 +356,20 @@ function upsertGuests(stepsGuestObj, callback) {
       const userPassword = '';
 
       let userEmail = '';
-      if (stepsGuestObj.email === 'abc@temp.com') { // To accommodate for sanitized Emails in STePs DB
-        User.where({ name: userName }).lean().find((err, matchedUsers) => { // Try to get true Email via Name
-          if (err) { // Unknown Error
+      if (stepsGuestObj.email === 'abc@temp.com') {
+        // To accommodate for sanitized Emails in STePs DB
+        User.where({ name: userName }).lean().find((err, matchedUsers) => {
+          // Try to get true Email via Name
+          if (err) {
+            // Unknown Error
             console.log(err);
             callback(null, userEmail, userPassword, userName, eventName, false);
-          } else if (matchedUsers && matchedUsers.length === 1) { // If Name is Unique
+          } else if (matchedUsers && matchedUsers.length === 1) {
+            // If Name is Unique
             userEmail = matchedUsers[0].email.trim();
             callback(null, userEmail, userPassword, userName, eventName, true);
-          } else { // Name not Unique or User non-existing
+          } else {
+            // Name not Unique or User non-existing
             userEmail = String(`${stepsGuestObj._id}@temp.com`).trim();
             callback(null, userEmail, userPassword, userName, eventName, true);
           }
@@ -353,7 +379,8 @@ function upsertGuests(stepsGuestObj, callback) {
         callback(null, userEmail, userPassword, userName, eventName, true);
       }
     },
-    (userEmail, userPassword, userName, eventName, valid, callback) => { // Upsert Guests into User Collection
+    (userEmail, userPassword, userName, eventName, valid, callback) => {
+      // Upsert Guests into User Collection
       if (valid) {
         const query = {
           email: userEmail,
@@ -365,20 +392,22 @@ function upsertGuests(stepsGuestObj, callback) {
           password: userPassword,
         };
 
-        User.findOneAndUpdate(query, update, { new: true, upsert: true, setDefaultsOnInsert: true }, (err) => {
-          if (err) {
-            console.log(err);
-          }
+        User.findOneAndUpdate(query, update,
+            { new: true, upsert: true, setDefaultsOnInsert: true }, (err) => {
+              if (err) {
+                console.log(err);
+              }
 
-          async.setImmediate(() => {
-            callback(null, userEmail, eventName, valid);
-          });
-        });
+              async.setImmediate(() => {
+                callback(null, userEmail, eventName, valid);
+              });
+            });
       } else {
         callback(null, userEmail, eventName, valid);
       }
     },
-    (userEmail, eventName, valid, callback) => { // Upsert an Attendance Listing for Each Guest Per Event
+    (userEmail, eventName, valid, callback) => {
+      // Upsert an Attendance Listing for Each Guest Per Event
       if (valid) {
         const userQuery = {
           email: userEmail,
@@ -393,79 +422,104 @@ function upsertGuests(stepsGuestObj, callback) {
         };
 
         User.where(userQuery).lean().findOne((err, user) => {
-          if (err) { // Unknown Error
+          if (err) {
+            // Unknown Error
             console.log(err);
             callback(null);
-          } else if (user) { // User was Previously Inserted
+          } else if (user) {
+            // User was Previously Inserted
             Event.where(eventQuery).lean().findOne((err, event) => {
-              if (err) { // Unknown Error
+              if (err) {
+                // Unknown Error
                 console.log(err);
                 callback(null);
-              } else if (event) { // User and Event found - Upsert Attendance Document
+              } else if (event) {
+                // User and Event found - Upsert Attendance Document
                 Attendance.where(attendanceEventQuery).lean().findOne((err, eventAttendance) => {
-                    if (err) { // Unknown Error
-                        console.log(err);
-                        callback(null);
-                      } else if (eventAttendance) { // Don't do anything if Attendance Document already exists
-                          callback(null);
-                        } else { // Attendance Document may not exist - Insert only if User isn't already participating in one of the Exhibitions in the Event
-                          const attendanceExhibitionQuery = {
-                              user_email: userEmail,
-                              attendance_type: 'exhibition',
-                            };
+                  if (err) {
+                    // Unknown Error
+                    console.log(err);
+                    callback(null);
+                  } else if (eventAttendance) {
+                    // Don't do anything if Attendance Document already exists
+                    callback(null);
+                  } else {
+                    // Attendance Document may not exist -
+                    // Insert only if User isn't already
+                    // participating in one of the Exhibitions in the Event
+                    const attendanceExhibitionQuery = {
+                      user_email: userEmail,
+                      attendance_type: 'exhibition',
+                    };
 
-                          Attendance.where(attendanceExhibitionQuery).lean().find((err, exhibitionAttendances) => {
-                              if (err) { // Unknown Error
-                                  callback(null);
-                                } else if (exhibitionAttendances && exhibitionAttendances.length > 0) { // User has participated in Exhibitions before
-                                  async.waterfall([
-                                      (callback) => {
-                                          async.eachLimit(exhibitionAttendances, 5, (exhibitionAttendance, callback) => { // For each Exhibition Attendance in Parallel, 5 at a time
-                                            const exhibitionQuery = {
-                                                exhibition_name: exhibitionAttendance.attendance_name,
-                                                event_name: eventName,
-                                              };
+                    Attendance.where(attendanceExhibitionQuery)
+                        .lean().find((err, exhibitionAttendances) => {
+                          if (err) {
+                            // Unknown Error
+                            callback(null);
+                          } else if (exhibitionAttendances && exhibitionAttendances.length > 0) {
+                            // User has participated in Exhibitions before
+                            async.waterfall([
+                              (callback) => {
+                                async.eachLimit(exhibitionAttendances, 5,
+                                (exhibitionAttendance, callback) => {
+                                  // For each Exhibition Attendance in Parallel, 5 at a time
+                                  const exhibitionQuery = {
+                                    exhibition_name: exhibitionAttendance.attendance_name,
+                                    event_name: eventName,
+                                  };
 
-                                            Exhibition.where(exhibitionQuery).lean().findOne((err, exhibition) => {
-                                                if (err) { // Unknown Error
-                                                    console.log(err);
-                                                    callback(true); // Stop the Parallel Search
-                                                  } else if (exhibition) { // User is already participating in the current Event as Exhibitor
-                                                    callback(true); // Stop the Parallel Search
-                                                  } else { // The current event
-                                                    callback(null);
-                                                  }
-                                              });
-                                          }, (isExhibitorForCurrentEvent) => {
-                                              callback(null, isExhibitorForCurrentEvent);
-                                            });
-                                        },
-                                      (isExhibitorForCurrentEvent, callback) => {
-                                          if (isExhibitorForCurrentEvent !== true) { // User has not participated in Exhibitions before - safe to insert Attendance for Event
-                                            const attendanceDoc = new Attendance(attendanceEventQuery);
-                                            attendanceDoc.save((err) => {
-                                                if (err) {
-                                                    console.log(err);
-                                                  }
-                                                callback(null);
-                                              });
-                                          } else { // User is participating in current Event as Exhibitor - do not insert Event Attendance data
-                                            callback(null);
-                                          }
-                                        },
-                                    ], callback);
-                                } else { // User has not participated in Exhibitions before - safe to insert Attendance for Event
+                                  Exhibition.where(exhibitionQuery)
+                                      .lean().findOne((err, exhibition) => {
+                                        if (err) {
+                                          // Unknown Error
+                                          console.log(err);
+                                          callback(true); // Stop the Parallel Search
+                                        } else if (exhibition) {
+                                          // User is already participating in the current Event
+                                          // as Exhibitor
+                                          callback(true); // Stop the Parallel Search
+                                        } else {
+                                          // The current event
+                                          callback(null);
+                                        }
+                                      });
+                                }, (isExhibitorForCurrentEvent) => {
+                                  callback(null, isExhibitorForCurrentEvent);
+                                });
+                              },
+                              (isExhibitorForCurrentEvent, callback) => {
+                                if (isExhibitorForCurrentEvent !== true) {
+                                  // User has not participated in Exhibitions before -
+                                  // safe to insert Attendance for Event
                                   const attendanceDoc = new Attendance(attendanceEventQuery);
                                   attendanceDoc.save((err) => {
-                                      if (err) {
-                                          console.log(err);
-                                        }
-                                      callback(null);
-                                    });
+                                    if (err) {
+                                      console.log(err);
+                                    }
+                                    callback(null);
+                                  });
+                                } else {
+                                  // User is participating in current Event as Exhibitor -
+                                  // do not insert Event Attendance data
+                                  callback(null);
                                 }
+                              },
+                            ], callback);
+                          } else {
+                            // User has not participated in Exhibitions before -
+                            // safe to insert Attendance for Event
+                            const attendanceDoc = new Attendance(attendanceEventQuery);
+                            attendanceDoc.save((err) => {
+                              if (err) {
+                                console.log(err);
+                              }
+                              callback(null);
                             });
-                        }
-                  });
+                          }
+                        });
+                  }
+                });
               } else { // Event was not Previously Inserted
                 callback(null);
               }
@@ -484,10 +538,12 @@ function upsertGuests(stepsGuestObj, callback) {
 // Start
 
 async.series([
-  (callback) => { // Bring in Events
+  (callback) => {
+    // Bring in Events
     async.waterfall(
       [
-        (callback) => { // Obtain all Events in the STePs DB
+        (callback) => {
+          // Obtain all Events in the STePs DB
           stepsEvent.where({}).lean().find((err, allEvents) => {
             if (err) {
               console.log(err);
@@ -495,7 +551,8 @@ async.series([
             callback(null, allEvents);
           });
         },
-        (allEvents, callback) => { // Upsert each STePs Event into our Event Collection
+        (allEvents, callback) => {
+          // Upsert each STePs Event into our Event Collection
           async.eachLimit(allEvents, 15, upsertEvent,
                         (err) => {
                           if (err) {
@@ -505,11 +562,13 @@ async.series([
                         });
         },
       ], callback);
-        // End: Bring in Events
+    // End: Bring in Events
   },
-  (callback) => { // Bring in _Users
+  (callback) => {
+    // Bring in _Users
     async.waterfall([
-      (callback) => { // Obtain all _Users from the STePs DB.
+      (callback) => {
+        // Obtain all _Users from the STePs DB.
         stepsUser.where({}).find((err, allUsers) => {
           if (err) {
             console.log(err);
@@ -527,9 +586,11 @@ async.series([
                     });
       },
     ], callback);
-        // End: Bring in _Users
+    // End: Bring in _Users
   },
-  (callback) => { // Bring in Projects and Create Attendance Documents for each Student Participant in each Project
+  (callback) => {
+    // Bring in Projects and Create Attendance Documents
+    // for each Student Participant in each Project
     async.waterfall([
       (callback) => {
         stepsModule.where({}).find((err, allModules) => {
@@ -548,9 +609,10 @@ async.series([
         });
       },
     ], callback);
-        // End: Bring in Exhibitions
+    // End: Bring in Exhibitions
   },
-  (callback) => { // Bring in Guests and Create Attendance Documents for each Guest for each Event
+  (callback) => {
+    // Bring in Guests and Create Attendance Documents for each Guest for each Event
     async.waterfall([
       (callback) => {
         stepsGuest.where({}).lean().find((err, allGuests) => {
@@ -569,6 +631,7 @@ async.series([
         });
       },
     ], callback);
+    // End: Bring in Guests
   },
   (callback) => {
     async.parallel([
