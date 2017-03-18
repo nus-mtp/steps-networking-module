@@ -13,3 +13,6 @@ lint.txt
 
 # VSCode files
 .vscode/
+
+# Webstorm files
+.idea/

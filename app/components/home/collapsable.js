@@ -9,13 +9,12 @@ const marginOffset = scrollbarWidth + bodyMargin;
 class Collapsable extends React.Component {
   constructor(props) {
     super(props);
-    const currentProjects = sampleProjects.filter(project => project.eventName == this.props.event.name);
 
     this.state = {
       numberOfEventPerRow: Math.floor((window.innerWidth - marginOffset) / this.props.width),
       order: this.props.serial,
       isAttended: false,
-      projects: currentProjects,
+      projects: sampleUsers,
     };
 
     this.setLayout = this.setLayout.bind(this);
@@ -131,7 +130,11 @@ class Collapsable extends React.Component {
                   <nav className="nav d-flex flex-row justify-content-between">
                     <div id="match-container">
                     {
-                      this.state.projects.map((project, i) => <Link key={i} className="nav-link matches" to="/match">{project.exhibitionName}</Link>
+                      this.state.projects.map((project, i) =>
+                        <Link key={i} className="nav-link matches" to="/match">
+                          <img className="img-fluid user-thumbnail" src="../../resources/images/default-profile-picture.png" alt="user-image" />
+                          <div>{project.exhibitionName}</div>
+                        </Link>
                     )}
                     </div>
                     <button id="all-projects" className="btn btn-secondary"><Link to="/match">See More</Link></button>
