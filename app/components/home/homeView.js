@@ -2,7 +2,7 @@ import React from 'react';
 import Tabs from './tabs';
 import Event from './event';
 import Collapsable from './collapsable';
-import { sampleEvents, sampleAttendance } from './sampleData';
+import { sampleEvents, sampleAttendance, nowDate, futureDate, pastDate } from './sampleData';
 
 class HomeView extends React.Component {
   constructor(props) {
@@ -18,11 +18,13 @@ class HomeView extends React.Component {
       open: this.initial,
       numOfEvents: numOfEvents,
       events: sampleEvents,
+      displayedEvents: sampleEvents,
       attendance: sampleAttendance,
     };
 
     this.openCollapsable = this.openCollapsable.bind(this);
     this.changeAttendance = this.changeAttendance.bind(this);
+    this.changeView = this.changeView.bind(this);
   }
 
   openCollapsable(serial) {
@@ -41,20 +43,35 @@ class HomeView extends React.Component {
         attendance: newAttendance,
       });
     } else {
-      const newAttendance = this.state.attendance.filter(attend => attend.name !== event)
+      const newAttendance = this.state.attendance.filter(attend => attend.name !== event);
       this.setState({
         attendance: newAttendance,
       });
     }
   }
 
+  changeView(e) {
+    const id = e.target.id;
+    const copy = this.state.events.slice();
+    let remainder;
+
+    if (id === "ongoing") {
+      remainder = copy.filter((event) => {if (event.date === nowDate.toDateString()) return event;});
+    } else if (id === "upcoming") {
+      remainder = copy.filter((event) => {if (event.date === futureDate.toDateString()) return event;});
+    } else {
+      remainder = copy.filter((event) => {if (event.date === pastDate.toDateString()) return event;});
+    }
+    this.setState({displayedEvents: remainder});
+  }
+
   render() {
     const containerWidth = 290;
     return (
       <div id="home-body">
-        <Tabs />
+        <Tabs onClick={this.changeView}/>
         <div id="event-list" className="d-flex justify-content-center justify-content-md-start"> {
-          this.state.events.map((event, i) =>
+          this.state.displayedEvents.map((event, i) =>
             <div id="event-container" key={i}>
               <Event
                 serial={i}
