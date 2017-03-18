@@ -16,7 +16,7 @@ const dbName = config[currentdb].database;
 
 class User {
   /**
-   * Creates a connection to the Database
+   * Creates a connection to the Database.
    */
   static connectDB() {
     this.ModelHandler = new ModelHandler()
@@ -67,7 +67,7 @@ class User {
   }
 
   /**
-   * Commits the internally stored User Document to the Database.
+   * Saves the User Document stored internally to the Database.
    *
    * @param {function} callback: A function that executes after the operation is done.
    */

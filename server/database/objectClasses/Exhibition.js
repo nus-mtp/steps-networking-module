@@ -16,7 +16,7 @@ const dbName = config[currentdb].database;
 
 class Exhibition {
   /**
-   * Creates a connection to the Database
+   * Creates a connection to the Database.
    */
   static connectDB() {
     this.ModelHandler = new ModelHandler()
@@ -25,7 +25,7 @@ class Exhibition {
   }
 
   /**
-   * Disconnects from the database
+   * Disconnects from the database.
    */
   static disconnectDB() {
     this.ModelHandler.disconnect();
@@ -62,7 +62,7 @@ class Exhibition {
   }
 
   /**
-   * Saves Exhibition Document stored internally to the Database.
+   * Saves the Exhibition Document stored internally to the Database.
    *
    * @param {function} callback: A function that is executed once the operation is done.
    */

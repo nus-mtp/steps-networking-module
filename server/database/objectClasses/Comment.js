@@ -16,7 +16,7 @@ const dbName = config[currentdb].database;
  */
 class Comment {
   /**
-   * Creates a connection to the Database
+   * Creates a connection to the Database.
    */
   static connectDB() {
     this.ModelHandler = new ModelHandler()
@@ -25,7 +25,7 @@ class Comment {
   }
 
   /**
-   * Disconnect from database
+   * Disconnect from database.
    */
   static disconnectDB() {
     this.ModelHandler.disconnect();
@@ -52,7 +52,7 @@ class Comment {
   }
 
   /**
-   * Saves the Comment Document into the Database.
+   * Saves the Comment Document stored internally to the Database.
    *
    * @param {function} callback: A function that is executed once the operation is done.
    */
@@ -88,7 +88,7 @@ class Comment {
   }
 
   /**
-   * Retrieve list of Comments for a specific Exhibition
+   * Retrieve list of Comments for a specific Exhibition.
    *
    * @param {String} exhibitionName: name of Exhibition to retrieve Comments for.
    * @param {function} callback: A function that is executed once the operation is done.
@@ -102,7 +102,7 @@ class Comment {
   }
 
   /**
-   * Removes Comments for a specific Exhibition
+   * Removes Comments for a specific Exhibition.
    *
    * @param {String} exhibitionName: name of Exhibition to clear Comments from.
    * @param {function} callback: A function that is executed once the operation is done.
@@ -116,7 +116,7 @@ class Comment {
   }
 
   /**
-   * Removes all Comments from the Database
+   * Removes all Comments from the Database.
    *
    * @param {function} callback: A function that is executed once the operation is done.
    */

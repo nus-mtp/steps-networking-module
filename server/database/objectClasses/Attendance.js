@@ -17,7 +17,7 @@ const dbName = config[currentdb].database;
 
 class Attendance {
   /**
-   * Creates a connection to the Database
+   * Creates a connection to the Database.
    */
   static connectDB() {
     this.ModelHandler = new ModelHandler()
@@ -26,7 +26,7 @@ class Attendance {
   }
 
   /**
-   * Disconnects from the Database
+   * Disconnects from the Database.
    */
   static disconnectDB() {
     this.ModelHandler.disconnect();

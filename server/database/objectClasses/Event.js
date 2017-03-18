@@ -17,7 +17,7 @@ const dbName = config[currentdb].database;
 
 class Event {
   /**
-   * Creates a connection to the Database
+   * Creates a connection to the Database.
    */
   static connectDB() {
     this.ModelHandler = new ModelHandler()
@@ -63,7 +63,7 @@ class Event {
   }
 
   /**
-   * Commits the internally stored Event Document to the Database.
+   * Saves the Event Document stored internally to the Database.
    *
    * @param {function} callback: A function that executes after the operation is done.
    */
@@ -76,7 +76,7 @@ class Event {
   }
 
   /**
-   * Retrieve a specific Event listed in the Database
+   * Retrieve a specific Event listed in the Database.
    *
    * @param {String} eventName: A unique identifier for the Event.
    * @param {function} callback: A function that is executed once the operation has completed.
@@ -121,7 +121,7 @@ class Event {
   }
 
   /**
-   * Retrieve all the Event with the specified tags listed in the Database
+   * Retrieve all the Event with the specified tags listed in the Database.
    *
    * @param {Array} tag: List of tags that can be used to search for Exhibitions.
    * @param {function} callback: A function that is executed once the operation has completed.
@@ -172,7 +172,7 @@ class Event {
   }
 
   /**
-   * Removes a specific event from the Database
+   * Removes a specific event from the Database.
    *
    * @param {String} eventName: A unique identifier for the Event.
    * @param {function} callback: A function that is executed once the operation has completed.
@@ -186,7 +186,7 @@ class Event {
   }
 
   /**
-   * Removes all event from the Database
+   * Removes all event from the Database.
    *
    * @param {function} callback: A function that is executed once the operation has completed.
    */
