@@ -11,77 +11,77 @@ const sampleEvents = [
     dateObj: nowDate,
     date: nowDate.toDateString(),
     venue: 'Adam\'s House',
-    description: 'Party all night at Pasir Ris!'
+    description: 'Party all night at Pasir Ris!',
   },
   {
     name: 'Geek Meet',
     dateObj: nowDate,
     date: nowDate.toDateString(),
     venue: 'Tanjung Pagar',
-    description: 'Anime, Manga fans and that-weirdo-in-the-corner meeting.'
+    description: 'Anime, Manga fans and that-weirdo-in-the-corner meeting.',
   },
   {
     name: 'Food Trail',
     dateObj: futureDate,
     date: futureDate.toDateString(),
     venue: 'Bedok',
-    description: 'Eat till you drop!'
+    description: 'Eat till you drop!',
   },
   {
     name: 'IT Fair',
     dateObj: futureDate,
     date: futureDate.toDateString(),
     venue: 'Geylang',
-    description: 'Cheap IT goods for sale!'
+    description: 'Cheap IT goods for sale!',
   },
   {
     name: 'STePS',
     dateObj: pastDate,
     date: pastDate.toDateString(),
     venue: 'NUS',
-    description: 'Students showcase their projects they have done in that semester'
+    description: 'Students showcase their projects they have done in that semester',
   },
   {
     name: 'Ku Klux Klan Bonfire',
     dateObj: pastDate,
     date: pastDate.toDateString(),
     venue: 'NUS',
-    description: 'Halloween Event for NUS students and alumni'
+    description: 'Halloween Event for NUS students and alumni',
   },
   {
     name: 'Mobile Gaming Conferences',
     dateObj: nowDate,
     date: nowDate.toDateString(),
     venue: 'NUS',
-    description: 'For all gamers out there!'
+    description: 'For all gamers out there!',
   },
   {
     name: 'Cyber Security Convection',
     dateObj: futureDate,
     date: futureDate.toDateString(),
     venue: 'NUS',
-    description: 'Mark Zuckerberg and Bill Gates will be attending!'
+    description: 'Mark Zuckerberg and Bill Gates will be attending!',
   },
   {
     name: 'Game Developers Conference 2017',
     dateObj: pastDate,
     date: pastDate.toDateString(),
     venue: 'NUS',
-    description: 'See all the new tools at your disposal'
+    description: 'See all the new tools at your disposal',
   },
   {
     name: 'CES 2017',
     dateObj: nowDate,
     date: nowDate.toDateString(),
     venue: 'NUS',
-    description: 'Cool Gadgets Galore'
+    description: 'Cool Gadgets Galore',
   },
   {
     name: 'WWDC 2017',
     dateObj: futureDate,
     date: futureDate.toDateString(),
     venue: 'NUS',
-    description: 'New iPhone? Maybe? Come join us!'
+    description: 'New iPhone? Maybe? Come join us!',
   },
 ];
 

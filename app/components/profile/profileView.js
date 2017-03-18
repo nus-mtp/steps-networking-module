@@ -20,22 +20,20 @@ class ProfileView extends React.Component {
     this.changeEdit = this.changeEdit.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
   }
-  
   componentWillMount() {
-    if(Auth.isUserAuthenticated) {
+    if (Auth.isUserAuthenticated) {
       this.setState({
         email: Auth.getToken().email,
       });
     }
   }
-  
   changeEdit(event) {
     const targetId = event.target.id;
     if (targetId === 'new-user-email') {
       this.setState({
         email: event.target.value,
       });
-    } else if (targetId ==='new-user-description') {
+    } else if (targetId === 'new-user-description') {
       this.setState({
         description: event.target.value,
       });
@@ -69,7 +67,7 @@ class ProfileView extends React.Component {
       interestedEvents: this.state.pastUserData.interestedEvents,
       interestedOpportunities: this.state.pastUserData.interestedOpportunities,
       isContentEditable: false,
-    })
+    });
   }
 
   render() {
@@ -77,7 +75,7 @@ class ProfileView extends React.Component {
       <div id="profile-body">
         <div className="row justify-content-between justify-content-md-around">
           <div id="profile-picture" className="col-md-6 push-md-3 col-12 text-center">
-            <img src="../../resources/images/default-profile-picture.png" />
+            <img src="../../resources/images/default-profile-picture.png" alt="user-profile-picture" />
           </div>
           <div className="col-md-3 pull-md-6 col-6 text-center d-flex justify-content-center">
             <div id="chat-icon-container">
