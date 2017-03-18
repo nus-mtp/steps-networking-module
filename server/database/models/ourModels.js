@@ -19,7 +19,7 @@ class ModelHandler {
    * Assumes the connection has already been established to the backend externally,
    * through the argument passed in. Does not validate the argument in any way.
    *
-   * @param db: The Mongoose.Connection connection to the database.
+   * @param {Mongoose.Connection} db: The Mongoose.Connection connection to the database.
    * @returns {ModelHandler}: This instance.
    */
   initWithConnection(db) {
@@ -50,15 +50,15 @@ class ModelHandler {
    *
    * Starts a connection to the backend implicitly.
    *
-   * @param username: The String containing a part of the login
+   * @param {String} username: The String containing a part of the login
    *  credentials required to access the DB.
-   * @param password: The String containing a part of the login
+   * @param {String} password: The String containing a part of the login
    *  credentials required to access the DB.
-   * @param host: The String containing the name of the host
+   * @param {String} host: The String containing the name of the host
    *  that the MongoDB Server is running on.
-   * @param port: The String containing the port number of the
+   * @param {Number} port: The String containing the port number of the
    *  MongoDB Server process on host.
-   * @param database: The String representing the name of the database to connect to.
+   * @param {String} database: The String representing the name of the database to connect to.
    * @returns {ModelHandler}: This instance.
    */
   initWithParameters(username, password, host, port, database) {
@@ -155,7 +155,7 @@ class ModelHandler {
    *
    * Needs to be called in order for the Node script to terminate.
    *
-   * @param callback: A function that is executed once the disconnect completes.
+   * @param {Function} callback: A function that is executed once the disconnect completes.
    */
   disconnect(callback) {
     this
