@@ -27,7 +27,7 @@ class EventMap extends React.Component {
           {/*<img src='../../resources/images/sitemap.png' style={{width: '100%'}}/> */}
           {EventMap.addNode('#0', 'MonaLisa', '79%', '29%')} 
           {EventMap.addNode('#1', <div>Alan<br/>Turing's<br/>Apple</div>, '13%', '68%',
-                           { backgroundColor: 'blue', color: 'white', })}
+                          { backgroundColor: 'blue', color: 'white', } )}
         </div>
         : <div />
       }
