@@ -10,7 +10,6 @@ class HomeView extends React.Component {
 
     const numOfEvents = 8; // Change according to num of events
     this.initial = [];
-
     for (let i = 0; i < numOfEvents; i++) {
       this.initial.push(false);
     }
@@ -30,7 +29,7 @@ class HomeView extends React.Component {
 
   getAllEvents() {
     const xhr = new XMLHttpRequest();
-    xhr.open('get', '/event/allEvents');
+    xhr.open('get', '/event/get/allEvents');
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
@@ -71,7 +70,7 @@ class HomeView extends React.Component {
         <Tabs />
         <div id="event-list" className="d-flex justify-content-center justify-content-md-start">
         {
-          (this.state.events.length > 0) ?
+          (this.state.events != null) ?
             this.state.events.map((event, i) =>
               <div id="event-container" key={i}>
                 <Event

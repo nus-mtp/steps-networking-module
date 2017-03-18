@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { sampleProjects } from '../project/sampleData';
+import { sampleUsers } from '../profile/sampleUsers';
 
 const scrollbarWidth = 15;
 const bodyMargin = 0.2 * window.innerWidth;
@@ -9,12 +9,12 @@ const marginOffset = scrollbarWidth + bodyMargin;
 class Collapsable extends React.Component {
   constructor(props) {
     super(props);
-  
+
     this.state = {
       numberOfEventPerRow: Math.floor((window.innerWidth - marginOffset) / this.props.width),
       order: this.props.serial,
       isAttended: false,
-      projects: sampleUsers,
+      users: sampleUsers,
     };
 
     this.setLayout = this.setLayout.bind(this);
@@ -140,12 +140,12 @@ class Collapsable extends React.Component {
                   <nav className="nav d-flex flex-row justify-content-between">
                     <div id="match-container">
                     {
-                      this.state.projects.map((project, i) =>
+                      this.state.users.map((users, i) =>
                         <Link key={i} className="nav-link matches" to="/match">
                           <img className="img-fluid user-thumbnail" src="../../resources/images/default-profile-picture.png" alt="user-image" />
-                          <div>{project.exhibitionName}</div>
+                          <div>{users.name}</div>
                         </Link>
-                    )} 
+                    )}
                     </div>
                     <button id="all-projects" className="btn btn-secondary"><Link to="/match">See More</Link></button>
                   </nav>
