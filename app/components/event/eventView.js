@@ -44,8 +44,14 @@ class EventView extends React.Component {
           <div className="col-md-6 col-12">
             <h4 className="card-title">Event Name</h4>
             <p className="card-text">Event Venue & Date & Time</p>
+            <button className="btn btn-secondary" onClick={this.displayEventMap.bind(this)}>Sitemap</button>
           </div>
         </div>
+
+        <EventMap
+          showEventMap={this.state.showEventMap}
+        />
+
         <div className="row mb-4">
           <div className="card col-md-7 col-12 mr-4 event-info card-block">
             <div className="info-type mb-2">Event Description</div>
@@ -56,12 +62,7 @@ class EventView extends React.Component {
                   (this.state.isDisplayProjects) ? "Hide Projects" : "Show Projects"
                 }
               </button>
-              <button className="btn btn-secondary" onClick={this.displayEventMap.bind(this)}>Sitemap</button>
             </div>
-
-            <EventMap
-              showEventMap={this.state.showEventMap}
-            />
 
             {
               (this.state.isDisplayProjects) ?
