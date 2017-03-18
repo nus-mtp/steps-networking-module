@@ -119,7 +119,7 @@ class StepsModelHandler {
    *
    * Needs to be called in order for the Node script to terminate.
    *
-   * @param {Function} callback: A function that is executed once the disconnect completes.
+   * @param {function} callback: A function that is executed once the disconnect completes.
    */
   disconnect(callback) {
     this

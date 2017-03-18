@@ -50,7 +50,7 @@ function removeDuplicates(arr) {
  * An asynchronous function which Upserts a stepsEventObj into our Event Collection.
  *
  * @param {Object} stepsEventObj: A plain JS Object containing a leaned stepsEvent Document.
- * @param {Function} callback: Callback to indicate when
+ * @param {function} callback: Callback to indicate when
  *    this asynchronous function has been completed.
  */
 function upsertEvent(stepsEventObj, callback) {
@@ -86,7 +86,7 @@ function upsertEvent(stepsEventObj, callback) {
  * An asynchronous function which Upserts a stepsUserObj into our User Collection.
  *
  * @param {Object} stepsUserObj: A plain JS Object containing a leaned stepsUser Document.
- * @param {Function} callback: Callback to indicate when
+ * @param {function} callback: Callback to indicate when
  *    this asynchronous function has been completed.
  */
 function upsertUser(stepsUserObj, callback) {
@@ -127,7 +127,7 @@ function upsertUser(stepsUserObj, callback) {
  * Exhibition Entries and Attendance Records.
  *
  * @param {Object} stepsModuleObj: A plain JS Object containing a leaned stepsModule Document.
- * @param {Function} callback: Callback to indicate when
+ * @param {function} callback: Callback to indicate when
  *    this asynchronous function has been completed.
  */
 function upsertModule(stepsModuleObj, callback) {
@@ -344,7 +344,7 @@ function upsertModule(stepsModuleObj, callback) {
  * into our User and Attendances Collection.
  *
  * @param {Object} stepsGuestObj: A plain JS Object containing a leaned stepsGuest Document.
- * @param {Function} callback: Callback to indicate when
+ * @param {function} callback: Callback to indicate when
  *    this asynchronous function has been completed.
  */
 function upsertGuests(stepsGuestObj, callback) {

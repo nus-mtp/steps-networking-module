@@ -69,7 +69,7 @@ class User {
   /**
    * Commits the internally stored User Document to the Database.
    *
-   * @param {Function} callback: A function that executes after the operation is done.
+   * @param {function} callback: A function that executes after the operation is done.
    */
   saveUser(callback) {
     User.connectDB();
@@ -83,7 +83,7 @@ class User {
    * A function that checks whether a User exists, and if it does, has it been marked as deleted.
    *
    * @param {String} userEmail: The email of the User to check for.
-   * @param {Function} callback: A function that is executed once the operation completes.
+   * @param {function} callback: A function that is executed once the operation completes.
    */
   static isValidUser(userEmail, callback) {
     User.connectDB();
@@ -107,7 +107,7 @@ class User {
   * Takes in password from User and checks the hashed version with the Database.
   *
   * @param {String} testPassword: The password to test for.
-  * @param {Function} callback: A function that executes once the operation is done.
+  * @param {function} callback: A function that executes once the operation is done.
   */
   comparePassword(testPassword, callback) {
     User.connectDB();
@@ -121,7 +121,7 @@ class User {
    * A function that returns a User from the Database based on the email supplied.
    *
    * @param {String} userEmail: The email of the User to search for.
-   * @param {Function} callback: A function that is executed when the operation is completed.
+   * @param {function} callback: A function that is executed when the operation is completed.
    */
   static getUser(userEmail, callback) {
     User.connectDB();
@@ -134,7 +134,7 @@ class User {
   /**
    *  A function that returns a copy of all Users currently being stored in the Database.
    *
-   * @param {Function} callback: A function that executes after the operation is done.
+   * @param {function} callback: A function that executes after the operation is done.
    */
   static getAllUsers(callback) {
     User.connectDB();
@@ -148,7 +148,7 @@ class User {
    * Finds Users that have a specified skill.
    *
    * @param {String} skillToBeSearched: A skill to search for.
-   * @param {Function} callback: A function that executes once the operation is done.
+   * @param {function} callback: A function that executes once the operation is done.
    */
   static searchUsersBySkills(skillToBeSearched, callback) {
     User.connectDB();
@@ -173,7 +173,7 @@ class User {
    *    User has some mastery in.
    * @param {Array} bookedmarkedUsers: A list of Strings representing other
    *    userEmails that the User has bookmarked.
-   * @param {Function} callback: A function that is executed once the operation is done.
+   * @param {function} callback: A function that is executed once the operation is done.
    */
   static updateUser(email = '', name = '', description = '', password = '',
                      willNotify = true, isDeleted = false, profilePic = '', skillSets = [], bookedmarkedUsers = [], callback) {
@@ -201,7 +201,7 @@ class User {
    *
    * @param {String} userEmail: The email of the User to mark as delete for.
    * @param {Boolean} isDeleted: The deletion status to set for the User.
-   * @param {Function} callback: A function that is executed once the operation is done.
+   * @param {function} callback: A function that is executed once the operation is done.
    */
   static setUserAsDeleted(userEmail, isDeleted, callback) {
     const update = { is_deleted: isDeleted };
@@ -220,7 +220,7 @@ class User {
   /**
    * A function that removes all data currently stored within the User Collection of the Database.
    *
-   * @param {Function} callback: A function that executes once the operation is done.
+   * @param {function} callback: A function that executes once the operation is done.
    */
   static clearAllUsers(callback) {
     User.connectDB();

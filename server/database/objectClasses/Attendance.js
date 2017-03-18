@@ -56,7 +56,7 @@ class Attendance {
   /**
    * Saves the Attendance Document stored internally to the Database.
    *
-   * @param {Function} callback: A function that is executed once the operation is done.
+   * @param {function} callback: A function that is executed once the operation is done.
    */
   saveAttendance(callback) {
     Attendance.connectDB();
@@ -77,7 +77,7 @@ class Attendance {
    * @param {String} attendanceType: Supposed to be a String enum
    *    containing either 'event' or 'exhibition'.
    *    Used to determine the type of activity attendanceName represents.
-   * @param {Function} callback: A function that executes once the operation completes.
+   * @param {function} callback: A function that executes once the operation completes.
    */
   static getAttendance(userEmail, attendanceName, attendanceType, callback) {
     Attendance.connectDB();
@@ -94,7 +94,7 @@ class Attendance {
   /**
    * Retrieve an array of Attendances from the Database.
    *
-   * @param {Function} callback: A function that is executed once the
+   * @param {function} callback: A function that is executed once the
    *    operation completes.
    */
   static getAllAttendances(callback) {
@@ -109,7 +109,7 @@ class Attendance {
    * Retrieve the Attendance Documents that contain a User's email.
    *
    * @param {String} userEmail: Used to match against the user_emails contained in all Attendances.
-   * @param {Function} callback: A function that executes once the
+   * @param {function} callback: A function that executes once the
    *    operation is done.
    */
   static searchAttendancesByUser(userEmail, callback) {
@@ -125,7 +125,7 @@ class Attendance {
    *
    * @param {String} attendanceName: Used to match against the
    *    attendance_name contained in all Attendances.
-   * @param {Function} callback: A function that executes once the
+   * @param {function} callback: A function that executes once the
    *    operation is done.
    */
   static searchAttendancesByName(attendanceName, callback) {
@@ -143,7 +143,7 @@ class Attendance {
    *    attendance_name contained in all Attendances.
    * @param {String} attendanceType: A String enum that is supposed
    *    to be either 'event' or 'exhibition'.
-   * @param {Function} callback: A function that executes once the
+   * @param {function} callback: A function that executes once the
    *    operation is done.
    */
   static searchAttendancesByNameAndType(attendanceName, attendanceType, callback) {
@@ -163,7 +163,7 @@ class Attendance {
    *
    * @param {Array} reasons: An array of Strings indicating reasons
    *    for Attending an Event / Exhibition to match for.
-   * @param {Function} callback: A function that executes once the
+   * @param {function} callback: A function that executes once the
    *    operation is done.
    */
   static searchAttendancesByReason(reasons, callback) {
@@ -183,7 +183,7 @@ class Attendance {
    *    attendance_name contained in all Attendances.
    * @param {Array} reasons: An array of Strings indicating reasons
    *    for Attending an Event / Exhibition to match for.
-   * @param {Function} callback: A function that executes once the
+   * @param {function} callback: A function that executes once the
    *    operation is done.
    */
   static searchAttendanceByNameAndReason(attendanceName, reasons, callback) {
@@ -209,7 +209,7 @@ class Attendance {
    *    Used to determine the type of activity attendanceName represents.
    * @param {Array} reason: The User's reasons for attending the Event.
    *    Each reason is a unique String element of the Array.
-   * @param {Function} callback: A function that executes once the
+   * @param {function} callback: A function that executes once the
    *    operation is done.
    */
   static updateReason(userEmail, attendanceName, attendanceType, reason, callback) {
@@ -236,7 +236,7 @@ class Attendance {
    * @param {String} attendanceType: Supposed to be a String enum
    *    containing either 'event' or 'exhibition'.
    *    Used to determine the type of activity attendanceName represents.
-   * @param {Function} callback: A function that executes once the
+   * @param {function} callback: A function that executes once the
    *    operation is done.
    */
   static deleteAttendance(userEmail, attendanceName, attendanceType, callback) {
@@ -254,7 +254,7 @@ class Attendance {
   /**
    * Remove the collection of Attendances from the Database.
    *
-   * @param {Function} callback: A function that is executed once the
+   * @param {function} callback: A function that is executed once the
    *    operation completes.
    */
   static clearAllAttendances(callback) {
