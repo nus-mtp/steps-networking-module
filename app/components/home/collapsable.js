@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import sampleProjects from '../project/sampleData';
+import { sampleProjects } from '../project/sampleData';
 
 const scrollbarWidth = 15;
 const bodyMargin = 0.2 * window.innerWidth;
