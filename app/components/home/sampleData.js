@@ -1,51 +1,76 @@
+// Create sample events that have dates that are in the past, present and future
+const nowDate = new Date();
+const futureDate = new Date();
+const pastDate = new Date();
+futureDate.setHours(nowDate.getHours() + 48);
+pastDate.setHours(nowDate.getHours() - 48);
+
 const sampleEvents = [
   {
     name: 'New Year Wild Party',
-    date: '01-01-2018',
+    date: nowDate.toDateString(),
     venue: 'Adam\'s House',
-    description: 'Party all night at Pasir Ris!',
+    description: 'Party all night at Pasir Ris!'
   },
   {
     name: 'Geek Meet',
-    date: '11-01-2017',
+    date: nowDate.toDateString(),
     venue: 'Tanjung Pagar',
-    description: 'Anime, Manga fans and that-weirdo-in-the-corner meeting.',
+    description: 'Anime, Manga fans and that-weirdo-in-the-corner meeting.'
   },
   {
     name: 'Food Trail',
-    date: '04-01-2017',
+    date: futureDate.toDateString(),
     venue: 'Bedok',
-    description: 'Eat till you drop!',
+    description: 'Eat till you drop!'
   },
   {
     name: 'IT Fair',
-    date: '01-01-2017',
+    date: futureDate.toDateString(),
     venue: 'Geylang',
+    description: 'Cheap IT goods for sale!'
   },
   {
     name: 'STePS',
-    date: '21-12-2017',
+    date: pastDate.toDateString(),
     venue: 'NUS',
+    description: 'Students showcase their projects they have done in that semester'
   },
   {
     name: 'Ku Klux Klan Bonfire',
-    date: '01-06-2017',
+    date: pastDate.toDateString(),
     venue: 'NUS',
+    description: 'Halloween Event for NUS students and alumni'
   },
   {
-    name: 'test7',
+    name: 'Mobile Gaming Conferences',
+    date: nowDate.toDateString(),
+    venue: 'NUS',
+    description: 'For all gamers out there!'
   },
   {
-    name: 'test8',
+    name: 'Cyber Security Convection',
+    date: futureDate.toDateString(),
+    venue: 'NUS',
+    description: 'Mark Zuckerberg and Bill Gates will be attending!'
   },
   {
-    name: 'test9',
+    name: 'Game Developers Conference 2017',
+    date: pastDate.toDateString(),
+    venue: 'NUS',
+    description: 'See all the new tools at your disposal'
   },
   {
-    name: 'test10',
+    name: 'CES 2017',
+    date: nowDate.toDateString(),
+    venue: 'NUS',
+    description: 'Cool Gadgets Galore'
   },
   {
-    name: 'test11',
+    name: 'WWDC 2017',
+    date: futureDate.toDateString(),
+    venue: 'NUS',
+    description: 'New iPhone? Maybe? Come join us!'
   },
 ];
 
@@ -61,4 +86,4 @@ const sampleAttendance = [
   },
 ];
 
-export { sampleEvents, sampleAttendance };
+export { sampleEvents, sampleAttendance, nowDate, futureDate, pastDate };
