@@ -17,7 +17,7 @@ class HomeView extends React.Component {
     this.state = {
       open: this.initial,
       numOfEvents: numOfEvents,
-      events: [],
+      events: null,
       attendance: sampleAttendance,
     };
 
@@ -65,12 +65,13 @@ class HomeView extends React.Component {
 
   render() {
     const containerWidth = 290;
+
     return (
       <div id="home-body">
         <Tabs />
         <div id="event-list" className="d-flex justify-content-center justify-content-md-start">
         {
-          (this.state.events != null) ?
+          (this.state.events !== null) ?
             this.state.events.map((event, i) =>
               <div id="event-container" key={i}>
                 <Event

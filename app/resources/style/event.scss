@@ -7,6 +7,10 @@
 #home-body {
   margin: 20px 10%;
 
+  .user-thumbnail {
+    max-width: 30px;
+  }
+
   #event-list {
     display: flex;
     flex-wrap: wrap;

@@ -1,6 +1,6 @@
 import React from 'react';
-import {Link} from 'react-router';
-import sampleProjects from '../project/sampleData';
+import { Link } from 'react-router';
+import { sampleProjects } from '../project/sampleData';
 
 class EventView extends React.Component {
   constructor(props) {
