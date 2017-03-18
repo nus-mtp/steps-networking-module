@@ -78,6 +78,7 @@ class Exhibition {
    * Checks whether the Exhibition exists within the Database. Will callback a boolean value.
    *
    * @param {String} exhibitionName: The name of the Exhibition to search for.
+   * @param {String} eventName: The name of the event in which the exhibition exist.
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static isExistingExhibition(exhibitionName, eventName, callback) {
@@ -102,6 +103,7 @@ class Exhibition {
    * Retrieve a specific Exhibition in the Database.
    *
    * @param {String} exhibitionName: The name of the Exhibition to retrieve from the Database.
+   * @param {String} eventName: The name of the event in which the exhibition exist.
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static getExhibition(exhibitionName, eventName, callback) {
