@@ -121,7 +121,7 @@ class StepsModelHandler {
    *
    * @param {function} callback: A function that is executed once the disconnect completes.
    */
-  disconnect(callback) {
+  disconnect(callback = () => {}) {
     this
       .db
       .close((err) => {
