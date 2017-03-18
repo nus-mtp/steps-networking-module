@@ -54,13 +54,28 @@ class HomeView extends React.Component {
     const id = e.target.id;
     const copy = this.state.events.slice();
     let remainder;
+    switch(id) {
+      case "ongoing":
+        remainder = copy.filter((event) => {
+          if (event.date === nowDate.toDateString())
+            return event;
+        });
+        break;
+      case "upcoming":
+        remainder = copy.filter((event) => {
+          if (event.date === futureDate.toDateString())
+            return event;
+        });
+        break;
+      case "past":
+        remainder = copy.filter((event) => {
+          if (event.date === pastDate.toDateString())
+            return event;
+        });
+        break;
+      default:
+        alert("no such tab id");
 
-    if (id === "ongoing") {
-      remainder = copy.filter((event) => {if (event.date === nowDate.toDateString()) return event;});
-    } else if (id === "upcoming") {
-      remainder = copy.filter((event) => {if (event.date === futureDate.toDateString()) return event;});
-    } else {
-      remainder = copy.filter((event) => {if (event.date === pastDate.toDateString()) return event;});
     }
     this.setState({displayedEvents: remainder});
   }
