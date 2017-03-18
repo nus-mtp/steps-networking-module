@@ -1,69 +1,69 @@
 const SampleUsers = [
   {
-    email: 'gundam@gundam.com',
-    password: 'gundam',
-    name: 'Wing Gundam',
-    description: '',
+    email: "gundam@gundam.com",
+    password: "gundam",
+    name: "Wing Gundam",
+    description: "",
     will_notify: false,
     is_deleted: false,
-    profile_picture: '',
+    profile_picture: "",
     skills: [
-      'fly', 'double bazooka', 'shoulder gatling gun',
+      "fly", "double bazooka", "shoulder gatling gun"
     ],
-    bookmarked_users: '',
+    bookmarked_users: "",
   },
   {
-    email: 'eren@eren.com',
-    password: 'eren',
-    name: 'Eren Jaeger',
-    description: '',
+    email: "eren@eren.com",
+    password: "eren",
+    name: "Eren Jaeger",
+    description: "",
     will_notify: false,
     is_deleted: false,
-    profile_picture: '',
+    profile_picture: "",
     skills: [
-      'titan mode', 'whiny',
+      "titan mode", "whiny"
     ],
-    bookmarked_users: '',
+    bookmarked_users: "",
   },
   {
-    email: 'kenshin@kenshin.com',
-    password: 'kenshin',
-    name: 'Rurouni Kenshin',
-    description: '',
+    email: "kenshin@kenshin.com",
+    password: "kenshin",
+    name: "Rurouni Kenshin",
+    description: "",
     will_notify: false,
     is_deleted: false,
-    profile_picture: '',
+    profile_picture: "",
     skills: [
-      'imba',
+      "imba"
     ],
-    bookmarked_users: '',
+    bookmarked_users: "",
   },
   {
-    email: 'naruto@naruto.com',
-    password: 'naruto',
-    name: 'Uzumaki Naruto',
-    description: '',
+    email: "naruto@naruto.com",
+    password: "naruto",
+    name: "Uzumaki Naruto",
+    description: "",
     will_notify: false,
     is_deleted: false,
-    profile_picture: '',
+    profile_picture: "",
     skills: [
-      'kage bushin', 'kuchiyose',
+      "kage bushin", "kuchiyose"
     ],
-    bookmarked_users: '',
+    bookmarked_users: "",
   },
   {
-    email: 'madoka@madoka.com',
-    password: 'madoka',
-    name: 'Madoka Magica',
-    description: '',
+    email: "madoka@madoka.com",
+    password: "madoka",
+    name: "Madoka Magica",
+    description: "",
     will_notify: false,
     is_deleted: false,
-    profile_picture: '',
+    profile_picture: "",
     skills: [
-      'whiny',
+      "whiny"
     ],
-    bookmarked_users: '',
-  },
-];
+    bookmarked_users: "",
+  }
+]
 
 export default SampleUsers;

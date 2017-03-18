@@ -1,53 +1,53 @@
 const SampleProjects = [
   {
-    exhibitionName: 'Searchparty VR',
-    eventName: 'VR Fantasy 2017',
+    exhibitionName: "Searchparty VR",
+    eventName: "VR Fantasy 2017",
     tags: [
-      'internship', 'partnership',
+      "internship", "partnership",
     ],
   },
   {
-    exhibitionName: 'Reality Escape Room',
-    eventName: 'VR Fantasy 2017',
+    exhibitionName: "Reality Escape Room",
+    eventName: "VR Fantasy 2017",
     tags: [
-      'internship',
+      "internship"
     ],
   },
   {
-    exhibitionName: 'Space Invaders 3D',
-    eventName: 'VR Fantasy 2017',
+    exhibitionName: "Space Invaders 3D",
+    eventName: "VR Fantasy 2017",
     tags: [
-      'full-time',
+      "full-time"
     ],
   },
   {
-    exhibitionName: 'Mama! Lava!',
-    eventName: 'VR Fantasy 2017',
+    exhibitionName: "Mama! Lava!",
+    eventName: "VR Fantasy 2017",
     tags: [
-      'partnership',
+      "partnership"
     ],
   },
   {
-    exhibitionName: 'VR Realism',
-    eventName: 'VR Fantasy 2017',
+    exhibitionName: "VR Realism",
+    eventName: "VR Fantasy 2017",
     tags: [
-      'full-time',
+      "full-time"
     ],
   },
   {
-    exhibitionName: 'Mario VR',
-    eventName: 'VR Fantasy 2017',
+    exhibitionName: "Mario VR",
+    eventName: "VR Fantasy 2017",
     tags: [
-      'internship',
+      "internship"
     ],
   },
   {
-    exhibitionName: 'Dangaronpa VR',
-    eventName: 'VR Fantasy 2017',
+    exhibitionName: "Dangaronpa VR",
+    eventName: "VR Fantasy 2017",
     tags: [
-      'internship', 'full-time',
+      "internship", "full-time",
     ],
   },
-];
+]
 
 export default SampleProjects;

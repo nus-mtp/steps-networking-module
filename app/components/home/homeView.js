@@ -8,17 +8,16 @@ class HomeView extends React.Component {
   constructor(props) {
     super(props);
 
-    const numOfEvents = 8; // Change according to num of events
+    var numOfEvents = 8; // Change according to num of events
     this.initial = [];
-    for (let i = 0; i < numOfEvents; i += 1) {
+    for (var i = 0; i < numOfEvents; i++) {
       this.initial.push(false);
     }
 
-    const currentEvents = sampleEvents.slice();
+    let currentEvents = sampleEvents.slice();
     const current = currentEvents.filter((event) => {
-      if (event.date === nowDate.toDateString()) {
+      if (event.date === nowDate.toDateString())
         return event;
-      }
     });
 
     this.state = {
@@ -35,7 +34,7 @@ class HomeView extends React.Component {
   }
 
   openCollapsable(serial) {
-    const new_status = this.initial.slice(); // ignore previous state and change all to false
+    var new_status = this.initial.slice(); // ignore previous state and change all to false
     new_status[serial] = !this.state.open[serial];
     this.setState({ open: new_status });
   }
@@ -43,9 +42,9 @@ class HomeView extends React.Component {
   changeAttendance(event, attendance) {
     // modify attendance data here
     if (attendance) {
-      const newEvent = { name: event };
+      const newEvent = { name: event }
       const newAttendance = this.state.attendance;
-      newAttendance.push(newEvent);
+      newAttendance.push(newEvent)
       this.setState({
         attendance: newAttendance,
       });
@@ -61,40 +60,37 @@ class HomeView extends React.Component {
     const id = e.target.id;
     const copy = this.state.events.slice();
     let remainder;
-    switch (id) {
-      case 'ongoing':
+    switch(id) {
+      case "ongoing":
         remainder = copy.filter((event) => {
-          if (event.date === nowDate.toDateString()) {
+          if (event.date === nowDate.toDateString())
             return event;
-          }
         });
         break;
-      case 'upcoming':
+      case "upcoming":
         remainder = copy.filter((event) => {
-          if (event.date === futureDate.toDateString()) {
+          if (event.date === futureDate.toDateString())
             return event;
-          }
         });
         break;
-      case 'past':
+      case "past":
         remainder = copy.filter((event) => {
-          if (event.date === pastDate.toDateString()) {
+          if (event.date === pastDate.toDateString())
             return event;
-          }
         });
         break;
       default:
-        alert('no such tab id');
+        alert("no such tab id");
 
     }
-    this.setState({ displayedEvents: remainder });
+    this.setState({displayedEvents: remainder});
   }
 
   render() {
     const containerWidth = 290;
     return (
       <div id="home-body">
-        <Tabs onClick={this.changeView} />
+        <Tabs onClick={this.changeView}/>
         <div id="event-list" className="d-flex justify-content-center justify-content-md-start"> {
           this.state.displayedEvents.map((event, i) =>
             <div id="event-container" key={i}>
