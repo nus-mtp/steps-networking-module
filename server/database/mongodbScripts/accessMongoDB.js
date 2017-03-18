@@ -19,7 +19,6 @@ module.exports.connect = (username, password, host, port, database) => {
   db.on('error', (err) => {
     if (err) {
       console.info(`MongoDB ${database} has encountered a problem.`);
-      console.errLogToConsole(err);
     }
   });
 
