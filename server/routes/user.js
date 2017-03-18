@@ -10,7 +10,7 @@ const ModelHandler = require('../database/models/ourModels');
 
 // All Routes prefixed with 'user/'
 
-router.get('/get/baseInfo/:email', (req = {}, res, next) => {
+router.get('/get/profile/:email', (req = {}, res, next) => {
   User.getUser(req.params.email, (err, user) => {
     if (err) {
       console.log(err);
