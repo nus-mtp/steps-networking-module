@@ -24,16 +24,16 @@ class ModelHandler {
    */
   initWithConnection(db) {
     this.db = db;
-    this.userModel = this
+    this.UserModel = this
       .db
       .model('user', userSchema);
-    this.eventModel = this
+    this.EventModel = this
       .db
       .model('event', eventSchema);
-    this.exhibitionModel = this
+    this.ExhibitionModel = this
       .db
       .model('exhibition', exhibitionSchema);
-    this.attendanceModel = this
+    this.AttendanceModel = this
       .db
       .model('attendance', attendanceSchema);
     this.commentModel = this
@@ -63,16 +63,16 @@ class ModelHandler {
    */
   initWithParameters(username, password, host, port, database) {
     this.db = mongoDBConnector.connect(username, password, host, port, database);
-    this.userModel = this
+    this.UserModel = this
       .db
       .model('user', userSchema);
-    this.eventModel = this
+    this.EventModel = this
       .db
       .model('event', eventSchema);
-    this.exhibitionModel = this
+    this.ExhibitionModel = this
       .db
       .model('exhibition', exhibitionSchema);
-    this.attendanceModel = this
+    this.AttendanceModel = this
       .db
       .model('attendance', attendanceSchema);
     this.commentModel = this
@@ -92,7 +92,7 @@ class ModelHandler {
    *  can be used to interact with the Users stored in the MongoDB backend.
    */
   getUserModel() {
-    return this.userModel;
+    return this.UserModel;
   }
 
   /**
@@ -103,7 +103,7 @@ class ModelHandler {
    *  can be used to interact with the Events stored in the MongoDB backend.
    */
   getEventModel() {
-    return this.eventModel;
+    return this.EventModel;
   }
 
   /**
@@ -114,7 +114,7 @@ class ModelHandler {
    *  can be used to interact with the Exhibitions stored in the MongoDB backend.
    */
   getExhibitionModel() {
-    return this.exhibitionModel;
+    return this.ExhibitionModel;
   }
 
   /**
@@ -125,7 +125,7 @@ class ModelHandler {
    *  can be used to interact with the Attendances stored in the MongoDB backend.
    */
   getAttendanceModel() {
-    return this.attendanceModel;
+    return this.AttendanceModel;
   }
 
   /**

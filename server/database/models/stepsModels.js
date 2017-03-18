@@ -22,7 +22,7 @@ class StepsModelHandler {
    */
   initWithConnection(db) {
     this.db = db;
-    this.userModel = this
+    this.UserModel = this
       .db
       .model('_User', stepsUserSchema, '_User');
     this.guestModel = this
@@ -31,7 +31,7 @@ class StepsModelHandler {
     this.moduleModel = this
       .db
       .model('Module', stepsModuleSchema, 'Module');
-    this.eventModel = this
+    this.EventModel = this
       .db
       .model('Event', stepsEventSchema, 'Event');
     return this;
@@ -55,7 +55,7 @@ class StepsModelHandler {
    */
   initWithParameters(username, password, host, port, database) {
     this.db = mongoDBConnector.connect(username, password, host, port, database);
-    this.userModel = this
+    this.UserModel = this
       .db
       .model('_User', stepsUserSchema, '_User');
     this.guestModel = this
@@ -64,7 +64,7 @@ class StepsModelHandler {
     this.moduleModel = this
       .db
       .model('Module', stepsModuleSchema, 'Module');
-    this.eventModel = this
+    this.EventModel = this
       .db
       .model('Event', stepsEventSchema, 'Event');
     return this;
@@ -78,7 +78,7 @@ class StepsModelHandler {
    *  can be used to interact with the Users stored in the MongoDB backend.
    */
   getUserModel() {
-    return this.userModel;
+    return this.UserModel;
   }
 
   /**
@@ -111,7 +111,7 @@ class StepsModelHandler {
    *  can be used to interact with the Events stored in the MongoDB backend.
    */
   getEventModel() {
-    return this.eventModel;
+    return this.EventModel;
   }
 
   /**
