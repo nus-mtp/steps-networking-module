@@ -10,6 +10,7 @@ class HomeView extends React.Component {
 
     const numOfEvents = 8; // Change according to num of events
     this.initial = [];
+
     for (let i = 0; i < numOfEvents; i++) {
       this.initial.push(false);
     }
@@ -41,22 +42,22 @@ class HomeView extends React.Component {
   }
 
   openCollapsable(serial) {
-    var new_status = this.initial.slice(); // ignore previous state and change all to false
-    new_status[serial] = !this.state.open[serial];
-    this.setState({ open: new_status });
+    const newStatus = this.initial.slice(); // ignore previous state and change all to false
+    newStatus[serial] = !this.state.open[serial];
+    this.setState({ open: newStatus });
   }
 
   changeAttendance(event, attendance) {
     // modify attendance data here
     if (attendance) {
-      const newEvent = { name: event }
+      const newEvent = { name: event };
       const newAttendance = this.state.attendance;
-      newAttendance.push(newEvent)
+      newAttendance.push(newEvent);
       this.setState({
         attendance: newAttendance,
       });
     } else {
-      const newAttendance = this.state.attendance.filter(attend => attend.name !== event)
+      const newAttendance = this.state.attendance.filter(attend => attend.name !== event);
       this.setState({
         attendance: newAttendance,
       });
