@@ -113,7 +113,7 @@ class Exhibition {
    *
    * @param callback: A function that is executed once the operation is done.
    */
-  static getAllExhibition(callback) {
+  static getAllExhibitions(callback) {
     Exhibition.connectDB();
     this.exhibitionModel.find({}, (err, allExhibitions) => {
       Exhibition.disconnectDB();
@@ -187,7 +187,8 @@ class Exhibition {
   }
 
   /**
-   * Removes a specific Exhibition from the Database.
+   * Deletes a specific Exhibition from the Database.
+   * Does NOT delete any Attendance Document that references it.
    *
    * @param exhibitionName: The name of the Exhibition to delete for.
    * @param callback: A function that is executed once the operation has completed.

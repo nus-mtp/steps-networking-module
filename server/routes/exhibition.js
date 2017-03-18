@@ -10,7 +10,7 @@ const ModelHandler = require('../database/models/ourModels');
 // All Routes prefixed with 'exhibition/'
 
 router.get('/get/allExhibitions', (req = {}, res, next) => {
-  Exhibition.getAllExhibition((err, exhibitionObjs) => {
+  Exhibition.getAllExhibitions((err, exhibitionObjs) => {
     if (err) {
       console.log(err);
       res.status(500).json('Unable to fetch data!');
