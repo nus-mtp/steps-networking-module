@@ -8,15 +8,15 @@ class HomeView extends React.Component {
   constructor(props) {
     super(props);
 
-    var numOfEvents = 8; // Change according to num of events
+    const numOfEvents = 8; // Change according to num of events
     this.initial = [];
-    for (var i = 0; i < numOfEvents; i++) {
+    for (let i = 0; i < numOfEvents; i += 1) {
       this.initial.push(false);
     }
 
     this.state = {
       open: this.initial,
-      numOfEvents: numOfEvents,
+      numOfEvents,
       events: sampleEvents,
       attendance: sampleAttendance,
     };
@@ -26,22 +26,22 @@ class HomeView extends React.Component {
   }
 
   openCollapsable(serial) {
-    var new_status = this.initial.slice(); // ignore previous state and change all to false
-    new_status[serial] = !this.state.open[serial];
-    this.setState({ open: new_status });
+    const newStatus = this.initial.slice(); // ignore previous state and change all to false
+    newStatus[serial] = !this.state.open[serial];
+    this.setState({ open: newStatus });
   }
 
   changeAttendance(event, attendance) {
     // modify attendance data here
     if (attendance) {
-      const newEvent = { name: event }
+      const newEvent = { name: event };
       const newAttendance = this.state.attendance;
-      newAttendance.push(newEvent)
+      newAttendance.push(newEvent);
       this.setState({
         attendance: newAttendance,
       });
     } else {
-      const newAttendance = this.state.attendance.filter(attend => attend.name !== event)
+      const newAttendance = this.state.attendance.filter(attend => attend.name !== event);
       this.setState({
         attendance: newAttendance,
       });
@@ -55,7 +55,7 @@ class HomeView extends React.Component {
         <Tabs />
         <div id="event-list" className="d-flex justify-content-center justify-content-md-start"> {
           this.state.events.map((event, i) =>
-            <div id="event-container" key={i}>
+            <div id="event-container" key={event.name}>
               <Event
                 serial={i}
                 open={this.state.open}
@@ -72,7 +72,7 @@ class HomeView extends React.Component {
                 attendance={this.state.attendance}
                 changeAttendance={this.changeAttendance}
               />
-            </div>
+            </div>,
           )}
         </div>
       </div>

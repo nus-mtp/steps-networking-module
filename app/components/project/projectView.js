@@ -36,7 +36,7 @@ class ProjectView extends React.Component {
               <div className="info-type">Comments</div>
               <div id="project-comments" />
               <div>
-                <textarea className="form-control" rows="1" id="comment"></textarea>
+                <textarea className="form-control" rows="1" id="comment" />
               </div>
               <button id="submit-comment" type="button" className="btn btn-primary">Submit</button>
             </li>

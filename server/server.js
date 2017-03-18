@@ -1,16 +1,25 @@
+import currentdb from './currentdb';
+
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
 var passport = require('passport');
 var config = require('./config.json');
 
-var db = require('./database/mongodbScripts/accessMongoDB').connect(config.herokuDbUri.host, config.herokuDbUri.port, config.herokuDbUri.database);
+var db = require('./database/mongodbScripts/accessMongoDB').connect(config[currentdb].username,
+                                                                    config[currentdb].password,
+                                                                    config[currentdb].host,
+                                                                    config[currentdb].port,
+                                                                    config[currentdb].database);
 
 var app = express();
 var port = 3000;
 
 app.use(express.static(path.join(__dirname, '/../dist')));
 app.use('/css', express.static(path.join(__dirname + '/../node_modules/bootstrap/dist/css')));  // redirect CSS bootstrap
+app.use('/js', express.static(path.join(__dirname + '/../node_modules/bootstrap/dist/js')));  // redirect js bootstrap
+app.use('/tether', express.static(path.join(__dirname + '/../node_modules/tether/dist/js')));  // redirect tether
+app.use('/jquery', express.static(path.join(__dirname + '/../node_modules/jquery/dist')));  // redirect jquery
 
 app.get('/',function(req,res){
   res.sendFile(path.join(__dirname + '/../app/index.html'));   //It will find and locate index.html from View or Scripts
@@ -33,7 +42,7 @@ var apiRoutes = require('./routes/api');
 app.use('/auth', authRoutes);
 app.use('/api', apiRoutes);
 
-app.listen(process.env.PORT || port, function(){
+app.listen(process.env.PORT || port, function() {
   var listeningPort = process.env.PORT || port;
   console.log(`Running on ${listeningPort}`);
 });

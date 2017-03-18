@@ -1,3 +1,5 @@
+import currentdb from '../currentdb';
+
 const jwt = require('jsonwebtoken');
 
 const ModelHandler = require('../database/models/ourModels'); // require('mongoose').model('User');
@@ -21,19 +23,20 @@ module.exports = (req, res, next) => {
 
     const userId = decoded.sub;
 
-    const ModelHandlerObj = new ModelHandler(config.herokuDbUri.host, config.herokuDbUri.port, config.herokuDbUri.database);
+    const ModelHandlerObj = new ModelHandler(config[currentdb].username,
+                                             config[currentdb].password,
+                                             config[currentdb].host,
+                                             config[currentdb].port,
+                                             config[currentdb].database);
     const User = ModelHandlerObj.getUserModel();
 
     // check if a user exists
     return User.findById(userId, (userErr, user) => {
-
       ModelHandlerObj.disconnect();
 
       if (userErr || !user) {
         return res.status(401).end();
       }
-
-      ModelHandlerObj.disconnect();
 
       return next();
     });

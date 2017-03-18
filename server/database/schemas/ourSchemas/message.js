@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const postSchema = require('./post');
 
 const messageSchema = new mongoose.Schema({
   recipient_email: {
@@ -12,14 +13,11 @@ const messageSchema = new mongoose.Schema({
     required: 'The Sender\'s Email is used as a Foreign Key, and is therefore Required.',
   },
 
-  content: String,
-
-  timestamp: {
-    type: Date,
-    default: Date.now,
-  },
+  messages: [
+    postSchema,
+  ],
 });
 
-messageSchema.index({ recipient_email: 1, sender_email: 1, timestamp: 1 }, { unique: true });
+messageSchema.index({ recipient_email: 1, sender_email: 1 }, { unique: true });
 
 module.exports = messageSchema;

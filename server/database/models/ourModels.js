@@ -1,3 +1,6 @@
+const mongodbScriptsFilePath = '../mongodbScripts/';
+const ourSchemasFilePath = '../schemas/ourSchemas/';
+
 const mongoDBConnector = require('../mongodbScripts/accessMongoDB');
 
 const userSchema = require('../schemas/ourSchemas/user');
@@ -13,19 +16,17 @@ const messageSchema = require('../schemas/ourSchemas/message');
 */
 class ModelHandler {
 
-  /*
+  /* 
     Initializes the ModelHandler with references to Mongoose Models.
 
-    Starts a connection to the backend implicitly.
+    Assumes the connection has already been established to the backend externally,
+    through the argument passed in. Does not validate the argument in any way.
 
-    @param {String} host: The String containing the name of the host
-                          that the MongoDB Server is running on.
-    @param {String} port: The String containing the port number of the
-                          MongoDB Server process on host.
-    @param {String} name: The String representing the name of the database to connect to.
+    @param {Mongoose.Connection} db: The connection to the DB.
+    @return {ModelHandler} this: This instance.
   */
-  constructor(host, port, name) {
-    this.db = mongoDBConnector.connect(host, port, name);
+  initWithConnection(db) {
+    this.db = db;
     this.userModel = this
       .db
       .model('user', userSchema);
@@ -44,6 +45,46 @@ class ModelHandler {
     this.messageModel = this
       .db
       .model('message', messageSchema);
+    return this;
+  }
+
+  /*
+    Initializes the ModelHandler with references to Mongoose Models.
+
+    Starts a connection to the backend implicitly.
+
+    @param {String} username: The String containing a part of the login
+                              credentials required to access the DB.
+    @param {String} password: The String containing a part of the login
+                              credentials required to access the DB.
+    @param {String} host: The String containing the name of the host
+                          that the MongoDB Server is running on.
+    @param {String} port: The String containing the port number of the
+                          MongoDB Server process on host.
+    @param {String} database: The String representing the name of the database to connect to.
+    @return {ModelHandler} this: This instance.
+  */
+  initWithParameters(username, password, host, port, database) {
+    this.db = mongoDBConnector.connect(username, password, host, port, database);
+    this.userModel = this
+      .db
+      .model('user', userSchema);
+    this.eventModel = this
+      .db
+      .model('event', eventSchema);
+    this.exhibitionModel = this
+      .db
+      .model('exhibition', exhibitionSchema);
+    this.attendanceModel = this
+      .db
+      .model('attendance', attendanceSchema);
+    this.commentModel = this
+      .db
+      .model('comment', commentSchema);
+    this.messageModel = this
+      .db
+      .model('message', messageSchema);
+    return this;
   }
 
   /*
