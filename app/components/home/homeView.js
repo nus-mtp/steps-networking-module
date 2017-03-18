@@ -2,27 +2,42 @@ import React from 'react';
 import Tabs from './tabs';
 import Event from './event';
 import Collapsable from './collapsable';
-import { sampleEvents, sampleAttendance } from './sampleData';
+import { sampleAttendance } from './sampleData';
 
 class HomeView extends React.Component {
   constructor(props) {
     super(props);
 
-    var numOfEvents = 8; // Change according to num of events
+    const numOfEvents = 8; // Change according to num of events
     this.initial = [];
-    for (var i = 0; i < numOfEvents; i++) {
+    for (let i = 0; i < numOfEvents; i++) {
       this.initial.push(false);
     }
 
     this.state = {
       open: this.initial,
       numOfEvents: numOfEvents,
-      events: sampleEvents,
+      events: [],
       attendance: sampleAttendance,
     };
 
+    this.getAllEvents();
+
     this.openCollapsable = this.openCollapsable.bind(this);
     this.changeAttendance = this.changeAttendance.bind(this);
+  }
+
+  getAllEvents() {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', '/event/allEvents');
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      this.setState({
+        events: xhr.response,
+      });
+    });
+    xhr.send();
   }
 
   openCollapsable(serial) {
@@ -53,27 +68,30 @@ class HomeView extends React.Component {
     return (
       <div id="home-body">
         <Tabs />
-        <div id="event-list" className="d-flex justify-content-center justify-content-md-start"> {
-          this.state.events.map((event, i) =>
-            <div id="event-container" key={i}>
-              <Event
-                serial={i}
-                open={this.state.open}
-                openCollapsable={this.openCollapsable}
-                event={event}
-                attendance={this.state.attendance}
-              />
-              <Collapsable
-                serial={i}
-                open={this.state.open}
-                openCollapsable={this.openCollapsable}
-                width={containerWidth}
-                event={event}
-                attendance={this.state.attendance}
-                changeAttendance={this.changeAttendance}
-              />
-            </div>
-          )}
+        <div id="event-list" className="d-flex justify-content-center justify-content-md-start">
+        {
+          (this.state.events.length > 0) ?
+            this.state.events.map((event, i) =>
+              <div id="event-container" key={i}>
+                <Event
+                  serial={i}
+                  open={this.state.open}
+                  openCollapsable={this.openCollapsable}
+                  event={event}
+                  attendance={this.state.attendance}
+                />
+                <Collapsable
+                  serial={i}
+                  open={this.state.open}
+                  openCollapsable={this.openCollapsable}
+                  width={containerWidth}
+                  event={event}
+                  attendance={this.state.attendance}
+                  changeAttendance={this.changeAttendance}
+                />
+              </div>
+            ) : <div />
+          }
         </div>
       </div>
     );
