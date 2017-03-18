@@ -11,92 +11,94 @@ const dbName = config[currentdb].database;
 
 /**
  * This is the wrapper class used extract out and store information
- * about the Messages from the database between view and model
+ * about the Messages from the Database between view and model
  * Deletion of Message Object is not supported
  *
  */
 class Message {
 
   /**
-   * Creates a connection to the database
+   * Creates a connection to the Database.
    */
   static connectDB() {
-    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
+    this.ModelHandler = new ModelHandler()
+        .initWithParameters(username, password, host, port, dbName);
     this.MessageModel = this.ModelHandler.getMessageModel();
   }
 
   /**
-   * Disconnects from the database
+   * Disconnects from the database.
    */
   static disconnectDB() {
     this.ModelHandler.disconnect();
   }
 
   /**
-   * Creates a Message model instance.
+   * Creates a Message Document and stores it internally.
    *
-   * @param {String} recipientEmail: Email string of receiver
-   * @param {String} senderEmail: Email string of sender
-   * @param {String} content: message to be saved
-   * @param {Date} timeStamp: Date object to map when was message sent
+   * @param {String} recipientEmail: The email of the User recipient.
+   * @param {String} senderEmail: The email of the User sender.
+   * @param {String} content: The content of the Message.
+   * @param {Date} timeStamp: Date object to map when the Message was sent.
    */
-  constructor(senderEmail, recipientEmail, content, timestamp) {
-    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
+  constructor(senderEmail, recipientEmail, content, timeStamp) {
+    this.ModelHandler = new ModelHandler()
+        .initWithParameters(username, password, host, port, dbName);
     this.MessageModel = this.ModelHandler.getMessageModel();
     this.messageModelDoc = new this.MessageModel({
       recipient_email: recipientEmail,
       sender_email: senderEmail,
-      messages:  { content: content ,  timestamp: timestamp } ,
+      messages: { content, timestamp: timeStamp },
     });
     this.ModelHandler.disconnect();
   }
 
   /**
-   * saves message into Database
+   * Saves Message Document stored internally into Database.
    *
    * @param {function} callback: A function that is executed once the operation is done.
    */
   saveMessage(callback) {
     Message.connectDB();
-    this.messageModelDoc.save(function cb(err) {
+    this.messageModelDoc.save((err) => {
       Message.disconnectDB();
       callback(err);
     });
   }
-  
+
   /**
-   * Retrieve Message by recipients
+   * Retrieve Messages for a recipient User.
    *
-   * @param {String} senderEmail: Email string of receiver
+   * @param {String} recipientEmail: The email of the recipient User.
    * @param {function} callback: A function that is executed once the operation is done.
    */
-  static getMessageForUser(recipientEmail, callback) {
+  static getMessagesForUser(recipientEmail, callback) {
     Message.connectDB();
-    this.MessageModel.find({ recipient_email: recipientEmail }, (err, msgObjs) => {
+    this.MessageModel.find({ recipient_email: recipientEmail }, (err, matchedMessages) => {
       Message.disconnectDB();
-      callback(err, msgObjs)
+      callback(err, matchedMessages);
     });
   }
 
   /**
-   * Retrieve Message by sender
+   * Retrieve Messages by a sender User.
    *
-   * @param {String} senderEmail: Email string of sender
+   * @param {String} senderEmail: The email of the sender User.
    * @param {function} callback: A function that is executed once the operation is done.
    */
-  static getMessageFromUser(senderEmail, callback) {
+  static getMessagesFromUser(senderEmail, callback) {
     Message.connectDB();
-    this.MessageModel.find({ sender_email: senderEmail }, (err, msbObjs) => {
+    this.MessageModel.find({ sender_email: senderEmail }, (err, matchedMessages) => {
       Message.disconnectDB();
-      callback(err, msbObjs);
+      callback(err, matchedMessages);
     });
   }
 
   /**
-   * Retrieve the messages sent by sender to recipient
+   * Retrieve the Message sent from a recipient User to a sender User.
    *
-   * @param {String} senderEmail: Email string of sender
-   * @param {String} senderEmail: Email string of receiver
+   * @param {String} senderEmail: The email of the sender User.
+   * @param {String} recipientEmail: The email of the recipient User.
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static getConversation(senderEmail, recipientEmail, callback) {
@@ -105,36 +107,37 @@ class Message {
       recipient_email: recipientEmail,
       sender_email: senderEmail,
     };
-    this.MessageModel.findOne({ sender_email: senderEmail }, (err, msgObj) => {
+    this.MessageModel.findOne(query, (err, matchedMessage) => {
       Message.disconnectDB();
-      callback(err, msgObj);
+      callback(err, matchedMessage);
     });
   }
 
   /**
-   * Add more elements into the message
+   * Add more messages to the Message.
    *
-   * @param {String} recipientEmail: Email string of receiver
-   * @param {String} senderEmail: Email string of sender
+   * @param {String} senderEmail: The email of the sender User.
+   * @param {String} recipientEmail: The email of the recipient User.
    * @param {String} content: message to be saved
-   * @param {Date} timeStamp: Date object to map when was message sent
+   * @param {Date} timeStamp: Date object to map when was message sent.
+   * @param {function} callback: A function that is executed once the operation is done.
    */
-  static addMessage(senderEmail, recipientEmail, content, timestamp, callback) {
+  static addMessage(senderEmail, recipientEmail, content, timeStamp, callback) {
     Message.connectDB();
     const query = {
       recipient_email: recipientEmail,
       sender_email: senderEmail,
     };
-    const update = { $push: { messages: { content: content,  timestamp: timestamp }}};
+    const update = { $push: { messages: { content, timestamp: timeStamp } } };
     const options = { new: true };
     this.MessageModel.findOneAndUpdate(query, update, options, (err, results) => {
       Message.disconnectDB();
       callback(err, results);
     });
   }
-  
+
   /**
-   * Removes all messages from the Database
+   * Removes all Messages from the Database.
    *
    * @param {function} callback: A function that is executed once the operation is done.
    */
@@ -145,6 +148,5 @@ class Message {
       callback(err);
     });
   }
-
 }
 module.exports = Message;

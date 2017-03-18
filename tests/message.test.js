@@ -37,7 +37,7 @@ describe('Message Create', function(){
         console.log(err);
       }
       // check that its inside the databse
-      Message.getMessageFromUser('user1@user.com', function cb(err, messageObj){
+      Message.getMessagesFromUser('user1@user.com', function cb(err, messageObj){
         if (err){
           console.log("error with getting message from user");
         } else {
@@ -86,7 +86,7 @@ describe('Message Read', function(){
   });
   
   it('should be able to read message FROM a specified user', function (done){
-    Message.getMessageFromUser('user4@user.com', function cb(err, msgObj){
+    Message.getMessagesFromUser('user4@user.com', function cb(err, msgObj){
       if (err){
         console.log("can't get existing message");
       } else {
@@ -97,7 +97,7 @@ describe('Message Read', function(){
   });
 
   it('should be able to read message TO a specified user', function (done){
-    Message.getMessageForUser('user3@user.com', function cb(err, msgObj){
+    Message.getMessagesForUser('user3@user.com', function cb(err, msgObj){
       if (err){
         console.log("can't get existing message");
       } else {
@@ -108,7 +108,7 @@ describe('Message Read', function(){
   });
 
   it('should not be able to read message with a non-existant user', function (done){
-    Message.getMessageForUser('user5@user.com', function cb(err, msgObj){
+    Message.getMessagesForUser('user5@user.com', function cb(err, msgObj){
       if (err){
         console.log("can't get existing message");
       } else {
