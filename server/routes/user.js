@@ -4,10 +4,6 @@ const router = new express.Router();
 
 const User = require('../database/objectClasses/User');
 
-import currentdb from '../currentdb';
-const config = require('../config.json');
-const ModelHandler = require('../database/models/ourModels');
-
 // All Routes prefixed with 'user/'
 
 router.get('/get/profile/:email', (req = {}, res, next) => {
