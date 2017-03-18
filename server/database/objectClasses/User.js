@@ -160,10 +160,10 @@ class User {
   /**
    * Updates all the information in a specified User - except the email.
    *
-   * @param userEmail: The unique email of the User to update.
-   * @param userName: The name of the User.
-   * @param userDescription: The bio for the User.
-   * @param userPassword: The password for this User Account.
+   * @param email: The unique email of the User to update.
+   * @param name: The name of the User.
+   * @param description: The bio for the User.
+   * @param password: The password for this User Account.
    * @param willNotify: A boolean value to indicate if the User is to be notified on anything.
    * @param isDeleted: A boolean to indicate if the User is marked as deleted or not.
    * @param profilePic: URL String representing an externally hosted depiction of the User.
