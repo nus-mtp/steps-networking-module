@@ -29,7 +29,7 @@ class HomeView extends React.Component {
 
   getAllEvents() {
     const xhr = new XMLHttpRequest();
-    xhr.open('get', '/event/allEvents');
+    xhr.open('get', '/event/get/allEvents');
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
