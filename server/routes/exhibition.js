@@ -59,7 +59,6 @@ router.get('/get/allExhibitions', (req = {}, res, next) => {
 });
 
 router.get('/get/oneExhibition/:eventName/:exhibitionName', (req = {}, res, next) => {
-  console.log(req.params.exhibitionName);
   Exhibition.getExhibition(req.params.eventName, req.params.exhibitionName, (err, exhibitionObj) => {
     if (err) {
       console.log(err);
