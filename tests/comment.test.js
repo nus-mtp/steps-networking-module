@@ -61,12 +61,12 @@ describe('Comment Create', () => {
           'hey man thanks!',
           new Date('October 14, 2014 21:01:00'),
         );
-        testcomment2.saveComment(function callback(err, result) {
+        testcomment2.saveComment((err, result) => {
           if (err) {
             console.log(err);
           }
           // check that its inside the databse
-          Comment.getCommentsForExhibition(result.exhibition_key, function cb(err, commentObj){
+          Comment.getCommentsForExhibition(result.exhibition_key, (err, commentObj) => {
             if (err){
               console.log("error with getting comment for an event");
             } else {
@@ -80,8 +80,8 @@ describe('Comment Create', () => {
   });
 });
 
-describe('Comment Read', (done) => {
-  before(function(done) {
+describe('Comment Read', () => {
+  before((done) => {
     const testexhibition1 = new Exhibition(
       'EXI',
       'description',
@@ -145,9 +145,9 @@ describe('Comment Read', (done) => {
     })
   });
 
-  it('Should not be able to obtain comments from a non-existing exhibition', function(done){
+  it('Should not be able to obtain comments from a non-existing exhibition', (done) => {
     // non-existing exhibition means an invalid object ID
-    Comment.getCommentsForExhibition(1234567, function cb(err, commentObj){
+    Comment.getCommentsForExhibition(1234567, (err, commentObj) => {
       if (err){
         console.log("error with getting comment for an event");
       } else {
@@ -158,8 +158,8 @@ describe('Comment Read', (done) => {
   });
 });
 
-describe('Comment Update', function(){
-  before(function(done) {
+describe('Comment Update', () => {
+  before((done) => {
     const testexhibition1 = new Exhibition(
       'EXI',
       'description',
@@ -190,7 +190,7 @@ describe('Comment Update', function(){
     });
   });
 
-  after (function(done) {
+  after ((done) => {
     Exhibition.clearAllExhibitions((err) => {
       if (err) {
         console.log(err);
@@ -205,7 +205,7 @@ describe('Comment Update', function(){
   });
 
 
-  it ('should be able to append more comments into the object', function(done){
+  it ('should be able to append more comments into the object', (done)=> {
     Exhibition.getExhibition('EVENTNAME', 'EXI', (err, results) => {
       if (err) {
         console.log(err);
@@ -216,7 +216,7 @@ describe('Comment Update', function(){
           results._id,
           'I agree',
           new Date('October 14, 2014 22:20:20'),
-          function cb(err, results){
+          (err, results) => {
             if (err){
               console.log(err);
             } else {
@@ -228,4 +228,4 @@ describe('Comment Update', function(){
     })
   });
 
-});//*/
+});
