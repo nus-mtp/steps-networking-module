@@ -14,9 +14,7 @@ const eventSchema = new mongoose.Schema({
   },
   end_date: {
     type: Date,
-    default: () => {
-      return Date.now() + (24 * 60 * 60 * 1000);
-    },
+    default: () => Date.now() + (24 * 60 * 60 * 1000),
   },
   event_location: String,
   event_map: String,

@@ -9,228 +9,267 @@ const host = config[currentdb].host;
 const port = config[currentdb].port;
 const dbName = config[currentdb].database;
 
+/**
+ * This is the wrapper class used extract out and store information
+ * about the Attendances from the Database between view and model.
+ *
+ */
+
 class Attendance {
   /**
-   * Creates a new model instance of Attendance
-   *
-   * @param {String} userEmail: identifer for users. Must be existing
-   * @param {String} attendanceName: Name of event/ exhibition.
-   *                Use attendanceType to determine if the name is for an Exhibition, or an Event.
-   * @param {String} attendanceType: 'exhibition' or 'event'. Exhibition if they are participating
-   *                as exhibitor, event otherwise.
-   * @param {String} reason: user's reason for attending the event. Each element has to be unique.
+   * Creates a connection to the Database.
    */
-  constructor(userEmail, attendanceName, attendanceType, reason) {
-    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
-    this.AttenanceModel = this.ModelHandler.getAttendanceModel();
-    this.attendanceModelDoc = new this.AttenanceModel({
-      user_email: userEmail,
-      attendance_name: attendanceName,
-      attendance_type: attendanceType,
-      reason: reason,
-    });
-    this.ModelHandler.disconnect();
+  static connectDB() {
+    this.ModelHandler = new ModelHandler()
+          .initWithParameters(username, password, host, port, dbName);
+    this.AttendanceModel = this.ModelHandler.getAttendanceModel();
   }
 
   /**
-   * Saves the attendance into the database
-   *
-   * @param {Function} callback: used for error checking
+   * Disconnects from the Database.
    */
-  saveAttendance(callback) {
-    Attendance.connectDB();
-    this.attendanceModelDoc.save(function cb(err) {
-      callback(err);
-    });
-    Attendance.disconnectDB();
-  }
-
-  static connectDB() {
-    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
-    this.AttenanceModel = this.ModelHandler.getAttendanceModel();
-  }
-
   static disconnectDB() {
     this.ModelHandler.disconnect();
   }
 
   /**
-   * Retrieve an array of attendance object from database
+   * Creates an Attendance Document and stores it internally.
    *
-   * @param {Function} callback (err, objArray): err is used for error checking,
-                                                objArray is the array of attendance object
+   * @param {String} userEmail: The name for Users. Does not check if User actually exists or not.
+   * @param {String} attendanceName: The name of the Event / Exhibition.
+   *    Does not check if the Event / Exhibition exists or not.
+   *    Use attendanceType to determine if the name is for an Exhibition, or an Event.
+   * @param {String} attendanceType: Supposed to be a String enum
+   *    containing either 'event' or 'exhibition'.
+   *    Used to determine the type of activity attendanceName represents.
+   * @param {Array} reason: The User's reasons for attending the Event.
+   *    Each reason is a unique String element of the Array.
    */
-  static getAllAttendance(callback) {
-    Attendance.connectDB();
-    this.AttenanceModel.find({}, function cb(err, userDoc) {
-      if (err) {
-        callback(err, null);
-      } else {
-        callback(null, userDoc);
-      }
+  constructor(userEmail, attendanceName, attendanceType, reason) {
+    this.ModelHandler = new ModelHandler()
+        .initWithParameters(username, password, host, port, dbName);
+    this.AttendanceModel = this.ModelHandler.getAttendanceModel();
+    this.attendanceModelDoc = new this.AttendanceModel({
+      user_email: userEmail,
+      attendance_name: attendanceName,
+      attendance_type: attendanceType,
+      reason,
     });
-    Attendance.disconnectDB();
+    this.ModelHandler.disconnect();
   }
 
   /**
-   * Remove the collection of Users from database
+   * Saves the Attendance Document stored internally to the Database.
    *
-   * @param {Function} callback: used for error checking
+   * @param {function} callback: A function that is executed once the operation is done.
    */
-  static clearAllAttendance(callback) {
+  saveAttendance(callback) {
     Attendance.connectDB();
-    this.AttenanceModel.collection.remove({}, callback);
-    Attendance.disconnectDB();
+    this.attendanceModelDoc.save((err) => {
+      Attendance.disconnectDB();
+      callback(err);
+    });
   }
 
   /**
-   * Retrieve the specific attendance object from the database
-   * Using the user email, attendance name and type as the unique identifer.
+   * Retrieve the specific Attendance Document from the Database.
+   * Using a User's email, Attendance name and type as the unique identifer.
    *
-   * @param {String} userEmail: identifer for users. Must be existing
-   * @param {String} attendanceName: Name of event/ exhibition.
-   * @param {String} attendanceType: 'exhibition' or 'event'.
-   * @param {Function} callback: user's reason for attending the event.
+   * @param {String} userEmail: The name for Users. Does not check if User actually exists or not.
+   * @param {String} attendanceName: The name of the Event / Exhibition.
+   *    Does not check if the Event / Exhibition exists or not.
+   *    Use attendanceType to determine if the name is for an Exhibition, or an Event.
+   * @param {String} attendanceType: Supposed to be a String enum
+   *    containing either 'event' or 'exhibition'.
+   *    Used to determine the type of activity attendanceName represents.
+   * @param {function} callback: A function that executes once the operation completes.
    */
-  static getAttendanceObj(userEmail, attendanceName, attendanceType, callback) {
+  static getAttendance(userEmail, attendanceName, attendanceType, callback) {
     Attendance.connectDB();
     const query = { user_email: userEmail,
-                   attendance_name: attendanceName,
-                   attendance_type: attendanceType,
-                  };
-    this.AttenanceModel.findOne(query, function cb(err, obj) {
-      if (err) {
-        callback(err, null);
-      } else {
-        callback(null, obj);
-      }
+      attendance_name: attendanceName,
+      attendance_type: attendanceType,
+    };
+    this.AttendanceModel.findOne(query, (err, attendance) => {
+      Attendance.disconnectDB();
+      callback(err, attendance);
     });
-    Attendance.disconnectDB();
   }
 
   /**
-   * Retrieve the attendance object with the user-defined userEmail
+   * Retrieve an array of Attendances from the Database.
    *
-   * @param {String} userEmail: the unique identifer to search in the database
-   * @param {Function} callback: used to return Attendance Object and error checking
+   * @param {function} callback: A function that is executed once the
+   *    operation completes.
    */
-  static searchAttendanceByUser(userEmail, callback) {
+  static getAllAttendances(callback) {
     Attendance.connectDB();
-    this.AttenanceModel.find({ user_email: userEmail }, function cb(err, obj) {
-      if (err) {
-        callback(err, null);
-      } else {
-        callback(null, obj);
-      }
+    this.AttendanceModel.find({}, (err, allAttendances) => {
+      Attendance.disconnectDB();
+      callback(err, allAttendances);
     });
-    Attendance.disconnectDB();
   }
 
   /**
-   * Retrieve the attendance object using attendance name
+   * Retrieve the Attendance Documents that contain a User's email.
    *
-   * @param {String} userEmail: the unique identifer to search in the database
-   * @param {Function} callback: used to return an array ofAttendance Object and error checking
+   * @param {String} userEmail: Used to match against the user_emails contained in all Attendances.
+   * @param {function} callback: A function that executes once the
+   *    operation is done.
    */
-  static searchAttendanceByEvent(eventName, callback) {
+  static searchAttendancesByUser(userEmail, callback) {
     Attendance.connectDB();
-    this.AttenanceModel.find({ attendance_name: eventName }, function cb(err, obj) {
-      if (err) {
-        callback(err, null);
-      } else {
-        callback(null, obj);
-      }
+    this.AttendanceModel.find({ user_email: userEmail }, (err, matchedAttendances) => {
+      Attendance.disconnectDB();
+      callback(err, matchedAttendances);
     });
-    Attendance.disconnectDB();
   }
 
   /**
-   * Retrieve the attendance object using reasons
+   * Retrieve the Attendance Documents that contain the specified Event / Exhibition name.
    *
-   * @param {String} reason: the unique identifer to search in the database
-   * @param {Function} callback: used to return an array ofAttendance Object and error checking
+   * @param {String} attendanceName: Used to match against the
+   *    attendance_name contained in all Attendances.
+   * @param {function} callback: A function that executes once the
+   *    operation is done.
    */
-  static searchAttendanceByReason(reason, callback) {
+  static searchAttendancesByName(attendanceName, callback) {
     Attendance.connectDB();
-    this.AttenanceModel.find({ reason: { $regex: new RegExp(reason.replace('+', '\\+'), 'i') } }, function cb(err, obj) {
-      if (err) {
-        callback(err, null);
-      } else {
-        callback(null, obj);
-      }
+    this.AttendanceModel.find({ attendance_name: attendanceName }, (err, matchedAttendances) => {
+      Attendance.disconnectDB();
+      callback(err, matchedAttendances);
     });
-    Attendance.disconnectDB();
   }
 
   /**
-   * Retrieve the attendance object using both reasons and attendance name
+   * Retrieve the Attendance Documents that contain the specified Event / Exhibition name.
    *
-   * @param {String} attendanceName: part of the identifer used to search database
-   * @param {String} reason: part of the identifer to search in the database
-   * @param {Function} callback: used to return an array ofAttendance Object and error checking
+   * @param {String} attendanceName: Used to match against the
+   *    attendance_name contained in all Attendances.
+   * @param {String} attendanceType: A String enum that is supposed
+   *    to be either 'event' or 'exhibition'.
+   * @param {function} callback: A function that executes once the
+   *    operation is done.
    */
-  static searchAttendanceByEventAndReason(attendanceName, reason, callback) {
+  static searchAttendancesByNameAndType(attendanceName, attendanceType, callback) {
+    Attendance.connectDB();
+    const query = {
+      attendance_name: attendanceName,
+      attendance_type: attendanceType,
+    };
+    this.AttendanceModel.find(query, (err, matchedAttendances) => {
+      Attendance.disconnectDB();
+      callback(err, matchedAttendances);
+    });
+  }
+
+  /**
+   * Retrieve the Attendance Documents that contain the specified reasons.
+   *
+   * @param {Array} reasons: An array of Strings indicating reasons
+   *    for Attending an Event / Exhibition to match for.
+   * @param {function} callback: A function that executes once the
+   *    operation is done.
+   */
+  static searchAttendancesByReason(reasons, callback) {
+    Attendance.connectDB();
+    this.AttendanceModel.find(
+      { reason: { $regex: new RegExp(reasons.replace('+', '\\+'), 'i') } },
+      (err, matchedAttendances) => {
+        Attendance.disconnectDB();
+        callback(err, matchedAttendances);
+      },
+    );
+  }
+
+  /**
+   * Retrieve the Attendance Documents that have the Event / Exhibition name and the specified
+   * reasons for attending above-mentioned activity.
+   *
+   * @param {String} attendanceName: Used to match against the
+   *    attendance_name contained in all Attendances.
+   * @param {Array} reasons: An array of Strings indicating reasons
+   *    for Attending an Event / Exhibition to match for.
+   * @param {function} callback: A function that executes once the
+   *    operation is done.
+   */
+  static searchAttendanceByNameAndReason(attendanceName, reasons, callback) {
     Attendance.connectDB();
     const query = { attendance_name: attendanceName,
-                   reason: { $regex: new RegExp(reason.replace('+', '\\+'), 'i') },
-                  };
-    this.AttenanceModel.find(query, function cb(err, obj) {
-      if (err) {
-        callback(err, null);
-      } else {
-        callback(null, obj);
-      }
+      reason: { $regex: new RegExp(reasons.replace('+', '\\+'), 'i') },
+    };
+    this.AttendanceModel.find(query, (err, matchedAttendances) => {
+      Attendance.disconnectDB();
+      callback(err, matchedAttendances);
     });
-    Attendance.disconnectDB();
   }
 
   /**
-   * Update instance of Attendance
+   * Update the Attendance Document stored internally in this object.
    *
-   * @param {String} userEmail: identifer for users. Must be existing.
-   * @param {String} attendanceName: Name of event/ exhibition.
-   * @param {String} attendanceType: 'exhibition' or 'event'.
-   * @param {String} reason: user's reason for attending the event. Each element has to be unique.
-   * @param {Function} callback: used for error checking and returning updated object.
+   * @param {String} userEmail: The name for Users. Does not check if User actually exists or not.
+   * @param {String} attendanceName: The name of the Event / Exhibition.
+   *    Does not check if the Event / Exhibition exists or not.
+   *    Use attendanceType to determine if the name is for an Exhibition, or an Event.
+   * @param {String} attendanceType: Supposed to be a String enum
+   *    containing either 'event' or 'exhibition'.
+   *    Used to determine the type of activity attendanceName represents.
+   * @param {Array} reason: The User's reasons for attending the Event.
+   *    Each reason is a unique String element of the Array.
+   * @param {function} callback: A function that executes once the
+   *    operation is done.
    */
   static updateReason(userEmail, attendanceName, attendanceType, reason, callback) {
     Attendance.connectDB();
     const query = { user_email: userEmail,
-                   attendance_name: attendanceName,
-                   attendance_type: attendanceType,
-                  };
-    const update = { reason: reason };
+      attendance_name: attendanceName,
+      attendance_type: attendanceType,
+    };
+    const update = { $set: { reason } };
     const options = { new: true };
-    this.AttenanceModel.findOneAndUpdate(query, update, options,
-                                         function cb(err, results) {
-      if (err) {
-        console.log('Unable to update reasons');
-        callback(err);
-      } else {
-        console.log('reasons are updated.');
-        callback(null, results);
-      }
-    });
-
-    Attendance.disconnectDB();
+    this.AttendanceModel.findOneAndUpdate(query, update, options,
+                                         (err, results) => {
+                                           Attendance.disconnectDB();
+                                           callback(err, results);
+                                         });
   }
 
   /**
-   * Deletes an Attendance instance from database
+   * Deletes a single Attendance Document from the Database.
    *
-   *
+   * @param {String} userEmail: The name for Users to match for the Attendance Document.
+   * @param {String} attendanceName: The name of the Event / Exhibition
+   *    to match for the Attendance Document.
+   * @param {String} attendanceType: Supposed to be a String enum
+   *    containing either 'event' or 'exhibition'.
+   *    Used to determine the type of activity attendanceName represents.
+   * @param {function} callback: A function that executes once the
+   *    operation is done.
    */
-  static deleteAttendace(userEmail, attendanceName, attendanceType, callback) {
+  static deleteAttendance(userEmail, attendanceName, attendanceType, callback) {
     const query = { user_email: userEmail,
-                   attendance_name: attendanceName,
-                   attendance_type: attendanceType,
-                  };
+      attendance_name: attendanceName,
+      attendance_type: attendanceType,
+    };
     Attendance.connectDB();
-    this.AttenanceModel.findOneAndRemove(query, function cb(err) {
+    this.AttendanceModel.findOneAndRemove(query, (err) => {
+      Attendance.disconnectDB();
       callback(err);
     });
-    Attendance.disconnectDB();
   }
 
+  /**
+   * Remove the collection of Attendances from the Database.
+   *
+   * @param {function} callback: A function that is executed once the
+   *    operation completes.
+   */
+  static clearAllAttendances(callback) {
+    Attendance.connectDB();
+    this.AttendanceModel.collection.remove({}, (err, results) => {
+      Attendance.disconnectDB();
+      callback(err, results);
+    });
+  }
 }
 module.exports = Attendance;
