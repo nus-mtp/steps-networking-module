@@ -172,8 +172,8 @@ class Attendance {
   static searchAttendanceByKeyAndReason(attendanceKey, reasons, callback) {
     Attendance.connectDB();
     const query = { attendance_key: attendanceKey,
-                   reason: { $regex: new RegExp(reasons.replace('+', '\\+'), 'i') },
-                  };
+      reason: { $regex: new RegExp(reasons.replace('+', '\\+'), 'i') },
+    };
     this.AttendanceModel.find(query, (err, matchedAttendances) => {
       Attendance.disconnectDB();
       callback(err, matchedAttendances);
@@ -203,9 +203,9 @@ class Attendance {
     const options = { new: true };
     this.AttendanceModel.findOneAndUpdate(query, update, options,
                                           (err, results) => {
-      Attendance.disconnectDB();
-      callback(err, results);
-    });
+                                            Attendance.disconnectDB();
+                                            callback(err, results);
+                                          });
   }
 
   /**
