@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = new express.Router();
 
-const Message = require('../database/objectClasses/Message.js');
+const Message = require('../database/objectClasses/Message');
 
 router.get('/get/getMessages/:senderEmail/:recipientEmail', (req = {}, res, next) => {
   Message.getConversation(req.params.senderEmail, req.params.recipientEmail, (err, msgObjs) => {

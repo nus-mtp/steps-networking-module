@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = new express.Router();
 
-const Comment = require('../database/objectClasses/Comment.js');
+const Comment = require('../database/objectClasses/Comment');
 
 router.post('/post/newComment', (req = {}, res, next) => {
   const newComment = new Comment(
