@@ -1,4 +1,4 @@
-const SampleUsers = [
+const sampleUsers = [
   {
     email: "gundam@gundam.com",
     password: "gundam",
@@ -66,4 +66,4 @@ const SampleUsers = [
   }
 ]
 
-export default SampleUsers;
+export default sampleUsers;

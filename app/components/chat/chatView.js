@@ -31,8 +31,11 @@ export default class ChatView extends Component {
       minWidth: '700px',
     };
 
-    this.query = 'screen and (min-width: ' + this.state.minWidth + ')';
+    this.query = `screen and (min-width: ${this.state.minWidth})`;
     this.widthOfChatTabs = '25%';
+
+    this.changeConversation = this.changeConversation.bind(this);
+    this.showChatTabs = this.showChatTabs.bind(this);
   }
 
   changeConversation(index) {
@@ -48,7 +51,7 @@ export default class ChatView extends Component {
             width={this.widthOfChatTabs}
             users={this.state.users}
             current={this.state.current}
-            changeConversation={this.changeConversation.bind(this)}
+            changeConversation={this.changeConversation}
           />
         </div>
       );
@@ -60,7 +63,7 @@ export default class ChatView extends Component {
     return (
       <div id="chat">
         <MediaQuery query={this.query}>
-          {this.showChatTabs.bind(this)}
+          {this.showChatTabs}
         </MediaQuery>
         <ChatBody
           query={this.query}
