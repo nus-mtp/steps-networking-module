@@ -113,7 +113,7 @@ describe('Attendance Create', () => {
         done();
       } else{
         const attendance3 = new Attendance(
-          'usertesting_1@user.com',
+          'usertesting_2@user.com',
           result._id,
           'event',
           ['finding collabrators']
@@ -122,7 +122,7 @@ describe('Attendance Create', () => {
           if (err) {
             console.log(err);
           }
-          Attendance.searchAttendancesByUser('usertesting_1@user.com', (err, attendanceObj) => {
+          Attendance.searchAttendancesByUser('usertesting_2@user.com', (err, attendanceObj) => {
             if (err) {
               console.log('not able to get object');
               console.log(err);
