@@ -68,9 +68,9 @@ class Exhibition {
    */
   saveExhibition(callback) {
     Exhibition.connectDB();
-    this.exhibitionModelDoc.save((err) => {
+    this.exhibitionModelDoc.save((err, result) => {
       Exhibition.disconnectDB();
-      callback(err);
+      callback(err, result);
     });
   }
 
