@@ -17,7 +17,7 @@ class HomeView extends React.Component {
     this.state = {
       open: this.initial,
       numOfEvents: numOfEvents,
-      events: [],
+      events: null,
       attendance: sampleAttendance,
     };
 
@@ -41,22 +41,22 @@ class HomeView extends React.Component {
   }
 
   openCollapsable(serial) {
-    var new_status = this.initial.slice(); // ignore previous state and change all to false
-    new_status[serial] = !this.state.open[serial];
-    this.setState({ open: new_status });
+    const newStatus = this.initial.slice(); // ignore previous state and change all to false
+    newStatus[serial] = !this.state.open[serial];
+    this.setState({ open: newStatus });
   }
 
   changeAttendance(event, attendance) {
     // modify attendance data here
     if (attendance) {
-      const newEvent = { name: event }
+      const newEvent = { name: event };
       const newAttendance = this.state.attendance;
-      newAttendance.push(newEvent)
+      newAttendance.push(newEvent);
       this.setState({
         attendance: newAttendance,
       });
     } else {
-      const newAttendance = this.state.attendance.filter(attend => attend.name !== event)
+      const newAttendance = this.state.attendance.filter(attend => attend.name !== event);
       this.setState({
         attendance: newAttendance,
       });
@@ -65,12 +65,13 @@ class HomeView extends React.Component {
 
   render() {
     const containerWidth = 290;
+
     return (
       <div id="home-body">
         <Tabs />
         <div id="event-list" className="d-flex justify-content-center justify-content-md-start">
         {
-          (this.state.events.length > 0) ?
+          (this.state.events !== null) ?
             this.state.events.map((event, i) =>
               <div id="event-container" key={i}>
                 <Event
