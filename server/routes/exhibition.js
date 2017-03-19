@@ -14,6 +14,7 @@ router.get('/get/oneEventExhibition/:eventName', (req = {}, res, next) => {
       next();
     } else if (exhibitionObjs) {
       res.status(200).json(exhibitionObjs.map(exhibitionObj => ({
+        id: exhibitionObj._id,
         exhibitionName: exhibitionObj.exhibition_name,
         exhibitionDescription: exhibitionObj.exhibition_description,
         eventName: exhibitionObj.event_name,
@@ -39,6 +40,7 @@ router.get('/get/allExhibitions', (req = {}, res, next) => {
       next();
     } else if (exhibitionObjs) {
       res.status(200).json(exhibitionObjs.map(exhibitionObj => ({
+        id: exhibitionObj._id,
         exhibitionName: exhibitionObj.exhibition_name,
         exhibitionDescription: exhibitionObj.exhibition_description,
         eventName: exhibitionObj.event_name,
@@ -56,30 +58,5 @@ router.get('/get/allExhibitions', (req = {}, res, next) => {
   });
 });
 
-/*
-router.get('/get/:exhibitionName', (req = {}, res, next) => {
-  Exhibition.getExhibition(req.param.exhibitionName, (err, exhibitionObjs) => {
-    if (err) {
-      console.log(err);
-      res.status(500).json('Unable to fetch data!');
-      next();
-    } else if (exhibitionObjs) {
-      res.status(200).json(exhibitionObjs.map(exhibitionObj => ({
-        exhibitionName: exhibitionObj.exhibition_name,
-        exhibitionDescription: exhibitionObj.exhibition_description,
-        eventName: exhibitionObj.event_name,
-        website: exhibitionObj.website,
-        poster: exhibitionObj.poster,
-        images: exhibitionObj.images,
-        videos: exhibitionObj.videos,
-        tags: exhibitionObj.tags,
-      })));
-    } else {
-      res.status(404).json('Nothing found!');
-      next();
-    }
-  });
-});
-*/
 
 module.exports = router;
