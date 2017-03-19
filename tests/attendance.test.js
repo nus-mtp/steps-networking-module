@@ -67,45 +67,45 @@ describe('Attendance Create', () => {
         });
       });
     });
+  });
 
-    it('Should be able to add a new exhibition attendance', (done) => {
-      //obtain exhibition_id
-      Exhibition.getExhibition('STEPS', 'MAMA! LAVA!', (err, result) => {
-        if (err){
-          console.log(err);
-          done();
-        } else{
-          const attendance2 = new Attendance(
-            'usertesting_1@user.com',
-            result._id,
-            'exhibition',
-            ['finding investors', 'finding collabrators']
-          );
-          attendance2.saveAttendance((err) => {
+  it('Should be able to add a new exhibition attendance', (done) => {
+    //obtain exhibition_id
+    Exhibition.getExhibition('STEPS', 'MAMA! LAVA!', (err, result) => {
+      if (err){
+        console.log(err);
+        done();
+      } else{
+        const attendance2 = new Attendance(
+          'usertesting_2@user.com',
+          result._id,
+          'exhibition',
+          ['finding investors', 'finding collabrators']
+        );
+        attendance2.saveAttendance((err) => {
+          if (err) {
+            console.log(err);
+          }
+          Attendance.searchAttendancesByUser('usertesting_2@user.com', (err, attendanceObj) => {
             if (err) {
+              console.log('not able to get object');
               console.log(err);
-            }
-            Attendance.searchAttendancesByUser('usertesting_1@user.com', (err, attendanceObj) => {
-              if (err) {
-                console.log('not able to get object');
-                console.log(err);
-              } else {
-                if(attendanceObj) {
-                  assert.equal(attendanceObj[0].attendance_type, 'exhibition');
-                }
-                else {
-                  console.log("Attendance Object not found");
-                }
+            } else {
+              if(attendanceObj) {
+                assert.equal(attendanceObj[0].attendance_type, 'exhibition');
               }
-              done();
-            });
+              else {
+                console.log("Attendance Object not found");
+              }
+            }
+            done();
           });
-        }
-      });
+        });
+      }
     });
   });
 
-  it('Should be able to add a new event attendance', (done) => {
+ it('Should be able to add a new event attendance', (done) => {
     //obtain event_id
     Event.getEvent('eventTest1', (err, result) => {
       if (err){
@@ -113,7 +113,7 @@ describe('Attendance Create', () => {
         done();
       } else{
         const attendance3 = new Attendance(
-          'usertesting_2@user.com',
+          'usertesting_3@user.com',
           result._id,
           'event',
           ['finding collabrators']
@@ -122,7 +122,7 @@ describe('Attendance Create', () => {
           if (err) {
             console.log(err);
           }
-          Attendance.searchAttendancesByUser('usertesting_2@user.com', (err, attendanceObj) => {
+          Attendance.searchAttendancesByUser('usertesting_3@user.com', (err, attendanceObj) => {
             if (err) {
               console.log('not able to get object');
               console.log(err);
