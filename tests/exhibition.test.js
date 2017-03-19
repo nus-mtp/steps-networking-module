@@ -44,7 +44,7 @@ describe('Exhibition Create', () => {
       if (err) {
         console.log(err);
       }
-      Exhibition.getExhibition('exhibitionTest3', (err, doc) => {
+      Exhibition.getExhibition('testingEvent_1', 'exhibitionTest3', (err, doc) => {
         if (err) {
           console.log('Unable to execute getExhibition function properly');
         }
@@ -86,7 +86,7 @@ describe('Exhibition Read', () => {
 
 
   it('Should be able to retrieve an existing object', (done) => {
-    Exhibition.getExhibition('exhibitionTest2', (err, doc) => {
+    Exhibition.getExhibition('eventName2', 'exhibitionTest2', (err, doc) => {
       if (err) {
         console.log('Unable to execute getExhibition function properly');
       } else {
@@ -97,7 +97,7 @@ describe('Exhibition Read', () => {
   });
 
   it('Should not be able to retrieve a non-existing object', (done) => {
-    Exhibition.getExhibition('exhibitionTest4', (err, doc) => {
+    Exhibition.getExhibition('eventName2', 'exhibitionTest4', (err, doc) => {
       if (err) {
         console.log('Unable to execute getExhibition function properly');
       } else {
@@ -108,7 +108,7 @@ describe('Exhibition Read', () => {
   });
 
   it('should be able to identify if its an existing exhibition', (done) => {
-    Exhibition.isExistingExhibition('exhibitionTest2', (err, doc) => {
+    Exhibition.isExistingExhibition('eventName2', 'exhibitionTest2', (err, doc) => {
       if (err) {
         console.log('error with isExisting');
       } else {
@@ -119,7 +119,7 @@ describe('Exhibition Read', () => {
   });
 
   it('should be able to identify if its an existing exhibition', (done) => {
-    Exhibition.isExistingExhibition('exhibitionTest4', (err, doc) => {
+    Exhibition.isExistingExhibition('eventName2', 'exhibitionTest4', (err, doc) => {
       if (err) {
         console.log('error with isExisting');
       } else {
@@ -192,17 +192,12 @@ describe('Exhibition Update', () => {
                                 ['www.youtube.com', 'www.youtube.com'],
                                 'url.com',
                                 ['software engineering', 'android'],
-                                (err) => {
+                                (err, result) => {
       if (err) {
         console.log('unable to update');
       }
-      Exhibition.getExhibition('exhibitionTest2', (err, obj) => {
-        if (err) {
-          console.log('unable to get exhibition in update existing unit test');
-        }
-        assert.equal('updated description', obj.exhibition_description);
-        done();
-      });
+      assert.equal('updated description', result.exhibition_description);
+      done();
     });
   });
 });
@@ -243,7 +238,7 @@ describe('Exhibition Delete', () => {
       }
 
       // Checks to see if it's removed
-      Exhibition.getExhibition('exhibitionTest1', (err, obj) => {
+      Exhibition.getExhibition('eventName2', 'exhibitionTest1', (err, obj) => {
         if (err) {
           console.log('unable to get exhibition in update existing unit test');
         } else {

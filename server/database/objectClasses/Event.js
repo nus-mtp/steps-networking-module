@@ -69,9 +69,9 @@ class Event {
    */
   saveEvent(callback) {
     Event.connectDB();
-    this.eventModelDoc.save((err) => {
+    this.eventModelDoc.save((err, result) => {
       Event.disconnectDB();
-      callback(err);
+      callback(err, result);
     });
   }
 

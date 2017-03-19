@@ -7,8 +7,8 @@ const commentSchema = new mongoose.Schema({
     required: 'The Email of the User who posted this Comment is used as a Foreign Key, and is t' +
         'herefore Required.',
   },
-  exhibition: {
-    type: String,
+  exhibition_key: {
+    type: mongoose.Schema.ObjectId,
     required: 'The Name of the Exhibition for which this Comment is posted under is used as a F' +
         'oreign Key, and is therefore Required.',
   },
