@@ -21,7 +21,7 @@ class Attendance {
    */
   static connectDB() {
     this.ModelHandler = new ModelHandler()
-          .initWithParameters(username, password, host, port, dbName);
+      .initWithParameters(username, password, host, port, dbName);
     this.AttendanceModel = this.ModelHandler.getAttendanceModel();
   }
 
@@ -47,7 +47,7 @@ class Attendance {
    */
   constructor(userEmail, attendanceKey, attendanceType, reason) {
     this.ModelHandler = new ModelHandler()
-        .initWithParameters(username, password, host, port, dbName);
+      .initWithParameters(username, password, host, port, dbName);
     this.AttendanceModel = this.ModelHandler.getAttendanceModel();
     this.attendanceModelDoc = new this.AttendanceModel({
       user_email: userEmail,
@@ -65,9 +65,9 @@ class Attendance {
    */
   saveAttendance(callback) {
     Attendance.connectDB();
-    this.attendanceModelDoc.save((err) => {
+    this.attendanceModelDoc.save((err, result) => {
       Attendance.disconnectDB();
-      callback(err);
+      callback(err, result);
     });
   }
 
@@ -79,16 +79,14 @@ class Attendance {
    * @param {mongoose.Schema.ObjectId} attendanceKey: The ObjectID of the Event / Exhibition.
    *    Does not check if the Event / Exhibition exists or not.
    *    Use attendanceType to determine if tthis is for an Exhibition, or an Event.
-   * @param {String} attendanceType: Supposed to be a String enum
-   *    containing either 'event' or 'exhibition'.
    *    Used to determine the type of activity attendanceName represents.
    * @param {function} callback: A function that executes once the operation completes.
    */
-  static getAttendance(userEmail, attendanceKey, attendanceType, callback) {
+  static getAttendance(userEmail, attendanceKey, callback) {
     Attendance.connectDB();
-    const query = { user_email: userEmail,
+    const query = {
+      user_email: userEmail,
       attendance_key: attendanceKey,
-      attendance_type: attendanceType,
     };
     this.AttendanceModel.findOne(query, (err, attendance) => {
       Attendance.disconnectDB();
@@ -111,7 +109,7 @@ class Attendance {
   }
 
   /**
-   * Retrieve the Attendance Documents that contain a User's email.
+   * Retrieve the Attendance Documents that contain the User's email.
    *
    * @param {String} userEmail: Used to match against the user_emails contained in all Attendances.
    * @param {function} callback: A function that executes once the
@@ -126,38 +124,16 @@ class Attendance {
   }
 
   /**
-   * Retrieve the Attendance Documents that contain the specified Event / Exhibition name.
+   * Retrieve the Attendance Documents that contain the specified Event / Exhibition ID
    *
    * @param {mongoose.Schema.ObjectId} attendanceKey: Used to match against the
    *    attendance_key contained in all Attendances.
    * @param {function} callback: A function that executes once the
    *    operation is done.
    */
-  static searchAttendancesByName(attendanceKey, callback) {
+  static searchAttendancesByKey(attendanceKey, callback) {
     Attendance.connectDB();
     this.AttendanceModel.find({ attendance_key: attendanceKey }, (err, matchedAttendances) => {
-      Attendance.disconnectDB();
-      callback(err, matchedAttendances);
-    });
-  }
-
-  /**
-   * Retrieve the Attendance Documents that contain the specified Event / Exhibition name.
-   *
-   * @param {mongoose.Schema.ObjectId} attendanceKey: Used to match against the
-   *    attendance_key contained in all Attendances.
-   * @param {String} attendanceType: A String enum that is supposed
-   *    to be either 'event' or 'exhibition'.
-   * @param {function} callback: A function that executes once the
-   *    operation is done.
-   */
-  static searchAttendancesByNameAndType(attendanceKey, attendanceType, callback) {
-    Attendance.connectDB();
-    const query = {
-      attendance_key: attendanceKey,
-      attendance_type: attendanceType,
-    };
-    this.AttendanceModel.find(query, (err, matchedAttendances) => {
       Attendance.disconnectDB();
       callback(err, matchedAttendances);
     });
@@ -193,11 +169,11 @@ class Attendance {
    * @param {function} callback: A function that executes once the
    *    operation is done.
    */
-  static searchAttendanceByNameAndReason(attendanceKey, reasons, callback) {
+  static searchAttendanceByKeyAndReason(attendanceKey, reasons, callback) {
     Attendance.connectDB();
     const query = { attendance_key: attendanceKey,
-      reason: { $regex: new RegExp(reasons.replace('+', '\\+'), 'i') },
-    };
+                   reason: { $regex: new RegExp(reasons.replace('+', '\\+'), 'i') },
+                  };
     this.AttendanceModel.find(query, (err, matchedAttendances) => {
       Attendance.disconnectDB();
       callback(err, matchedAttendances);
@@ -211,27 +187,25 @@ class Attendance {
    * @param {mongoose.Schema.ObjectId} attendanceKey: The ObjectID of the Event / Exhibition.
    *    Does not check if the Event / Exhibition exists or not.
    *    Use attendanceType to determine if tthis is for an Exhibition, or an Event.
-   * @param {String} attendanceType: Supposed to be a String enum
-   *    containing either 'event' or 'exhibition'.
    *    Used to determine the type of activity attendanceName represents.
    * @param {Array} reason: The User's reasons for attending the Event.
    *    Each reason is a unique String element of the Array.
    * @param {function} callback: A function that executes once the
    *    operation is done.
    */
-  static updateReason(userEmail, attendanceKey, attendanceType, reason, callback) {
+  static updateReason(userEmail, attendanceKey, reason, callback) {
     Attendance.connectDB();
-    const query = { user_email: userEmail,
+    const query = {
+      user_email: userEmail,
       attendance_key: attendanceKey,
-      attendance_type: attendanceType,
     };
     const update = { $set: { reason } };
     const options = { new: true };
     this.AttendanceModel.findOneAndUpdate(query, update, options,
-                                         (err, results) => {
-                                           Attendance.disconnectDB();
-                                           callback(err, results);
-                                         });
+                                          (err, results) => {
+      Attendance.disconnectDB();
+      callback(err, results);
+    });
   }
 
   /**
@@ -240,16 +214,13 @@ class Attendance {
    * @param {String} userEmail: The name for Users to match for the Attendance Document.
    * @param {mongoose.Schema.ObjectId} attendanceKey: Used to match against the
    *    attendance_key contained in all Attendances.
-   * @param {String} attendanceType: Supposed to be a String enum
-   *    containing either 'event' or 'exhibition'.
-   *    Used to determine the type of activity attendanceName represents.
    * @param {function} callback: A function that executes once the
    *    operation is done.
    */
-  static deleteAttendance(userEmail, attendanceKey, attendanceType, callback) {
-    const query = { user_email: userEmail,
+  static deleteAttendance(userEmail, attendanceKey, callback) {
+    const query = {
+      user_email: userEmail,
       attendance_key: attendanceKey,
-      attendance_type: attendanceType,
     };
     Attendance.connectDB();
     this.AttendanceModel.findOneAndRemove(query, (err) => {
