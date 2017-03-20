@@ -178,6 +178,91 @@ describe('User Update', () => {
     });
   });
 
+  it('Should be able to update the profile picture of the user', (done) => {
+    User.updateUserProfilePicture('usertesting_1@user.com', 'https://www.google.com', (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.profile_picture, 'https://www.google.com');
+      done();
+    });
+  });
+
+  it('Should be able to update description of the user', (done) => {
+    User.updateUserDescription('usertesting_1@user.com', 'edited description', (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.description, 'edited description');
+      done();
+    });
+  });
+
+  it('Should be able to update notification settings of the user', (done) => {
+    User.updateUserNotification('usertesting_1@user.com', false, (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.will_notify, false);
+      done();
+    });
+  });
+
+  it('Should not be able to push duplicates of skills into the user', (done) => {
+    User.addSkillToUserSkills('usertesting_1@user.com', 'C++', (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.skills.length, 4, result.skills.toString());
+      done();
+    });
+  });
+
+  it('Should be able to remove a specified skill from the user', (done) => {
+    User.removeSkillFromUser('usertesting_1@user.com', 'C++', (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.skills.length, 3, result.skills.toString());
+      done();
+    });
+  });
+
+  it('The changes should persist and not affect any other fields', (done) => {
+    User.getUser('usertesting_1@user.com', (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.profile_picture, 'https://www.google.com');
+      assert.equal(result.description, 'edited description');
+      assert.equal(result.will_notify, false);
+      assert.equal(result.skills.length, 3, result.skills.toString());
+      assert.equal(result.bookmarked_users.length, 1, result.bookmarked_users);
+      done();
+    });
+  });
+
+  it('Should not be able to push duplicate emails into the bookmarks of the user', (done) => {
+    User.addBookmarkedUserForUser('usertesting_1@user.com', 'usertesting_2@user.com', (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.bookmarked_users.length, 1, result);
+      done();
+    });
+  });
+
+  it('Should not be able to remove a non-existing bookmark of the user', (done) => {
+    User.removeBookmarkedUserFromUser('usertesting_1@user.com', 'usertesting_3@user.com', (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.bookmarked_users.length, 1, result);
+      done();
+    });
+  });
+
+  it('Should be able to remove emails from the bookmarks of the user', (done) => {
+    User.removeBookmarkedUserFromUser('usertesting_1@user.com', 'usertesting_2@user.com', (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.bookmarked_users.length, 0, result);
+      done();
+    });
+  });
+
   it('Should be able to update an existing specific user', (done) => {
     User.updateUser(
       'usertesting_1@user.com',
@@ -221,6 +306,7 @@ describe('User Update', () => {
       });
   });
 });
+
 
 describe('User Delete', () => {
   before((done) => {
