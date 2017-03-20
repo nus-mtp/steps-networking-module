@@ -40,7 +40,7 @@ router.get('/get/profile/:email', (req = {}, res, next) => {
 });
 
 router.post('/post/profile/description', (req = {}, res, next) => {
-  if (req.body) {
+  if (req.body && req.body.userEmail && req.body.userDescription) {
     User.updateUserDescription(req.body.userEmail, req.body.userDescription, (err, user) => {
       if (err) {
         if (err.name === 'ValidationError') {
@@ -64,7 +64,7 @@ router.post('/post/profile/description', (req = {}, res, next) => {
 });
 
 router.post('/post/profile/picture', (req = {}, res, next) => {
-  if (req.body) {
+  if (req.body && req.body.userEmail && req.body.userProfilePicture) {
     User.updateUserProfilePicture(req.body.userEmail, req.body.userProfilePicture, (err, user) => {
       if (err) {
         if (err.name === 'ValidationError') {
@@ -87,8 +87,8 @@ router.post('/post/profile/picture', (req = {}, res, next) => {
   }
 });
 
-router.post('/post/profile/addSkill', (req = {}, res, next) => {
-  if (req.body) {
+router.post('/post/profile/add/skill', (req = {}, res, next) => {
+  if (req.body && req.body.userEmail && req.body.userSkill) {
     User.addSkillToUserSkills(req.body.userEmail, req.body.userSkill, (err, user) => {
       if (err) {
         if (err.name === 'ValidationError') {
@@ -111,9 +111,57 @@ router.post('/post/profile/addSkill', (req = {}, res, next) => {
   }
 });
 
-router.post('/post/profile/removeSkill', (req = {}, res, next) => {
-  if (req.body) {
+router.post('/post/profile/add/bUser', (req = {}, res, next) => {
+  if (req.body && req.body.userEmail && req.body.bookmarkedUser) {
+    User.addBookmarkedUserForUser(req.body.userEmail, req.body.bookmarkedUser, (err, user) => {
+      if (err) {
+        if (err.name === 'ValidationError') {
+          console.log(err);
+          res.status(403).json('Unauthorized!');
+        } else {
+          console.log(err);
+          res.status(500).json('Unable to post data!');
+        }
+      } else if (user) {
+        res.status(200).json(extractUserInfo(user));
+      } else {
+        res.status(404).json('Nothing found!');
+      }
+      next();
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
+router.post('/post/profile/remove/skill', (req = {}, res, next) => {
+  if (req.body && req.body.userEmail && req.body.userSkill) {
     User.removeSkillFromUser(req.body.userEmail, req.body.userSkill, (err, user) => {
+      if (err) {
+        if (err.name === 'ValidationError') {
+          console.log(err);
+          res.status(403).json('Unauthorized!');
+        } else {
+          console.log(err);
+          res.status(500).json('Unable to post data!');
+        }
+      } else if (user) {
+        res.status(200).json(extractUserInfo(user));
+      } else {
+        res.status(404).json('Nothing found!');
+      }
+      next();
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
+router.post('/post/profile/remove/bUser', (req = {}, res, next) => {
+  if (req.body && req.body.userEmail && req.body.bookmarkedUser) {
+    User.removeBookmarkedUserFromUser(req.body.userEmail, req.body.bookmarkedUser, (err, user) => {
       if (err) {
         if (err.name === 'ValidationError') {
           console.log(err);
@@ -137,8 +185,8 @@ router.post('/post/profile/removeSkill', (req = {}, res, next) => {
 
 // The Routes below utilize Comma-Separated Strings for the second argument in the Post Request
 
-router.post('/post/profile/setSkill', (req = {}, res, next) => {
-  if (req.body) {
+router.post('/post/profile/set/skills', (req = {}, res, next) => {
+  if (req.body && req.body.userEmail && req.body.userSkills) {
     User.setSkillsForUser(req.body.userEmail, req.body.userSkills.split(','), (err, user) => {
       if (err) {
         if (err.name === 'ValidationError') {
@@ -161,6 +209,28 @@ router.post('/post/profile/setSkill', (req = {}, res, next) => {
   }
 });
 
-
+router.post('/post/profile/set/bUsers', (req = {}, res, next) => {
+  if (req.body && req.body.userEmail && req.body.bookmarkedUsers) {
+    User.setBookmarksForUser(req.body.userEmail, req.body.bookmarkedUsers.split(','), (err, user) => {
+      if (err) {
+        if (err.name === 'ValidationError') {
+          console.log(err);
+          res.status(403).json('Unauthorized!');
+        } else {
+          console.log(err);
+          res.status(500).json('Unable to post data!');
+        }
+      } else if (user) {
+        res.status(200).json(extractUserInfo(user));
+      } else {
+        res.status(404).json('Nothing found!');
+      }
+      next();
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
 
 module.exports = router;
