@@ -158,8 +158,8 @@ function upsertModule(stepsModuleObj, callback) {
             const websiteLink = project.urlLink;
 
             const tagsList = [];
-            tagsList.push(eventName);
-            tagsList.push(collectedInformation.tag);
+            tagsList.push(eventName.trim().toLowerCase());
+            tagsList.push(collectedInformation.tag.trim().toLowerCase());
 
             const exhibitionProperties = {
               exhibitionNameKey: exhibitionName,
