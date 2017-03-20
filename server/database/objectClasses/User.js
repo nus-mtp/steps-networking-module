@@ -1,3 +1,4 @@
+const removeDuplicates = require('../../utils/utils').removeDuplicates;
 const ModelHandler = require('../models/ourModels.js');
 
 const config = require('../../config.json');
@@ -155,6 +156,169 @@ class User {
     this.UserModel.find({ skills: { $regex: new RegExp(skillToBeSearched.replace('+', '\\+'), 'i') } }, (err, matchedUsers) => {
       User.disconnectDB();
       callback(err, matchedUsers);
+    });
+  }
+
+  /**
+   * Updates the description of a specified User.
+   *
+   * @param {String} userEmail: The email of the User to update.
+   * @param {String} description: The new description to replace the User's description with.
+   * @param {function} callback: A function that executes once the operation is done.
+   */
+  static updateUserDescription(userEmail, description, callback) {
+    User.connectDB();
+    this.UserModel.findOne({ email: userEmail }, (err, user) => {
+      if (user) {
+        user.set('description', description);
+        user.save((err, updatedUser) => {
+          User.disconnectDB();
+          callback(err, updatedUser);
+        });
+      } else {
+        User.disconnectDB();
+        callback(err, user);
+      }
+    });
+  }
+
+  /**
+   * Updates the willNotify setting of a specified User.
+   *
+   * @param {String} userEmail: The email of the User to update.
+   * @param {Boolean} willNotify: The new notification settings for this User.
+   * @param {function} callback: A function that executes once the operation is done.
+   */
+  static updateUserNotification(userEmail, willNotify, callback) {
+    User.connectDB();
+    this.UserModel.findOne({ email: userEmail }, (err, user) => {
+      if (user) {
+        user.set('will_notify', willNotify);
+        user.save((err, updatedUser) => {
+          User.disconnectDB();
+          callback(err, updatedUser);
+        });
+      } else {
+        User.disconnectDB();
+        callback(err, user);
+      }
+    });
+  }
+
+  /**
+   * Updates the willNotify setting of a specified User.
+   *
+   * @param {String} userEmail: The email of the User to update.
+   * @param {String} profilePicURL:
+   *    A URL representing an externally hosted visual representation of the User.
+   * @param {function} callback: A function that executes once the operation is done.
+   */
+  static updateUserProfilePicture(userEmail, profilePicURL, callback) {
+    User.connectDB();
+    this.UserModel.findOne({ email: userEmail }, (err, user) => {
+      if (user) {
+        user.set('profile_picture', profilePicURL);
+        user.save((err, updatedUser) => {
+          User.disconnectDB();
+          callback(err, updatedUser);
+        });
+      } else {
+        User.disconnectDB();
+        callback(err, user);
+      }
+    });
+  }
+
+  /**
+   * Adds a skill for the User.
+   *
+   * @param {String} userEmail: The email of the User to add the skill for.
+   * @param {String} skill: The skill to add into the User's skill array.
+   * @param {function} callback: A function that executes once the operation is done.
+   */
+  static addSkillToUserSkills(userEmail, skill, callback) {
+    User.connectDB();
+    this.UserModel.findOne({ email: userEmail }, (err, user) => {
+      if (user) {
+        user.set('skills', removeDuplicates(user.get('skills').concat(skill.trim())));
+        user.save((err, updatedUser) => {
+          User.disconnectDB();
+          callback(err, updatedUser);
+        });
+      } else {
+        User.disconnectDB();
+        callback(err, user);
+      }
+    });
+  }
+
+  /**
+   * Removes a skill for the User.
+   *
+   * @param {String} userEmail: The email of the User to remove the skill for.
+   * @param {String} skill: The skill to remove from the User's skill array.
+   * @param {function} callback: A function that executes once the operation is done.
+   */
+  static removeSkillFromUser(userEmail, skill, callback) {
+    User.connectDB();
+    this.UserModel.findOne({ email: userEmail }, (err, user) => {
+      if (user) {
+        user.set('skills', user.get('skills').filter(currSkill => (currSkill !== skill)));
+        user.save((err, updatedUser) => {
+          User.disconnectDB();
+          callback(err, updatedUser);
+        });
+      } else {
+        User.disconnectDB();
+        callback(err, user);
+      }
+    });
+  }
+
+  /**
+   * Saves a User's email into the specified User's bookmarks.
+   *
+   * @param {String} userEmail: The email of the User to add the bookmark for.
+   * @param {String} bookmarkedUserEmail: The email of the bookmarked User.
+   *    Does not perform validation on supplied email.
+   * @param {function} callback: A function that executes once the operation completes.
+   */
+  static addBookmarkedUserForUser(userEmail, bookmarkedUserEmail, callback) {
+    User.connectDB();
+    this.UserModel.findOne({ email: userEmail }, (err, user) => {
+      if (user) {
+        user.set('bookmarked_users', removeDuplicates(user.get('bookmarked_users').concat(bookmarkedUserEmail.trim())));
+        user.save((err, updatedUser) => {
+          User.disconnectDB();
+          callback(err, updatedUser);
+        });
+      } else {
+        User.disconnectDB();
+        callback(err, user);
+      }
+    });
+  }
+
+  /**
+   * Removes a saved User email from a specified User's bookmarks.
+   *
+   * @param {String} userEmail: The email of the User to remove the bookmark from.
+   * @param {String} bookmarkedUserEmail: The email of the bookmarked User.
+   * @param {function} callback: A function that executes once the operation completes.
+   */
+  static removeBookmarkedUserFromUser(userEmail, bookmarkedUserEmail, callback) {
+    User.connectDB();
+    this.UserModel.findOne({ email: userEmail }, (err, user) => {
+      if (user) {
+        user.set('bookmarked_users', user.get('bookmarked_users').filter(currBookmarkedUserEmail => (currBookmarkedUserEmail !== bookmarkedUserEmail)));
+        user.save((err, updatedUser) => {
+          User.disconnectDB();
+          callback(err, updatedUser);
+        });
+      } else {
+        User.disconnectDB();
+        callback(err, user);
+      }
     });
   }
 
