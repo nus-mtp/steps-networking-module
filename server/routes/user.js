@@ -39,7 +39,7 @@ router.get('/get/profile/:email', (req = {}, res, next) => {
   });
 });
 
-router.post('/post/profile/description', (req = {}, res, next) => {
+router.post('/post/profile/set/description', (req = {}, res, next) => {
   if (req.body && req.body.userEmail && req.body.userDescription) {
     User.updateUserDescription(req.body.userEmail, req.body.userDescription, (err, user) => {
       if (err) {
@@ -63,7 +63,7 @@ router.post('/post/profile/description', (req = {}, res, next) => {
   }
 });
 
-router.post('/post/profile/picture', (req = {}, res, next) => {
+router.post('/post/profile/set/picture', (req = {}, res, next) => {
   if (req.body && req.body.userEmail && req.body.userProfilePicture) {
     User.updateUserProfilePicture(req.body.userEmail, req.body.userProfilePicture, (err, user) => {
       if (err) {
