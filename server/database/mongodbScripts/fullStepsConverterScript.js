@@ -35,16 +35,7 @@ const stepsModule = StepsModels.getModuleModel();
 const stepsEvent = StepsModels.getEventModel();
 
 // Helper Functions
-
-/**
- * A function which removes all duplicates from a given Array.
- *
- * @param {Array} arr: The given Array to remove duplicates from.
- * @returns {Array}: A copy of the given Array that has no duplicates.
- */
-function removeDuplicates(arr) {
-  return Array.from(new Set(arr));
-}
+const removeDuplicates = require('../../utils/utils').removeDuplicates;
 
 /**
  * An asynchronous function which Upserts a stepsEventObj into our Event Collection.
