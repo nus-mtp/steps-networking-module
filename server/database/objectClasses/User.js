@@ -45,24 +45,24 @@ class User {
    * @param {String} profilePic: URL String representing an externally hosted depiction of the User.
    * @param {Array} skillSets: A list of Strings representing subject matters the
    *    User has some mastery in.
-   * @param {Array} bookedmarkedUsers: A list of Strings representing other
+   * @param {Array} bookmarkedUsers: A list of Strings representing other
    *    userEmails that the User has bookmarked.
    */
   constructor(userEmail = '', userName = '', userDescription = '', userPassword = '',
-    willNotify = true, isDeleted = false, profilePic = '', skillSets = [], bookedmarkedUsers = []) {
+    willNotify = true, isDeleted = false, profilePic = '', skillSets = [], bookmarkedUsers = []) {
     this.ModelHandler = new ModelHandler()
       .initWithParameters(username, password, host, port, dbName);
     this.UserModel = this.ModelHandler.getUserModel();
     this.userModelDoc = new this.UserModel({
-      email: userEmail,
-      name: userName,
+      email: userEmail.trim(),
+      name: userName.trim(),
       description: userDescription,
       password: userPassword,
       will_notify: willNotify,
       is_deleted: isDeleted,
       profile_picture: profilePic,
-      skills: skillSets,
-      bookmarked_users: bookedmarkedUsers,
+      skills: skillSets.map(skill => skill.trim().toLowerCase()),
+      bookmarked_users: bookmarkedUsers.map(bookmarkedUser => bookmarkedUser.trim()),
     });
     this.ModelHandler.disconnect();
   }
@@ -340,17 +340,17 @@ class User {
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static updateUser(email = '', name = '', description = '', password = '',
-    willNotify = true, isDeleted = false, profilePic = '', skillSets = [], bookedmarkedUsers = [], callback) {
+    willNotify = true, isDeleted = false, profilePic = '', skillSets = [], bookmarkedUsers = [], callback) {
     const update = {
-      email,
-      name,
+      email: email.trim(),
+      name: name.trim(),
       description,
       password,
       will_notify: willNotify,
       is_deleted: isDeleted,
       profile_picture: profilePic,
-      skills: skillSets,
-      bookmarked_users: bookedmarkedUsers,
+      skills: skillSets.map(skill => skill.trim().toLowerCase()),
+      bookmarked_users: bookmarkedUsers.map(bookmarkedUser => bookmarkedUser.trim()),
     };
     const options = { new: true };
     User.connectDB();
