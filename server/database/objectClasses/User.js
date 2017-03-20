@@ -335,7 +335,7 @@ class User {
    * @param {String} profilePic: URL String representing an externally hosted depiction of the User.
    * @param {Array} skillSets: A list of Strings representing subject matters the
    *    User has some mastery in.
-   * @param {Array} bookedmarkedUsers: A list of Strings representing other
+   * @param {Array} bookmarkedUsers: A list of Strings representing other
    *    userEmails that the User has bookmarked.
    * @param {function} callback: A function that is executed once the operation is done.
    */
