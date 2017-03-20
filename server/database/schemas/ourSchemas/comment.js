@@ -9,7 +9,7 @@ const commentSchema = new mongoose.Schema({
   },
   exhibition_key: {
     type: mongoose.Schema.ObjectId,
-    required: 'The Name of the Exhibition for which this Comment is posted under is used as a F' +
+    required: 'The id of the Exhibition for which this Comment is posted under is used as a F' +
         'oreign Key, and is therefore Required.',
   },
 
