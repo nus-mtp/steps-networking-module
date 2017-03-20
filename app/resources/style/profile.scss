@@ -1,5 +1,35 @@
+@import "mixin";
+
 .profile-info {
   margin: 15px;
+}
+
+.match-button-lg-prev {
+  position: absolute;
+  left: 5%;
+  top: 60px;
+  font-size: 30px;
+}
+
+.match-button-lg-next {
+  position: absolute;
+  right: 5%;
+  top: 60px;
+  font-size: 30px;
+}
+
+.match-button-lg-next:hover, .match-button-lg-prev:hover {
+  cursor: pointer;
+  opacity: 0.3;
+  @include transition(opacity, 0.4s, ease);
+}
+
+#match-body {
+  width: 80%;
+
+  .user-thumbnail {
+    max-width: 30px;
+  }
 }
 
 .info-type {
@@ -18,7 +48,7 @@
   color: grey;
 }
 
-#edit-icon-container, #chat-icon-container {
+#edit-icon-container, #chat-icon-container, #match-icon-container {
   background: orange;
   color: #fff;
   border: none;
@@ -27,19 +57,23 @@
   max-width: 70px;
   min-height: 70px;
   max-height: 70px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  @include box-shadow(0, 1px, 3px, 0, rgba(0,0,0,0.5));
   cursor: pointer;
   outline: none;
   margin: 0;
 }
 
-#chat-icon a, #edit-icon a {
+#edit-icon-container:hover, #chat-icon-container:hover, #match-icon-container:hover {
+  @include box-shadow(1px, 1px, 4px, 2px, rgba(0,0,0,0.5));
+  @include transition(all, 0.3s, ease);
+}
+
+#chat-icon a, #edit-icon a, #match-icon a{
   display: flex;
   align-content: center;
 }
 
-
-#edit-icon, #chat-icon {
+#edit-icon, #chat-icon, #match-icon {
   width: 48px;
   height: 70px;
 }
@@ -51,4 +85,8 @@
 
 .post-edit {
   margin: 5px;
+}
+
+.user-image {
+  max-height: 300px;
 }
