@@ -240,7 +240,7 @@ class User {
     User.connectDB();
     this.UserModel.findOne({ email: userEmail }, (err, user) => {
       if (user) {
-        user.set('skills', removeDuplicates(user.get('skills').concat(skill.trim())));
+        user.set('skills', removeDuplicates(user.get('skills').concat(skill.trim().toLowerCase())));
         user.save((err, updatedUser) => {
           User.disconnectDB();
           callback(err, updatedUser);
@@ -263,7 +263,7 @@ class User {
     User.connectDB();
     this.UserModel.findOne({ email: userEmail }, (err, user) => {
       if (user) {
-        user.set('skills', user.get('skills').filter(currSkill => (currSkill !== skill)));
+        user.set('skills', user.get('skills').filter(currSkill => (currSkill !== skill.trim().toLowerCase())));
         user.save((err, updatedUser) => {
           User.disconnectDB();
           callback(err, updatedUser);
@@ -310,7 +310,7 @@ class User {
     User.connectDB();
     this.UserModel.findOne({ email: userEmail }, (err, user) => {
       if (user) {
-        user.set('bookmarked_users', user.get('bookmarked_users').filter(currBookmarkedUserEmail => (currBookmarkedUserEmail !== bookmarkedUserEmail)));
+        user.set('bookmarked_users', user.get('bookmarked_users').filter(currBookmarkedUserEmail => (currBookmarkedUserEmail !== bookmarkedUserEmail.trim())));
         user.save((err, updatedUser) => {
           User.disconnectDB();
           callback(err, updatedUser);
