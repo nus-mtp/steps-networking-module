@@ -87,4 +87,80 @@ router.post('/post/profile/picture', (req = {}, res, next) => {
   }
 });
 
+router.post('/post/profile/addSkill', (req = {}, res, next) => {
+  if (req.body) {
+    User.addSkillToUserSkills(req.body.userEmail, req.body.userSkill, (err, user) => {
+      if (err) {
+        if (err.name === 'ValidationError') {
+          console.log(err);
+          res.status(403).json('Unauthorized!');
+        } else {
+          console.log(err);
+          res.status(500).json('Unable to post data!');
+        }
+      } else if (user) {
+        res.status(200).json(extractUserInfo(user));
+      } else {
+        res.status(404).json('Nothing found!');
+      }
+      next();
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
+router.post('/post/profile/removeSkill', (req = {}, res, next) => {
+  if (req.body) {
+    User.removeSkillFromUser(req.body.userEmail, req.body.userSkill, (err, user) => {
+      if (err) {
+        if (err.name === 'ValidationError') {
+          console.log(err);
+          res.status(403).json('Unauthorized!');
+        } else {
+          console.log(err);
+          res.status(500).json('Unable to post data!');
+        }
+      } else if (user) {
+        res.status(200).json(extractUserInfo(user));
+      } else {
+        res.status(404).json('Nothing found!');
+      }
+      next();
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
+// The Routes below utilize Comma-Separated Strings for the second argument in the Post Request
+
+router.post('/post/profile/setSkill', (req = {}, res, next) => {
+  if (req.body) {
+    User.setSkillsForUser(req.body.userEmail, req.body.userSkills.split(','), (err, user) => {
+      if (err) {
+        if (err.name === 'ValidationError') {
+          console.log(err);
+          res.status(403).json('Unauthorized!');
+        } else {
+          console.log(err);
+          res.status(500).json('Unable to post data!');
+        }
+      } else if (user) {
+        res.status(200).json(extractUserInfo(user));
+      } else {
+        res.status(404).json('Nothing found!');
+      }
+      next();
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
+
+
 module.exports = router;
