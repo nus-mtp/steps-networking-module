@@ -276,6 +276,30 @@ class User {
   }
 
   /**
+   * Sets the array of skills for the User.
+   *
+   * @param {String} userEmail: The email of the User to set the skills for.
+   * @param {Array} skills:
+   *    The array of String objects representing the skills that the User is proficient in.
+   * @param {function} callback: A function that executes once the operation is done.
+   */
+  static setSkillsForUser(userEmail, skills, callback) {
+    User.connectDB();
+    this.UserModel.findOne({ email: userEmail }, (err, user) => {
+      if (user) {
+        user.set('skills', removeDuplicates(skills.map(skill => skill.trim().toLowerCase())));
+        user.save((err, updatedUser) => {
+          User.disconnectDB();
+          callback(err, updatedUser);
+        });
+      } else {
+        User.disconnectDB();
+        callback(err, user);
+      }
+    });
+  }
+
+  /**
    * Saves a User's email into the specified User's bookmarks.
    *
    * @param {String} userEmail: The email of the User to add the bookmark for.
@@ -311,6 +335,30 @@ class User {
     this.UserModel.findOne({ email: userEmail }, (err, user) => {
       if (user) {
         user.set('bookmarked_users', user.get('bookmarked_users').filter(currBookmarkedUserEmail => (currBookmarkedUserEmail !== bookmarkedUserEmail.trim())));
+        user.save((err, updatedUser) => {
+          User.disconnectDB();
+          callback(err, updatedUser);
+        });
+      } else {
+        User.disconnectDB();
+        callback(err, user);
+      }
+    });
+  }
+
+  /**
+   * Sets the array of bookmarked Users for the specified User.
+   *
+   * @param {String} userEmail: The email of the User to set the skills for.
+   * @param {Array} bookmarkedUsers:
+   *    The array of String objects representing the emails the User has decide to bookmark.
+   * @param {function} callback: A function that executes once the operation is done.
+   */
+  static setBookmarksForUser(userEmail, bookmarkedUsers, callback) {
+    User.connectDB();
+    this.UserModel.findOne({ email: userEmail }, (err, user) => {
+      if (user) {
+        user.set('bookmarked_users', removeDuplicates(bookmarkedUsers.map(markedUser => markedUser.trim())));
         user.save((err, updatedUser) => {
           User.disconnectDB();
           callback(err, updatedUser);
