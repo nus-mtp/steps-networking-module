@@ -19,6 +19,8 @@ function extractUserInfo(user) {
     userDescription: user.description,
     userSkills: user.skills,
     bookmarkedUsers: user.bookmarked_users,
+    userNotification: user.will_notify,
+    isDeleted: user.is_deleted,
   };
 }
 
@@ -81,6 +83,31 @@ router.post('/post/profile/set/picture', (req = {}, res, next) => {
       }
       next();
     });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
+router.post('/post/profile/set/notification', (req = {}, res, next) => {
+  if (req.body && req.body.userEmail && req.body.userNotification) {
+    User.updateUserNotification(
+        req.body.userEmail, req.body.userNotification.toLowerCase() === 'true', (err, user) => {
+          if (err) {
+            if (err.name === 'ValidationError') {
+              console.log(err);
+              res.status(403).json('Unauthorized!');
+            } else {
+              console.log(err);
+              res.status(500).json('Unable to post data!');
+            }
+          } else if (user) {
+            res.status(200).json(extractUserInfo(user));
+          } else {
+            res.status(404).json('Nothing found!');
+          }
+          next();
+        });
   } else {
     res.status(400).json('Bad Request!');
     next();
@@ -184,6 +211,7 @@ router.post('/post/profile/remove/bUser', (req = {}, res, next) => {
 });
 
 // The Routes below utilize Comma-Separated Strings for the second argument in the Post Request
+// Use <Array>.toString() to generate a Comma-Separated String from an Array
 
 router.post('/post/profile/set/skills', (req = {}, res, next) => {
   if (req.body && req.body.userEmail && req.body.userSkills) {
