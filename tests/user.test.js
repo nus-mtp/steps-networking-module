@@ -223,6 +223,15 @@ describe('User Update', () => {
     });
   });
 
+  it('Should be able to set the skills for the user, without duplicates', (done) => {
+    User.setSkillsForUser('usertesting_1@user.com', ['c++', 'C++', ' C++ ', ' C++', 'C++ '], (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.skills.length, 1, result.skills.toString());
+      done();
+    });
+  });
+
   it('The changes should persist and not affect any other fields', (done) => {
     User.getUser('usertesting_1@user.com', (err, result) => {
       assert.equal(err, null, err);
@@ -230,7 +239,7 @@ describe('User Update', () => {
       assert.equal(result.profile_picture, 'https://www.google.com');
       assert.equal(result.description, 'edited description');
       assert.equal(result.will_notify, false);
-      assert.equal(result.skills.length, 3, result.skills.toString());
+      assert.equal(result.skills.length, 1, result.skills.toString());
       assert.equal(result.bookmarked_users.length, 1, result.bookmarked_users);
       done();
     });
@@ -259,6 +268,15 @@ describe('User Update', () => {
       assert.equal(err, null, err);
       assert.notEqual(result, null);
       assert.equal(result.bookmarked_users.length, 0, result);
+      done();
+    });
+  });
+
+  it('Should be able to set the bookmarks for the user, without duplicates', (done) => {
+    User.setBookmarksForUser('usertesting_1@user.com', ['usertesting_2@user.com', 'usertesting_2@user.com'], (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.bookmarked_users.length, 1, result);
       done();
     });
   });
