@@ -86,26 +86,24 @@ class Collapsable extends React.Component {
             <div id="event-description">{this.props.event.description}</div>
             <div className="btn-group attendance-indicator-container" >
               <span className="event-attendance-title">Attendance: </span>
-              <label htmlFor="attend-yes" className={`btn btn-success attendance-indicator ${attending}`}>
+              <label className={`btn btn-success attendance-indicator ${attending}`}>
                 <input
-                  type="radio"
-                  name="option"
-                  id="attend-yes"
-                  value="Yes"
-                  className="custom-control-input"
-                  onChange={this.setPresent}
-                />
+                type="radio"
+                name="option"
+                id="attend-yes"
+                value="Yes"
+                className="custom-control-input"
+                onChange={this.setPresent} />
                 Yes
               </label>
-              <label htmlFor="attend-no" className={`btn btn-secondary attendance-indicator ${notAttending}`}>
+              <label className={`btn btn-secondary attendance-indicator ${notAttending}`}>
                 <input
-                  type="radio"
-                  name="option"
-                  id="attend-no"
-                  value="No"
-                  className="custom-control-input"
-                  onChange={this.setAbsent}
-                />
+                type="radio"
+                name="option"
+                id="attend-no"
+                value="No"
+                className="custom-control-input"
+                onChange={this.setAbsent} />
                 No
               </label>
             </div>
