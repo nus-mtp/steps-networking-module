@@ -8,12 +8,13 @@
 }
 
 .collapse-show {
-  top: 240px;
+  top: 220px;
+  margin: 10px;
   @include transition(all 0.3s);
 }
 
 .collapse-hide {
-  top: 80px;
+  top: 65px;
   margin: 10px;
   @include transition(all 0.3s);
 }

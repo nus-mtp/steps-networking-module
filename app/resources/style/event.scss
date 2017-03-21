@@ -5,10 +5,30 @@
 }
 
 #home-body {
-  margin: 20px 10%;
+  margin: 10px 10%;
+  width: 100vw;
 
   .user-thumbnail {
     max-width: 30px;
+  }
+
+  .no-events {
+    margin-left: auto;
+    margin-right: auto;
+
+    img {
+      max-width: 50vw;
+      display: block;
+      margin: auto;
+    }
+
+    p {
+      margin-top: 10px;
+      text-align: center;
+      color: #3CB371;
+      font-size: 20px;
+      font-weight: 500;
+    }
   }
 
   #event-list {

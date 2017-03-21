@@ -22,6 +22,7 @@ class HomeView extends React.Component {
       displayedEvents: [],
       attendance: sampleAttendance,
       todayDate: nowDate,
+      currentTab: 'ongoing',
     };
 
     this.getAllEvents();
@@ -107,7 +108,10 @@ class HomeView extends React.Component {
       default:
         alert('no such id!');
     }
-    this.setState({displayedEvents: remainder});
+    this.setState({
+      displayedEvents: remainder,
+      currentTab: id,
+    });
   }
 
   render() {
@@ -138,7 +142,10 @@ class HomeView extends React.Component {
                   changeAttendance={this.changeAttendance}
                 />
               </div>
-            ) : <div>Sorry!There are no events here!</div>
+            ) : <div className="no-events justify-content-center">
+                  <img src="../resources/images/sad-face.png" alt="Sorry-no-events" />
+                  <p>Sorry! There are no {this.state.currentTab} events. Please check again in the future!</p>
+                </div>
           }
         </div>
       </div>
