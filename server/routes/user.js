@@ -27,18 +27,46 @@ function extractUserInfo(user) {
 // All Routes prefixed with 'user/'
 
 router.get('/get/profile/:email', (req = {}, res, next) => {
-  User.getUser(req.params.email, (err, user) => {
-    if (err) {
-      console.log(err);
-      res.status(500).json('Unable to fetch data!');
-    } else if (user) {
-      res.status(200).json(extractUserInfo(user));
-    } else {
-      res.status(404).json('Nothing found!');
-    }
-
+  if (req.params && req.params.email) {
+    User.getUser(req.params.email, (err, user) => {
+      if (err) {
+        console.log(err);
+        res.status(500).json('Unable to fetch data!');
+      } else if (user) {
+        res.status(200).json(extractUserInfo(user));
+      } else {
+        res.status(404).json('Nothing found!');
+      }
+      next();
+    });
+  } else {
+    res.status(400).json('Bad Request!');
     next();
-  });
+  }
+});
+
+router.post('/post/search/skill', (req = {}, res, next) => {
+  if (req.body && req.body.skill) {
+    User.searchUsersBySkills(req.body.skill, (err, users) => {
+      if (err) {
+        if (err.name === 'ValidationError') {
+          console.log(err);
+          res.status(403).json('Unauthorized!');
+        } else {
+          console.log(err);
+          res.status(500).json('Unable to post data!');
+        }
+      } else if (users) {
+        res.status(200).json(users.map(user => extractUserInfo(user)));
+      } else {
+        res.status(404).json('Nothing found!');
+      }
+      next();
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
 });
 
 router.post('/post/profile/set/description', (req = {}, res, next) => {
