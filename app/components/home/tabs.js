@@ -15,8 +15,6 @@ class Tabs extends React.Component {
             <a id="past" className="nav-link" data-toggle="tab" href="#past" role="tab" onClick={this.props.onClick}>Past</a>
           </li>
         </ul>
-
-
       </div>
     );
   }

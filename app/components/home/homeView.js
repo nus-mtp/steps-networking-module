@@ -8,30 +8,28 @@ class HomeView extends React.Component {
   constructor(props) {
     super(props);
 
-    const numOfEvents = 8; // Change according to num of events
+    const numOfEvents = 1; // Change according to num of events Refactor
     this.initial = [];
     for (let i = 0; i < numOfEvents; i++) {
       this.initial.push(false);
     }
-
-    /*let currentEvents = sampleEvents.slice();
-    const current = currentEvents.filter((event) => {
-      if (event.date === nowDate.toDateString())
-        return event;
-    });*/
+    const nowDate = new Date();
 
     this.state = {
       open: this.initial,
       numOfEvents: numOfEvents,
       events: null,
+      displayedEvents: null,
       attendance: sampleAttendance,
+      todayDate: nowDate,
     };
 
     this.getAllEvents();
 
     this.openCollapsable = this.openCollapsable.bind(this);
     this.changeAttendance = this.changeAttendance.bind(this);
-    //this.changeView = this.changeView.bind(this);
+    this.changeView = this.changeView.bind(this);
+    this.formatMilli = this.formatMilli.bind(this);
   }
 
   getAllEvents() {
@@ -70,46 +68,51 @@ class HomeView extends React.Component {
     }
   }
 
-  /*changeView(e) {
+  formatMilli(dateString) {
+    const date = new Date(dateString);
+    return date.getTime();
+  }
+
+  changeView(e) {
     const id = e.target.id;
     const copy = this.state.events.slice();
+    const nowTime = this.state.todayDate.getTime();
     let remainder;
-    switch(id) {
-      case "ongoing":
+    switch (id) {
+      case 'ongoing':
         remainder = copy.filter((event) => {
-          if (event.date === nowDate.toDateString())
+          if (nowTime > this.formatMilli(event.start_date) && nowTime < this.formatMilli(event.end_date))
             return event;
         });
         break;
-      case "upcoming":
+      case 'upcoming':
         remainder = copy.filter((event) => {
-          if (event.date === futureDate.toDateString())
+          if (nowTime < this.formatMilli(event.start_date))
             return event;
         });
         break;
-      case "past":
+      case 'past':
         remainder = copy.filter((event) => {
-          if (event.date === pastDate.toDateString())
+          if (nowTime > this.formatMilli(event.end_date))
             return event;
         });
         break;
       default:
-        alert("no such tab id");
-
+        alert('no such id!');
     }
     this.setState({displayedEvents: remainder});
-  }*/
+  }
 
   render() {
     const containerWidth = 290;
 
     return (
       <div id="home-body">
-        <Tabs />
+        <Tabs onClick={this.changeView} />
         <div id="event-list" className="d-flex justify-content-center justify-content-md-start">
         {
-          (this.state.events !== null) ?
-            this.state.events.map((event, i) =>
+          (this.state.displayedEvents !== null) ?
+            this.state.displayedEvents.map((event, i) =>
               <div id="event-container" key={i}>
                 <Event
                   serial={i}
@@ -128,7 +131,7 @@ class HomeView extends React.Component {
                   changeAttendance={this.changeAttendance}
                 />
               </div>
-            ) : <div />
+            ) : <div>Sorry! There are no events here!</div>
           }
         </div>
       </div>
