@@ -154,6 +154,14 @@
 #event-body {
   width: 90%;
 
+  .thumbnail-container {
+    min-width: 100px;
+    min-height: 80px;
+    max-width: 100px;
+    max-height: 80px;
+    margin: 0 20px;
+  }
+
   .project-thumbnail {
     max-height: 80px;
   }

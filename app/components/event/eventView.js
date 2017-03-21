@@ -8,18 +8,36 @@ class EventView extends React.Component {
     super(props);
 
     this.state = {
-      isDisplayProjects: false,
-      projects: sampleProjects, // This is for all projects
-      displayProjects: sampleProjects, // This is for the displayed projects
+      isDisplayExhibitions: false,
+      exhibitions: [], // This is for all exhibitions
+      displayExhibitions: [], // This is for the displayed exhibitions
       event: [],
       organizer: sampleOrganizer,
     }
 
     this.getEvent();
+    this.getExhibitions();
 
-    this.displayAllProjects = this.displayAllProjects.bind(this);
+    this.displayAllExhibitions = this.displayAllExhibitions.bind(this);
     this.onClick = this.onClick.bind(this);
-    this.updateDisplayedProjects = this.updateDisplayedProjects.bind(this);
+    this.updateDisplayedExhibitions = this.updateDisplayedExhibitions.bind(this);
+  }
+
+  getExhibitions() {
+    const pathname = this.props.location.pathname;
+    const eventName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/exhibition/get/oneEventExhibition/${eventName}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      this.setState({
+        exhibitions: xhr.response,
+        displayExhibitions: xhr.response,
+      });
+    });
+    xhr.send();
   }
 
   getEvent() {
@@ -38,22 +56,22 @@ class EventView extends React.Component {
     xhr.send();
   }
 
-  displayAllProjects() {
+  displayAllExhibitions() {
     this.setState({
-      isDisplayProjects: !this.state.isDisplayProjects
+      isDisplayExhibitions: !this.state.isDisplayExhibitions
     });
   }
 
-  updateDisplayedProjects(id) {
+  updateDisplayedExhibitions(id) {
     if (id === "all") {
-      this.setState({displayProjects: this.state.projects});
+      this.setState({displayExhibitions: this.state.exhibitions});
     } else {
-      const remainder = this.state.projects.slice();
-      const result = remainder.filter((project) => {
-        if (project.tags.includes(id))
-            return project;
+      const remainder = this.state.exhibitions.slice();
+      const result = remainder.filter((exhibition) => {
+        if (exhibition.tags.includes(id))
+            return exhibition;
       });
-    this.setState({displayProjects: result});
+    this.setState({displayExhibitions: result});
     }
   }
 
@@ -82,7 +100,7 @@ class EventView extends React.Component {
       default:
         alert("Unknown");
     }
-    this.updateDisplayedProjects(e.target.id);
+    this.updateDisplayedExhibitions(e.target.id);
   }
 
   render() {
@@ -123,10 +141,10 @@ class EventView extends React.Component {
               <div className="event-info mb-2">{this.state.event.description}</div>
               <hr/>
               <div className="mb-3">
-                <button className="btn btn-success mr-2" onClick={this.displayAllProjects}>
-                  {(this.state.isDisplayProjects)
-                    ? "Hide Projects"
-                    : "Show Projects"
+                <button className="btn btn-success mr-2" onClick={this.displayAllExhibitions}>
+                  {(this.state.isDisplayExhibitions)
+                    ? "Hide exhibitions"
+                    : "Show exhibitions"
                   }
                 </button>
                 <button className="btn btn-info" data-toggle="modal" data-target="#sitemap">Sitemap</button>
@@ -146,7 +164,7 @@ class EventView extends React.Component {
                   </div>
                 </div>
               </div>
-              {(this.state.isDisplayProjects)
+              {(this.state.isDisplayExhibitions)
                 ? <div>
                     <div className="row">
                       <span className="input-group-addon">
@@ -163,12 +181,20 @@ class EventView extends React.Component {
                       </span>
                     </div>
                     <br/>
-                    {this.state.displayProjects.map((project, i) => <div className="d-flex flex-row mb-1" key={i}>
-                      <img className="img-fluid project-thumbnail mr-2" src="../../resources/images/dummy-poster.png" alt="event-poster"/>
+                    {this.state.displayExhibitions.map((exhibition, i) => <div className="d-flex flex-row mb-1" key={i}>
+                      {
+                        (exhibition.poster)
+                        ? <div className="d-flex justify-content-center thumbnail-container">
+                          <img className="img-fluid project-thumbnail" src={exhibition.poster} alt="event-poster" />
+                          </div>
+                        : <div className="d-flex justify-content-center thumbnail-container">
+                          <img className="img-fluid project-thumbnail" src="../../resources/images/empty-poster-placeholder.png" alt="event-poster" />
+                          </div>
+                      }
                       <div>
-                        <div>{project.exhibitionName}</div>
+                        <div>{exhibition.exhibitionName}</div>
                         <div>
-                          {project.tags.map((tag, i) => <div key={i} className="badge badge-pill badge-info">{tag}</div>)}
+                          {exhibition.tags.map((tag, i) => <div key={i} className="badge badge-pill badge-info">{tag}</div>)}
                         </div>
                       </div>
                     </div>)}
