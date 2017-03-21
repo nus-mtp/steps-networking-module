@@ -61,8 +61,8 @@ class User {
       will_notify: willNotify,
       is_deleted: isDeleted,
       profile_picture: profilePic,
-      skills: skillSets.map(skill => skill.trim().toLowerCase()),
-      bookmarked_users: bookmarkedUsers.map(bookmarkedUser => bookmarkedUser.trim()),
+      skills: removeDuplicates(skillSets.map(skill => skill.trim().toLowerCase())),
+      bookmarked_users: removeDuplicates(bookmarkedUsers.map(bookmarkedUser => bookmarkedUser.trim())),
     });
     this.ModelHandler.disconnect();
   }
@@ -153,7 +153,7 @@ class User {
    */
   static searchUsersBySkills(skillToBeSearched, callback) {
     User.connectDB();
-    this.UserModel.find({ skills: { $regex: new RegExp(skillToBeSearched.replace('+', '\\+'), 'i') } }, (err, matchedUsers) => {
+    this.UserModel.find({ skills: { $regex: new RegExp(skillToBeSearched.trim().toLowerCase().replace('+', '\\+'), 'i') } }, (err, matchedUsers) => {
       User.disconnectDB();
       callback(err, matchedUsers);
     });

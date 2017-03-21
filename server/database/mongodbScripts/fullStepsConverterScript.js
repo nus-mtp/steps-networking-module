@@ -51,6 +51,13 @@ function upsertEvent(stepsEventObj, callback) {
   const endDate = new Date(stepsEventObj.endTime);
   const eventLocation = stepsEventObj.location;
 
+  let eventPicture = '';
+
+  if (stepsEventObj.promote &&
+      stepsEventObj.promote.links.length > 0) {
+    eventPicture = stepsEventObj.promote.links[0].url;
+  }
+
   const query = {
     event_name: eventName,
   };
@@ -60,6 +67,7 @@ function upsertEvent(stepsEventObj, callback) {
     start_date: startDate,
     end_date: endDate,
     event_location: eventLocation,
+    event_picture: eventPicture,
   };
 
   Event.findOneAndUpdate(query, update, {
