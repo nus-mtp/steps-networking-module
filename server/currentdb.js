@@ -3,9 +3,9 @@
 let currentdb = '';
 
 // Use this db in release
- currentdb = 'herokuDbUri';
+currentdb = 'herokuDbUri';
 
 // Use this db while in development
-// currentdb = 'devDbUri';
+//  currentdb = 'devDbUri';
 
 module.exports = currentdb;
