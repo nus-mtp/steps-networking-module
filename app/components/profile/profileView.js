@@ -12,7 +12,7 @@ class ProfileView extends React.Component {
     const userEmail = (Auth.isUserAuthenticated) ? Auth.getToken().email : '';
 
     this.state = {
-      email: 'hugh@comp.nus.edu.sg',
+      email: userEmail.replace(/%40/i, '@'),
       skills: [],
       links: 'N/A',
       projects: 'none',
