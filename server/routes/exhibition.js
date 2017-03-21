@@ -4,52 +4,57 @@ const router = new express.Router();
 
 const Exhibition = require('../database/objectClasses/Exhibition');
 
+/**
+ * Extracts out relevant information from a supplied Exhibition Document.
+ *
+ * @param {Mongoose.Document} exhibition:
+ *    The Exhibition document returned from a Exhibition objectClass method.
+ * @returns {{id, exhibitionName, exhibitionDescription: (*|string|String|string), eventName, website: (*|String), poster: (*|number|String|string), images: (*|Array|HTMLCollection), videos: (*|Array), tags}}
+ */
+function extractExhibitionInfo(exhibition) {
+  return {
+    id: exhibition._id,
+    exhibitionName: exhibition.exhibition_name,
+    exhibitionDescription: exhibition.exhibition_description,
+    eventName: exhibition.event_name,
+    website: exhibition.website,
+    poster: exhibition.poster,
+    images: exhibition.images,
+    videos: exhibition.videos,
+    tags: exhibition.tags,
+  };
+}
+
 // All Routes prefixed with 'exhibition/'
 
-router.get('/get/oneEventExhibition/:eventName', (req = {}, res, next) => {
-  Exhibition.searchExhibitionsByEvent(req.params.eventName, (err, exhibitionObjs) => {
-    if (err) {
-      console.log(err);
-      res.status(500).json('Unable to fetch data!');
-      next();
-    } else if (exhibitionObjs) {
-      res.status(200).json(exhibitionObjs.map(exhibitionObj => ({
-        id: exhibitionObj._id,
-        exhibitionName: exhibitionObj.exhibition_name,
-        exhibitionDescription: exhibitionObj.exhibition_description,
-        eventName: exhibitionObj.event_name,
-        website: exhibitionObj.website,
-        poster: exhibitionObj.poster,
-        images: exhibitionObj.images,
-        videos: exhibitionObj.videos,
-        tags: exhibitionObj.tags,
-      })));
-      next();
-    } else {
-      res.status(404).json('Nothing found!');
-      next();
-    }
-  });
+router.get('/get/oneEventExhibitions/:eventName', (req = {}, res, next) => {
+  if (req.params && req.params.eventName) {
+    Exhibition.searchExhibitionsByEvent(req.params.eventName, (err, exhibitions) => {
+      if (err) {
+        console.log(err);
+        res.status(500).json('Unable to fetch data!');
+        next();
+      } else if (exhibitions) {
+        res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
+        next();
+      } else {
+        res.status(404).json('Nothing found!');
+        next();
+      }
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+  }
 });
 
 router.get('/get/allExhibitions', (req = {}, res, next) => {
-  Exhibition.getAllExhibitions((err, exhibitionObjs) => {
+  Exhibition.getAllExhibitions((err, exhibitions) => {
     if (err) {
       console.log(err);
       res.status(500).json('Unable to fetch data!');
       next();
-    } else if (exhibitionObjs) {
-      res.status(200).json(exhibitionObjs.map(exhibitionObj => ({
-        id: exhibitionObj._id,
-        exhibitionName: exhibitionObj.exhibition_name,
-        exhibitionDescription: exhibitionObj.exhibition_description,
-        eventName: exhibitionObj.event_name,
-        website: exhibitionObj.website,
-        poster: exhibitionObj.poster,
-        images: exhibitionObj.images,
-        videos: exhibitionObj.videos,
-        tags: exhibitionObj.tags,
-      })));
+    } else if (exhibitions) {
+      res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
       next();
     } else {
       res.status(404).json('Nothing found!');
@@ -59,23 +64,13 @@ router.get('/get/allExhibitions', (req = {}, res, next) => {
 });
 
 router.get('/get/oneExhibition/:eventName/:exhibitionName', (req = {}, res, next) => {
-  Exhibition.getExhibition(req.params.eventName, req.params.exhibitionName, (err, exhibitionObj) => {
+  Exhibition.getExhibition(req.params.eventName, req.params.exhibitionName, (err, exhibition) => {
     if (err) {
       console.log(err);
       res.status(500).json('Unable to fetch data!');
       next();
-    } else if (exhibitionObj) {
-      res.status(200).json({
-        id: exhibitionObj._id,
-        exhibitionName: exhibitionObj.exhibition_name,
-        exhibitionDescription: exhibitionObj.exhibition_description,
-        eventName: exhibitionObj.event_name,
-        website: exhibitionObj.website,
-        poster: exhibitionObj.poster,
-        images: exhibitionObj.images,
-        videos: exhibitionObj.videos,
-        tags: exhibitionObj.tags,
-      });
+    } else if (exhibition) {
+      res.status(200).json(extractExhibitionInfo(exhibition));
       next();
     } else {
       res.status(404).json('Nothing found!');
