@@ -38,8 +38,15 @@ class HomeView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
+      const nowTime = this.state.todayDate.getTime();
+      const copy = xhr.response;
+      const remainder = copy.filter((event) => {
+        if (nowTime > this.formatMilli(event.start_date) && nowTime < this.formatMilli(event.end_date))
+          return event;
+      });
       this.setState({
         events: xhr.response,
+        displayedEvents: remainder,
       });
     });
     xhr.send();
