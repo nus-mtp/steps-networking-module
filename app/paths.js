@@ -4,7 +4,7 @@ const Paths = {
   signup: '/signup',
   logout: '/logout',
   project: '/project',
-  event: '/event',
+  event: '/event(/:eventName)',
   chat: '/chat',
   profile: '/profile',
   match: '/match',
