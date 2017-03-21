@@ -8,7 +8,7 @@ class HomeView extends React.Component {
   constructor(props) {
     super(props);
 
-    const numOfEvents = 1; // Change according to num of events Refactor
+    const numOfEvents = 10; // Change according to num of events Refactor
     this.initial = [];
     for (let i = 0; i < numOfEvents; i++) {
       this.initial.push(false);
@@ -19,7 +19,7 @@ class HomeView extends React.Component {
       open: this.initial,
       numOfEvents: numOfEvents,
       events: null,
-      displayedEvents: null,
+      displayedEvents: [],
       attendance: sampleAttendance,
       todayDate: nowDate,
     };
@@ -118,7 +118,7 @@ class HomeView extends React.Component {
         <Tabs onClick={this.changeView} />
         <div id="event-list" className="d-flex justify-content-center justify-content-md-start">
         {
-          (this.state.displayedEvents !== null) ?
+          (this.state.displayedEvents.length !== 0) ?
             this.state.displayedEvents.map((event, i) =>
               <div id="event-container" key={i}>
                 <Event
@@ -138,7 +138,7 @@ class HomeView extends React.Component {
                   changeAttendance={this.changeAttendance}
                 />
               </div>
-            ) : <div>Sorry! There are no events here!</div>
+            ) : <div>Sorry!There are no events here!</div>
           }
         </div>
       </div>
