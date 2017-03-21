@@ -121,7 +121,8 @@ describe('Exhibition Read', () => {
         (reason) => {
           assert.fail(reason);
           done();
-        });
+        },
+    );
   });
 
   it('Should not be able to retrieve a non-existing object', (done) => {
