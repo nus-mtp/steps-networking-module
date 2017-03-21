@@ -22,7 +22,7 @@ class Message {
    */
   static connectDB() {
     this.ModelHandler = new ModelHandler()
-        .initWithParameters(username, password, host, port, dbName);
+      .initWithParameters(username, password, host, port, dbName);
     this.MessageModel = this.ModelHandler.getMessageModel();
   }
 
@@ -43,7 +43,7 @@ class Message {
    */
   constructor(senderEmail, recipientEmail, content, timeStamp) {
     this.ModelHandler = new ModelHandler()
-        .initWithParameters(username, password, host, port, dbName);
+      .initWithParameters(username, password, host, port, dbName);
     this.MessageModel = this.ModelHandler.getMessageModel();
     this.messageModelDoc = new this.MessageModel({
       recipient_email: recipientEmail,
@@ -89,6 +89,20 @@ class Message {
   static getMessagesFromUser(senderEmail, callback) {
     Message.connectDB();
     this.MessageModel.find({ sender_email: senderEmail }, (err, matchedMessages) => {
+      Message.disconnectDB();
+      callback(err, matchedMessages);
+    });
+  }
+
+  /**
+   * Retrieve Messages that involves a certain user.
+   *
+   * @param {String} userEmail: The email of the targeted user.
+   * @param {String} callback: A function that is executed once the operation is done.
+   */
+  static getMessagesInvolvingUser(userEmail, callback){
+    Message.connectDB();
+    this.MessageModel.find( { $or: [ {recipient_email: userEmail}, {sender_email: userEmail}] }, (err, matchedMessages) => {
       Message.disconnectDB();
       callback(err, matchedMessages);
     });
