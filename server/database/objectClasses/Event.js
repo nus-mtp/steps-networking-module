@@ -11,25 +11,43 @@ const dbName = config[currentdb].database;
 
 /**
  * This is the wrapper class used extract out and store information
- * about the Events from the database between view and model
+ * about the Events from the Database between view and model.
  *
  */
 
 class Event {
   /**
-   * Creates an model instance.
+   * Creates a connection to the Database.
+   */
+  static connectDB() {
+    this.ModelHandler = new ModelHandler()
+        .initWithParameters(username, password, host, port, dbName);
+    this.EventModel = this.ModelHandler.getEventModel();
+  }
+
+  /**
+   * Disconnects from the Database.
+   */
+  static disconnectDB() {
+    this.ModelHandler.disconnect();
+  }
+
+  /**
+   * Creates an Event Document and stores it internally.
    *
-   * @param {String} eventName: Unique identifier for the object
-   * @param {String} eventDescription: Description for the event
-   * @param {Date} startDate: Date object to identify start of event
-   * @param {Date} endDate: Date object to identify end of event
-   * @param {String} location: Description of location, e.g how to get there
-   * @param {Object} map: Object for an interactive map
-   * @param {String} eventPicture: URL string expected
-   * @param {String Array} tags: Tags used to identify events
+   * @param {String} eventName: The unique email for this Event.
+   * @param {String} eventDescription: The description for the Event.
+   * @param {Date} startDate: Date object to identify start of Event.
+   * @param {Date} endDate: Date object to identify end of Event.
+   * @param {String} location: The description of location, e.g how to get there
+   * @param {String} map: URL String representing an externally hosted interactive map.
+   * @param {String} eventPicture:
+   *    URL String representing an externally hosted depiction of the Event.
+   * @param {Array} tags: A list of tags used to identify Events.
    */
   constructor(eventName = '', eventDescription = '', startDate, endDate, location, map, eventPicture = '', tags = []) {
-    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
+    this.ModelHandler = new ModelHandler()
+        .initWithParameters(username, password, host, port, dbName);
     this.EventModel = this.ModelHandler.getEventModel();
     this.eventModelDoc = new this.EventModel({
       event_name: eventName,
@@ -39,107 +57,100 @@ class Event {
       event_location: location,
       event_map: map,
       event_picture: eventPicture,
-      tags: tags,
+      tags,
     });
     this.ModelHandler.disconnect();
   }
 
   /**
-   * saves event into Database
+   * Saves the Event Document stored internally to the Database.
    *
-   * @param {function} callback: used for error checking
+   * @param {function} callback: A function that executes after the operation is done.
    */
   saveEvent(callback) {
     Event.connectDB();
-    this.eventModelDoc.save(function cb(err) {
-      callback(err);
+    this.eventModelDoc.save((err, result) => {
+      Event.disconnectDB();
+      callback(err, result);
     });
-    Event.disconnectDB();
-  }
-
-  static connectDB() {
-    this.ModelHandler = new ModelHandler().initWithParameters(username, password, host, port, dbName);
-    this.EventModel = this.ModelHandler.getEventModel();
-  }
-
-  static disconnectDB() {
-    this.ModelHandler.disconnect();
   }
 
   /**
-   * Removes all event from the Database
+   * Retrieve a specific Event listed in the Database.
    *
-   * @param {function} callback: used for error checking
-   */
-  static clearAllEvents(callback) {
-    Event.connectDB();
-    this.EventModel.collection.remove({}, callback);
-    Event.disconnectDB();
-  }
-
-  /**
-   * Removes a specific event from the Database
-   *
-   * @param {function} callback: used for error checking
-   */
-  static deleteEvent(eventName, callback) {
-    Event.connectDB();
-    this.EventModel.findOneAndRemove({ event_name: eventName }, function cb(err) {
-      callback(err);
-    });
-    Event.disconnectDB();
-  }
-
-  /**
-   * Retrieve all the event listed in the database
-   *
-   * @param {function} callback: used for error checking
-   */
-  static getAllEvents(callback) {
-    Event.connectDB();
-    this.EventModel.find({}, function cb(err, eventObj) {
-      if (err) {
-        callback(err, null);
-      } else {
-        // eventObj is an array of Event objects
-        callback(null, eventObj);
-      }
-    });
-    Event.disconnectDB();
-  }
-
-  /**
-   * Retrieve a specific event listed in the database
-   *
-   * @param {function} callback: used for error checking
+   * @param {String} eventName: A unique identifier for the Event.
+   * @param {function} callback: A function that is executed once the operation has completed.
    */
   static getEvent(eventName, callback) {
     Event.connectDB();
-    this.EventModel.findOne({ event_name: eventName }, function cb(err, eventObj) {
-      if (err) {
-        callback(err, null);
-      } else {
-        callback(null, eventObj);
-      }
+    this.EventModel.findOne({ event_name: eventName }, (err, event) => {
+      Event.disconnectDB();
+      callback(err, event);
     });
-    Event.disconnectDB();
   }
 
   /**
-   * Updates an model instance.
+   * Retrieve all Events from the Database.
    *
-   * @param {String} eventName: Unique identifier for the object
-   * @param {String} eventDescription: Description for the event
-   * @param {Date} startDate: Date object to identify start of event
-   * @param {Date} endDate: Date object to identify end of event
-   * @param {String} location: Description of location, e.g how to get there
-   * @param {Object} map: Object for an interactive map
-   * @param {String} eventPicture: URL string expected
-   * @param {String Array} tags: Tags used to identify events
+   * @param {function} callback: A function that executes after the operation is done.
+   */
+  static getAllEvents(callback) {
+    Event.connectDB();
+    this.EventModel.find({}, (err, allEvents) => {
+      Event.disconnectDB();
+      callback(err, allEvents);
+    });
+  }
+
+  /**
+   * Checks whether the Event is existing within the Database. Will callback a boolean value.
+   *
+   * @param {String} eventName: A unique identifier for the Event.
+   * @param {function} callback: A function that is executed once the operation has completed.
+   */
+  static isExistingEvent(eventName, callback) {
+    Event.connectDB();
+    this.EventModel.findOne({ event_name: eventName }, (err, result) => {
+      Event.disconnectDB();
+      if (err || !result) {
+        callback(err, false);
+      } else {
+        callback(null, true);
+      }
+    });
+  }
+
+  /**
+   * Retrieve all the Event with the specified tags listed in the Database.
+   *
+   * @param {Array} tag: List of tags that can be used to search for Exhibitions.
+   * @param {function} callback: A function that is executed once the operation has completed.
+   */
+  static searchEventsByTag(tag, callback) {
+    Event.connectDB();
+    this.EventModel.find({ tags: { $regex: new RegExp(tag.replace('+', '\\+'), 'i') } }, (err, matchedEvents) => {
+      Event.disconnectDB();
+      callback(err, matchedEvents);
+    });
+  }
+
+  /**
+   * Updates the all information in a specified Event - except the eventName.
+   *
+   * @param {String} eventName: The unique email for this Event.
+   * @param {String} eventDescription: The description for the Event.
+   * @param {Date} startDate: Date object to identify start of Event.
+   * @param {Date} endDate: Date object to identify end of Event.
+   * @param {String} location: The description of location, e.g how to get there
+   * @param {Object} map: URL String representing an externally hosted interactive map.
+   * @param {String} eventPicture:
+   *    URL String representing an externally hosted depiction of the Event.
+   * @param {Array} tags: A list of tags used to identify Events.
+   * @param {function} callback: A function that is executed once the operation has completed.
    */
   static updateEvent(eventName = '', eventDescription = '', startDate, endDate, location, map, eventPicture = '', tags = [], callback) {
     Event.connectDB();
-    const update = { 
+    const update = {
       event_name: eventName,
       event_description: eventDescription,
       start_date: startDate,
@@ -147,63 +158,44 @@ class Event {
       event_location: location,
       event_map: map,
       event_picture: eventPicture,
-      tags: tags,
+      tags,
     };
     const options = { new: true };
     this.EventModel.findOneAndUpdate(
-      {event_name: eventName },
+      { event_name: eventName },
       update,
       options,
-      function cb(err, results) {
-        if (err) {
-          console.log('Unable to update Event');
-          callback(err);
-        } else if (results) {
-          console.log('Event is updated.');
-        } else {
-          console.log('There is no such Event.');
-        }
+      (err, results) => {
+        Event.disconnectDB();
+        callback(err, results);
       });
-
-    this.ModelHandler.disconnect();
   }
 
   /**
-   * Checks whether the event is existing within the database. Will callback a boolean value.
+   * Removes a specific event from the Database.
    *
-   * @param {String} eventName: unique identifer used to check against database
-   * @param {function} callback: used for error checking
+   * @param {String} eventName: A unique identifier for the Event.
+   * @param {function} callback: A function that is executed once the operation has completed.
    */
-  static isExistingEvent(eventName, callback) {
+  static deleteEvent(eventName, callback) {
     Event.connectDB();
-    this.EventModel.findOne({ event_name: eventName }, function cb(err, docs) {
-      if (err) {
-        callback(err, null);
-      } else if (docs) {
-        callback(null, true);
-      } else {
-        callback(null, false);
-      }
+    this.EventModel.findOneAndRemove({ event_name: eventName }, (err) => {
+      Event.disconnectDB();
+      callback(err);
     });
-    Event.disconnectDB();
   }
 
   /**
-   * Retrieve all the event with the specificed tag listed in the database
+   * Removes all event from the Database.
    *
-   * @param {String} eventName: unique identifer used to check against database
-   * @param {function} callback: used for error checking
+   * @param {function} callback: A function that is executed once the operation has completed.
    */
-  static searchEventsByTag(tag, callback) {
+  static clearAllEvents(callback) {
     Event.connectDB();
-    this.EventModel.find({ tags: { $regex: new RegExp(tag.replace('+', '\\+'), 'i') } }, function cb(err, docs) {
-      if (err) {
-        callback(err, null);
-      } else {
-        callback(null, docs);
-      }
+    this.EventModel.collection.remove({}, (err) => {
+      Event.disconnectDB();
+      callback(err);
     });
-    Event.disconnectDB();
   }
 }
 module.exports = Event;

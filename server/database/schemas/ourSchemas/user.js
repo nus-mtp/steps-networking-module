@@ -36,12 +36,16 @@ const userSchema = new mongoose.Schema({
       unique: true,
     },
   ],
-  bookmarked_users: [String],
+  bookmarked_users: [
+    {
+      type: String,
+      trim: true,
+      unique: true,
+    },
+  ],
 });
 
-userSchema.methods.get_id = function () {
-  return this._id;
-};
+userSchema.methods.get_id = () => this._id;
 
 userSchema.methods.comparePassword = function comparePassword(password, callback) {
   bcrypt.compare(password, this.password, callback);

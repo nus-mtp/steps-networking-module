@@ -7,6 +7,10 @@
 #home-body {
   margin: 20px 10%;
 
+  .user-thumbnail {
+    max-width: 30px;
+  }
+
   #event-list {
     display: flex;
     flex-wrap: wrap;
@@ -117,6 +121,7 @@
     border-radius: 20px;
     margin: 5px;
     font-size: 16px;
+    cursor: pointer;
   }
 }
 
@@ -177,7 +182,7 @@
 
 #event-map-pointers {
   font-size: 12px;
-  padding: 10% 5px;
+  padding: 5% 10%;
   display: block;
   /*
   background-color: Transparent;

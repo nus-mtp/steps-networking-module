@@ -23,9 +23,9 @@ class App extends React.Component {
   }
 
   removeDropdown() {
-    document.getElementById("navbar-supported-content").classList.remove("show");
-    document.getElementById("app-body").classList.add("collapse-hide");
-    document.getElementById("app-body").classList.remove("collapse-show");
+    document.getElementById('navbar-supported-content').classList.remove('show');
+    document.getElementById('app-body').classList.add('collapse-hide');
+    document.getElementById('app-body').classList.remove('collapse-show');
     this.setState({
       isHamburgerToggled: !this.state.isHamburgerToggled,
     });
@@ -33,11 +33,11 @@ class App extends React.Component {
 
   shiftBody() {
     if (!this.state.isHamburgerToggled) {
-      document.getElementById("app-body").classList.remove("collapse-hide");
-      document.getElementById("app-body").classList.add("collapse-show");
+      document.getElementById('app-body').classList.remove('collapse-hide');
+      document.getElementById('app-body').classList.add('collapse-show');
     } else {
-      document.getElementById("app-body").classList.add("collapse-hide");
-      document.getElementById("app-body").classList.remove("collapse-show");
+      document.getElementById('app-body').classList.add('collapse-hide');
+      document.getElementById('app-body').classList.remove('collapse-show');
     }
     this.setState({
       isHamburgerToggled: !this.state.isHamburgerToggled,
@@ -70,9 +70,9 @@ class App extends React.Component {
       <div>
         <nav id="header" className="navbar fixed-top navbar-toggleable-md navbar-light bg-faded">
           <button id="hamburger-toggle" onClick={this.shiftBody} className="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbar-supported-content" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon"></span>
+            <span className="navbar-toggler-icon" />
           </button>
-          <Link onClick={this.removeDropdown} to={Paths.home}><img id="brand-logo" src="resources/images/home.svg" alt="Home"/></Link>
+          <Link onClick={this.removeDropdown} to={Paths.home}><img id="brand-logo" src="resources/images/home.svg" alt="Home" /></Link>
           <div className="collapse navbar-collapse flex-column flex-lg-row justify-content-between" id="navbar-supported-content">
             <form className="form-inline mt-2 mt-lg-0 row" id="search-container">
               <input id="search-input" className="form-control col-9" type="text" placeholder="Search" />
@@ -81,26 +81,21 @@ class App extends React.Component {
             <ul id="navbar-links" className="navbar-nav">
               <li className="nav-item">
                 { Auth.isUserAuthenticated() ?
-                  <Link onClick={this.removeDropdown.bind(this)} className={`navbar-buttons ${this.state.profileActive}`} to={Paths.profile}>Profile</Link> :
-                  <Link></Link>
-                }
-              </li>
-              <li className="nav-item">
-                { Auth.isUserAuthenticated() ?
-                  <Link onClick={this.removeDropdown.bind(this)} className={`navbar-buttons ${this.state.eventActive}`} to={Paths.event}>Event</Link> :
-                  <Link></Link>
+                  <Link onClick={this.removeDropdown} className={`navbar-buttons ${this.state.profileActive}`} to={Paths.profile}>Profile</Link> :
+                  <Link />
                 }
               </li>
               <li className="nav-item">
                 { Auth.isUserAuthenticated() ?
                   <Link onClick={this.removeDropdown.bind(this)} className={`navbar-buttons ${this.state.chatActive}`} to={Paths.chat}>Chat</Link> :
                   <Link></Link>
+
                 }
               </li>
               <li className="nav-item">
                 { Auth.isUserAuthenticated() ?
-                  <Link onClick={this.removeDropdown.bind(this)} id="logout" className="navbar-buttons" to={Paths.logout}>Logout</Link> :
-                  <Link onClick={this.removeDropdown.bind(this)} id="login" className={`navbar-buttons ${this.state.loginActive}`} to={Paths.login}>Login</Link>
+                  <Link onClick={this.removeDropdown} id="logout" className="navbar-buttons" to={Paths.logout}>Logout</Link> :
+                  <Link onClick={this.removeDropdown} id="login" className={`navbar-buttons ${this.state.loginActive}`} to={Paths.login}>Login</Link>
                 }
               </li>
             </ul>

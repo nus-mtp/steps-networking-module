@@ -21,16 +21,32 @@ class EventMap extends React.Component {
   render() {
     return (
       <div>
-      {
-        (this.props.showEventMap) ?
-        <div id="event-map">
-          {/*<img src='../../resources/images/sitemap.png' style={{width: '100%'}}/> */}
-          {EventMap.addNode('#0', 'MonaLisa', '79%', '29%')} 
-          {EventMap.addNode('#1', <div>Alan<br/>Turing's<br/>Apple</div>, '13%', '68%',
-                          { backgroundColor: 'blue', color: 'white', } )}
-        </div>
-        : <div />
-      }
+        {(this.props.showEventMap) ?
+          <div id="event-map">
+            {/*<img src='../../resources/images/sitemap.png' style={{width: '100%'}}/> */}
+            {EventMap.addNode('#0', 'SearchParty VR', '75%', '29%')} 
+            {EventMap.addNode('#1', <div>Reality<br/>Escape<br/>Room</div>, '13%', '68%',
+                            { backgroundColor: 'blue', color: 'white', } )}
+          </div>
+          : <div />
+        }
+        {/*
+        <button className="btn btn-info" data-toggle="modal" data-target="#sitemap">Sitemap</button>
+        <div className="modal fade" id="sitemap" tabIndex="-1" role="dialog" aria-hidden="true">
+          <div className="modal-dialog modal-lg" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">Event Name</h5>
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                <img className="img-fluid" src="../resources/images/dummy-floorplan.jpg"/>
+              </div>
+            </div>
+          </div>
+        </div>*/}
       </div>
     );
   }

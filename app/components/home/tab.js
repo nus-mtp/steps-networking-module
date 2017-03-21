@@ -1,15 +1,15 @@
 import React from 'react';
 
-class Tab extends React.Component {
-  render() {
-    return (
-      <div className="event-tab">
-        <li className="nav-item">
-          <a className="nav-link" href="#">{this.props.name}</a>
-        </li>
-      </div>
-    );
-  }
-}
+const Tab = ({ name }) => (
+  <div className="event-tab">
+    <li className="nav-item">
+      <div className="nav-link">{name}</div>
+    </li>
+  </div>
+);
+
+Tab.propTypes = {
+  name: React.PropTypes.string.isRequired,
+};
 
 export default Tab;
