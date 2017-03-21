@@ -43,7 +43,7 @@ router.get('/get/allExhibitions', (req = {}, res, next) => {
   });
 });
 
-router.get('/get/oneEventExhibition/:eventName', (req = {}, res, next) => {
+router.get('/get/oneEventExhibitions/:eventName', (req = {}, res, next) => {
   if (req.params && req.params.eventName) {
     Exhibition.searchExhibitionsByEvent(req.params.eventName, (err, exhibitions) => {
       if (err) {
