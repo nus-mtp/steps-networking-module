@@ -61,8 +61,8 @@ class User {
       will_notify: willNotify,
       is_deleted: isDeleted,
       profile_picture: profilePic,
-      skills: skillSets.map(skill => skill.trim().toLowerCase()),
-      bookmarked_users: bookmarkedUsers.map(bookmarkedUser => bookmarkedUser.trim()),
+      skills: removeDuplicates(skillSets.map(skill => skill.trim().toLowerCase())),
+      bookmarked_users: removeDuplicates(bookmarkedUsers.map(bookmarkedUser => bookmarkedUser.trim())),
     });
     this.ModelHandler.disconnect();
   }
