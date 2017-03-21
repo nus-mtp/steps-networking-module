@@ -8,16 +8,10 @@ class HomeView extends React.Component {
   constructor(props) {
     super(props);
 
-    const numOfEvents = 10; // Change according to num of events Refactor
-    this.initial = [];
-    for (let i = 0; i < numOfEvents; i++) {
-      this.initial.push(false);
-    }
     const nowDate = new Date();
 
     this.state = {
-      open: this.initial,
-      numOfEvents: numOfEvents,
+      open: null,
       events: null,
       displayedEvents: [],
       attendance: sampleAttendance,
@@ -25,15 +19,16 @@ class HomeView extends React.Component {
       currentTab: 'ongoing',
     };
 
-    this.getAllEvents();
+    this.initializeStates();
 
     this.openCollapsable = this.openCollapsable.bind(this);
     this.changeAttendance = this.changeAttendance.bind(this);
     this.changeView = this.changeView.bind(this);
     this.formatMilli = this.formatMilli.bind(this);
+    this.createFalseArray = this.createFalseArray.bind(this);
   }
 
-  getAllEvents() {
+  initializeStates() {
     const xhr = new XMLHttpRequest();
     xhr.open('get', '/event/get/allEvents');
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -48,14 +43,23 @@ class HomeView extends React.Component {
       this.setState({
         events: xhr.response,
         displayedEvents: remainder,
+        open: this.createFalseArray(remainder.length),
       });
     });
     xhr.send();
   }
 
+  createFalseArray(n) {
+    let array = [];
+    for (let i = 0; i < n; i += 1) {
+      array.push(false);
+    }
+    return array;
+  }
+
   openCollapsable(serial) {
-    const newStatus = this.initial.slice(); // ignore previous state and change all to false
-    newStatus[serial] = !this.state.open[serial];
+    const newStatus = this.createFalseArray(this.state.open.length); // ignore previous state and change all to false
+    newStatus[serial] = true;
     this.setState({ open: newStatus });
   }
 
@@ -111,6 +115,7 @@ class HomeView extends React.Component {
     this.setState({
       displayedEvents: remainder,
       currentTab: id,
+      open: this.createFalseArray(remainder.length),
     });
   }
 
