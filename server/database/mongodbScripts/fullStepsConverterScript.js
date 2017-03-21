@@ -449,80 +449,14 @@ function upsertGuests(stepsGuestObj, callback) {
                     // Don't do anything if Attendance Document already exists
                     callback(null);
                   } else {
-                    // Attendance Document may not exist -
-                    // Insert only if User isn't already
-                    // participating in one of the Exhibitions in the Event
-                    const attendanceExhibitionQuery = {
-                      user_email: userEmail,
-                      attendance_type: 'exhibition',
-                    };
-
-                    Attendance.where(attendanceExhibitionQuery)
-                        .lean().find((err, exhibitionAttendances) => {
-                          if (err) {
-                            // Unknown Error
-                            callback(null);
-                          } else if (exhibitionAttendances && exhibitionAttendances.length > 0) {
-                            // User has participated in Exhibitions before
-                            async.waterfall([
-                              (callback) => {
-                                async.eachLimit(exhibitionAttendances, 5,
-                                (exhibitionAttendance, callback) => {
-                                  // For each Exhibition Attendance in Parallel, 5 at a time
-                                  const exhibitionQuery = {
-                                    _id: exhibitionAttendance.attendance_key,
-                                    event_name: eventName,
-                                  };
-
-                                  Exhibition.where(exhibitionQuery)
-                                      .lean().findOne((err, exhibition) => {
-                                        if (err) {
-                                          // Unknown Error
-                                          console.log(err);
-                                          callback(true); // Stop the Parallel Search
-                                        } else if (exhibition) {
-                                          // User is already participating in the current Event
-                                          // as Exhibitor
-                                          callback(true); // Stop the Parallel Search
-                                        } else {
-                                          // The current event
-                                          callback(null);
-                                        }
-                                      });
-                                }, (isExhibitorForCurrentEvent) => {
-                                  callback(null, isExhibitorForCurrentEvent);
-                                });
-                              },
-                              (isExhibitorForCurrentEvent, callback) => {
-                                if (isExhibitorForCurrentEvent !== true) {
-                                  // User has not participated in Exhibitions before -
-                                  // safe to insert Attendance for Event
-                                  const attendanceDoc = new Attendance(attendanceEventQuery);
-                                  attendanceDoc.save((err) => {
-                                    if (err) {
-                                      console.log(err);
-                                    }
-                                    callback(null);
-                                  });
-                                } else {
-                                  // User is participating in current Event as Exhibitor -
-                                  // do not insert Event Attendance data
-                                  callback(null);
-                                }
-                              },
-                            ], callback);
-                          } else {
-                            // User has not participated in Exhibitions before -
-                            // safe to insert Attendance for Event
-                            const attendanceDoc = new Attendance(attendanceEventQuery);
-                            attendanceDoc.save((err) => {
-                              if (err) {
-                                console.log(err);
-                              }
-                              callback(null);
-                            });
-                          }
-                        });
+                    // Attendance Record does not exist - Insert
+                    const attendanceDoc = new Attendance(attendanceEventQuery);
+                    attendanceDoc.save((err) => {
+                      if (err) {
+                        console.log(err);
+                      }
+                      callback(null);
+                    });
                   }
                 });
               } else { // Event was not Previously Inserted
