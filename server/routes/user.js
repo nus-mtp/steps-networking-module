@@ -45,12 +45,17 @@ router.get('/get/profile/:email', (req = {}, res, next) => {
   }
 });
 
-router.get('/get/search/:skill', (req = {}, res, next) => {
-  if (req.params && req.params.skill) {
-    User.searchUsersBySkills(req.param.skill, (err, users) => {
+router.post('/post/search/skill', (req = {}, res, next) => {
+  if (req.body && req.body.skill) {
+    User.searchUsersBySkills(req.body.skill, (err, users) => {
       if (err) {
-        console.log(err);
-        res.status(500).json('Unable to fetch data!');
+        if (err.name === 'ValidationError') {
+          console.log(err);
+          res.status(403).json('Unauthorized!');
+        } else {
+          console.log(err);
+          res.status(500).json('Unable to post data!');
+        }
       } else if (users) {
         res.status(200).json(users.map(user => extractUserInfo(user)));
       } else {

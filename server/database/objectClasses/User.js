@@ -153,7 +153,7 @@ class User {
    */
   static searchUsersBySkills(skillToBeSearched, callback) {
     User.connectDB();
-    this.UserModel.find({ skills: { $regex: new RegExp(skillToBeSearched.replace('+', '\\+'), 'i') } }, (err, matchedUsers) => {
+    this.UserModel.find({ skills: { $regex: new RegExp(skillToBeSearched.trim().toLowerCase().replace('+', '\\+'), 'i') } }, (err, matchedUsers) => {
       User.disconnectDB();
       callback(err, matchedUsers);
     });
