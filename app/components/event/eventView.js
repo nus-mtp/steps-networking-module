@@ -1,12 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router';
 import { sampleProjects } from '../project/sampleData';
+import EventMap from './eventMap';
 
 class EventView extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      projects: sampleProjects,
       isDisplayProjects: false,
       projects: sampleProjects, // This is for all projects
       displayProjects: sampleProjects // This is for the displayed projects
@@ -21,6 +23,18 @@ class EventView extends React.Component {
     this.setState({
       isDisplayProjects: !this.state.isDisplayProjects
     });
+  }
+  
+  displayEventMap() {
+    this.setState({
+      showEventMap: !this.state.showEventMap,
+    });
+    // Also forcefully open Projects
+    if (!this.state.showEventMap) {
+      this.setState({
+        isDisplayProjects: true,
+      });
+    }
   }
 
   updateDisplayedProjects(id) {
@@ -74,8 +88,14 @@ class EventView extends React.Component {
           <div className="col-md-6 col-12">
             <h4 className="card-title">Event Name</h4>
             <p className="card-text">Event Venue & Date & Time</p>
+            <button className="btn btn-info" onClick={this.displayEventMap.bind(this)}>Sitemap</button>
           </div>
         </div>
+
+        <EventMap
+          showEventMap={this.state.showEventMap}
+        />
+
         <div className="row mb-4">
           <div className="card col-md-7 col-12 mr-4">
             <div className="event-info card-block">
@@ -88,22 +108,6 @@ class EventView extends React.Component {
                     : "Show Projects"
                   }
                 </button>
-                <button className="btn btn-info" data-toggle="modal" data-target="#sitemap">Sitemap</button>
-                <div className="modal fade" id="sitemap" tabIndex="-1" role="dialog" aria-hidden="true">
-                  <div className="modal-dialog modal-lg" role="document">
-                    <div className="modal-content">
-                      <div className="modal-header">
-                        <h5 className="modal-title" id="exampleModalLabel">Event Name</h5>
-                        <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                        </button>
-                      </div>
-                      <div className="modal-body">
-                        <img className="img-fluid" src="../resources/images/dummy-floorplan.jpg"/>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
               {(this.state.isDisplayProjects)
                 ? <div>
@@ -122,7 +126,7 @@ class EventView extends React.Component {
                       </span>
                     </div>
                     <br/>
-                    {this.state.displayProjects.map((project, i) => <div className="d-flex flex-row mb-1" key={i}>
+                    {this.state.displayProjects.map((project, i) => <div className="d-flex flex-row mb-1" id={i} key={i}>
                       <img className="img-fluid project-thumbnail mr-2" src="../../resources/images/dummy-poster.png" alt="event-poster"/>
                       <div>
                         <div>{project.exhibitionName}</div>
