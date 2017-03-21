@@ -40,7 +40,7 @@ class Event extends React.Component {
           aria-expanded={this.props.open[this.props.serial]}
         >
           <div id="event-image-container">
-            <Link to="/event">
+            <Link to={`/event/${this.props.event.name}`}>
               <button className="btn btn-danger event-img-button">
                 <img src="../../resources/images/pageview-icon.svg" alt="pageview-icon" />
               </button>
