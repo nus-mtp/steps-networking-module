@@ -68,44 +68,48 @@ class Exhibition {
    */
   saveExhibition(callback) {
     Exhibition.connectDB();
-    this.exhibitionModelDoc.save((err) => {
+    this.exhibitionModelDoc.save((err, result) => {
       Exhibition.disconnectDB();
-      callback(err);
+      callback(err, result);
     });
   }
 
   /**
    * Checks whether the Exhibition exists within the Database. Will callback a boolean value.
    *
+   * @param {String} eventName: The name of the Event that the Exhibition is held in.
    * @param {String} exhibitionName: The name of the Exhibition to search for.
    * @param {function} callback: A function that is executed once the operation is done.
    */
-  static isExistingExhibition(exhibitionName, callback) {
+  static isExistingExhibition(eventName, exhibitionName, callback) {
     Exhibition.connectDB();
-    this.ExhibitionModel.findOne({ exhibition_name: exhibitionName }, (err, exhibition) => {
-      Exhibition.disconnectDB();
-      if (err) {
-        callback(err, false);
-      } else if (exhibition) {
-        callback(null, true);
-      } else {
-        callback(null, false);
-      }
-    });
+    this.ExhibitionModel.findOne({ event_name: eventName, exhibition_name: exhibitionName },
+        (err, exhibition) => {
+          Exhibition.disconnectDB();
+          if (err) {
+            callback(err, false);
+          } else if (exhibition) {
+            callback(null, true);
+          } else {
+            callback(null, false);
+          }
+        });
   }
 
   /**
    * Retrieve a specific Exhibition in the Database.
    *
+   * @param {String} eventName: The name of the Event of which the Exhibition is held in.
    * @param {String} exhibitionName: The name of the Exhibition to retrieve from the Database.
    * @param {function} callback: A function that is executed once the operation is done.
    */
-  static getExhibition(exhibitionName, callback) {
+  static getExhibition(eventName, exhibitionName, callback) {
     Exhibition.connectDB();
-    this.ExhibitionModel.findOne({ exhibition_name: exhibitionName }, (err, exhibition) => {
-      Exhibition.disconnectDB();
-      callback(err, exhibition);
-    });
+    this.ExhibitionModel.findOne({ event_name: eventName, exhibition_name: exhibitionName },
+        (err, exhibition) => {
+          Exhibition.disconnectDB();
+          callback(err, exhibition);
+        });
   }
 
   /**

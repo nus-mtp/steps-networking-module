@@ -35,17 +35,17 @@ class Comment {
    * Creates a Comment Document and stores it internally.
    *
    * @param {String} userEmail: The email of the User that made the Comment.
-   * @param {String} exhibitionName: The name of Exhibition with the Comment.
+   * @param {mongoose.Schema.ObjectId} exhibitionKey: The ObjectId of the Exhibition.
    * @param {String} comment: The content of the Comment.
-   * @param {Date} date: date object to indicate when the Comment was made.
+   * @param {Date} date: Date object to indicate when the Comment was made.
    */
-  constructor(userEmail, exhibitionName, comment, date) {
+  constructor(userEmail, exhibitionKey, comment, date) {
     this.ModelHandler = new ModelHandler()
         .initWithParameters(username, password, host, port, dbName);
     this.CommentModel = this.ModelHandler.getCommentModel();
     this.commentModelDoc = new this.CommentModel({
       user_email: userEmail,
-      exhibition: exhibitionName,
+      exhibition_key: exhibitionKey,
       comments: { content: comment, timestamp: date },
     });
     this.ModelHandler.disconnect();
@@ -58,9 +58,9 @@ class Comment {
    */
   saveComment(callback) {
     Comment.connectDB();
-    this.commentModelDoc.save((err) => {
+    this.commentModelDoc.save((err, result) => {
       Comment.disconnectDB();
-      callback(err);
+      callback(err, result);
     });
   }
 
@@ -68,16 +68,16 @@ class Comment {
    * Adds a Comment made by a specific User of a Comment Document.
    *
    * @param {String} userEmail: User that made the Comment.
-   * @param {String} exhibitionName: name of exhibition with the Comment.
-   * @param {String} comment: string content of the Comment.
-   * @param {Date} date: date object to indicate when the Comment is made.
+   * @param {mongoose.Schema.ObjectId} exhibitionKey: The ObjectId of the Exhibition.
+   * @param {String} comment: String content of the Comment.
+   * @param {Date} date: Date object to indicate when the Comment is made.
    * @param {function} callback: A function that is executed once the operation is done.
    */
-  static addCommentForExhibition(userEmail, exhibitionName, comment, date, callback) {
+  static addCommentForExhibition(userEmail, exhibitionKey, comment, date, callback) {
     Comment.connectDB();
     const query = {
       user_email: userEmail,
-      exhibition: exhibitionName,
+      exhibition_key: exhibitionKey,
     };
     const update = { $push: { comments: { content: comment, timestamp: date } } };
     const options = { new: true };
@@ -90,12 +90,12 @@ class Comment {
   /**
    * Retrieve list of Comments for a specific Exhibition.
    *
-   * @param {String} exhibitionName: name of Exhibition to retrieve Comments for.
+   * @param {mongoose.Schema.ObjectId} exhibitionKey: The ObjectID of the Exhibition.
    * @param {function} callback: A function that is executed once the operation is done.
    */
-  static getCommentsForExhibition(exhibitionName, callback) {
+  static getCommentsForExhibition(exhibitionKey, callback) {
     Comment.connectDB();
-    this.CommentModel.find({ exhibition: exhibitionName }, (err, matchedComments) => {
+    this.CommentModel.find({ exhibition_key: exhibitionKey }, (err, matchedComments) => {
       Comment.disconnectDB();
       callback(err, matchedComments);
     });
@@ -104,12 +104,12 @@ class Comment {
   /**
    * Removes Comments for a specific Exhibition.
    *
-   * @param {String} exhibitionName: name of Exhibition to clear Comments from.
+   * @param {mongoose.Schema.ObjectId} exhibitionKey: The ObjectId of the Exhibition.
    * @param {function} callback: A function that is executed once the operation is done.
    */
-  static clearCommentsForExhibition(exhibitionName, callback) {
+  static clearCommentsForExhibition(exhibitionKey, callback) {
     Comment.connectDB();
-    this.CommentModel.find({ exhibition_name: exhibitionName }).remove().exec((err, results) => {
+    this.CommentModel.find({ exhibition_key: exhibitionKey }).remove().exec((err, results) => {
       Comment.disconnectDB();
       callback(err, results);
     });
@@ -120,7 +120,7 @@ class Comment {
    *
    * @param {function} callback: A function that is executed once the operation is done.
    */
-  static clearAllComment(callback) {
+  static clearAllComments(callback) {
     Comment.connectDB();
     this.CommentModel.collection.remove({}, (err) => {
       Comment.disconnectDB();
