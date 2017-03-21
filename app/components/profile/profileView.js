@@ -1,33 +1,78 @@
 import React from 'react';
-import { Link } from 'react-router';
 import Paths from '../../paths';
 import Auth from '../../database/auth';
+import suggestions from './skillSuggestions';
+import { Link } from 'react-router';
+import { WithContext as ReactTags } from 'react-tag-input';
 
 class ProfileView extends React.Component {
   constructor(props) {
     super(props);
+
+    const userEmail = (Auth.isUserAuthenticated) ? Auth.getToken().email : '';
+
     this.state = {
-      email: 'N/A',
-      description: 'N/A',
+      email: 'hugh@comp.nus.edu.sg',
+      skills: [],
       links: 'N/A',
       projects: 'none',
       interestedEvents: 'none',
       interestedOpportunities: 'none',
       isContentEditable: false,
       pastUserData: {},
+      user: {},
     };
+
+    this.getUser();
 
     this.handleEdit = this.handleEdit.bind(this);
     this.changeEdit = this.changeEdit.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
+    this.handleDeleteSkill = this.handleDeleteSkill.bind(this);
+    this.handleAdditionSkill = this.handleAdditionSkill.bind(this);
+    this.handleDragSkill = this.handleDragSkill.bind(this);
   }
 
-  componentWillMount() {
-    if (Auth.isUserAuthenticated) {
+  getUser() {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/user/get/profile/${this.state.email}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
       this.setState({
-        email: Auth.getToken().email,
+        user: xhr.response,
       });
-    }
+    });
+    xhr.send();
+  }
+
+  handleDeleteSkill(i) {
+    this.setState({
+      skills: this.state.skills.filter((skill, index) => index !== i)
+    });
+  }
+
+  handleDragSkill(skill, currPos, newPos) {
+    const skills = [ ...this.state.skills ];
+
+    // mutate array
+    skills.splice(currPos, 1);
+    skills.splice(newPos, 0, skill);
+
+    // re-render
+    this.setState({ skills });
+  }
+
+  handleAdditionSkill(skill) {
+    this.setState({
+      skills: [
+        ...this.state.skills,
+        {
+          id: this.state.skills.length + 1,
+          text: skill
+        }
+      ]
+    });
   }
 
   changeEdit(event) {
@@ -36,9 +81,9 @@ class ProfileView extends React.Component {
       this.setState({
         email: event.target.value,
       });
-    } else if (targetId === 'new-user-description') {
+    } else if (targetId === 'new-user-skills') {
       this.setState({
-        description: event.target.value,
+        skills: event.target.value,
       });
     } else if (targetId === 'new-user-links') {
       this.setState({
@@ -52,7 +97,7 @@ class ProfileView extends React.Component {
       isContentEditable: !this.state.isContentEditable,
       pastUserData: {
         email: this.state.email,
-        description: this.state.description,
+        skills: this.state.skills,
         links: this.state.links,
         projects: this.state.projects,
         interestedEvents: this.state.interestedEvents,
@@ -64,7 +109,7 @@ class ProfileView extends React.Component {
   handleCancel() {
     this.setState({
       email: this.state.pastUserData.email,
-      description: this.state.pastUserData.description,
+      skills: this.state.pastUserData.skills,
       links: this.state.pastUserData.links,
       projects: this.state.pastUserData.projects,
       interestedEvents: this.state.pastUserData.interestedEvents,
@@ -96,7 +141,7 @@ class ProfileView extends React.Component {
         <div className="profile-info card">
           <div className="card-block">
             <div className="card-text">
-              <h4 id="user-name" className="card-title">Anonymous</h4>
+              <h4 id="user-name" className="card-title">{this.state.user.userName}</h4>
               <div>
                 <span className="info-type">Email: </span>
                 { (this.state.isContentEditable) ?
@@ -105,17 +150,29 @@ class ProfileView extends React.Component {
                 }
               </div>
               <div>
-                <span className="info-type">Description: </span>
+                <span className="info-type">Skills: </span>
                 { (this.state.isContentEditable) ?
-                  <input id="new-user-description" className="form-control" type="text" value={this.state.description} onChange={this.changeEdit} /> :
-                  <span id="user-desc" className="user-info">{this.state.description}</span>
+                  <ReactTags
+                    tags={this.state.skills}
+                    suggestions={suggestions}
+                    handleDelete={this.handleDeleteSkill}
+                    handleAddition={this.handleAdditionSkill}
+                    handleDrag={this.handleDragSkill}
+                    placeholder="Add skills"
+                  /> :
+                  <div>
+                    {
+                      this.state.skills.map(skill =>
+                        <span id="user-skills" className="user-info" key={`${skill.text}${skill.id}`}>{skill.text}</span>
+                    )}
+                  </div>
                 }
               </div>
               <div>
                 <span className="info-type">Links: </span>
                 { (this.state.isContentEditable) ?
                   <input id="new-user-links" className="form-control" type="text" value={this.state.links} onChange={this.changeEdit} /> :
-                  <span id="user-links" className="user-info">{this.state.links}</span>
+                  <a id="user-links" className="user-info" href={`https://${this.state.links}`}>{this.state.links}</a>
                 }
               </div>
             </div>
