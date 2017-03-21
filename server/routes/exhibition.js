@@ -27,6 +27,22 @@ function extractExhibitionInfo(exhibition) {
 
 // All Routes prefixed with 'exhibition/'
 
+router.get('/get/allExhibitions', (req = {}, res, next) => {
+  Exhibition.getAllExhibitions((err, exhibitions) => {
+    if (err) {
+      console.log(err);
+      res.status(500).json('Unable to fetch data!');
+      next();
+    } else if (exhibitions) {
+      res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
+      next();
+    } else {
+      res.status(404).json('Nothing found!');
+      next();
+    }
+  });
+});
+
 router.get('/get/oneEventExhibition/:eventName', (req = {}, res, next) => {
   if (req.params && req.params.eventName) {
     Exhibition.searchExhibitionsByEvent(req.params.eventName, (err, exhibitions) => {
@@ -45,22 +61,6 @@ router.get('/get/oneEventExhibition/:eventName', (req = {}, res, next) => {
   } else {
     res.status(400).json('Bad Request!');
   }
-});
-
-router.get('/get/allExhibitions', (req = {}, res, next) => {
-  Exhibition.getAllExhibitions((err, exhibitions) => {
-    if (err) {
-      console.log(err);
-      res.status(500).json('Unable to fetch data!');
-      next();
-    } else if (exhibitions) {
-      res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
-      next();
-    } else {
-      res.status(404).json('Nothing found!');
-      next();
-    }
-  });
 });
 
 router.get('/get/oneExhibition/:eventName/:exhibitionName', (req = {}, res, next) => {
