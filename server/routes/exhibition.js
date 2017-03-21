@@ -27,6 +27,26 @@ function extractExhibitionInfo(exhibition) {
 
 // All Routes prefixed with 'exhibition/'
 
+router.get('/get/oneEventExhibitions/:eventName', (req = {}, res, next) => {
+  if (req.params && req.params.eventName) {
+    Exhibition.searchExhibitionsByEvent(req.params.eventName, (err, exhibitions) => {
+      if (err) {
+        console.log(err);
+        res.status(500).json('Unable to fetch data!');
+        next();
+      } else if (exhibitions) {
+        res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
+        next();
+      } else {
+        res.status(404).json('Nothing found!');
+        next();
+      }
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+  }
+});
+
 router.get('/get/allExhibitions', (req = {}, res, next) => {
   Exhibition.getAllExhibitions((err, exhibitions) => {
     if (err) {
@@ -57,51 +77,6 @@ router.get('/get/oneExhibition/:eventName/:exhibitionName', (req = {}, res, next
       next();
     }
   });
-});
-
-router.post('/post/search/event', (req = {}, res, next) => {
-  if (req.body && req.body.eventName) {
-    Exhibition.searchExhibitionsByEvent(req.body.eventName, (err, exhibitions) => {
-      if (err) {
-        console.log(err);
-        res.status(500).json('Unable to fetch data!');
-        next();
-      } else if (exhibitions) {
-        res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
-        next();
-      } else {
-        res.status(404).json('Nothing found!');
-        next();
-      }
-    });
-  } else {
-    res.status(400).json('Bad Request!');
-    next();
-  }
-});
-
-router.post('/post/search/tag', (req = {}, res, next) => {
-  if (req.body && req.body.tag) {
-    Exhibition.searchExhibitionsByTag(req.body.tag, (err, exhibitions) => {
-      if (err) {
-        if (err.name === 'ValidationError') {
-          console.log(err);
-          res.status(403).json('Unauthorized!');
-        } else {
-          console.log(err);
-          res.status(500).json('Unable to post data!');
-        }
-      } else if (exhibitions) {
-        res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
-      } else {
-        res.status(404).json('Nothing found!');
-      }
-      next();
-    });
-  } else {
-    res.status(400).json('Bad Request!');
-    next();
-  }
 });
 
 // The Routes below utilize Comma-Separated Strings for the second argument in the Post Request
