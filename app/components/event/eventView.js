@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 import { sampleProjects } from '../project/sampleData';
+import sampleOrganizer from './sampleOrganizer';
 
 class EventView extends React.Component {
   constructor(props) {
@@ -11,6 +12,7 @@ class EventView extends React.Component {
       projects: sampleProjects, // This is for all projects
       displayProjects: sampleProjects, // This is for the displayed projects
       event: [],
+      organizer: sampleOrganizer,
     }
 
     this.getEvent();
@@ -91,7 +93,11 @@ class EventView extends React.Component {
       <div id="event-body" className="d-f1lex flex-column justify-content-center">
         <div className="row justify-content-center mb-4">
           <div className="col-md-6 col-12 text-center">
-            <img className="img-fluid event-poster mb-2" src="../../resources/images/dummy-poster.png" alt="event-poster"/>
+          {
+            (this.state.event_poster)
+              ? <img className="img-fluid event-poster mb-2" src={`${this.state.event.event_poster}`} alt="event-poster"/>
+              : <img className="img-fluid event-poster mb-2" src="../../resources/images/empty-poster-placeholder.png" alt="event-poster"/>
+          }
           </div>
           {
             (this.state.event != null) ?
@@ -173,12 +179,10 @@ class EventView extends React.Component {
           </div>
           <div className="card col-md-4 col-12">
             <div className="event-info card-block">
-              <div className="info-type">Organizer</div>
-              <div className="event-name event-info"/>
-              <div className="info-type">Organizer Info</div>
-              <div id="event-desc" className="event-info"/>
+              <h6 className="event-name">{this.state.organizer.name}</h6>
+              <div className="event-info">{this.state.organizer.description}</div>
               <hr/>
-              <button className="btn btn-secondary">Website</button>
+              <a href={`${this.state.organizer.link}`}><button className="btn btn-secondary">Website</button></a>
             </div>
           </div>
         </div>
