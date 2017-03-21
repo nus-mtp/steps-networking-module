@@ -1,3 +1,4 @@
+const removeDuplicates = require('../../utils/utils').removeDuplicates;
 const ModelHandler = require('../models/ourModels.js');
 
 const config = require('../../config.json');
@@ -56,7 +57,7 @@ class Exhibition {
       images,
       videos,
       website,
-      tags,
+      tags: removeDuplicates(tags.map(tag => tag.trim().toLowerCase())),
     });
     this.ModelHandler.disconnect();
   }
@@ -154,6 +155,33 @@ class Exhibition {
   }
 
   /**
+   * Sets the array of tags that this Exhibition has.
+   *
+   * @param {String} eventName: The name of the Event that the Exhibition is held in.
+   * @param {String} exhibitionName: The name of the Exhibition to search for.
+   * @param {Array} tags:
+   *    The array of String objects that represent the tags tagged to this exhibiiton.
+   * @param {function} callback: A function that is executed once the operation is done.
+   */
+  static setTagsForExhibition(eventName, exhibitionName, tags, callback) {
+    Exhibition.connectDB();
+    this.ExhibitionModel.findOne(
+        { event_name: eventName, exhibition_name: exhibitionName },
+        (err, exhibition) => {
+          if (exhibition) {
+            exhibition.set('tags', removeDuplicates(tags.map(tag => tag.trim().toLowerCase())));
+            exhibition.save((err, updatedExhibition) => {
+              Exhibition.disconnectDB();
+              callback(err, updatedExhibition);
+            });
+          } else {
+            Exhibition.disconnectDB();
+            callback(err, exhibition);
+          }
+        });
+  }
+
+  /**
    * Updates the all information in a specified Exhibition - except the exhibitionName.
    *
    * @param {String} exhibitionName: The name for the Exhibition.
@@ -176,7 +204,7 @@ class Exhibition {
       images,
       videos,
       website,
-      tags,
+      tags: removeDuplicates(tags.map(tag => tag.trim().toLowerCase())),
     };
     const options = { new: true };
     this.ExhibitionModel
