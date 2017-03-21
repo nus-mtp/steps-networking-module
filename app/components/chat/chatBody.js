@@ -54,6 +54,34 @@ export default class ChatBody extends Component {
     this.textInput.focus();
   }
 
+  sendMessage(senderEmail, recipientEmail, content) {
+    const body = {
+      senderEmail,
+      recipientEmail,
+      content,
+    };
+    const xhr = new XMLHttpRequest();
+    xhr.open('post', '/message/post/newMessage');
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        // success
+
+        console.log("No Error lol");
+      } else {
+        // failure
+
+        console.log("Error lol");
+        console.log("xhr");
+        console.log(xhr);
+      }
+    });
+    xhr.send(body);
+    
+    return ChatBody.PostSelf(content, this.state.messages.length);
+  }
+
   getInputBox() {
     return (
       <div className="fixed-bottom" id="chat-form-container">
@@ -129,7 +157,11 @@ export default class ChatBody extends Component {
     const str = this.textInput.value;
     const strStrip = str.trim();
     if (strStrip.length > 0) {
-      const newDiv = ChatBody.PostSelf(this.textInput.value, this.state.messages.length);
+      const newDiv = this.sendMessage(
+        this.props.email,
+        this.props.users[this.props.current],
+        this.textInput.value,
+      );
       this.addMessages(newDiv);
     }
     this.textInput.value = '';
