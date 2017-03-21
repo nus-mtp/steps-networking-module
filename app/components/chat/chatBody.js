@@ -2,24 +2,6 @@ import React, { Component } from 'react';
 import MediaQuery from 'react-responsive';
 
 export default class ChatBody extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      messages: [
-        ChatBody.PostSelf('Turkey', 0),
-        ChatBody.PostOther('Bacon', 1),
-        ChatBody.PostSelf('Test', 2),
-      ],
-    };
-
-    this.placeholder = 'Type a message...';
-    this.divStyle = {
-      paddingLeft: '15px',
-      marginLeft: this.props.marginLeft,
-    };
-  }
-
   static PostSelf(text, key = 0) {
     return (
       <div className="container form-control" id="chat-self" key={key}>
@@ -41,8 +23,30 @@ export default class ChatBody extends Component {
   }
 
   static getUserName(email) {
-    const str = 'Name of "' + email + '"';
+    const str = `Name of ${email}`;
     return str;
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      messages: [
+        ChatBody.PostSelf('Turkey', 0),
+        ChatBody.PostOther('Bacon', 1),
+        ChatBody.PostSelf('Test', 2),
+      ],
+    };
+
+    this.placeholder = 'Type a message...';
+    this.divStyle = {
+      paddingLeft: '15px',
+      marginLeft: this.props.marginLeft,
+    };
+
+    this.catchSubmit = this.catchSubmit.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.checkQuery = this.checkQuery.bind(this);
   }
 
   componentDidUpdate() {
@@ -58,13 +62,13 @@ export default class ChatBody extends Component {
           ref={(input) => { this.textInput = input; }}
           id="chat-input"
           placeholder={this.placeholder}
-          onKeyDown={this.catchSubmit.bind(this)}
+          onKeyDown={this.catchSubmit}
         />
         <button
           type="button"
           id="chat-submit-button"
           className="btn btn-default"
-          onClick={this.handleSubmit.bind(this)}
+          onClick={this.handleSubmit}
         >
           <img
             id="chat-submit-image"
@@ -142,7 +146,7 @@ export default class ChatBody extends Component {
   render() {
     return (
       <MediaQuery query={this.props.query}>
-        {this.checkQuery.bind(this)}
+        {this.checkQuery}
       </MediaQuery>
     );
   }

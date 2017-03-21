@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const postSchema = require('./post');
 
 const commentSchema = new mongoose.Schema({
   user_email: {
@@ -6,19 +7,17 @@ const commentSchema = new mongoose.Schema({
     required: 'The Email of the User who posted this Comment is used as a Foreign Key, and is t' +
         'herefore Required.',
   },
-  exhibition: {
-    type: String,
-    required: 'The Name of the Exhibition for which this Comment is posted under is used as a F' +
+  exhibition_key: {
+    type: mongoose.Schema.ObjectId,
+    required: 'The id of the Exhibition for which this Comment is posted under is used as a F' +
         'oreign Key, and is therefore Required.',
   },
-  comment: {
-    type: String,
-    trim: true,
-  },
-  date: {
-    type: Date,
-    default: Date.now,
-  },
+
+  comments: [
+    postSchema,
+  ],
 });
+
+commentSchema.index({ user_email: 1, exhibition: 1 }, { unique: true });
 
 module.exports = commentSchema;

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
+import sampleUsers from '../profile/sampleUsers';
 
 const scrollbarWidth = 15;
 const bodyMargin = 0.2 * window.innerWidth;
@@ -13,12 +14,13 @@ class Collapsable extends React.Component {
       numberOfEventPerRow: Math.floor((window.innerWidth - marginOffset) / this.props.width),
       order: this.props.serial,
       isAttended: false,
+      users: sampleUsers,
     };
 
     this.setLayout = this.setLayout.bind(this);
-    this.updateLayout = this.updateLayout.bind(this);
     this.setPresent = this.setPresent.bind(this);
     this.setAbsent = this.setAbsent.bind(this);
+    this.updateLayout = this.updateLayout.bind(this);
   }
 
   componentDidMount() {
@@ -30,14 +32,8 @@ class Collapsable extends React.Component {
     window.removeEventListener('resize', this.updateLayout);
   }
 
-  updateLayout() {
-    this.setState({
-      numberOfEventPerRow: Math.floor((window.innerWidth - marginOffset) / this.props.width),
-    });
-  }
-
   setLayout() {
-    let marginToDisplay = Math.abs(this.state.order % this.state.numberOfEventPerRow);
+    const marginToDisplay = Math.abs(this.state.order % this.state.numberOfEventPerRow);
 
     return {
       width: `calc(${this.state.numberOfEventPerRow}00% + ${(this.state.numberOfEventPerRow - 1) * 20}px)`,
@@ -48,9 +44,23 @@ class Collapsable extends React.Component {
     };
   }
 
+  setAbsent() {
+    this.setState({
+      isAttended: false,
+    });
+    this.props.changeAttendance(this.props.event.name, false);
+  }
+
+  setPresent() {
+    this.setState({
+      isAttended: true,
+    });
+    this.props.changeAttendance(this.props.event.name, true);
+  }
+
   checkAttendance() {
-    for (let attend of this.props.attendance) {
-      if (this.props.event.name == attend.name) {
+    for (const attend of this.props.attendance) {
+      if (this.props.event.name === attend.name) {
         this.setState({
           isAttended: true,
         });
@@ -58,24 +68,16 @@ class Collapsable extends React.Component {
     }
   }
 
-  setAbsent(e) {
+  updateLayout() {
     this.setState({
-      isAttended: false,
+      numberOfEventPerRow: Math.floor((window.innerWidth - marginOffset) / this.props.width),
     });
-    this.props.changeAttendance(this.props.event.name, false);
-  }
-
-  setPresent(e) {
-    this.setState({
-      isAttended: true,
-    });
-    this.props.changeAttendance(this.props.event.name, true);
   }
 
   render() {
-    let displayCollapse = (this.props.open[this.props.serial]) ? 'collapse show' : 'collapse hide';
-    let attending = (this.state.isAttended) ? 'active' : '';
-    let notAttending = (!this.state.isAttended) ? 'active' : '';
+    const displayCollapse = (this.props.open[this.props.serial]) ? 'collapse show' : 'collapse hide';
+    const attending = (this.state.isAttended) ? 'active' : '';
+    const notAttending = (!this.state.isAttended) ? 'active' : '';
 
     return (
       <div style={this.setLayout()} className={displayCollapse}>
@@ -84,16 +86,26 @@ class Collapsable extends React.Component {
             <div id="event-description">{this.props.event.description}</div>
             <div className="btn-group attendance-indicator-container" >
               <span className="event-attendance-title">Attendance: </span>
-              <label className={`btn btn-success attendance-indicator ${attending}`}>
-                <input type="radio" name="option" id="attend-yes" value="Yes"
-                className="custom-control-input"
-                onChange={this.setPresent} />
+              <label htmlFor="attend-yes" className={`btn btn-success attendance-indicator ${attending}`}>
+                <input
+                  type="radio"
+                  name="option"
+                  id="attend-yes"
+                  value="Yes"
+                  className="custom-control-input"
+                  onChange={this.setPresent}
+                />
                 Yes
               </label>
-              <label className={`btn btn-secondary attendance-indicator ${notAttending}`}>
-                <input type="radio" name="option" id="attend-no" value="No"
-                className="custom-control-input"
-                onChange={this.setAbsent} />
+              <label htmlFor="attend-no" className={`btn btn-secondary attendance-indicator ${notAttending}`}>
+                <input
+                  type="radio"
+                  name="option"
+                  id="attend-no"
+                  value="No"
+                  className="custom-control-input"
+                  onChange={this.setAbsent}
+                />
                 No
               </label>
             </div>
@@ -102,32 +114,40 @@ class Collapsable extends React.Component {
                 <hr />
                 <div id="event-reasons">
                   <span className="event-reason-title">Reason: </span>
-                  <label className="custom-control custom-checkbox">
-                    <input type="checkbox" className="custom-control-input" />
-                    <span className="custom-control-indicator"></span>
+                  <label htmlFor="cofounder-reason" className="custom-control custom-checkbox">
+                    <input id="cofounder-reason" type="checkbox" className="custom-control-input" />
+                    <span className="custom-control-indicator" />
                     <span className="custom-control-description reasons">Co-founder</span>
                   </label>
-                  <label className="custom-control custom-checkbox">
-                    <input type="checkbox" className="custom-control-input" />
-                    <span className="custom-control-indicator"></span>
+                  <label htmlFor="intern-reason" className="custom-control custom-checkbox">
+                    <input id="intern-reason" type="checkbox" className="custom-control-input" />
+                    <span className="custom-control-indicator" />
                     <span className="custom-control-description reasons">Intern</span>
                   </label>
-                  <label className="custom-control custom-checkbox">
-                    <input type="checkbox" className="custom-control-input" />
-                    <span className="custom-control-indicator"></span>
+                  <label htmlFor="fulltime-reason" className="custom-control custom-checkbox">
+                    <input id="fulltime-reason" type="checkbox" className="custom-control-input" />
+                    <span className="custom-control-indicator" />
                     <span className="custom-control-description reasons">Full-time</span>
                   </label>
-                  <label className="custom-control custom-checkbox">
-                    <input type="checkbox" className="custom-control-input" />
-                    <span className="custom-control-indicator"></span>
+                  <label htmlFor="teammate-reason" className="custom-control custom-checkbox">
+                    <input id="teammate-reason" type="checkbox" className="custom-control-input" />
+                    <span className="custom-control-indicator" />
                     <span className="custom-control-description reasons">Teammate</span>
                   </label>
                 </div>
                 <div id="event-matches">
                   <span className="event-match-title">Matches: </span>
-                  <nav className="nav">
-                    <Link className="nav-link matches" to="/match">Project1</Link>
-                    <Link className="nav-link matches" to="/match">Project2</Link>
+                  <nav className="nav d-flex flex-row justify-content-between">
+                    <div id="match-container">
+                    {
+                      this.state.users.map((users, i) =>
+                        <Link key={i} className="nav-link matches" to="/match">
+                          <img className="img-fluid user-thumbnail" src="../../resources/images/default-profile-picture.png" alt="user-image" />
+                          <div>{users.name}</div>
+                        </Link>
+                    )}
+                    </div>
+                    <button id="all-projects" className="btn btn-secondary"><Link to="/match">See More</Link></button>
                   </nav>
                 </div>
               </div>
@@ -143,12 +163,11 @@ class Collapsable extends React.Component {
 
 Collapsable.propTypes = {
   serial: React.PropTypes.number.isRequired,
-  open: React.PropTypes.array.isRequired,
-  openCollapsable: React.PropTypes.func.isRequired,
+  open: React.PropTypes.arrayOf(React.PropTypes.any).isRequired,
   width: React.PropTypes.number.isRequired,
-  event: React.PropTypes.object,
-  attendance: React.PropTypes.array,
-  //changeAttendance: React.PropTypes.element,
+  event: React.PropTypes.objectOf(React.PropTypes.string).isRequired,
+  attendance: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
+  changeAttendance: React.PropTypes.func.isRequired,
 };
 
 export default Collapsable;

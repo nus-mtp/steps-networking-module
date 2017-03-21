@@ -1,4 +1,4 @@
-import App from './components/app'
+import App from './components/app';
 import Home from './components/home/homeView';
 import Chat from './components/chat/chatView';
 import Event from './components/event/eventView';
@@ -6,7 +6,7 @@ import Project from './components/project/projectView';
 import Profile from './components/profile/profileView';
 import Login from './components/auth/loginView';
 import Signup from './components/auth/signupView';
-import Match from './components/project/match';
+import Match from './components/profile/match';
 import Auth from './database/auth';
 import Paths from './paths';
 
@@ -22,7 +22,7 @@ const routes = {
         } else {
           callback(null, Login);
         }
-      }
+      },
     },
     {
       path: Paths.login,
@@ -37,7 +37,7 @@ const routes = {
       getComponent: (nextState, callback) => {
         Auth.deauthenticateUser();
         callback(null, Login);
-      }
+      },
     },
     {
       path: Paths.project,
@@ -49,7 +49,7 @@ const routes = {
     },
     {
       path: Paths.event,
-      component: Home,
+      component: Event,
     },
     {
       path: Paths.profile,
@@ -59,7 +59,7 @@ const routes = {
       path: Paths.match,
       component: Match,
     },
-  ]
+  ],
 };
 
 export default routes;

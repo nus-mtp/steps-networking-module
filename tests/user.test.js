@@ -1,56 +1,55 @@
-const User = require('../app/database/objectClasses/User.js');
+const User = require('../server/database/objectClasses/User.js');
 const assert = require('assert');
 
-describe ('User Create',function() {
-
-  before(function(done) {
-    var userTest2 = new User(
-      'usertesting_2@user.com', 
-      'UserTest2', 
+describe('User Create', () => {
+  before((done) => {
+    const userTest2 = new User(
+      'usertesting_2@user.com',
+      'UserTest2',
       'I am the second test user.',
-      'password456', false, false, 
-      'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', 
+      'password456', false, false,
+      'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png',
       ['Producing skills', 'Photoshop', 'Illustrator', 'AutoCAD', 'Microsoft Office'],
-      []
+      [],
     );
-    userTest2.saveUser(function (err){
-      if(err){
+    userTest2.saveUser((err) => {
+      if (err) {
         console.log(err);
       }
       done();
     });
   });
 
-  after (function(done){
-    User.clearAllUser(function(err){
-      if (err){
+  after((done) => {
+    User.clearAllUsers((err) => {
+      if (err) {
         console.log(err);
       }
       done();
     });
   });
 
-  it('Should be able to add new Users', function(done) {
-    var userTest3 = new User(
-      'usertesting_3@user.com', 
-      'UserTest3', 
+  it('Should be able to add new Users', (done) => {
+    const userTest3 = new User(
+      'usertesting_3@user.com',
+      'UserTest3',
       'I am the third test user.',
-      'password789', 
-      true, 
-      false, 
-      'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', 
+      'password789',
+      true,
+      false,
+      'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png',
       ['Project Management', 'Programming skills', 'Objective C', 'C++', 'C#'],
-      ['usertesting_1@user.com', 'usertesting_2@user.com']
-    ); 
-    userTest3.saveUser(function(err) {
-      if (err){
+      ['usertesting_1@user.com', 'usertesting_2@user.com'],
+    );
+    userTest3.saveUser((err) => {
+      if (err) {
         console.log('error with saving user3');
       } else {
-        User.getUser('usertesting_3@user.com', function (err1, results){
-          if (err1){
+        User.getUser('usertesting_3@user.com', (err1, results) => {
+          if (err1) {
             console.log('error with retrieving user3');
           } else {
-            assert.notEqual(results,null);
+            assert.notEqual(results, null);
             assert.equal('UserTest3', results.name);
           }
           done();
@@ -59,230 +58,320 @@ describe ('User Create',function() {
     });
   });
 
-  it('Should not be able to add Users with duplicate email', function(done) {
-    var userTestDup = new User(
-      'usertesting_2@user.com', 
-      'UserTest2 again~!', 
+  it('Should not be able to add Users with duplicate email', (done) => {
+    const userTestDup = new User(
+      'usertesting_2@user.com',
+      'UserTest2 again~!',
       'I am the duplicated second test user.',
-      'sadawe123', 
-      false, 
-      false, 
-      'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', 
+      'sadawe123',
+      false,
+      false,
+      'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png',
       ['Project Management', 'Programming skills', 'Objective C', 'C++', 'C#'],
-      [, 'usertesting_2@user.com']
-    ); 
-    userTestDup.saveUser(function (err){
-      if (err){
-        //duplicate error expected
+      [, 'usertesting_2@user.com'],
+    );
+    userTestDup.saveUser((err) => {
+      if (err) {
+        // duplicate error expected
+      } else {
+        User.getUser('usertesting_2@user.com', (err1, results) => {
+          if (err1) {
+            console.log(err);
+          } else {
+            assert.notEqual(results, null);
+            assert.equal(results.name, 'UserTest2');
+          }
+        });
       }
-      User.getUser('usertesting_2@user.com', function(err1, results){
-        if (err1) {
-          console.log(err);
-        }
-        else if(results){
-          assert.equal(results.name, 'UserTest2');
-        }
-        else {
-          console.log('THERE IS NO SUCH RESULTS');
-        }
-        done();
-      })
+      done();
     });
   });
-
 });
 
 
-describe ('User Read',function() {
-
-  before(function(done){
-
-    var userTest1 = new User(
-      'usertesting_1@user.com', //email
-      'UserTest1', //name
-      'I am the first test user.', //description
-      'password123', //password
-      true, //will_notify
-      false, //is_deleted
-      'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', //profile_pic
-      ['Programming skills', 'C++', 'Java', 'HTML'], //skills
-      ['usertesting_2@user.com']//bookmarked users
+describe('User Read', () => {
+  before((done) => {
+    const userTest1 = new User(
+      'usertesting_1@user.com', // email
+      'UserTest1', // name
+      'I am the first test user.', // description
+      'password123', // password
+      true, // will_notify
+      false, // is_deleted
+      'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', // profile_pic
+      ['Programming skills', 'C++', 'Java', 'HTML'], // skills
+      ['usertesting_2@user.com'], // bookmarked users
     );
-    userTest1.saveUser(function (err){
-      if(err){
+    userTest1.saveUser((err) => {
+      if (err) {
         console.log(err);
       }
       done();
     });
   });
 
-  after (function(done){
-    User.clearAllUser(function(err){
-      if (err){
+  after((done) => {
+    User.clearAllUsers((err) => {
+      if (err) {
         console.log(err);
       }
       done();
     });
   });
 
-  it('Should be able to get a specific existing user', function(done){
-    User.getUser('usertesting_1@user.com', function callback(err, userObj){
-      if(err){
+  it('Should be able to get a specific existing user', (done) => {
+    User.getUser('usertesting_1@user.com', (err, userObj) => {
+      if (err) {
         console.log('Something went wrong with getting user function');
         console.log(err);
       } else if (userObj) {
         assert.equal(userObj.name, 'UserTest1');
         assert.equal('usertesting_1@user.com', userObj.email);
-      } else { 
+      } else {
         console.log('User does not exist');
       }
+      done();
     });
-    done()
   });
 
-  it('Should not be able to get an non-existing user', function(done){
-    User.getUser('usertesting_4@user.com', function callback(err, userObj){
-      if(err){
+  it('Should not be able to get an non-existing user', (done) => {
+    User.getUser('usertesting_4@user.com', (err, userObj) => {
+      if (err) {
         console.log('Something went wrong with getting user function');
-        //console.log(err);
+        // console.log(err);
+      } else {
+        assert.equal(null, userObj);
       }
-      assert.equal(null, userObj);
+      done();
     });
-    done();
   });
 });
 
 
-
-describe ('User Update',function() {
-
-  before(function(done){
-
-    var userTest1 = new User(
-      'usertesting_1@user.com', //email
-      'UserTest1', //name
-      'I am the first test user.', //description
-      'password123', //password
-      true, //will_notify
-      false, //is_deleted
-      'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', //profile_pic
-      ['Programming skills', 'C++', 'Java', 'HTML'], //skills
+describe('User Update', () => {
+  before((done) => {
+    const userTest1 = new User(
+      'usertesting_1@user.com', // email
+      'UserTest1', // name
+      'I am the first test user.', // description
+      'password123', // password
+      true, // will_notify
+      false, // is_deleted
+      'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', // profile_pic
+      ['Programming skills', 'C++', 'Java', 'HTML'], // skills
       ['usertesting_2@user.com'], //bookmarked users
     );
-    userTest1.saveUser(function(err){
-      if (err){
+    userTest1.saveUser((err) => {
+      if (err) {
         console.log(err);
       }
       done();
     });
   });
 
-  after (function(done){
-    User.clearAllUser(function(err){
-      if (err){
+  after((done) => {
+    User.clearAllUsers((err) => {
+      if (err) {
         console.log(err);
       }
       done();
     });
   });
 
-  it('Should be able to update an existing specific user', function(done){
+  it('Should be able to update the profile picture of the user', (done) => {
+    User.updateUserProfilePicture('usertesting_1@user.com', 'https://www.google.com', (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.profile_picture, 'https://www.google.com');
+      done();
+    });
+  });
+
+  it('Should be able to update description of the user', (done) => {
+    User.updateUserDescription('usertesting_1@user.com', 'edited description', (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.description, 'edited description');
+      done();
+    });
+  });
+
+  it('Should be able to update notification settings of the user', (done) => {
+    User.updateUserNotification('usertesting_1@user.com', false, (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.will_notify, false);
+      done();
+    });
+  });
+
+  it('Should not be able to push duplicates of skills into the user', (done) => {
+    User.addSkillToUserSkills('usertesting_1@user.com', 'C++', (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.skills.length, 4, result.skills.toString());
+      done();
+    });
+  });
+
+  it('Should be able to remove a specified skill from the user', (done) => {
+    User.removeSkillFromUser('usertesting_1@user.com', 'C++', (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.skills.length, 3, result.skills.toString());
+      done();
+    });
+  });
+
+  it('Should be able to set the skills for the user, without duplicates', (done) => {
+    User.setSkillsForUser('usertesting_1@user.com', ['c++', 'C++', ' C++ ', ' C++', 'C++ '], (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.skills.length, 1, result.skills.toString());
+      done();
+    });
+  });
+
+  it('The changes should persist and not affect any other fields', (done) => {
+    User.getUser('usertesting_1@user.com', (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.profile_picture, 'https://www.google.com');
+      assert.equal(result.description, 'edited description');
+      assert.equal(result.will_notify, false);
+      assert.equal(result.skills.length, 1, result.skills.toString());
+      assert.equal(result.bookmarked_users.length, 1, result.bookmarked_users);
+      done();
+    });
+  });
+
+  it('Should not be able to push duplicate emails into the bookmarks of the user', (done) => {
+    User.addBookmarkedUserForUser('usertesting_1@user.com', 'usertesting_2@user.com', (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.bookmarked_users.length, 1, result);
+      done();
+    });
+  });
+
+  it('Should not be able to remove a non-existing bookmark of the user', (done) => {
+    User.removeBookmarkedUserFromUser('usertesting_1@user.com', 'usertesting_3@user.com', (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.bookmarked_users.length, 1, result);
+      done();
+    });
+  });
+
+  it('Should be able to remove emails from the bookmarks of the user', (done) => {
+    User.removeBookmarkedUserFromUser('usertesting_1@user.com', 'usertesting_2@user.com', (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.bookmarked_users.length, 0, result);
+      done();
+    });
+  });
+
+  it('Should be able to set the bookmarks for the user, without duplicates', (done) => {
+    User.setBookmarksForUser('usertesting_1@user.com', ['usertesting_2@user.com', 'usertesting_2@user.com'], (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.bookmarked_users.length, 1, result);
+      done();
+    });
+  });
+
+  it('Should be able to update an existing specific user', (done) => {
     User.updateUser(
-      'usertesting_1@user.com', 
-      'User Test 1 Updated', 
+      'usertesting_1@user.com',
+      'User Test 1 Updated',
       'my description is updated',
-      'changedPassword', 
-      false, 
-      false, 
-      'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1', 
+      'changedPassword',
+      false,
+      false,
+      'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
       ['c++', 'C#', 'java'],
       [],
-      function(err){
-        if (err){
+      (err, results) => {
+        if (err) {
           console.log(err);
+        } else {
+          assert.notEqual(results, null);
+          assert.equal('my description is updated', results.description);
         }
-        User.getUser('usertesting_1@user.com', function(err, results){
-          if (err){
-            console.log('USER UPDATES TEST: '+err);
-          } else{
-            assert.notEqual(results, null);
-            assert.equal('my description is updated', results.description);
-          }
-        });
+        done();
       });
-    done();
   });
 
-  it ('Should not be able to update a non-existing user', function(done){
+  it('Should not be able to update a non-existing user', (done) => {
     User.updateUser(
-      'user2000@user.com', 
-      'i am a duplicate', 
+      'user2000@user.com',
+      'i am a duplicate',
       'my descript is useless',
-      'qwe141asdasd1', 
-      true, 
-      false, 
-      'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1', 
+      'qwe141asdasd1',
+      true,
+      false,
+      'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
       ['c++', 'C#', 'java'],
       [],
-      function(err){
-        if (err){
-          // no such users error expected
+      (err, results) => {
+        if (err) {
+          console.log(err);
+        } else {
+          assert.equal(null, results);
+          done();
         }
-        User.getUser('user2000@user.com', function(err,doc){
-          assert.equal(null,doc);
-        });
       });
-    done();
   });
 });
 
-describe ('User Delete',function() {
 
-  before(function(done){
-
-    var userTest2 = new User(
-      'usertesting_2@user.com', 
-      'UserTest2', 
+describe('User Delete', () => {
+  before((done) => {
+    const userTest2 = new User(
+      'usertesting_2@user.com',
+      'UserTest2',
       'I am the second test user.',
-      'password456', false, false, 
-      'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', 
+      'password456', false, false,
+      'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png',
       ['Producing skills', 'Photoshop', 'Illustrator', 'AutoCAD', 'Microsoft Office'],
       []);
-    userTest2.saveUser(function(err){
-      if (err){
+    userTest2.saveUser((err) => {
+      if (err) {
         console.log(err);
       }
       done();
     });
   });
 
-  after (function(done){
-    User.clearAllUser(function(err){
-      if (err){
+  after((done) => {
+    User.clearAllUsers((err) => {
+      if (err) {
         console.log(err);
       }
       done();
     });
   });
-  it ('should be able to mark an existing user as deleted', function(done){
-    User.setUserAsDeleted('usertesting_2@user.com', true, function callback(err, result){
-      if (err){
-        console.log('this is the error: '+err);
+
+  it('should be able to mark an existing user as deleted', (done) => {
+    User.setUserAsDeleted('usertesting_2@user.com', true, (err, result) => {
+      if (err) {
+        console.log(`this is the error: ${err}`);
       } else {
         assert.equal(true, result.is_deleted);
       }
+      done();
     });
-    done();
   });
 
-  it ('should be able to mark an "deleted" user as existing', function(done){
-    User.setUserAsDeleted('usertesting_2@user.com', false, function callback(err, result){
-      if (err){
-        console.log('this is the error: '+err);
-      } else if (result){
+  it('should be able to mark an "deleted" user as existing', (done) => {
+    User.setUserAsDeleted('usertesting_2@user.com', false, (err, result) => {
+      if (err) {
+        console.log(`this is the error: ${err}`);
+      } else if (result) {
         assert.equal(false, result.is_deleted);
       }
+      done();
     });
-    done();
   });
 });

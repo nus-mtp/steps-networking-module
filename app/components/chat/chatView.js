@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import MediaQuery from 'react-responsive';
 import ChatBody from './chatBody';
 import ChatTabs from './chatTabs';
-import Auth from '../../database/auth';
-import User from '../../database/objectClasses/User.js';
 
 export default class ChatView extends Component {
   constructor(props) {
@@ -33,27 +31,11 @@ export default class ChatView extends Component {
       minWidth: '700px',
     };
 
-    this.query = 'screen and (min-width: ' + this.state.minWidth + ')';
+    this.query = `screen and (min-width: ${this.state.minWidth})`;
     this.widthOfChatTabs = '25%';
-  }
-  
-  componentWillMount() {
-    if(Auth.isUserAuthenticated) {
-      let email = Auth.getToken().email;
-      email = email.replace('%40', '@');
-      
-      this.setState({ email });
-      console.log(email);
-      /*
-      User.getUser(email, function callback(err, userObj){
-        if(err){
-          console.log("No user desu");
-        } else {
-          let str = "UserObj is " + userObj.name;
-          console.log(str);
-        }
-      });//*/
-    }
+
+    this.changeConversation = this.changeConversation.bind(this);
+    this.showChatTabs = this.showChatTabs.bind(this);
   }
 
   changeConversation(index) {
@@ -69,8 +51,7 @@ export default class ChatView extends Component {
             width={this.widthOfChatTabs}
             users={this.state.users}
             current={this.state.current}
-            changeConversation={this.changeConversation.bind(this)}
-            email={this.state.email}
+            changeConversation={this.changeConversation}
           />
         </div>
       );
@@ -82,14 +63,13 @@ export default class ChatView extends Component {
     return (
       <div id="chat">
         <MediaQuery query={this.query}>
-          {this.showChatTabs.bind(this)}
+          {this.showChatTabs}
         </MediaQuery>
         <ChatBody
           query={this.query}
           marginLeft={this.widthOfChatTabs}
           users={this.state.users}
           current={this.state.current}
-          email={this.state.email}
         />
       </div>
     );

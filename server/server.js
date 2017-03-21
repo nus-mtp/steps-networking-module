@@ -1,12 +1,16 @@
+import currentdb from './currentdb';
+
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
 var passport = require('passport');
 var config = require('./config.json');
 
-var db = require('./database/mongodbScripts/accessMongoDB').connect(config.herokuDbUri.username, config.herokuDbUri.password,
-                                                                    config.herokuDbUri.host, config.herokuDbUri.port,
-                                                                    config.herokuDbUri.database);
+var db = require('./database/mongodbScripts/accessMongoDB').connect(config[currentdb].username,
+                                                                    config[currentdb].password,
+                                                                    config[currentdb].host,
+                                                                    config[currentdb].port,
+                                                                    config[currentdb].database);
 
 var app = express();
 var port = 3000;
@@ -37,6 +41,24 @@ var authRoutes = require('./routes/auth');
 var apiRoutes = require('./routes/api');
 app.use('/auth', authRoutes);
 app.use('/api', apiRoutes);
+
+var userRoutes = require('./routes/user');
+app.use('/user', userRoutes);
+
+var eventRoutes = require('./routes/event');
+app.use('/event', eventRoutes);
+
+var exhibitionRoutes = require('./routes/exhibition');
+app.use('/exhibition', exhibitionRoutes);
+
+var attendanceRoutes = require('./routes/attendance');
+app.use('/attendance', attendanceRoutes);
+
+var commentRoutes = require('./routes/comment');
+app.use('/comment', commentRoutes);
+
+var messageRoutes = require('./routes/message');
+app.use('/message', messageRoutes);
 
 app.listen(process.env.PORT || port, function() {
   var listeningPort = process.env.PORT || port;
