@@ -9,12 +9,31 @@ class EventView extends React.Component {
     this.state = {
       isDisplayProjects: false,
       projects: sampleProjects, // This is for all projects
-      displayProjects: sampleProjects // This is for the displayed projects
+      displayProjects: sampleProjects, // This is for the displayed projects
+      event: [],
     }
+
+    this.getEvent();
 
     this.displayAllProjects = this.displayAllProjects.bind(this);
     this.onClick = this.onClick.bind(this);
     this.updateDisplayedProjects = this.updateDisplayedProjects.bind(this);
+  }
+
+  getEvent() {
+    const pathname = this.props.location.pathname;
+    const eventName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/event/get/oneEvent/${eventName}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      this.setState({
+        event: xhr.response,
+      });
+    });
+    xhr.send();
   }
 
   displayAllProjects() {
@@ -65,21 +84,37 @@ class EventView extends React.Component {
   }
 
   render() {
+    const startDate = new Date(this.state.event.start_date).toDateString();
+    const endDate = new Date(this.state.event.end_date).toDateString();
+
     return (
       <div id="event-body" className="d-f1lex flex-column justify-content-center">
         <div className="row justify-content-center mb-4">
           <div className="col-md-6 col-12 text-center">
             <img className="img-fluid event-poster mb-2" src="../../resources/images/dummy-poster.png" alt="event-poster"/>
           </div>
-          <div className="col-md-6 col-12">
-            <h4 className="card-title">Event Name</h4>
-            <p className="card-text">Event Venue & Date & Time</p>
-          </div>
+          {
+            (this.state.event != null) ?
+              <div className="col-md-6 col-12">
+                <h4 className="card-title">{this.state.event.name}</h4>
+                <div className="card-text">
+                  <div className="event-info">{this.state.event.venue}</div>
+                  <div className="event-info">
+                  {
+                    (startDate === endDate)
+                    ? `${startDate}`
+                    : `${startDate} - ${endDate}`
+                  }
+                  </div>
+                </div>
+              </div>
+            : <div />
+          }
         </div>
         <div className="row mb-4">
           <div className="card col-md-7 col-12 mr-4">
-            <div className="event-info card-block">
-              <div className="info-type mb-2">Event Description</div>
+            <div className="card-block">
+              <div className="event-info mb-2">{this.state.event.description}</div>
               <hr/>
               <div className="mb-3">
                 <button className="btn btn-success mr-2" onClick={this.displayAllProjects}>

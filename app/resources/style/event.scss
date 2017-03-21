@@ -152,10 +152,14 @@
 }
 
 #event-body {
-  width: 80%;
+  width: 90%;
 
   .project-thumbnail {
     max-height: 80px;
+  }
+
+  .event-info {
+    font-size: 16px;
   }
 
   .btn {
