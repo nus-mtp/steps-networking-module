@@ -1,4 +1,5 @@
 const ModelHandler = require('../models/ourModels.js');
+const removeDuplicates = require('../../utils/utils').removeDuplicates;
 
 const config = require('../../config.json');
 const currentdb = require('../../currentdb.js');
@@ -72,7 +73,7 @@ class Message {
    * @param {String} recipientEmail: The email of the recipient User.
    * @param {function} callback: A function that is executed once the operation is done.
    */
-  static getMessagesForUser(recipientEmail, callback) {
+  static getMessagesToUser(recipientEmail, callback) {
     Message.connectDB();
     this.MessageModel.find({ recipient_email: recipientEmail }, (err, matchedMessages) => {
       Message.disconnectDB();
@@ -100,11 +101,19 @@ class Message {
    * @param {String} userEmail: The email of the targeted user.
    * @param {String} callback: A function that is executed once the operation is done.
    */
-  static getMessagesInvolvingUser(userEmail, callback){
+  static getEmailsInvolvingUser(userEmail, callback){
     Message.connectDB();
     this.MessageModel.find( { $or: [ {recipient_email: userEmail}, {sender_email: userEmail}] }, (err, matchedMessages) => {
       Message.disconnectDB();
-      callback(err, matchedMessages);
+      const emailArray= [];
+      for (var i = 0; i< matchedMessages.length; i++){
+        if (matchedMessages[i].sender_email !== userEmail){
+          emailArray.push(matchedMessages[i].sender_email);
+        } else {
+          emailArray.push(matchedMessages[i].recipient_email);
+        }
+      }
+      callback(err, removeDuplicates(emailArray));
     });
   }
 
