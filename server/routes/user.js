@@ -7,7 +7,7 @@ const User = require('../database/objectClasses/User');
 /**
  * Extracts out the relevant information from a supplied User document.
  *
- * @param {String} user: The User document returned from a User objectClass method.
+ * @param {Mongoose.Document} user: The User document returned from a User objectClass method.
  * @returns {{id, userEmail: *, userProfile: (*|String|string), userName: *, userDescription: *, userSkills: (*|Array|skills|{$regex}), bookmarkedUsers: (*|Array)}}
  */
 function extractUserInfo(user) {
