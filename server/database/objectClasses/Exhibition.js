@@ -114,6 +114,21 @@ class Exhibition {
   }
 
   /**
+   * Retrieve a specific Exhibition in the Database, using its ID.
+   *
+   * @param {Mongoose.Schema.ObjectId} exhibitionId:
+   *    The id of an Exhibition to search for.
+   * @param {function} callback: A function that executes once the operation is done.
+   */
+  static getExhibitionById(exhibitionId, callback) {
+    Exhibition.connectDB();
+    this.ExhibitionModel.findById(exhibitionId, (err, exhibition) => {
+      Exhibition.disconnectDB();
+      callback(err, exhibition);
+    });
+  }
+
+  /**
    * Retrieve all Exhibitions in the current Database.
    *
    * @param {function} callback: A function that is executed once the operation is done.

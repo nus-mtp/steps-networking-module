@@ -95,6 +95,35 @@ describe('Exhibition Read', () => {
     });
   });
 
+  it('Should be able to retrieve an existing exhibition by its Id', (done) => {
+    const initialQuery = new Promise((resolve, reject) => {
+      Exhibition.getExhibition('eventName2', 'exhibitionTest2', (err, doc) => {
+        if (err) {
+          reject(err);
+        } else if (doc) {
+          resolve(doc);
+        } else {
+          reject(null);
+        }
+      });
+    });
+
+    initialQuery.then(
+        (value) => {
+          Exhibition.getExhibitionById(value._id, (err, doc) => {
+            assert.equal(err, null);
+            assert.notEqual(doc, null);
+            assert.equal(value.event_name, doc.event_name);
+            assert.equal(value.exhibition_name, doc.exhibition_name);
+            done();
+          });
+        },
+        (reason) => {
+          assert.fail(reason);
+          done();
+        });
+  });
+
   it('Should not be able to retrieve a non-existing object', (done) => {
     Exhibition.getExhibition('eventName2', 'exhibitionTest4', (err, doc) => {
       if (err) {

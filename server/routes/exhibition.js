@@ -79,6 +79,27 @@ router.get('/get/oneExhibition/:eventName/:exhibitionName', (req = {}, res, next
   });
 });
 
+router.get('/get/oneExhibitionById/:exhibitionId', (req = {}, res, next) => {
+  Exhibition.getExhibitionById(req.params.exhibitionId, (err, exhibition) => {
+    if (err) {
+      if (err.name === 'CastError') {
+        console.log(err);
+        res.status(404).json('Nothing found!');
+      } else {
+        console.log(err);
+        res.status(500).json('Unable to fetch data!');
+      }
+      next();
+    } else if (exhibition) {
+      res.status(200).json(extractExhibitionInfo(exhibition));
+      next();
+    } else {
+      res.status(404).json('Nothing found!');
+      next();
+    }
+  });
+});
+
 router.post('/post/search/tag', (req = {}, res, next) => {
   if (req.body && req.body.tag) {
     Exhibition.searchExhibitionsByTag(req.body.tag, (err, exhibitions) => {
