@@ -4,7 +4,7 @@ const router = new express.Router();
 
 const User = require('../database/objectClasses/User');
 
-const extractUserInfo = require('../utils/utils');
+const extractUserInfo = require('../utils/utils').extractUserInfo;
 
 // All Routes prefixed with 'user/'
 

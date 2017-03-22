@@ -4,7 +4,7 @@ const router = new express.Router();
 
 const Exhibition = require('../database/objectClasses/Exhibition');
 
-const extractExhibitionInfo = require('../utils/utils');
+const extractExhibitionInfo = require('../utils/utils').extractExhibitionInfo;
 
 // All Routes prefixed with 'exhibition/'
 
