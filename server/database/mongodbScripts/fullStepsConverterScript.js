@@ -75,7 +75,7 @@ function upsertEvent(stepsEventObj, callback) {
     setDefaultsOnInsert: true,
   }, (err) => {
     if (err) {
-      console.log(err);
+      console.log('Cannot upsert Event!');
     }
     callback(null);
   });
@@ -107,7 +107,7 @@ function upsertUser(stepsUserObj, callback) {
     setDefaultsOnInsert: true,
   }, (err) => {
     if (err) {
-      console.log(err);
+      console.log('Cannot upsert User!');
     }
     callback(null);
   });
@@ -124,6 +124,10 @@ function upsertUser(stepsUserObj, callback) {
  * Possible Integrity Issue 2:
  * Projects which change Names will spawn new
  * Exhibition Entries and Attendance Records.
+ *
+ * Possible Integrity Issue 3:
+ * If the same User participates in several Projects from the same Module,
+ * a duplicate key error may be thrown.
  *
  * @param {Object} stepsModuleObj: A plain JS Object containing a leaned stepsModule Document.
  * @param {function} callback: Callback to indicate when
@@ -215,14 +219,14 @@ function upsertModule(stepsModuleObj, callback) {
               Event.where(eventQuery).lean().findOne((err, event) => {
                 if (err) {
                   // Unknown Error
-                  console.log(err);
+                  console.log('Cannot search for the Event when upserting Module!');
                   callback(null, null, null, null, false);
                 } else if (event) {
-                  // Event exists, Upsert Exhibition
+                  // Event exists - Upsert Exhibition
                   Exhibition.where(exhibitionQuery).findOne((err, exhibition) => {
                     if (err) {
                       // Unknown Error
-                      console.log(err);
+                      console.log('Cannot search for the Exhibition when upserting Module!');
                       callback(null, null, null, null, false);
                     } else if (exhibition) {
                       // Exhibition was Previously Inserted - Update
@@ -238,11 +242,11 @@ function upsertModule(stepsModuleObj, callback) {
 
                       exhibition.save((err) => {
                         if (err) {
-                          console.log(err);
+                          console.log('Cannot update Exhibition Document when upserting Module!');
                           callback(null, null, null, null, false);
                         } else {
-                          callback(null, exhibitionProperties.exhibitionNameKey,
-                                exhibitionProperties.eventNameKey, studentsInvolved, true);
+                          callback(null, exhibition._id,
+                                event._id, studentsInvolved, true);
                         }
                       });
                     } else {
@@ -253,17 +257,17 @@ function upsertModule(stepsModuleObj, callback) {
                       exhibitionDoc.set('tags', exhibitionProperties.tagsListKey);
                       exhibitionDoc.save((err) => {
                         if (err) {
-                          console.log(err);
+                          console.log('Cannot insert Exhibition Document when upserting Module!');
                           callback(null, null, null, null, false);
                         } else {
-                          callback(null, exhibitionProperties.exhibitionNameKey,
-                                exhibitionProperties.eventNameKey, studentsInvolved, true);
+                          callback(null, exhibitionDoc._id,
+                                event._id, studentsInvolved, true);
                         }
                       });
                     }
                   });
                 } else {
-                  // Event does not exist, Exhibition info not valid
+                  // Event does not exist - Exhibition info not valid
                   callback(null, null, null, null, false);
                 }
               });
@@ -271,77 +275,103 @@ function upsertModule(stepsModuleObj, callback) {
               callback(null, null, null, null, false);
             }
           },
-          (exhibitionName, eventName, studentsInvolved, valid, callback) => {
+          (exhibitionKey, eventKey, studentsInvolved, valid, callback) => {
             // Upsert an Attendance Listing for Each User involved in the Project,
             // only if Project Information was valid
             if (valid) {
               async.eachLimit(studentsInvolved, 5, (studentId, callback) => {
                 stepsUser.findById(studentId).lean().exec((err, student) => {
                   if (err) {
-                    console.log(err);
+                    console.log('Cannot search for stepsUser for a Project when upserting Module!');
                     callback(null);
-                  } else {
+                  } else if (student) {
                     const userQuery = {
                       email: String(student.email).trim(),
-                    };
-                    const exhibitionQuery = {
-                      event_name: String(eventName).trim(),
-                      exhibition_name: String(exhibitionName).trim(),
                     };
 
                     // Upsert Attendance
                     User.where(userQuery).lean().findOne((err, user) => {
                       if (err) {
                         // Unknown Error
-                        console.log(err);
+                        console.log('Cannot search for a User when upserting Module!');
                         callback(null);
                       } else if (user) {
-                        // User Previously Inserted
-                        Exhibition.where(exhibitionQuery).lean().findOne((err, exhibition) => {
-                          if (err) {
-                            // Unknown Error
-                            console.log(err);
-                            callback(null);
-                          } else if (exhibition) {
-                            // Both the User and Exhibition exist - Upsert Attendance Information
-                            const attendanceExhibitionQuery = {
-                              user_email: String(student.email).trim(),
-                              attendance_key: exhibition._id,
-                              attendance_type: 'exhibition',
+                        // User exists
+                        // Upsert both eventAttendance and exhibitionAttendance
+                        async.waterfall([
+                          (callback) => {
+                            // eventAttendance
+                            const eventAttendanceQuery = {
+                              user_email: userQuery.email,
+                              attendance_type: 'event',
+                              attendance_key: eventKey,
                             };
-                            Attendance.where(attendanceExhibitionQuery)
-                                .findOne((err, attendance) => {
+                            Attendance.where(eventAttendanceQuery)
+                                .findOne((err, eventAttendance) => {
                                   if (err) {
                                     // Unknown Error
-                                    console.log(err);
-                                    callback(null);
-                                  } else if (attendance) {
-                                    // The Attendance Information exists - don't need to Update
-                                    callback(null);
+                                    console.log('Cannot search for a pre-existing Attendance Document when trying to upsert the Attendance');
+                                    callback(null, false);
+                                  } else if (eventAttendance) {
+                                    // Don't do anything if eventAttendance document exists
+                                    callback(null, true);
                                   } else {
-                                    // Attendance Information does not exist - Insert
-                                    const attendanceDoc = new Attendance(attendanceExhibitionQuery);
-                                    attendanceDoc.save((err) => {
+                                    // eventAttendance document does not already exist - Insert
+                                    const eventAttendanceDoc = new Attendance(eventAttendanceQuery);
+                                    eventAttendanceDoc.save((err) => {
                                       if (err) {
                                         console.log(err);
+                                        callback(null, false);
+                                      } else {
+                                        callback(null, true);
                                       }
-                                      callback(null);
                                     });
                                   }
                                 });
-                          } else {
-                            // The User was Inserted before -
-                            // but the Exhibition has not been inserted in the Previous Step
-                            console.log(`Unable to create Attendance Record for Student under: ${exhibitionName}`);
-                            callback(null);
-                          }
-                        });
+                          },
+                          (valid, callback) => {
+                            // exhibitionAttendance
+                            if (valid) {
+                              const exhibitionAttendanceQuery = {
+                                user_email: userQuery.email,
+                                attendance_type: 'exhibition',
+                                attendance_key: exhibitionKey,
+                              };
+                              Attendance.where(exhibitionAttendanceQuery)
+                                    .findOne((err, exhibitionAttendance) => {
+                                      if (err) {
+                                            // Unknown Error
+                                        console.log(err);
+                                        callback(null);
+                                      } else if (exhibitionAttendance) {
+                                        // Don't do anything if exhibitionAttendance document exists
+                                        callback(null);
+                                      } else {
+                                        // exhibitionAttendance document does not already exist
+                                          // - Insert
+                                        const exhibitionAttendanceDoc =
+                                            new Attendance(exhibitionAttendanceQuery);
+                                        exhibitionAttendanceDoc.save((err) => {
+                                          if (err) {
+                                            console.log(err);
+                                          }
+                                          callback(null);
+                                        });
+                                      }
+                                    });
+                            } else {
+                              callback(null);
+                            }
+                          },
+                        ], callback);
                       } else {
                         // User not Inserted before -
                         // should have been inserted when reading in the STePs _User Collection
                         callback(null);
                       }
                     });
+                  } else {
+                    callback(null);
                   }
                 });
               }, (err) => {
@@ -421,7 +451,7 @@ function upsertGuests(stepsGuestObj, callback) {
         User.findOneAndUpdate(query, update,
             { new: true, upsert: true, setDefaultsOnInsert: true }, (err) => {
               if (err) {
-                console.log(err);
+                console.log('Cannot upsert User when upserting Guests!');
               }
 
               async.setImmediate(() => {
@@ -562,7 +592,7 @@ async.series([
         });
       },
       (allModules, callback) => {
-        async.eachLimit(allModules, 5, upsertModule, (err) => {
+        async.eachLimit(allModules, 1, upsertModule, (err) => {
           if (err) {
             console.log(err);
           }
