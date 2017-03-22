@@ -149,7 +149,7 @@ class Exhibition {
    */
   static searchExhibitionsByTag(tag, callback) {
     Exhibition.connectDB();
-    this.ExhibitionModel.find({ tags: { $regex: new RegExp(tag.replace('+', '\\+'), 'i') } }, (err, matchedExhibitions) => {
+    this.ExhibitionModel.find({ tags: { $regex: new RegExp(tag.trim().toLowerCase().replace('+', '\\+'), 'i') } }, (err, matchedExhibitions) => {
       Exhibition.disconnectDB();
       callback(err, matchedExhibitions);
     });
