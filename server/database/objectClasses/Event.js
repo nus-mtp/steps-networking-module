@@ -91,6 +91,21 @@ class Event {
   }
 
   /**
+   * Retrieve a specific Event from the Database, using its ID.
+   *
+   * @param {Mongoose.Schema.ObjectId} eventId:
+   *    The id of the event to search for.
+   * @param {function} callback: A function that is executed once the operation is done.
+   */
+  static getEventById(eventId, callback) {
+    Event.connectDB();
+    this.EventModel.findById(eventId, (err, event) => {
+      Event.disconnectDB();
+      callback(err, event);
+    });
+  }
+
+  /**
    * Retrieve all Events from the Database.
    *
    * @param {function} callback: A function that executes after the operation is done.
@@ -156,7 +171,7 @@ class Event {
         Event.disconnectDB();
         callback(err, results);
       });
-  } 
+  }
 
   /**
    * Updates the all information in a specified Event - except the eventName.
@@ -181,7 +196,7 @@ class Event {
         callback(err, results);
       });
   }
-  
+
   /**
    * Updates the all information in a specified Event - except the eventName.
    *
@@ -190,7 +205,6 @@ class Event {
    * @param {function} callback: A function that is executed once the operation has completed.
    */
   static updateEventTag(eventName = '', location, map, eventPicture = '', tags = [], callback) {
-    
     const update = {
       tags,
     };
@@ -205,7 +219,7 @@ class Event {
         callback(err, results);
       });
   }
-  
+
   /**
    * Removes a specific event from the Database.
    *
