@@ -33,7 +33,7 @@ function extractUserInfo(user) {
 module.exports.extractUserInfo = extractUserInfo;
 
 /**
- * Extracts out relevant information from a supplied Exhibition Document.
+ * Extracts out relevant information from a supplied Exhibition document.
  *
  * @param {Mongoose.Document} exhibition:
  *    The Exhibition document returned from a Exhibition objectClass method.
@@ -54,3 +54,23 @@ function extractExhibitionInfo(exhibition) {
 }
 
 module.exports.extractExhibitionInfo = extractExhibitionInfo;
+
+/**
+ * Extracts out releveant information from a supplied Attendance document.
+ *
+ * @param {Mongoose.Document} attendance:
+ *    The Attendance document returned from a Attendance objectClass method.
+ * @returns {{id, userEmail, attendanceType: (attendanceSchema.attendance_type|{type, enum, default}|string|string|String), attendanceKey: (number|mongoose.Schema.ObjectId|attendanceSchema.attendance_key|{type, required}|*), reasons}}
+ */
+function extractAttendanceInfo(attendance) {
+  return {
+    id: attendance._id,
+    userEmail: attendance.user_email,
+    attendanceType: attendance.attendance_type,
+    attendanceKey: attendance.attendance_key,
+    reasons: attendance.reason,
+  };
+}
+
+module.exports.extractAttendanceInfo = extractAttendanceInfo;
+
