@@ -11,9 +11,9 @@ function removeDuplicates(arr) {
 module.exports.removeDuplicates = removeDuplicates;
 
 /**
- * Extracts out the relevant information from a supplied User document.
+ * Extracts out the relevant information from a supplied User Object.
  *
- * @param {Mongoose.Document} user: The User document returned from a User objectClass method.
+ * @param {User.Object} user: The User Object returned from a User objectClass method.
  * @returns {{id, userEmail: *, userProfile: (*|String|string), userName: *, userDescription: *, userSkills: (*|Array|skills|{$regex}), bookmarkedUsers: (*|Array)}}
  */
 function extractUserInfo(user) {
@@ -33,10 +33,32 @@ function extractUserInfo(user) {
 module.exports.extractUserInfo = extractUserInfo;
 
 /**
- * Extracts out relevant information from a supplied Exhibition document.
+ * Extracts out the relevant information from a supplied Event Object.
  *
- * @param {Mongoose.Document} exhibition:
- *    The Exhibition document returned from a Exhibition objectClass method.
+ * @param {Event.Object} event: The Event Object returned from a Event objectClass method.
+ * @returns {{id, name, start_date: (*|Date|eventSchema.start_date|{type, default}), end_date: (*|Date|eventSchema.end_date|{type, default}), venue: (*|string|String), description: (string|*|string|string|string|String), event_poster: (*|String|string|string), siteMap, tags}}
+ */
+function extractEventInfo(event) {
+  return {
+    id: event._id,
+    name: event.event_name,
+    start_date: event.start_date,
+    end_date: event.end_date,
+    venue: event.event_location,
+    description: event.event_description,
+    event_poster: event.event_picture,
+    siteMap: event.map,
+    tags: event.tags,
+  };
+}
+
+module.exports.extractEventInfo = extractEventInfo;
+
+/**
+ * Extracts out relevant information from a supplied Exhibition Object.
+ *
+ * @param {Exhibition.Object} exhibition:
+ *    The Exhibition Object returned from a Exhibition objectClass method.
  * @returns {{id, exhibitionName, exhibitionDescription: (*|string|String|string), eventName, website: (*|String), poster: (*|number|String|string), images: (*|Array|HTMLCollection), videos: (*|Array), tags}}
  */
 function extractExhibitionInfo(exhibition) {
@@ -56,10 +78,10 @@ function extractExhibitionInfo(exhibition) {
 module.exports.extractExhibitionInfo = extractExhibitionInfo;
 
 /**
- * Extracts out releveant information from a supplied Attendance document.
+ * Extracts out relevant information from a supplied Attendance Object.
  *
- * @param {Mongoose.Document} attendance:
- *    The Attendance document returned from a Attendance objectClass method.
+ * @param {Attendance.Object} attendance:
+ *    The Attendance Object returned from a Attendance objectClass method.
  * @returns {{id, userEmail, attendanceType: (attendanceSchema.attendance_type|{type, enum, default}|string|string|String), attendanceKey: (number|mongoose.Schema.ObjectId|attendanceSchema.attendance_key|{type, required}|*), reasons}}
  */
 function extractAttendanceInfo(attendance) {
