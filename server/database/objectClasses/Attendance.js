@@ -50,7 +50,7 @@ class Attendance {
       .initWithParameters(username, password, host, port, dbName);
     this.AttendanceModel = this.ModelHandler.getAttendanceModel();
     this.attendanceModelDoc = new this.AttendanceModel({
-      user_email: userEmail,
+      user_email: userEmail.trim(),
       attendance_key: attendanceKey,
       attendance_type: attendanceType,
       reason,
