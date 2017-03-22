@@ -15,7 +15,6 @@ class Event extends React.Component {
         return true;
       }
     }
-
     return false;
   }
 
@@ -30,6 +29,8 @@ class Event extends React.Component {
       boxShadow: '2px 2px 15px 0px rgba(200,200,200,1)',
       zIndex: 0,
     } : {};
+
+    const eventDate = new Date(this.props.event.start_date);
 
     return (
       <div id="event-info">
@@ -54,7 +55,7 @@ class Event extends React.Component {
               ? <div className="attendance-badge"><img id="attendance-badge-image" src="../../resources/images/check-icon.svg" alt="check-icon" />Attending</div>
               : <div className="attendance-badge" />
             }
-            <div className="event-info">{this.props.event.date}</div>
+            <div className="event-info">{eventDate.toDateString()}</div>
             <div className="event-info">{this.props.event.venue}</div>
           </div>
         </div>

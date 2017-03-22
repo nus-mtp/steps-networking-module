@@ -8,41 +8,58 @@ class HomeView extends React.Component {
   constructor(props) {
     super(props);
 
-    const numOfEvents = 8; // Change according to num of events
-    this.initial = [];
-    for (let i = 0; i < numOfEvents; i++) {
-      this.initial.push(false);
-    }
+    const nowDate = new Date();
 
     this.state = {
-      open: this.initial,
-      numOfEvents: numOfEvents,
+      open: null,
       events: null,
+      displayedEvents: [],
       attendance: sampleAttendance,
+      todayDate: nowDate,
+      currentTab: 'ongoing',
     };
 
-    this.getAllEvents();
+    this.initializeStates();
 
     this.openCollapsable = this.openCollapsable.bind(this);
     this.changeAttendance = this.changeAttendance.bind(this);
+    this.changeView = this.changeView.bind(this);
+    this.formatMilli = this.formatMilli.bind(this);
+    this.createFalseArray = this.createFalseArray.bind(this);
   }
 
-  getAllEvents() {
+  initializeStates() {
     const xhr = new XMLHttpRequest();
     xhr.open('get', '/event/get/allEvents');
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
+      const nowTime = this.state.todayDate.getTime();
+      const copy = xhr.response;
+      const remainder = copy.filter((event) => {
+        if (nowTime > this.formatMilli(event.start_date) && nowTime < this.formatMilli(event.end_date))
+          return event;
+      });
       this.setState({
         events: xhr.response,
+        displayedEvents: remainder,
+        open: this.createFalseArray(remainder.length),
       });
     });
     xhr.send();
   }
 
+  createFalseArray(n) {
+    let array = [];
+    for (let i = 0; i < n; i += 1) {
+      array.push(false);
+    }
+    return array;
+  }
+
   openCollapsable(serial) {
-    const newStatus = this.initial.slice(); // ignore previous state and change all to false
-    newStatus[serial] = !this.state.open[serial];
+    const newStatus = this.createFalseArray(this.state.open.length); // ignore previous state and change all to false
+    newStatus[serial] = true;
     this.setState({ open: newStatus });
   }
 
@@ -63,16 +80,55 @@ class HomeView extends React.Component {
     }
   }
 
+  formatMilli(dateString) {
+    const date = new Date(dateString);
+    return date.getTime();
+  }
+
+  changeView(e) {
+    const id = e.target.id;
+    const copy = this.state.events.slice();
+    const nowTime = this.state.todayDate.getTime();
+    let remainder;
+    switch (id) {
+      case 'ongoing':
+        remainder = copy.filter((event) => {
+          if (nowTime > this.formatMilli(event.start_date) && nowTime < this.formatMilli(event.end_date))
+            return event;
+        });
+        break;
+      case 'upcoming':
+        remainder = copy.filter((event) => {
+          if (nowTime < this.formatMilli(event.start_date))
+            return event;
+        });
+        break;
+      case 'past':
+        remainder = copy.filter((event) => {
+          if (nowTime > this.formatMilli(event.end_date))
+            return event;
+        });
+        break;
+      default:
+        alert('no such id!');
+    }
+    this.setState({
+      displayedEvents: remainder,
+      currentTab: id,
+      open: this.createFalseArray(remainder.length),
+    });
+  }
+
   render() {
     const containerWidth = 290;
 
     return (
       <div id="home-body">
-        <Tabs />
+        <Tabs onClick={this.changeView} />
         <div id="event-list" className="d-flex justify-content-center justify-content-md-start">
         {
-          (this.state.events !== null) ?
-            this.state.events.map((event, i) =>
+          (this.state.displayedEvents.length !== 0) ?
+            this.state.displayedEvents.map((event, i) =>
               <div id="event-container" key={i}>
                 <Event
                   serial={i}
@@ -91,7 +147,10 @@ class HomeView extends React.Component {
                   changeAttendance={this.changeAttendance}
                 />
               </div>
-            ) : <div />
+            ) : <div className="no-events justify-content-center">
+                  <img src="../resources/images/sad-face.png" alt="Sorry-no-events" />
+                  <p>Sorry! There are no {this.state.currentTab} events. Please check again in the future!</p>
+                </div>
           }
         </div>
       </div>
