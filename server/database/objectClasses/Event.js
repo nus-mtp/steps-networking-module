@@ -93,7 +93,7 @@ class Event {
   /**
    * Retrieve a specific Event from the Database, using its ID.
    *
-   * @param {Mongoose.Schema.ObjectId} eventId:
+   * @param {mongoose.Schema.ObjectId} eventId:
    *    The id of the event to search for.
    * @param {function} callback: A function that is executed once the operation is done.
    */
