@@ -4,26 +4,7 @@ const router = new express.Router();
 
 const Exhibition = require('../database/objectClasses/Exhibition');
 
-/**
- * Extracts out relevant information from a supplied Exhibition Document.
- *
- * @param {Mongoose.Document} exhibition:
- *    The Exhibition document returned from a Exhibition objectClass method.
- * @returns {{id, exhibitionName, exhibitionDescription: (*|string|String|string), eventName, website: (*|String), poster: (*|number|String|string), images: (*|Array|HTMLCollection), videos: (*|Array), tags}}
- */
-function extractExhibitionInfo(exhibition) {
-  return {
-    id: exhibition._id,
-    exhibitionName: exhibition.exhibition_name,
-    exhibitionDescription: exhibition.exhibition_description,
-    eventName: exhibition.event_name,
-    website: exhibition.website,
-    poster: exhibition.poster,
-    images: exhibition.images,
-    videos: exhibition.videos,
-    tags: exhibition.tags,
-  };
-}
+const extractExhibitionInfo = require('../utils/utils');
 
 // All Routes prefixed with 'exhibition/'
 
