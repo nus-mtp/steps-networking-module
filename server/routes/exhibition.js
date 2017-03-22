@@ -32,14 +32,12 @@ router.get('/get/allExhibitions', (req = {}, res, next) => {
     if (err) {
       console.log(err);
       res.status(500).json('Unable to fetch data!');
-      next();
     } else if (exhibitions) {
       res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
-      next();
     } else {
       res.status(404).json('Nothing found!');
-      next();
     }
+    next();
   });
 });
 
@@ -49,55 +47,60 @@ router.get('/get/oneEventExhibitions/:eventName', (req = {}, res, next) => {
       if (err) {
         console.log(err);
         res.status(500).json('Unable to fetch data!');
-        next();
       } else if (exhibitions) {
         res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
-        next();
       } else {
         res.status(404).json('Nothing found!');
-        next();
       }
+      next();
     });
   } else {
     res.status(400).json('Bad Request!');
+    next();
   }
 });
 
 router.get('/get/oneExhibition/:eventName/:exhibitionName', (req = {}, res, next) => {
-  Exhibition.getExhibition(req.params.eventName, req.params.exhibitionName, (err, exhibition) => {
-    if (err) {
-      console.log(err);
-      res.status(500).json('Unable to fetch data!');
+  if (req.params && req.params.eventName && req.params.exhibitionName) {
+    Exhibition.getExhibition(req.params.eventName, req.params.exhibitionName, (err, exhibition) => {
+      if (err) {
+        console.log(err);
+        res.status(500).json('Unable to fetch data!');
+      } else if (exhibition) {
+        res.status(200).json(extractExhibitionInfo(exhibition));
+      } else {
+        res.status(404).json('Nothing found!');
+      }
       next();
-    } else if (exhibition) {
-      res.status(200).json(extractExhibitionInfo(exhibition));
-      next();
-    } else {
-      res.status(404).json('Nothing found!');
-      next();
-    }
-  });
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
 });
 
 router.get('/get/oneExhibitionById/:exhibitionId', (req = {}, res, next) => {
-  Exhibition.getExhibitionById(req.params.exhibitionId, (err, exhibition) => {
-    if (err) {
-      if (err.name === 'CastError') {
-        console.log(err);
-        res.status(404).json('Nothing found!');
+  if (req.params && req.params.exhibitionId) {
+    Exhibition.getExhibitionById(req.params.exhibitionId, (err, exhibition) => {
+      if (err) {
+        if (err.name === 'CastError') {
+          console.log(err);
+          res.status(404).json('Nothing found!');
+        } else {
+          console.log(err);
+          res.status(500).json('Unable to fetch data!');
+        }
+      } else if (exhibition) {
+        res.status(200).json(extractExhibitionInfo(exhibition));
       } else {
-        console.log(err);
-        res.status(500).json('Unable to fetch data!');
+        res.status(404).json('Nothing found!');
       }
       next();
-    } else if (exhibition) {
-      res.status(200).json(extractExhibitionInfo(exhibition));
-      next();
-    } else {
-      res.status(404).json('Nothing found!');
-      next();
-    }
-  });
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
 });
 
 router.post('/post/search/tag', (req = {}, res, next) => {
