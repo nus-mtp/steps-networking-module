@@ -192,9 +192,13 @@ function upsertModule(stepsModuleObj, callback) {
             callback(null, exhibitionProperties, studentsInvolved, valid);
           },
           (exhibitionProperties, studentsInvolved, valid, callback) => {
-            // Upsert an Exhibition Listing, only if Project Information was valid
+            // Upsert an Exhibition Listing,
+            // only if the Event exists and Project Information was valid
             if (valid) {
-              const query = {
+              const eventQuery = {
+                event_name: exhibitionProperties.eventNameKey,
+              };
+              const exhibitionQuery = {
                 event_name: exhibitionProperties.eventNameKey,
                 exhibition_name: exhibitionProperties.exhibitionNameKey,
               };
@@ -207,47 +211,64 @@ function upsertModule(stepsModuleObj, callback) {
                 website: exhibitionProperties.websiteLinkKey,
               };
 
-              // Upsert Exhibition
-              Exhibition.where(query).findOne((err, doc) => {
-                if (err) { // Unknown Error
+              // Check if Event exists
+              Event.where(eventQuery).lean().findOne((err, event) => {
+                if (err) {
+                  // Unknown Error
                   console.log(err);
-                  callback(null, exhibitionProperties.exhibitionNameKey,
-                      exhibitionProperties.eventNameKey, studentsInvolved, valid);
-                } else if (doc) { // Exhibition was Previously Inserted - Update
-                  doc.set('exhibition_name', update.exhibition_name);
-                  doc.set('event_name', update.event_name);
-                  doc.set('exhibition_description', update.exhibition_description);
-                  doc.set('poster', update.poster);
-                  doc.set('website', update.website);
-
-                  doc.set('images', removeDuplicates(doc.get('images').concat(exhibitionProperties.imagesListKey)));
-                  doc.set('videos', removeDuplicates(doc.get('videos').concat(exhibitionProperties.videosListKey)));
-                  doc.set('tags', removeDuplicates(doc.get('tags').concat(exhibitionProperties.tagsListKey)));
-
-                  doc.save((err) => {
+                  callback(null, null, null, null, false);
+                } else if (event) {
+                  // Event exists, Upsert Exhibition
+                  Exhibition.where(exhibitionQuery).findOne((err, exhibition) => {
                     if (err) {
+                      // Unknown Error
                       console.log(err);
+                      callback(null, null, null, null, false);
+                    } else if (exhibition) {
+                      // Exhibition was Previously Inserted - Update
+                      exhibition.set('exhibition_name', update.exhibition_name);
+                      exhibition.set('event_name', update.event_name);
+                      exhibition.set('exhibition_description', update.exhibition_description);
+                      exhibition.set('poster', update.poster);
+                      exhibition.set('website', update.website);
+
+                      exhibition.set('images', removeDuplicates(exhibition.get('images').concat(exhibitionProperties.imagesListKey)));
+                      exhibition.set('videos', removeDuplicates(exhibition.get('videos').concat(exhibitionProperties.videosListKey)));
+                      exhibition.set('tags', removeDuplicates(exhibition.get('tags').concat(exhibitionProperties.tagsListKey)));
+
+                      exhibition.save((err) => {
+                        if (err) {
+                          console.log(err);
+                          callback(null, null, null, null, false);
+                        } else {
+                          callback(null, exhibitionProperties.exhibitionNameKey,
+                                exhibitionProperties.eventNameKey, studentsInvolved, true);
+                        }
+                      });
+                    } else {
+                      // Exhibition is a Potential New Entry - Insert
+                      const exhibitionDoc = new Exhibition(update);
+                      exhibitionDoc.set('images', exhibitionProperties.imagesListKey);
+                      exhibitionDoc.set('videos', exhibitionProperties.videosListKey);
+                      exhibitionDoc.set('tags', exhibitionProperties.tagsListKey);
+                      exhibitionDoc.save((err) => {
+                        if (err) {
+                          console.log(err);
+                          callback(null, null, null, null, false);
+                        } else {
+                          callback(null, exhibitionProperties.exhibitionNameKey,
+                                exhibitionProperties.eventNameKey, studentsInvolved, true);
+                        }
+                      });
                     }
-                    callback(null, exhibitionProperties.exhibitionNameKey,
-                        exhibitionProperties.eventNameKey, studentsInvolved, valid);
                   });
-                } else { // Exhibition is a Potential New Entry - Insert
-                  const exhibitionDoc = new Exhibition(update);
-                  exhibitionDoc.set('images', exhibitionProperties.imagesListKey);
-                  exhibitionDoc.set('videos', exhibitionProperties.videosListKey);
-                  exhibitionDoc.set('tags', exhibitionProperties.tagsListKey);
-                  exhibitionDoc.save((err) => {
-                    if (err) {
-                      console.log(err);
-                    }
-                    callback(null, exhibitionProperties.exhibitionNameKey,
-                        exhibitionProperties.eventNameKey, studentsInvolved, valid);
-                  });
+                } else {
+                  // Event does not exist, Exhibition info not valid
+                  callback(null, null, null, null, false);
                 }
               });
             } else {
-              callback(null, exhibitionProperties.exhibitionNameKey,
-                  exhibitionProperties.eventNameKey, studentsInvolved, valid);
+              callback(null, null, null, null, false);
             }
           },
           (exhibitionName, eventName, studentsInvolved, valid, callback) => {
@@ -283,30 +304,31 @@ function upsertModule(stepsModuleObj, callback) {
                             callback(null);
                           } else if (exhibition) {
                             // Both the User and Exhibition exist - Upsert Attendance Information
-                            const attendanceQuery = {
+                            const attendanceExhibitionQuery = {
                               user_email: String(student.email).trim(),
                               attendance_key: exhibition._id,
                               attendance_type: 'exhibition',
                             };
-                            Attendance.where(attendanceQuery).findOne((err, attendance) => {
-                              if (err) {
-                                // Unknown Error
-                                console.log(err);
-                                callback(null);
-                              } else if (attendance) {
-                                // The Attendance Information exists - don't need to Update
-                                callback(null);
-                              } else {
-                                // Attendance Information does not exist - Insert
-                                const attendanceDoc = new Attendance(attendanceQuery);
-                                attendanceDoc.save((err) => {
+                            Attendance.where(attendanceExhibitionQuery)
+                                .findOne((err, attendance) => {
                                   if (err) {
+                                    // Unknown Error
                                     console.log(err);
+                                    callback(null);
+                                  } else if (attendance) {
+                                    // The Attendance Information exists - don't need to Update
+                                    callback(null);
+                                  } else {
+                                    // Attendance Information does not exist - Insert
+                                    const attendanceDoc = new Attendance(attendanceExhibitionQuery);
+                                    attendanceDoc.save((err) => {
+                                      if (err) {
+                                        console.log(err);
+                                      }
+                                      callback(null);
+                                    });
                                   }
-                                  callback(null);
                                 });
-                              }
-                            });
                           } else {
                             // The User was Inserted before -
                             // but the Exhibition has not been inserted in the Previous Step
