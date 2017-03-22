@@ -22,8 +22,9 @@ router.get('/get/oneUserAttendances/:email', (req = {}, res, next) => {
         res.status(500).json('Unable to fetch data!');
         next();
       } else if (attendances) {
-        async.map(attendances,
+        async.mapLimit(attendances, 5,
             (attendance, callback) => {
+              // Limit number of concurrent connections made by this request to 5
               if (attendance) {
                 const attendanceKey = attendance.attendance_key;
                 const attendanceType = attendance.attendance_type;
