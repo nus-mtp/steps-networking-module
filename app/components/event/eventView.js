@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { sampleProjects } from '../project/sampleData';
+import { sampleProjects } from '../exhibition/sampleData';
 import sampleOrganizer from './sampleOrganizer';
 import EventMap from './eventMap';
 
@@ -63,7 +63,7 @@ class EventView extends React.Component {
       isDisplayExhibitions: !this.state.isDisplayExhibitions
     });
   }
-  
+
   displayEventMap() {
     this.setState({
       showEventMap: !this.state.showEventMap,
