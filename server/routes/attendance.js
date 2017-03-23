@@ -15,6 +15,100 @@ const extractAttendanceInfo = require('../utils/utils').extractAttendanceInfo;
 
 // All Routes prefixed with 'attendance/'
 
+// Get the Users attending an Event
+router.get('/get/oneEventAttendances/:eventName', (req = {}, res, next) => {
+  if (req.params && req.params.eventName) {
+    Event.getEvent(req.params.eventName, (err, event) => {
+      if (err) {
+        res.status(500).json('Unable to fetch data!');
+        next();
+      } else if (event) {
+        Attendance.searchAttendancesByKey(event._id, (err, attendances) => {
+          if (err || !attendances) {
+            res.status(500).json('Unable to fetch data!');
+            next();
+          } else {
+            async.mapLimit(attendances, 5,
+                (attendance, callback) => {
+                  User.getUser(attendance.user_email, (err, user) => {
+                    if (err || !user) {
+                      callback(null, null);
+                    } else {
+                      callback(null, extractUserInfo(user));
+                    }
+                  });
+                },
+                (err, results) => {
+                  if (err || !results) {
+                    res.status(500).json('Unable to process data!');
+                    next();
+                  } else {
+                    res.status(200).json(results.filter(item => (item !== null)));
+                    next();
+                  }
+                });
+          }
+        });
+      } else {
+        res.status(404).json('Event not found!');
+        next();
+      }
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
+// Get the Users participating in an Exhibition
+router.get('/get/oneExhibitionParticipants/:eventName/:exhibitionName', (req = {}, res, next) => {
+  if (req.params && req.params.eventName && req.params.exhibitionName) {
+    Exhibition.getExhibition(req.params.eventName, req.params.exhibitionName, (err, exhibition) => {
+      if (err) {
+        res.status(500).json('Unable to fetch data!');
+        next();
+      } else if (exhibition) {
+        Attendance.searchAttendancesByKey(exhibition._id, (err, attendances) => {
+          if (err) {
+            res.status(500).json('Unable to fetch data!');
+            next();
+          } else if (attendances) {
+            async.mapLimit(attendances, 5,
+                            (attendance, callback) => {
+                              // Limit number of concurrent connections made by this request to 5
+                              User.getUser(attendance.user_email, (err, user) => {
+                                if (err || !user) {
+                                  callback(null, null);
+                                } else {
+                                  callback(null, extractUserInfo(user));
+                                }
+                              });
+                            },
+                            (err, results) => {
+                              if (err || !results) {
+                                res.status(500).json('Unable to process data!');
+                                next();
+                              } else {
+                                res.status(200).json(results.filter(item => (item !== null)));
+                                next();
+                              }
+                            });
+          } else {
+            res.status(404).json('Cannot find any Participants for this Exhibition!');
+            next();
+          }
+        });
+      } else {
+        res.status(404).json('Unable to find Exhibition!');
+        next();
+      }
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
 // Get all the Events and Exhibitions that a User is participating in / has participated in
 router.get('/get/oneUserAttendances/:email', (req = {}, res, next) => {
   if (req.params && req.params.email) {
@@ -175,56 +269,7 @@ router.get('/get/oneUserAttendancesForEvent/:email/:eventName', (req = {}, res, 
   }
 });
 
-// Get the Users participating in an Exhibition
-router.get('/get/oneExhibitionParticipants/:eventName/:exhibitionName', (req = {}, res, next) => {
-  if (req.params && req.params.eventName && req.params.exhibitionName) {
-    Exhibition.getExhibition(req.params.eventName, req.params.exhibitionName, (err, exhibition) => {
-      if (err) {
-        res.status(500).json('Unable to fetch data!');
-        next();
-      } else if (exhibition) {
-        Attendance.searchAttendancesByKey(exhibition._id, (err, attendances) => {
-          if (err) {
-            res.status(500).json('Unable to fetch data!');
-            next();
-          } else if (attendances) {
-            async.mapLimit(attendances, 5,
-                (attendance, callback) => {
-                  // Limit number of concurrent connections made by this request to at most 5
-                  User.getUser(attendance.user_email, (err, user) => {
-                    if (err || !user) {
-                      callback(null, null);
-                    } else {
-                      callback(null, extractUserInfo(user));
-                    }
-                  });
-                },
-                (err, results) => {
-                  if (err || !results) {
-                    res.status(500).json('Unable to process data!');
-                    next();
-                  } else {
-                    res.status(200).json(results.filter(item => (item !== null)));
-                    next();
-                  }
-                });
-          } else {
-            res.status(404).json('Cannot find any Participants for this Exhibition!');
-            next();
-          }
-        });
-      } else {
-        res.status(404).json('Unable to find Exhibition!');
-        next();
-      }
-    });
-  } else {
-    res.status(400).json('Bad Request!');
-    next();
-  }
-});
-
-// Toggle Attendance for an Event
+// Toggle User's Attendance for an Event
 router.post('/post/oneEventAttendance/', (req = {}, res, next) => {
   if (req.body && req.body.userEmail && req.body.eventName) {
     User.getUser(req.body.userEmail, (err, user) => {
