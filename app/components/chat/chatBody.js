@@ -80,13 +80,10 @@ export default class ChatBody extends Component {
   
   createPostList(array = [], postFunc = ChatBody.PostSelf) {
     return array.map(function(object, index) {
-      console.log(object.content);
-      console.log(index);
-      return postFunc(object.content, index);
-      /*{ // return an object that has been made into a post and keep time stamp
+      return { // return an object that has been made into a post and keep time stamp
         content: postFunc(object.content, index),
         timestamp: object.timestamp,
-      };//*/
+      };
     });
   }
 
@@ -124,11 +121,11 @@ export default class ChatBody extends Component {
         </div>
         <div id="chat-content-container">
           { // Do stuff here
-            //this.state.messages
+            //this.state.messages // Old one
             this.createPostList(this.state[this.props.email], ChatBody.PostSelf)
-            /*.map(function(object){ // return only the div objects
+            .map(function(object){ // return only the div objects
               return object.content;
-            })*/
+            })
           }
         </div>
       </div>
