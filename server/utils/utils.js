@@ -47,7 +47,7 @@ function extractEventInfo(event) {
     venue: event.event_location,
     description: event.event_description,
     event_poster: event.event_picture,
-    siteMap: event.map,
+    siteMap: event.event_map,
     tags: event.tags,
   };
 }
