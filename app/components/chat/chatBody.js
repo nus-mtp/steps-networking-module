@@ -4,6 +4,15 @@ import MediaQuery from 'react-responsive';
 export default class ChatBody extends Component {
   constructor(props) {
     super(props);
+    
+    // Map functions to the class for easier handling    
+    this.catchSubmit = this.catchSubmit.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.checkQuery = this.checkQuery.bind(this);
+    
+    // Get all messages for both sender and receiver
+    this.retrieveAllMessages(this.props.email, this.props.users[this.props.current]);
+    this.retrieveAllMessages(this.props.users[this.props.current], this.props.email);
 
     this.state = {
       messages: [
@@ -11,8 +20,6 @@ export default class ChatBody extends Component {
         ChatBody.PostOther('Bacon', 1),
         ChatBody.PostSelf('Test', 2),
       ],
-      selfMessages: [],
-      otherMessages: [],
     };
 
     this.placeholder = 'Type a message...';
@@ -20,12 +27,6 @@ export default class ChatBody extends Component {
       paddingLeft: '15px',
       marginLeft: this.props.marginLeft,
     };
-
-    this.catchSubmit = this.catchSubmit.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.checkQuery = this.checkQuery.bind(this);
-    this.retrieveAllMessages(this.props.email, this.props.users[this.props.current]);
-    this.retrieveAllMessages(this.props.users[this.props.current], this.props.email);
   }
 
   componentDidUpdate() {
@@ -41,6 +42,7 @@ export default class ChatBody extends Component {
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
         // success
+        console.log(xhr.response.messages);
         this.setState({[`${senderEmail}`]: xhr.response.messages});
       } else {
         // failure
@@ -74,6 +76,18 @@ export default class ChatBody extends Component {
     xhr.send(formData);
     
     return ChatBody.PostSelf(content, this.state.messages.length);
+  }
+  
+  createPostList(array = [], postFunc = ChatBody.PostSelf) {
+    return array.map(function(object, index) {
+      console.log(object.content);
+      console.log(index);
+      return postFunc(object.content, index);
+      /*{ // return an object that has been made into a post and keep time stamp
+        content: postFunc(object.content, index),
+        timestamp: object.timestamp,
+      };//*/
+    });
   }
 
   getInputBox() {
@@ -109,30 +123,30 @@ export default class ChatBody extends Component {
           {ChatBody.getUserName(this.props.users[this.props.current])}
         </div>
         <div id="chat-content-container">
-          {this.state.messages}
+          { // Do stuff here
+            //this.state.messages
+            this.createPostList(this.state[this.props.email], ChatBody.PostSelf)
+            /*.map(function(object){ // return only the div objects
+              return object.content;
+            })*/
+          }
         </div>
       </div>
     );
   }
 
   checkQuery(matches) {
-    let markup = (
-      <div id="chat-body">
+    let divStyle = {};
+    if (matches) {
+      divStyle = this.divStyle
+    }
+    
+    return (
+      <div id="chat-body" style={divStyle}>
         {this.getCurrentConversation()}
         {this.getInputBox()}
       </div>
     );
-
-    if (matches) {
-      markup = (
-        <div id="chat-body" style={this.divStyle}>
-          {this.getCurrentConversation()}
-          {this.getInputBox()}
-        </div>
-      );
-    }
-
-    return markup;
   }
 
   addMessages(text) {
@@ -169,17 +183,26 @@ export default class ChatBody extends Component {
     return true;
   }
 
-  static PostSelf(text, key = 0) {
+  render() {
     return (
-      <div className="container form-control" id="chat-self" key={key}>
-        {text}
-      </div>
+      <MediaQuery query={this.props.query}>
+        {this.checkQuery}
+      </MediaQuery>
     );
   }
 
+ /* Static functions used throughout */
+  static PostSelf(text, key = 0) {
+    return ChatBody.createPost(text, 'chat-self', key);
+  }
+
   static PostOther(text, key = 0) {
+    return ChatBody.createPost(text, 'chat-other', key);
+  }
+
+  static createPost(text, id, key = 0) {
     return (
-      <div className="container-fluid form-control" id="chat-other" key={key}>
+      <div className="container-fluid form-control" id={id} key={key}>
         {text}
       </div>
     );
@@ -194,13 +217,6 @@ export default class ChatBody extends Component {
     return str;
   }
 
-  render() {
-    return (
-      <MediaQuery query={this.props.query}>
-        {this.checkQuery}
-      </MediaQuery>
-    );
-  }
 }
 
 ChatBody.propTypes = {
