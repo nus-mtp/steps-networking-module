@@ -30,19 +30,22 @@ export default class ChatView extends Component {
       email = email.replace(/%40/gi, '@');
       
       this.setState({ email });
-      console.log(email); 
+      this.getAllUsers(email);
     }
   }
 
-  getAllUsers() {
+  getAllUsers(email) {
     const xhr = new XMLHttpRequest();
-    xhr.open('get', '/event/get/allEvents');
+    xhr.open('get', `/message/get/getMessagesInvolving/${email}`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      this.setState({
-        events: xhr.response,
-      });
+      if (xhr.status === 200) {
+        // success
+        this.setState({users: xhr.response});
+      } else {
+        // failure
+      }
     });
     xhr.send();
   }

@@ -44,7 +44,6 @@ export default class ChatBody extends Component {
         this.setState({[`${senderEmail}`]: xhr.response.messages});
       } else {
         // failure
-        console.log(xhr.response);
         this.setState({[`${senderEmail}`]: []});
       }
     });
@@ -66,12 +65,13 @@ export default class ChatBody extends Component {
     const formData = `senderEmail=${body.senderEmail}&recipientEmail=${body.recipientEmail}&content=${body.content}`;
 
     const xhr = new XMLHttpRequest();
-    xhr.open('post', '/message/post/newMessage');
+    xhr.open('post', '/message/post/addMessage');
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
         // success
+        this.initialiseMessages();
       } else {
         // failure
         console.log(xhr.response);
