@@ -57,14 +57,14 @@ describe('Event Create', () => {
 
   it('Should not be able to add an Event with the same name', (done) => {
     const testevent2 = new Event('eventTest1',
-                               ' new description',
-                               new Date('October 31, 2017 00:00:00'),
-                               new Date('October 31, 2017 23:59:59'),
-                               'Someone House',
-                               'map',
-                               'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
-                               ['game'],
-                              );
+                                 ' new description',
+                                 new Date('October 31, 2017 00:00:00'),
+                                 new Date('October 31, 2017 23:59:59'),
+                                 'Someone House',
+                                 'map',
+                                 'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
+                                 ['game'],
+                                );
     testevent2.saveEvent((err) => {
       // expect duplicate error to be thrown
       assert.notEqual(err, null);
@@ -132,18 +132,18 @@ describe('Event Read', () => {
     });
 
     initialQuery.then(
-        (value) => {
-          Event.getEventById(value._id, (err, doc) => {
-            assert.equal(err, null, err);
-            assert.notEqual(doc, null, doc);
-            assert.equal(value.event_name, doc.event_name);
-            done();
-          });
-        },
-        (reason) => {
-          assert.fail(reason);
+      (value) => {
+        Event.getEventById(value._id, (err, doc) => {
+          assert.equal(err, null, err);
+          assert.notEqual(doc, null, doc);
+          assert.equal(value.event_name, doc.event_name);
           done();
         });
+      },
+      (reason) => {
+        assert.fail(reason);
+        done();
+      });
   });
 
   it('Should not be able to retrieve a non-existing object', (done) => {
@@ -220,21 +220,43 @@ describe('Event Update', () => {
     });
   });
 
-  it('Should be able to update an existing event', (done) => {
-    Event.updateEvent(
+  it ('should be able to update an existing event Picture', function(done) {
+    Event.updateEventPicture(
       'eventTest2',
-      'This is an updated description',
-      new Date('April 8, 2017 00:00:00'),
-      new Date('April 8, 2017 23:59:59'),
-      'Home',
-      'map',
-      'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
-      ['engineering', 'database'],
-      (err, results) => {
+      'newimage.png',
+      (err,  results) => {
         if (err) {
           console.log('unable to update');
         } else {
-          assert.equal('This is an updated description', results.event_description);
+          assert.equal('newimage.png', results.event_picture);
+        }
+        done();
+      });
+  });
+
+  it ('should be able to update an existing event Picture', function(done) {
+    Event.updateEventMap(
+      'eventTest2',
+      'mapString',
+      (err,  results) => {
+        if (err) {
+          console.log('unable to update');
+        } else {
+          assert.equal(results.event_map, 'mapString');
+        }
+        done();
+      });
+  });
+
+  it ('should be able to update an existing event Picture', function(done) {
+    Event.updateEventTag(
+      'eventTest2',
+      ['NUS', 'STEPS'],
+      (err,  results) => {
+        if (err) {
+          console.log('unable to update');
+        } else {
+          assert.equal(results.tags[0], 'NUS');
         }
         done();
       });
