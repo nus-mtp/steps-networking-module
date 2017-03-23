@@ -85,7 +85,7 @@ describe('Message Read', () => {
   });
 
   it ('should be able to get all messages involving a specific user', (done) => {
-    Message.getMessagesInvolvingUser('user3@user.com', (err, msgObj) => {
+    Message.getEmailsInvolvingUser('user3@user.com', (err, msgObj) => {
       console.log(msgObj);
       if (err){
         console.log("unable to get message");
@@ -120,7 +120,7 @@ describe('Message Read', () => {
   });
 
   it('should be able to read message TO a specified user', (done) => {
-    Message.getMessagesForUser('user3@user.com', (err, msgObj) => {
+    Message.getMessagesToUser('user3@user.com', (err, msgObj) => {
       if (err){
         console.log("can't get existing message");
       } else {
@@ -131,7 +131,7 @@ describe('Message Read', () => {
   });
 
   it('should not be able to read message with a non-existant user', (done) => {
-    Message.getMessagesForUser('user5@user.com', (err, msgObj) => {
+    Message.getMessagesToUser('user5@user.com', (err, msgObj) => {
       if (err){
         console.log("can't get existing message");
       } else {
