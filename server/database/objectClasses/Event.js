@@ -204,7 +204,7 @@ class Event {
    * @param {Array} tags: A list of tags used to identify Events.
    * @param {function} callback: A function that is executed once the operation has completed.
    */
-  static updateEventTag(eventName = '', location, map, eventPicture = '', tags = [], callback) {
+  static updateEventTag(eventName = '', tags = [], callback) {
     const update = {
       tags,
     };
