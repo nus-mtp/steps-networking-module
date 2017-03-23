@@ -17,7 +17,7 @@ router.get('/get/allEvents', (req = {}, res, next) => {
       res.status(200).json(eventObjs.map(eventObj => extractEventInfo(eventObj)));
       next();
     } else {
-      res.status(404).json('Nothing found!');
+      res.status(204).json('Nothing found!');
       next();
     }
   });
@@ -32,7 +32,7 @@ router.get('/get/oneEvent/:eventName', (req = {}, res, next) => {
       res.status(200).json(extractEventInfo(eventObj));
       next();
     } else {
-      res.status(404).json('Nothing found!');
+      res.status(204).json('Nothing found!');
       next();
     }
   });
@@ -47,7 +47,7 @@ router.get('/get/searchTag/:tag', (req = {}, res, next) => {
       res.status(200).json(eventObjs.map(eventObj => extractEventInfo(eventObj)));
       next();
     } else {
-      res.status(404).json('Nothing found!');
+      res.status(204).json('Nothing found!');
       next();
     }
   });
@@ -61,7 +61,7 @@ router.post('/post/updateMap', (req = {}, res, next) => {
       } else if (results) {
         res.status(200).send('Added!');
       } else {
-        res.status(404).json('Message object not found!');
+        res.status(204).json('Message object not found!');
       }
       next();
     });
@@ -78,7 +78,7 @@ router.post('/post/updateEventPicture', (req = {}, res, next) => {
       } else if (results) {
         res.status(200).send('Added!');
       } else {
-        res.status(404).json('Message object not found!');
+        res.status(204).json('Message object not found!');
       }
       next();
     });
@@ -96,7 +96,7 @@ router.post('/post/updateTags', (req = {}, res, next) => {
       } else if (results) {
         res.status(200).send('Added!');
       } else {
-        res.status(404).json('Message object not found!');
+        res.status(204).json('Message object not found!');
       }
       next();
     });
