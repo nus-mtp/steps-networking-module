@@ -11,8 +11,7 @@ export default class ChatBody extends Component {
     this.checkQuery = this.checkQuery.bind(this);
     
     // Get all messages for both sender and receiver
-    this.retrieveAllMessages(this.props.email, this.props.users[this.props.current]);
-    this.retrieveAllMessages(this.props.users[this.props.current], this.props.email);
+    this.initialiseMessages();
 
     this.state = {
       messages: [
@@ -42,14 +41,19 @@ export default class ChatBody extends Component {
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
         // success
-        console.log(xhr.response.messages);
         this.setState({[`${senderEmail}`]: xhr.response.messages});
       } else {
         // failure
         console.log(xhr.response);
+        this.setState({[`${senderEmail}`]: []});
       }
     });
     xhr.send();
+  }
+  
+  initialiseMessages() {
+    this.retrieveAllMessages(this.props.email, this.props.users[this.props.current]);
+    this.retrieveAllMessages(this.props.users[this.props.current], this.props.email);
   }
 
   sendMessage(senderEmail, recipientEmail, content) {
@@ -114,6 +118,30 @@ export default class ChatBody extends Component {
     
     return mergedList;
   }
+  
+  getMessages() {
+    if (this.state[this.props.email]!=null && 
+      this.state[this.props.users[this.props.current]]!=null && // if not null and
+      (this.state[this.props.email].length!=0 ||
+      this.state[this.props.users[this.props.current]].length!=0)) { // if not empty
+      
+      return this.mergeSortLists(
+        this.createPostList(this.state[this.props.email], ChatBody.PostSelf),
+        this.createPostList(this.state[this.props.users[this.props.current]], ChatBody.PostOther)
+      );
+      /*
+      .map(function(object){ // return only the div objects
+        return object.content;
+      })//*/
+    }
+    else {
+      return (
+        <div className="container" style={{style: 'auto'}}>
+          You have no messages with this person.
+        </div>
+      );
+    }
+  }
 
   getInputBox() {
     return (
@@ -148,17 +176,7 @@ export default class ChatBody extends Component {
           {ChatBody.getUserName(this.props.users[this.props.current])}
         </div>
         <div id="chat-content-container">
-          { // Do stuff here
-            //this.state.messages // Old one
-            this.mergeSortLists(
-              this.createPostList(this.state[this.props.email], ChatBody.PostSelf),
-              this.createPostList(this.state[this.props.users[this.props.current]], ChatBody.PostOther)
-            )
-            /*
-            .map(function(object){ // return only the div objects
-              return object.content;
-            })//*/
-          }
+          {this.getMessages.bind(this)()}
         </div>
       </div>
     );
@@ -167,7 +185,7 @@ export default class ChatBody extends Component {
   checkQuery(matches) {
     let divStyle = {};
     if (matches) {
-      divStyle = this.divStyle
+      divStyle = this.divStyle;
     }
     
     return (
