@@ -222,7 +222,7 @@ describe('Attendance Read', () => {
       if (err) {
         console.log("unable to get attendance object");
       } else {
-        assert.notEqual(obj, null);
+        assert.notEqual(obj[0], null);
       }
       done();
     });
@@ -243,7 +243,7 @@ describe('Attendance Read', () => {
           if (err) {
             console.log("unable to get attendance object");
           } else {
-            assert.notEqual(obj, null);
+            assert.notEqual(obj[0], null);
           }
           done();
         });
@@ -326,13 +326,13 @@ describe('Attendance Update', () => {
         Attendance.updateReason(
           'usertesting_3@user.com',
           result._id,
-          ['Finding internship', 'anything'],
+          ['finding internship', 'anything'],
           (err, obj) => {
             if (err) {
               console.log(err);
             } else if (obj){
               assert.notEqual(obj,null);
-              assert.equal(obj.reason[0], 'Finding internship');
+              assert.equal(obj.reason[0], 'finding internship');
             } else {
               console.log("unable to find attendance object. Run test again");
             }

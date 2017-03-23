@@ -1,15 +1,15 @@
 const Message = require("../server/database/objectClasses/Message.js");
 const assert = require('assert');
 
-describe('Message Create', function(){
-  before(function(done) {
+describe('Message Create', () => {
+  before((done) =>  {
     var testmessage1 = new Message('user2@user.com',
                                    'user1@user.com',
                                    'HELLO!',
                                    new Date('October 14, 2014 21:00:00'),
                                   );
 
-    testmessage1.saveMessage(function callback(err) {
+    testmessage1.saveMessage((err) => {
       if (err) {
         console.log(err);
       }
@@ -17,8 +17,8 @@ describe('Message Create', function(){
     });
   });
 
-  after (function(done) {
-    Message.clearAllMessage(function cb(err) {
+  after ((done) =>  {
+    Message.clearAllMessage((err) => {
       if (err) {
         console.log(err);
       }
@@ -26,22 +26,22 @@ describe('Message Create', function(){
     });
   });
 
-  it('should be able to add a new message object', function(done){
+  it('should be able to add a new message object', (done) => {
     var testmessage2 = new Message('user1@user.com',
                                    'user2@user.com',
                                    'Hi!',
                                    new Date('October 14, 2014 21:01:00'),
                                   );
-    testmessage2.saveMessage(function callback(err) {
+    testmessage2.saveMessage((err) => {
       if (err) {
         console.log(err);
       }
       // check that its inside the databse
-      Message.getMessagesFromUser('user1@user.com', function cb(err, messageObj){
+      Message.getMessagesFromUser('user1@user.com', (err, msgObj) => {
         if (err){
           console.log("error with getting message from user");
         } else {
-          assert.equal(messageObj[0].messages[0].content, 'Hi!');
+          assert.equal(msgObj[0].messages[0].content, 'Hi!');
         }
         done();
       });
@@ -49,15 +49,34 @@ describe('Message Create', function(){
   });
 });
 
-describe('Message Read', function(){
-  before(function(done) {
+describe('Message Read', () => {
+  before((done) =>  {
     var testmessage1 = new Message('user4@user.com',
                                    'user3@user.com',
                                    'Dammit',
                                    new Date('October 14, 2014 21:00:00'),
                                   );
 
-    testmessage1.saveMessage(function callback(err) {
+    testmessage1.saveMessage((err) => {
+      if (err) {
+        console.log(err);
+      }
+      var testmessage2 = new Message('user3@user.com',
+                                     'user1@user.com',
+                                     'okay can.',
+                                     new Date('October 14, 2014 21:00:00'),
+                                    );
+      testmessage2.saveMessage((err) => {
+        if (err) {
+          console.log(err);
+        }
+        done();
+      });
+    });
+  });
+
+  after ((done) =>  {
+    Message.clearAllMessage((err) => {
       if (err) {
         console.log(err);
       }
@@ -65,17 +84,21 @@ describe('Message Read', function(){
     });
   });
 
-  after (function(done) {
-    Message.clearAllMessage(function cb(err) {
-      if (err) {
+  it ('should be able to get all messages involving a specific user', (done) => {
+    Message.getEmailsInvolvingUser('user3@user.com', (err, msgObj) => {
+      console.log(msgObj);
+      if (err){
+        console.log("unable to get message");
         console.log(err);
+      } else {
+        assert.notEqual(msgObj[0], null);
       }
       done();
     });
   });
-  
-  it('should be able to read message FROM a specified user TO another specified user', function (done){
-    Message.getConversation('user4@user.com', 'user3@user.com', function cb(err, msgObj){
+
+  it('should be able to read message FROM a specified user TO another specified user', (done) => {
+    Message.getConversation('user4@user.com', 'user3@user.com', (err, msgObj) => {
       if (err){
         console.log("can't get existing message");
       } else {
@@ -84,9 +107,9 @@ describe('Message Read', function(){
       done();
     });
   });
-  
-  it('should be able to read message FROM a specified user', function (done){
-    Message.getMessagesFromUser('user4@user.com', function cb(err, msgObj){
+
+  it('should be able to read message FROM a specified user', (done) => {
+    Message.getMessagesFromUser('user4@user.com', (err, msgObj) => {
       if (err){
         console.log("can't get existing message");
       } else {
@@ -96,8 +119,8 @@ describe('Message Read', function(){
     });
   });
 
-  it('should be able to read message TO a specified user', function (done){
-    Message.getMessagesForUser('user3@user.com', function cb(err, msgObj){
+  it('should be able to read message TO a specified user', (done) => {
+    Message.getMessagesToUser('user3@user.com', (err, msgObj) => {
       if (err){
         console.log("can't get existing message");
       } else {
@@ -107,8 +130,8 @@ describe('Message Read', function(){
     });
   });
 
-  it('should not be able to read message with a non-existant user', function (done){
-    Message.getMessagesForUser('user5@user.com', function cb(err, msgObj){
+  it('should not be able to read message with a non-existant user', (done) => {
+    Message.getMessagesToUser('user5@user.com', (err, msgObj) => {
       if (err){
         console.log("can't get existing message");
       } else {
@@ -119,15 +142,15 @@ describe('Message Read', function(){
   });
 });
 
-describe('Message Update', function(){
-  before(function(done) {
+describe('Message Update', () => {
+  before((done) => {
     var testmessage1 = new Message('user4@user.com',
                                    'user3@user.com',
                                    'Dammit',
                                    new Date('October 14, 2014 21:00:00'),
                                   );
 
-    testmessage1.saveMessage(function callback(err) {
+    testmessage1.saveMessage((err) => {
       if (err) {
         console.log(err);
       }
@@ -135,8 +158,8 @@ describe('Message Update', function(){
     });
   });
 
-  after (function(done) {
-    Message.clearAllMessage(function cb(err) {
+  after ((done) => {
+    Message.clearAllMessage((err) => {
       if (err) {
         console.log(err);
       }
@@ -144,13 +167,13 @@ describe('Message Update', function(){
     });
   });
 
-  it ('should be able to append more messages into the object', function(done){
+  it ('should be able to append more messages into the object', (done) => {
     Message.addMessage(
       'user4@user.com',
       'user3@user.com',
       'Are you serious?!',
       new Date('October 15, 2014 21:00:00'),
-      function cb(err, results){
+      (err, results) => {
         if (err){
           console.log (err);
         } else {

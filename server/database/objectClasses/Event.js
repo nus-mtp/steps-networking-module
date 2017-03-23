@@ -1,4 +1,5 @@
 const ModelHandler = require('../models/ourModels.js');
+const removeDuplicates = require('../../utils/utils').removeDuplicates;
 
 const config = require('../../config.json');
 const currentdb = require('../../currentdb.js');
@@ -21,7 +22,7 @@ class Event {
    */
   static connectDB() {
     this.ModelHandler = new ModelHandler()
-        .initWithParameters(username, password, host, port, dbName);
+      .initWithParameters(username, password, host, port, dbName);
     this.EventModel = this.ModelHandler.getEventModel();
   }
 
@@ -40,14 +41,14 @@ class Event {
    * @param {Date} startDate: Date object to identify start of Event.
    * @param {Date} endDate: Date object to identify end of Event.
    * @param {String} location: The description of location, e.g how to get there
-   * @param {String} map: URL String representing an externally hosted interactive map.
+   * @param {String} map: String representing an externally hosted interactive map.
    * @param {String} eventPicture:
    *    URL String representing an externally hosted depiction of the Event.
    * @param {Array} tags: A list of tags used to identify Events.
    */
   constructor(eventName = '', eventDescription = '', startDate, endDate, location, map, eventPicture = '', tags = []) {
     this.ModelHandler = new ModelHandler()
-        .initWithParameters(username, password, host, port, dbName);
+      .initWithParameters(username, password, host, port, dbName);
     this.EventModel = this.ModelHandler.getEventModel();
     this.eventModelDoc = new this.EventModel({
       event_name: eventName,
@@ -57,7 +58,7 @@ class Event {
       event_location: location,
       event_map: map,
       event_picture: eventPicture,
-      tags,
+      tags: tags.map(tag => tag.trim().toLowerCase()),
     });
     this.ModelHandler.disconnect();
   }
@@ -84,6 +85,21 @@ class Event {
   static getEvent(eventName, callback) {
     Event.connectDB();
     this.EventModel.findOne({ event_name: eventName }, (err, event) => {
+      Event.disconnectDB();
+      callback(err, event);
+    });
+  }
+
+  /**
+   * Retrieve a specific Event from the Database, using its ID.
+   *
+   * @param {mongoose.Schema.ObjectId} eventId:
+   *    The id of the event to search for.
+   * @param {function} callback: A function that is executed once the operation is done.
+   */
+  static getEventById(eventId, callback) {
+    Event.connectDB();
+    this.EventModel.findById(eventId, (err, event) => {
       Event.disconnectDB();
       callback(err, event);
     });
@@ -138,29 +154,62 @@ class Event {
    * Updates the all information in a specified Event - except the eventName.
    *
    * @param {String} eventName: The unique email for this Event.
-   * @param {String} eventDescription: The description for the Event.
-   * @param {Date} startDate: Date object to identify start of Event.
-   * @param {Date} endDate: Date object to identify end of Event.
-   * @param {String} location: The description of location, e.g how to get there
-   * @param {Object} map: URL String representing an externally hosted interactive map.
+   * @param {String} map: String representing an externally hosted interactive map.
+   * @param {function} callback: A function that is executed once the operation has completed.
+   */
+  static updateEventMap(eventName = '', map, callback) {
+    Event.connectDB();
+    const update = {
+      event_map: map,
+    };
+    const options = { new: true };
+    this.EventModel.findOneAndUpdate(
+      { event_name: eventName },
+      update,
+      options,
+      (err, results) => {
+        Event.disconnectDB();
+        callback(err, results);
+      });
+  }
+
+  /**
+   * Updates the all information in a specified Event - except the eventName.
+   *
+   * @param {String} eventName: The unique email for this Event.
    * @param {String} eventPicture:
    *    URL String representing an externally hosted depiction of the Event.
+   * @param {function} callback: A function that is executed once the operation has completed.
+   */
+  static updateEventPicture(eventName = '', eventPicture = '', callback) {
+    Event.connectDB();
+    const update = {
+      event_picture: eventPicture,
+    };
+    const options = { new: true };
+    this.EventModel.findOneAndUpdate(
+      { event_name: eventName },
+      update,
+      options,
+      (err, results) => {
+        Event.disconnectDB();
+        callback(err, results);
+      });
+  }
+
+  /**
+   * Updates the all information in a specified Event - except the eventName.
+   *
+   * @param {String} eventName: The unique email for this Event.
    * @param {Array} tags: A list of tags used to identify Events.
    * @param {function} callback: A function that is executed once the operation has completed.
    */
-  static updateEvent(eventName = '', eventDescription = '', startDate, endDate, location, map, eventPicture = '', tags = [], callback) {
-    Event.connectDB();
+  static updateEventTag(eventName = '', tags = [], callback) {
     const update = {
-      event_name: eventName,
-      event_description: eventDescription,
-      start_date: startDate,
-      end_date: endDate,
-      event_location: location,
-      event_map: map,
-      event_picture: eventPicture,
       tags,
     };
     const options = { new: true };
+    Event.connectDB();
     this.EventModel.findOneAndUpdate(
       { event_name: eventName },
       update,

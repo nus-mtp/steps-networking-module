@@ -30,7 +30,7 @@ class EventView extends React.Component {
     const eventName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
 
     const xhr = new XMLHttpRequest();
-    xhr.open('get', `/exhibition/get/oneEventExhibition/${eventName}`);
+    xhr.open('get', `/exhibition/get/oneEventExhibitions/${eventName}`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
