@@ -39,8 +39,23 @@ class ProfileView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
+      /*if (xhr.response.userSkills) {
+        xhr.response.userSkills.map((skill, i) => {
+          return {
+            id: i,
+            text: skill,
+          };
+        });
+      }*/
+
       this.setState({
         user: xhr.response,
+        skills: (xhr.response.userSkills) ? xhr.response.userSkills.map((skill, i) => {
+          return {
+            id: i,
+            text: skill,
+          };
+        }) : [],
       });
     });
     xhr.send();
