@@ -100,6 +100,10 @@ class ProfileView extends React.Component {
       this.setState({
         skills: event.target.value,
       });
+    } else if (targetId === 'new-user-description') {
+      this.setState({
+        description: event.target.value,
+      });
     } else if (targetId === 'new-user-links') {
       this.setState({
         links: event.target.value,
@@ -162,6 +166,13 @@ class ProfileView extends React.Component {
                 { (this.state.isContentEditable) ?
                   <input id="new-user-email" type="email" className="form-control" value={this.state.email} onChange={this.changeEdit} /> :
                   <span id="user-email" className="user-info">{this.state.email}</span>
+                }
+              </div>
+              <div>
+                <span className="info-type">Description: </span>
+                { (this.state.isContentEditable) ?
+                  <input id="new-user-description" type="text" className="form-control" value={this.state.description} onChange={this.changeEdit} /> :
+                  <span id="user-description" className="user-info">{this.state.user.userDescription}</span>
                 }
               </div>
               <div>
