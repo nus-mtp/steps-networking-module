@@ -13,7 +13,7 @@ router.get('/get/allEvents', (req = {}, res, next) => {
     if (err) {
       res.status(500).json('Unable to fetch data!');
       next();
-    } else if (eventObjs) {
+    } else if (eventObjs[0]) {
       res.status(200).json(eventObjs.map(eventObj => extractEventInfo(eventObj)));
       next();
     } else {
@@ -43,7 +43,7 @@ router.get('/get/searchTag/:tag', (req = {}, res, next) => {
     if (err) {
       res.status(500).json('Unable to fetch data!');
       next();
-    } else if (eventObjs) {
+    } else if (eventObjs[0]) {
       res.status(200).json(eventObjs.map(eventObj => extractEventInfo(eventObj)));
       next();
     } else {
@@ -90,7 +90,7 @@ router.post('/post/updateEventPicture', (req = {}, res, next) => {
 
 router.post('/post/updateTags', (req = {}, res, next) => {
   if (req.body && req.body.eventName && req.body.tags) {
-    Event.updateEventPicture(req.body.eventName, req.body.tags.split(','), (err, results) => {
+    Event.updateEventTag(req.body.eventName, req.body.tags.split(','), (err, results) => {
       if (err) {
         res.status(500).json('Unable to save data!');
       } else if (results) {
