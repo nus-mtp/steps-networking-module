@@ -222,7 +222,7 @@ describe('Attendance Read', () => {
       if (err) {
         console.log("unable to get attendance object");
       } else {
-        assert.notEqual(obj, null);
+        assert.notEqual(obj[0], null);
       }
       done();
     });
@@ -243,7 +243,7 @@ describe('Attendance Read', () => {
           if (err) {
             console.log("unable to get attendance object");
           } else {
-            assert.notEqual(obj, null);
+            assert.notEqual(obj[0], null);
           }
           done();
         });
