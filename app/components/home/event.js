@@ -15,7 +15,6 @@ class Event extends React.Component {
         return true;
       }
     }
-
     return false;
   }
 
@@ -31,6 +30,8 @@ class Event extends React.Component {
       zIndex: 0,
     } : {};
 
+    const eventDate = new Date(this.props.event.start_date);
+
     return (
       <div id="event-info">
         <div
@@ -40,7 +41,7 @@ class Event extends React.Component {
           aria-expanded={this.props.open[this.props.serial]}
         >
           <div id="event-image-container">
-            <Link to="/event">
+            <Link to={`/event/${this.props.event.name}`}>
               <button className="btn btn-danger event-img-button">
                 <img src="../../resources/images/pageview-icon.svg" alt="pageview-icon" />
               </button>
@@ -54,7 +55,7 @@ class Event extends React.Component {
               ? <div className="attendance-badge"><img id="attendance-badge-image" src="../../resources/images/check-icon.svg" alt="check-icon" />Attending</div>
               : <div className="attendance-badge" />
             }
-            <div className="event-info">{this.props.event.date}</div>
+            <div className="event-info">{eventDate.toDateString()}</div>
             <div className="event-info">{this.props.event.venue}</div>
           </div>
         </div>

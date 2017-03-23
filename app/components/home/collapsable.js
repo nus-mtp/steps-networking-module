@@ -86,7 +86,7 @@ class Collapsable extends React.Component {
             <div id="event-description">{this.props.event.description}</div>
             <div className="btn-group attendance-indicator-container" >
               <span className="event-attendance-title">Attendance: </span>
-              <label htmlFor="attend-yes" className={`btn btn-success attendance-indicator ${attending}`}>
+              <label className={`btn btn-success attendance-indicator ${attending}`}>
                 <input
                   type="radio"
                   name="option"
@@ -97,7 +97,7 @@ class Collapsable extends React.Component {
                 />
                 Yes
               </label>
-              <label htmlFor="attend-no" className={`btn btn-secondary attendance-indicator ${notAttending}`}>
+              <label className={`btn btn-secondary attendance-indicator ${notAttending}`}>
                 <input
                   type="radio"
                   name="option"
