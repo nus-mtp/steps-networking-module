@@ -175,7 +175,7 @@ router.get('/get/oneUserAttendancesForEvent/:email/:eventName', (req = {}, res, 
   }
 });
 
-// Get the Users participating of an Exhibition
+// Get the Users participating in an Exhibition
 router.get('/get/oneExhibitionParticipants/:eventName/:exhibitionName', (req = {}, res, next) => {
   if (req.params && req.params.eventName && req.params.exhibitionName) {
     Exhibition.getExhibition(req.params.eventName, req.params.exhibitionName, (err, exhibition) => {
@@ -195,7 +195,7 @@ router.get('/get/oneExhibitionParticipants/:eventName/:exhibitionName', (req = {
                     if (err || !user) {
                       callback(null, null);
                     } else {
-                      callback(null, user);
+                      callback(null, extractUserInfo(user));
                     }
                   });
                 },
@@ -215,6 +215,76 @@ router.get('/get/oneExhibitionParticipants/:eventName/:exhibitionName', (req = {
         });
       } else {
         res.status(404).json('Unable to find Exhibition!');
+        next();
+      }
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
+// Toggle Attendance for an Event
+router.post('/post/oneEventAttendance/', (req = {}, res, next) => {
+  if (req.body && req.body.userEmail && req.body.eventName) {
+    User.getUser(req.body.userEmail, (err, user) => {
+      if (err) {
+        if (err.name === 'ValidationError') {
+          console.log(err);
+          res.status(403).json('Unauthorized!');
+          next();
+        } else {
+          console.log(err);
+          res.status(500).json('Unable to post data!');
+          next();
+        }
+      } else if (user) {
+        // User exists
+        Event.getEvent(req.body.eventName, (err, event) => {
+          if (err) {
+            res.status(500).json('Unable to process request!');
+            next();
+          } else if (event) {
+            // Event exisrs
+            // Toggle existance of Attendance
+            Attendance.searchAttendanceByUserAndKey(user.user_email, event._id,
+                (err, attendance) => {
+                  if (err) {
+                    res.status(500).json('Unable to process request');
+                    next();
+                  } else if (attendance) {
+                    // Delete this Attendance
+                    Attendance.deleteAttendance(attendance.user_email, attendance.attendance_key,
+                    (err) => {
+                      if (err) {
+                        res.status(500).json('Unable to Toggle Attendance!');
+                        next();
+                      } else {
+                        res.status(200).json('Attendance Toggled!');
+                        next();
+                      }
+                    });
+                  } else {
+                    // Create the Attendance
+                    const attendanceDoc = new Attendance(user.user_email, event._id, 'event', []);
+                    attendanceDoc.saveAttendance((err, attendance) => {
+                      if (err || !attendance) {
+                        res.status(500).json('Unable to Toggle Attendance!');
+                        next();
+                      } else {
+                        res.status(200).json('Attendance Toggled!');
+                        next();
+                      }
+                    });
+                  }
+                });
+          } else {
+            res.status(404).json('Unable to find Event!');
+            next();
+          }
+        });
+      } else {
+        res.status(404).json('Unable to find User!');
         next();
       }
     });

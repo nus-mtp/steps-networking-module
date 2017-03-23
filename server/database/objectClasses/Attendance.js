@@ -141,6 +141,25 @@ class Attendance {
   }
 
   /**
+   * Retrieve the Attendance Document for a User that contains a specific Event / Exhibition ID
+   *
+   * @param {String} userEmail: Used to match against the user_emails contained in all Attendances.
+   * @param {mongoose.Schema.ObjectId} attendanceKey: Used to match against the
+   *    attendance_key contained in all Attendances.
+   * @param {function} callback: A function that executes once the
+   *    operation is done.
+   */
+  static searchAttendanceByUserAndKey(userEmail, attendanceKey, callback) {
+    Attendance.connectDB();
+    this.AttendanceModel
+        .findOne({ user_email: userEmail, attendance_key: attendanceKey },
+            (err, matchedAttendance) => {
+              Attendance.disconnectDB();
+              callback(err, matchedAttendance);
+            });
+  }
+
+  /**
    * Retrieve the Attendance Documents that contain the specified reasons.
    *
    * @param {String} reason: A String indicating a reason
