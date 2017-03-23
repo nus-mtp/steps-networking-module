@@ -4,9 +4,12 @@ const router = new express.Router();
 
 const Exhibition = require('../database/objectClasses/Exhibition');
 
+// Note: Exhibition Routes return JSON objects with key names
+//       that differ from the Exhibition Mongoose Schema:
+// See extractExhibitionInfo under ../utils/utils to see actual conversion
 const extractExhibitionInfo = require('../utils/utils').extractExhibitionInfo;
 
-// All Routes prefixed with 'exhibition/'
+// Note: All Routes prefixed with 'exhibition/'
 
 router.get('/get/allExhibitions', (req = {}, res, next) => {
   Exhibition.getAllExhibitions((err, exhibitions) => {

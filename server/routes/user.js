@@ -4,9 +4,12 @@ const router = new express.Router();
 
 const User = require('../database/objectClasses/User');
 
+// Note: User Routes return JSON objects with key names
+//       that differ from the User Mongoose Schema:
+// See extractUserInfo under ../utils/utils to see actual conversion
 const extractUserInfo = require('../utils/utils').extractUserInfo;
 
-// All Routes prefixed with 'user/'
+// Note: All Routes prefixed with 'user/'
 
 router.get('/get/profile/:email', (req = {}, res, next) => {
   if (req.params && req.params.email) {

@@ -8,12 +8,15 @@ const Event = require('../database/objectClasses/Event');
 const Exhibition = require('../database/objectClasses/Exhibition');
 const Attendance = require('../database/objectClasses/Attendance');
 
+// Note: Attendance Routes return JSON objects with key names
+//    that differ from the User, Event, Exhibition and Attendance Schemas.
+// See extractExhibitionInfo under ../utils/utils to see actual conversion
 const extractUserInfo = require('../utils/utils').extractUserInfo;
 const extractEventInfo = require('../utils/utils').extractEventInfo;
 const extractExhibitionInfo = require('../utils/utils').extractExhibitionInfo;
 const extractAttendanceInfo = require('../utils/utils').extractAttendanceInfo;
 
-// All Routes prefixed with 'attendance/'
+// Note: All Routes prefixed with 'attendance/'
 
 // Get the Users attending an Event
 router.get('/get/oneEventAttendances/:eventName', (req = {}, res, next) => {
