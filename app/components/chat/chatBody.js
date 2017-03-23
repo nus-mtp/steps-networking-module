@@ -87,6 +87,34 @@ export default class ChatBody extends Component {
     });
   }
 
+  // Expects to receive arrays made of objects containing { content, timestamp }. Sorts by timestamp
+  mergeSortLists(list1 = [], list2 = []) {
+    const mergedList = [];
+    let i = 0;
+    let j = 0;
+    while (i < list1.length && j < list2.length) {
+      if (list1[i].timestamp < list2[j].timestamp) {
+        mergedList.push(list1[i].content);
+        i++;
+      } else {
+        mergedList.push(list2[j].content);
+        j++;
+      }
+    }
+    
+    while(i < list1.length) {
+      mergedList.push(list1[i].content);
+      i++;
+    }
+    
+    while(j < list2.length) {
+      mergedList.push(list2[j].content);
+      j++;
+    }
+    
+    return mergedList;
+  }
+
   getInputBox() {
     return (
       <div className="fixed-bottom" id="chat-form-container">
@@ -122,10 +150,14 @@ export default class ChatBody extends Component {
         <div id="chat-content-container">
           { // Do stuff here
             //this.state.messages // Old one
-            this.createPostList(this.state[this.props.email], ChatBody.PostSelf)
+            this.mergeSortLists(
+              this.createPostList(this.state[this.props.email], ChatBody.PostSelf),
+              this.createPostList(this.state[this.props.users[this.props.current]], ChatBody.PostOther)
+            )
+            /*
             .map(function(object){ // return only the div objects
               return object.content;
-            })
+            })//*/
           }
         </div>
       </div>
