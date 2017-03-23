@@ -4,25 +4,7 @@ const router = new express.Router();
 
 const User = require('../database/objectClasses/User');
 
-/**
- * Extracts out the relevant information from a supplied User document.
- *
- * @param {String} user: The User document returned from a User objectClass method.
- * @returns {{id, userEmail: *, userProfile: (*|String|string), userName: *, userDescription: *, userSkills: (*|Array|skills|{$regex}), bookmarkedUsers: (*|Array)}}
- */
-function extractUserInfo(user) {
-  return {
-    id: user._id,
-    userEmail: user.email,
-    userProfilePicture: user.profile_picture,
-    userName: user.name,
-    userDescription: user.description,
-    userSkills: user.skills,
-    bookmarkedUsers: user.bookmarked_users,
-    userNotification: user.will_notify,
-    isDeleted: user.is_deleted,
-  };
-}
+const extractUserInfo = require('../utils/utils').extractUserInfo;
 
 // All Routes prefixed with 'user/'
 

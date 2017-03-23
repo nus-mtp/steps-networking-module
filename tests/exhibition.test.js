@@ -84,7 +84,6 @@ describe('Exhibition Read', () => {
     });
   });
 
-
   it('Should be able to retrieve an existing object', (done) => {
     Exhibition.getExhibition('eventName2', 'exhibitionTest2', (err, doc) => {
       if (err) {
@@ -94,6 +93,36 @@ describe('Exhibition Read', () => {
       }
       done();
     });
+  });
+
+  it('Should be able to retrieve an existing exhibition by its Id', (done) => {
+    const initialQuery = new Promise((resolve, reject) => {
+      Exhibition.getExhibition('eventName2', 'exhibitionTest2', (err, doc) => {
+        if (err) {
+          reject(err);
+        } else if (doc) {
+          resolve(doc);
+        } else {
+          reject(null);
+        }
+      });
+    });
+
+    initialQuery.then(
+        (value) => {
+          Exhibition.getExhibitionById(value._id, (err, doc) => {
+            assert.equal(err, null);
+            assert.notEqual(doc, null);
+            assert.equal(value.event_name, doc.event_name);
+            assert.equal(value.exhibition_name, doc.exhibition_name);
+            done();
+          });
+        },
+        (reason) => {
+          assert.fail(reason);
+          done();
+        },
+    );
   });
 
   it('Should not be able to retrieve a non-existing object', (done) => {
@@ -107,7 +136,7 @@ describe('Exhibition Read', () => {
     });
   });
 
-  it('should be able to identify if its an existing exhibition', (done) => {
+  it('Should be able to identify if its an existing exhibition', (done) => {
     Exhibition.isExistingExhibition('eventName2', 'exhibitionTest2', (err, doc) => {
       if (err) {
         console.log('error with isExisting');
@@ -118,7 +147,7 @@ describe('Exhibition Read', () => {
     });
   });
 
-  it('should be able to identify if its an existing exhibition', (done) => {
+  it('Should be able to identify if its an existing exhibition', (done) => {
     Exhibition.isExistingExhibition('eventName2', 'exhibitionTest4', (err, doc) => {
       if (err) {
         console.log('error with isExisting');
@@ -129,8 +158,7 @@ describe('Exhibition Read', () => {
     });
   });
 
-
-  it('should be able to get a list of exhibitions by tag', (done) => {
+  it('Should be able to get a list of exhibitions by tag', (done) => {
     Exhibition.searchExhibitionsByTag('engineering', (err, results) => {
       if (err) {
         console.log('error with searching by tag unit test');
@@ -141,7 +169,7 @@ describe('Exhibition Read', () => {
     });
   });
 
-  it('should be able to get a list of exhibitions by event name', (done) => {
+  it('Should be able to get a list of exhibitions by event name', (done) => {
     Exhibition.searchExhibitionsByEvent('eventname2', (err, results) => {
       if (err) {
         console.log('error with searching by event unit test');
@@ -152,6 +180,7 @@ describe('Exhibition Read', () => {
     });
   });
 });
+
 
 describe('Exhibition Update', () => {
   before((done) => {
@@ -183,7 +212,16 @@ describe('Exhibition Update', () => {
     });
   });
 
-  it('should be able to update an existing exhibition', (done) => {
+  it('Should be able to set the tags for the exhibition, without duplicates', (done) => {
+    Exhibition.setTagsForExhibition('eventName2', 'exhibitionTest2', ['Software Engineering', 'Android', 'Web MERN Stack'], (err, results) => {
+      assert.equal(err, null, err);
+      assert.notEqual(results, null, results);
+      assert.equal(results.tags.length, 3, results.tags.toString(','));
+      done();
+    });
+  });
+
+  it('Should be able to update an existing exhibition', (done) => {
     Exhibition.updateExhibition('exhibitionTest2',
                                 'updated description',
                                 'eventName2',
@@ -193,14 +231,15 @@ describe('Exhibition Update', () => {
                                 'url.com',
                                 ['software engineering', 'android'],
                                 (err, result) => {
-      if (err) {
-        console.log('unable to update');
-      }
-      assert.equal('updated description', result.exhibition_description);
-      done();
-    });
+                                  if (err) {
+                                    console.log('unable to update');
+                                  }
+                                  assert.equal('updated description', result.exhibition_description);
+                                  done();
+                                });
   });
 });
+
 
 describe('Exhibition Delete', () => {
   before((done) => {
@@ -231,7 +270,7 @@ describe('Exhibition Delete', () => {
     });
   });
 
-  it('should be able to remove an exhibition from the database', (done) => {
+  it('Should be able to remove an exhibition from the database', (done) => {
     Exhibition.deleteExhibition('exhibitionTest1', (err) => {
       if (err) {
         console.log(err);
@@ -248,4 +287,4 @@ describe('Exhibition Delete', () => {
       });
     });
   });
-});//*/
+});//* /

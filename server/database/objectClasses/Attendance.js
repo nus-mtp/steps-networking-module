@@ -1,3 +1,4 @@
+const removeDuplicates = require('../../utils/utils').removeDuplicates;
 const ModelHandler = require('../models/ourModels.js');
 
 const config = require('../../config.json');
@@ -50,10 +51,10 @@ class Attendance {
       .initWithParameters(username, password, host, port, dbName);
     this.AttendanceModel = this.ModelHandler.getAttendanceModel();
     this.attendanceModelDoc = new this.AttendanceModel({
-      user_email: userEmail,
+      user_email: userEmail.trim(),
       attendance_key: attendanceKey,
       attendance_type: attendanceType,
-      reason,
+      reason: removeDuplicates(reason.map(currReason => currReason.trim().toLowerCase())),
     });
     this.ModelHandler.disconnect();
   }
@@ -140,17 +141,36 @@ class Attendance {
   }
 
   /**
+   * Retrieve the Attendance Document for a User that contains a specific Event / Exhibition ID
+   *
+   * @param {String} userEmail: Used to match against the user_emails contained in all Attendances.
+   * @param {mongoose.Schema.ObjectId} attendanceKey: Used to match against the
+   *    attendance_key contained in all Attendances.
+   * @param {function} callback: A function that executes once the
+   *    operation is done.
+   */
+  static searchAttendanceByUserAndKey(userEmail, attendanceKey, callback) {
+    Attendance.connectDB();
+    this.AttendanceModel
+        .findOne({ user_email: userEmail.trim(), attendance_key: attendanceKey },
+            (err, matchedAttendance) => {
+              Attendance.disconnectDB();
+              callback(err, matchedAttendance);
+            });
+  }
+
+  /**
    * Retrieve the Attendance Documents that contain the specified reasons.
    *
-   * @param {Array} reasons: An array of Strings indicating reasons
+   * @param {String} reason: A String indicating a reason
    *    for Attending an Event / Exhibition to match for.
    * @param {function} callback: A function that executes once the
    *    operation is done.
    */
-  static searchAttendancesByReason(reasons, callback) {
+  static searchAttendancesByReason(reason, callback) {
     Attendance.connectDB();
     this.AttendanceModel.find(
-      { reason: { $regex: new RegExp(reasons.replace('+', '\\+'), 'i') } },
+      { reason: { $regex: new RegExp(reason.trim().toLowerCase().replace('+', '\\+'), 'i') } },
       (err, matchedAttendances) => {
         Attendance.disconnectDB();
         callback(err, matchedAttendances);
@@ -164,15 +184,15 @@ class Attendance {
    *
    * @param {mongoose.Schema.ObjectId} attendanceKey: Used to match against the
    *    attendance_key contained in all Attendances.
-   * @param {Array} reasons: An array of Strings indicating reasons
+   * @param {String} reason: A String indicating a reason
    *    for Attending an Event / Exhibition to match for.
    * @param {function} callback: A function that executes once the
    *    operation is done.
    */
-  static searchAttendanceByKeyAndReason(attendanceKey, reasons, callback) {
+  static searchAttendanceByKeyAndReason(attendanceKey, reason, callback) {
     Attendance.connectDB();
     const query = { attendance_key: attendanceKey,
-      reason: { $regex: new RegExp(reasons.replace('+', '\\+'), 'i') },
+      reason: { $regex: new RegExp(reason.trim().toLowerCase().replace('+', '\\+'), 'i') },
     };
     this.AttendanceModel.find(query, (err, matchedAttendances) => {
       Attendance.disconnectDB();
@@ -195,11 +215,14 @@ class Attendance {
    */
   static updateReason(userEmail, attendanceKey, reason, callback) {
     Attendance.connectDB();
+
+    const processedReason = removeDuplicates(reason.map(currReason => currReason.trim().toLowerCase()));
+
     const query = {
       user_email: userEmail,
       attendance_key: attendanceKey,
     };
-    const update = { $set: { reason } };
+    const update = { $set: { reason: processedReason } };
     const options = { new: true };
     this.AttendanceModel.findOneAndUpdate(query, update, options,
                                           (err, results) => {
