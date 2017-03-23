@@ -56,10 +56,13 @@ export default class ChatBody extends Component {
 
   sendMessage(senderEmail, recipientEmail, content) {
     const body = {
-      senderEmail,
-      recipientEmail,
-      content,
+      senderEmail: encodeURIComponent(senderEmail),
+      recipientEmail: encodeURIComponent(recipientEmail),
+      content: encodeURIComponent(content),
     };
+    
+    const formData = `senderEmail=${body.senderEmail}&recipientEmail=${body.recipientEmail}&content=${body.content}`;
+
     const xhr = new XMLHttpRequest();
     xhr.open('post', '/message/post/newMessage');
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -67,17 +70,12 @@ export default class ChatBody extends Component {
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
         // success
-
-        console.log("No Error lol");
       } else {
         // failure
-
-        console.log("Error lol");
-        console.log("xhr");
-        console.log(xhr);
+        console.log(xhr.response);
       }
     });
-    xhr.send(body);
+    xhr.send(formData);
     
     return ChatBody.PostSelf(content, this.state.messages.length);
   }
