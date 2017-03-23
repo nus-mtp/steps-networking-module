@@ -2,31 +2,6 @@ import React, { Component } from 'react';
 import MediaQuery from 'react-responsive';
 
 export default class ChatBody extends Component {
-  static PostSelf(text, key = 0) {
-    return (
-      <div className="container form-control" id="chat-self" key={key}>
-        {text}
-      </div>
-    );
-  }
-
-  static PostOther(text, key = 0) {
-    return (
-      <div className="container-fluid form-control" id="chat-other" key={key}>
-        {text}
-      </div>
-    );
-  }
-
-  static scrollToBottom() {
-    document.body.scrollTop = document.body.scrollHeight;
-  }
-
-  static getUserName(email) {
-    const str = `Name of ${email}`;
-    return str;
-  }
-
   constructor(props) {
     super(props);
 
@@ -36,6 +11,8 @@ export default class ChatBody extends Component {
         ChatBody.PostOther('Bacon', 1),
         ChatBody.PostSelf('Test', 2),
       ],
+      selfMessages: [],
+      otherMessages: [],
     };
 
     this.placeholder = 'Type a message...';
@@ -47,11 +24,30 @@ export default class ChatBody extends Component {
     this.catchSubmit = this.catchSubmit.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.checkQuery = this.checkQuery.bind(this);
+    this.retrieveAllMessages(this.props.email, this.props.users[this.props.current]);
+    this.retrieveAllMessages(this.props.users[this.props.current], this.props.email);
   }
 
   componentDidUpdate() {
     ChatBody.scrollToBottom();
     this.textInput.focus();
+  }
+  
+  retrieveAllMessages(senderEmail, recipientEmail) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/message/get/getMessages/${senderEmail}/${recipientEmail}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        // success
+        this.setState({[`${senderEmail}`]: xhr.response.messages});
+      } else {
+        // failure
+        console.log(xhr.response);
+      }
+    });
+    xhr.send();
   }
 
   sendMessage(senderEmail, recipientEmail, content) {
@@ -171,6 +167,31 @@ export default class ChatBody extends Component {
       this.handleSubmit();
     }
     return true;
+  }
+
+  static PostSelf(text, key = 0) {
+    return (
+      <div className="container form-control" id="chat-self" key={key}>
+        {text}
+      </div>
+    );
+  }
+
+  static PostOther(text, key = 0) {
+    return (
+      <div className="container-fluid form-control" id="chat-other" key={key}>
+        {text}
+      </div>
+    );
+  }
+
+  static scrollToBottom() {
+    document.body.scrollTop = document.body.scrollHeight;
+  }
+
+  static getUserName(email) {
+    const str = `Name of ${email}`;
+    return str;
   }
 
   render() {
