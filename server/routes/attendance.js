@@ -24,10 +24,10 @@ router.get('/get/oneEventAttendances/:eventName', (req = {}, res, next) => {
         next();
       } else if (event) {
         Attendance.searchAttendancesByKey(event._id, (err, attendances) => {
-          if (err || !attendances) {
+          if (err) {
             res.status(500).json('Unable to fetch data!');
             next();
-          } else {
+          } else if (attendances) {
             async.mapLimit(attendances, 5,
                 (attendance, callback) => {
                   User.getUser(attendance.user_email, (err, user) => {
@@ -47,10 +47,13 @@ router.get('/get/oneEventAttendances/:eventName', (req = {}, res, next) => {
                     next();
                   }
                 });
+          } else {
+            res.status(200).json([]);
+            next();
           }
         });
       } else {
-        res.status(404).json('Event not found!');
+        res.status(204).json('Unable to find Event!!');
         next();
       }
     });
@@ -94,12 +97,12 @@ router.get('/get/oneExhibitionParticipants/:eventName/:exhibitionName', (req = {
                               }
                             });
           } else {
-            res.status(404).json('Cannot find any Participants for this Exhibition!');
+            res.status(200).json([]);
             next();
           }
         });
       } else {
-        res.status(404).json('Unable to find Exhibition!');
+        res.status(204).json('Unable to find Exhibition!');
         next();
       }
     });
@@ -157,7 +160,7 @@ router.get('/get/oneUserAttendances/:email', (req = {}, res, next) => {
               }
             });
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(200).json([]);
         next();
       }
     });
@@ -207,7 +210,7 @@ router.get('/get/oneUserEventAttendances/:email', (req = {}, res, next) => {
               }
             });
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(200).json([]);
         next();
       }
     });
@@ -259,7 +262,80 @@ router.get('/get/oneUserAttendancesForEvent/:email/:eventName', (req = {}, res, 
               }
             });
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(200).json([]);
+        next();
+      }
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
+// Search for Users attending an Event with a specified Reason
+router.post('/post/search/oneEventAttendancesWithReason/', (req = {}, res, next) => {
+  if (req.body && req.body.eventName && req.body.reason) {
+    Event.getEvent(req.body.eventName, (err, event) => {
+      if (err) {
+        res.status(500).json('Unable to process data!');
+        next();
+      } else if (event) {
+        Attendance.searchAttendanceByKeyAndReason(event._id,
+                    req.body.reason, (err, attendances) => {
+                      if (err) {
+                        res.status(500).json('Unable to process data!');
+                        next();
+                      } else if (attendances) {
+                        async.mapLimit(attendances, 5,
+                                (attendance, callback) => {
+                                  User.getUser(attendance.user_email, (err, user) => {
+                                    if (err || !user) {
+                                      callback(null, null);
+                                    } else {
+                                      callback(null, extractUserInfo(user));
+                                    }
+                                  });
+                                },
+                                (err, results) => {
+                                  if (err || !results) {
+                                    res.status(500).json('Unable to process data!');
+                                    next();
+                                  } else {
+                                    res.status(200).json(results.filter(item => (item !== null)));
+                                    next();
+                                  }
+                                });
+                      } else {
+                        res.status(200).json([]);
+                        next();
+                      }
+                    });
+      } else {
+        res.status(204).json('Unable to find Event!');
+        next();
+      }
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
+// Set Reasons for a particular Attendance
+// Note: Requires Event or Exhibition ID as request body parameter 'id'
+// Note: Requires reasons to be a Comma-Separated String rather than an Array
+// Use <Array>.toString() to generate a Comma-Separated String from an Array
+router.post('/post/set/oneAttendanceReasons', (req = {}, res, next) => {
+  if (req.body && req.body.userEmail && req.body.id && req.body.reasons) {
+    Attendance.updateReason(req.body.userEmail, req.body.id, req.body.reasons.split(','), (err, attendance) => {
+      if (err) {
+        res.status(500).json('Unable to process data!');
+        next();
+      } else if (attendance) {
+        res.status(200).json(extractAttendanceInfo(attendance));
+        next();
+      } else {
+        res.status(204).json('Unable to find attendance for specified User and Event / Exhibition');
         next();
       }
     });
@@ -325,12 +401,12 @@ router.post('/post/oneEventAttendance/', (req = {}, res, next) => {
                   }
                 });
           } else {
-            res.status(404).json('Unable to find Event!');
+            res.status(204).json('Unable to find Event!');
             next();
           }
         });
       } else {
-        res.status(404).json('Unable to find User!');
+        res.status(204).json('Unable to find User!');
         next();
       }
     });
