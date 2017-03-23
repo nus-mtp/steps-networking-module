@@ -245,9 +245,9 @@ router.post('/post/oneEventAttendance/', (req = {}, res, next) => {
             res.status(500).json('Unable to process request!');
             next();
           } else if (event) {
-            // Event exisrs
+            // Event exists
             // Toggle existance of Attendance
-            Attendance.searchAttendanceByUserAndKey(user.user_email, event._id,
+            Attendance.searchAttendanceByUserAndKey(user.email, event._id,
                 (err, attendance) => {
                   if (err) {
                     res.status(500).json('Unable to process request');
@@ -257,22 +257,23 @@ router.post('/post/oneEventAttendance/', (req = {}, res, next) => {
                     Attendance.deleteAttendance(attendance.user_email, attendance.attendance_key,
                     (err) => {
                       if (err) {
-                        res.status(500).json('Unable to Toggle Attendance!');
+                        console.log(err);
+                        res.status(500).json('Unable to Toggle Attendance to Delete!');
                         next();
                       } else {
-                        res.status(200).json('Attendance Toggled!');
+                        res.status(200).json('Attendance Removed!');
                         next();
                       }
                     });
                   } else {
                     // Create the Attendance
-                    const attendanceDoc = new Attendance(user.user_email, event._id, 'event', []);
+                    const attendanceDoc = new Attendance(user.email, event._id, 'event', []);
                     attendanceDoc.saveAttendance((err, attendance) => {
                       if (err || !attendance) {
-                        res.status(500).json('Unable to Toggle Attendance!');
+                        res.status(500).json('Unable to Toggle Attendance to Create!');
                         next();
                       } else {
-                        res.status(200).json('Attendance Toggled!');
+                        res.status(200).json('Attendance Added!');
                         next();
                       }
                     });

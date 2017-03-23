@@ -152,7 +152,7 @@ class Attendance {
   static searchAttendanceByUserAndKey(userEmail, attendanceKey, callback) {
     Attendance.connectDB();
     this.AttendanceModel
-        .findOne({ user_email: userEmail, attendance_key: attendanceKey },
+        .findOne({ user_email: userEmail.trim(), attendance_key: attendanceKey },
             (err, matchedAttendance) => {
               Attendance.disconnectDB();
               callback(err, matchedAttendance);
