@@ -4,7 +4,6 @@ class ChatTabs extends Component {
   constructor(props) {
     super(props);
 
-    this.client = 'turkey@bacon.com'; // the user who is logged in
     this.divStyle = {
       width: this.props.width,
     };
