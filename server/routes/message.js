@@ -117,7 +117,6 @@ router.post('/post/addMessage', (req = {}, res, next) => {
         next();
       } else {
         const newMessage = new Message(req.body.senderEmail, req.body.recipientEmail, req.body.content, Date.now());
-        console.log(req.body.senderEmail+ req.body.recipientEmail+ req.body.content);
         newMessage.saveMessage((err) => {
           if (err) {
             res.status(500).json('Unable to save data!');
