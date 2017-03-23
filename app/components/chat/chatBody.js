@@ -136,7 +136,7 @@ export default class ChatBody extends Component {
     }
     else {
       return (
-        <div className="container" style={{style: 'auto'}}>
+        <div className="container-fluid" style={{textAlign: 'center'}}>
           You have no messages with this person.
         </div>
       );
