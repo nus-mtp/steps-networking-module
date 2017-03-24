@@ -6,7 +6,7 @@ const Paths = {
   project: '/project',
   event: '/event(/:eventName)',
   chat: '/chat',
-  profile: '/profile',
+  profile: '/profile/:email',
   match: '/match',
 };
 
