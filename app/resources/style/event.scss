@@ -195,6 +195,15 @@
   .btn {
     font-size: 15px;
   }
+
+  #exhibition-container {
+    color: black;
+
+    #exhibition:hover {
+      background: lightseagreen;
+      color: white;
+    }
+  }
 }
 
 /* Event map */

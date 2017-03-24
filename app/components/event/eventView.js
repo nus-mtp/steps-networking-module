@@ -117,6 +117,10 @@ class EventView extends React.Component {
     this.updateDisplayedExhibitions(e.target.id);
   }
 
+  addDefaultSrc(event) {
+    event.target.src = "../../resources/images/empty-poster-placeholder.png";
+  }
+
   render() {
     const startDate = new Date(this.state.event.start_date).toDateString();
     const endDate = new Date(this.state.event.end_date).toDateString();
@@ -185,23 +189,27 @@ class EventView extends React.Component {
                       </span>
                     </div>
                     <br/>
-                    {this.state.displayExhibitions.map((exhibition, i) => <div className="d-flex flex-row mb-1" key={i}>
-                      {
-                        (exhibition.poster)
-                        ? <div className="d-flex justify-content-center thumbnail-container">
-                          <img className="img-fluid project-thumbnail" src={exhibition.poster} alt="event-poster" />
+                    {this.state.displayExhibitions.map((exhibition, i) =>
+                      <Link id="exhibition-container" to={`/exhibition/${this.state.event.name}/${exhibition.exhibitionName}`} key={i}>
+                        <div id="exhibition" className="d-flex flex-row mb-1 align-items-center">
+                          {
+                            (exhibition.poster)
+                            ? <div className="d-flex justify-content-center align-items-center thumbnail-container">
+                              <img className="img-fluid project-thumbnail" src={exhibition.poster} onError={this.addDefaultSrc} alt="event-poster" />
+                              </div>
+                            : <div className="d-flex justify-content-center thumbnail-container">
+                              <img className="img-fluid project-thumbnail" src="../../resources/images/empty-poster-placeholder.png" alt="event-poster" />
+                              </div>
+                          }
+                          <div>
+                            <div>{exhibition.exhibitionName}</div>
+                            <div>
+                              {exhibition.tags.map((tag, i) => <div key={i} className="badge badge-pill badge-info">{tag}</div>)}
+                            </div>
                           </div>
-                        : <div className="d-flex justify-content-center thumbnail-container">
-                          <img className="img-fluid project-thumbnail" src="../../resources/images/empty-poster-placeholder.png" alt="event-poster" />
-                          </div>
-                      }
-                      <div>
-                        <div>{exhibition.exhibitionName}</div>
-                        <div>
-                          {exhibition.tags.map((tag, i) => <div key={i} className="badge badge-pill badge-info">{tag}</div>)}
                         </div>
-                      </div>
-                    </div>)}
+                      </Link>
+                    )}
                   </div>
                 : <div/>
               }
