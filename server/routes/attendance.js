@@ -8,6 +8,8 @@ const Event = require('../database/objectClasses/Event');
 const Exhibition = require('../database/objectClasses/Exhibition');
 const Attendance = require('../database/objectClasses/Attendance');
 
+const removeDuplicates = require('../utils/utils').removeDuplicates;
+
 // Note: Attendance Routes return JSON objects with key names
 //       that differ from the User, Event, Exhibition and Attendance Schemas.
 // See extractExhibitionInfo under ../utils/utils to see actual conversion
@@ -63,7 +65,7 @@ router.get('/get/oneAttendanceAttendees/:id', (req = {}, res, next) => {
   }
 });
 
-// Get the Users attending an Event
+// Get the Users attending a particular Event
 router.get('/get/oneEventAttendances/:eventName', (req = {}, res, next) => {
   if (req.params && req.params.eventName) {
     Event.getEvent(req.params.eventName, (err, event) => {
@@ -111,7 +113,7 @@ router.get('/get/oneEventAttendances/:eventName', (req = {}, res, next) => {
   }
 });
 
-// Get the Users participating in an Exhibition
+// Get the Users participating in a particular Exhibition
 router.get('/get/oneExhibitionParticipants/:eventName/:exhibitionName', (req = {}, res, next) => {
   if (req.params && req.params.eventName && req.params.exhibitionName) {
     Exhibition.getExhibition(req.params.eventName, req.params.exhibitionName, (err, exhibition) => {
@@ -151,6 +153,85 @@ router.get('/get/oneExhibitionParticipants/:eventName/:exhibitionName', (req = {
         });
       } else {
         res.status(204).json('Unable to find Exhibition!');
+        next();
+      }
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
+// Get the Users participating in at least 1 Exhibition within the given Event
+// Note: Requires Event ID as request parameter 'id'
+router.get('/get/oneEventExhibitors/:id', (req = {}, res, next) => {
+  if (req.params && req.params.id) {
+    Event.getEventById(req.params.id, (err, event) => {
+      if (err) {
+        res.status(500).json('Unable to fetch data!');
+        next();
+      } else if (event) {
+        const eventName = event.event_name;
+        Exhibition.searchExhibitionsByEvent(eventName, (err, exhibitions) => {
+          if (err) {
+            res.status(500).json('Unable to fetch data!');
+            next();
+          } else if (exhibitions) {
+            async.mapLimit(exhibitions, 5,
+                  (exhibition, callback) => {
+                    if (exhibition) {
+                      Attendance.searchAttendancesByKey(exhibition._id, (err, attendances) => {
+                        if (err || !attendances) {
+                          callback(null, null);
+                        } else {
+                          callback(null, attendances.map(attendance => attendance.user_email));
+                        }
+                      });
+                    } else {
+                      callback(null, null);
+                    }
+                  },
+                  (err, results) => {
+                    if (err || !results) {
+                      res.status(500).json('Unable to process data!');
+                      next();
+                    } else {
+                      const userEmailArray = removeDuplicates(
+                          [].concat.apply([], results).filter(item => (item !== null)));
+
+                      async.mapLimit(userEmailArray, 5,
+                          (userEmail, callback) => {
+                            if (userEmail) {
+                              User.getUser(userEmail, (err, user) => {
+                                if (err || !user) {
+                                  callback(null, null);
+                                } else {
+                                  callback(null, extractUserInfo(user));
+                                }
+                              });
+                            } else {
+                              callback(null, null);
+                            }
+                          },
+                          (err, results) => {
+                            if (err || !results) {
+                              res.status(500).json('Unable to process data!');
+                              next();
+                            } else {
+                              res.status(200).json(results);
+                              next();
+                            }
+                          },
+                      );
+                    }
+                  });
+          } else {
+            res.status(204).json('Nothing found!');
+            next();
+          }
+        });
+      } else {
+        res.status(204).json('Nothing found!');
         next();
       }
     });
