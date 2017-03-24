@@ -16,7 +16,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
-  description: String,
+  description: {
+    type: String,
+    default: '',
+  },
 
   will_notify: {
     type: Boolean,
@@ -26,7 +29,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  profile_picture: String,
+  profile_picture: {
+    type: String,
+    default: '',
+  },
 
   skills: [
     {
