@@ -6,13 +6,18 @@ import Paths from '../paths';
 class App extends React.Component {
   constructor(props) {
     super(props);
+
+    const userEmail = (Auth.isUserAuthenticated) ? Auth.getToken().email : '';
+
     this.state = {
+      email: userEmail.replace(/%40/i, '@'),
       profileActive: '',
       loginActive: '',
       eventActive: '',
       chatActive: '',
       isHamburgerToggled: false,
     };
+
     this.removeDropdown = this.removeDropdown.bind(this);
     this.handleLinks = this.handleLinks.bind(this);
     this.shiftBody = this.shiftBody.bind(this);
@@ -81,7 +86,7 @@ class App extends React.Component {
             <ul id="navbar-links" className="navbar-nav">
               <li className="nav-item">
                 { Auth.isUserAuthenticated() ?
-                  <Link onClick={this.removeDropdown} className={`navbar-buttons ${this.state.profileActive}`} to={Paths.profile}>Profile</Link> :
+                  <Link onClick={this.removeDropdown} className={`navbar-buttons ${this.state.profileActive}`} to={`/profile/${this.state.email}`}>Profile</Link> :
                   <Link />
                 }
               </li>

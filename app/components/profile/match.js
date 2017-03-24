@@ -75,7 +75,7 @@ class Match extends React.Component {
               </div>
               <hr className="divider" />
               <div className="more-info text-center hidden-md-up">
-                <Link to={Paths.profile}>More Info</Link>
+                <Link to={`/profile/${user.email}`}>More Info</Link>
               </div>
               <div className="hidden-sm-down">
                 <div className="profile-info card">
