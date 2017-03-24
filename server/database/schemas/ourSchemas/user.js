@@ -38,8 +38,8 @@ const userSchema = new mongoose.Schema({
   ],
   bookmarked_users: [
     {
-      type: String,
-      trim: true,
+      type: mongoose.Schema.ObjectId,
+      ref: 'user',
       unique: true,
     },
   ],
