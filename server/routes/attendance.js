@@ -34,7 +34,7 @@ router.get('/get/oneAttendanceAttendees/:id', (req = {}, res, next) => {
                           if (err) {
                             callback(null, null);
                           } else if (user) {
-                            callback(null, user);
+                            callback(null, extractUserInfo(user));
                           } else {
                             callback(null, null);
                           }
