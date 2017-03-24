@@ -9,7 +9,7 @@ const Exhibition = require('../database/objectClasses/Exhibition');
 const Attendance = require('../database/objectClasses/Attendance');
 
 // Note: Attendance Routes return JSON objects with key names
-//    that differ from the User, Event, Exhibition and Attendance Schemas.
+//       that differ from the User, Event, Exhibition and Attendance Schemas.
 // See extractExhibitionInfo under ../utils/utils to see actual conversion
 const extractUserInfo = require('../utils/utils').extractUserInfo;
 const extractEventInfo = require('../utils/utils').extractEventInfo;
