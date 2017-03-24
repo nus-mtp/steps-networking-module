@@ -19,7 +19,7 @@ router.get('/get/allExhibitions', (req = {}, res, next) => {
     } else if (exhibitions) {
       res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
     } else {
-      res.status(404).json('Nothing found!');
+      res.status(204).json('Nothing found!');
     }
     next();
   });
@@ -34,7 +34,7 @@ router.get('/get/oneEventExhibitions/:eventName', (req = {}, res, next) => {
       } else if (exhibitions) {
         res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(204).json('Nothing found!');
       }
       next();
     });
@@ -53,7 +53,7 @@ router.get('/get/oneExhibition/:eventName/:exhibitionName', (req = {}, res, next
       } else if (exhibition) {
         res.status(200).json(extractExhibitionInfo(exhibition));
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(204).json('Nothing found!');
       }
       next();
     });
@@ -77,7 +77,7 @@ router.get('/get/oneExhibitionById/:exhibitionId', (req = {}, res, next) => {
       } else if (exhibition) {
         res.status(200).json(extractExhibitionInfo(exhibition));
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(204).json('Nothing found!');
       }
       next();
     });
@@ -101,7 +101,7 @@ router.post('/post/search/tag', (req = {}, res, next) => {
       } else if (exhibitions) {
         res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(204).json('Nothing found!');
       }
       next();
     });
@@ -129,7 +129,7 @@ router.post('/post/oneExhibition/set/tags', (req = {}, res, next) => {
               } else if (exhibition) {
                 res.status(200).json(extractExhibitionInfo(exhibition));
               } else {
-                res.status(404).json('Nothing found!');
+                res.status(204).json('Nothing found!');
               }
               next();
             });
