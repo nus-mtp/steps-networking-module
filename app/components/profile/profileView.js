@@ -9,10 +9,7 @@ class ProfileView extends React.Component {
   constructor(props) {
     super(props);
 
-    const userEmail = (Auth.isUserAuthenticated) ? Auth.getToken().email : '';
-
     this.state = {
-      email: userEmail.replace(/%40/i, '@'),
       skills: [],
       links: 'N/A',
       projects: 'none',
@@ -34,9 +31,23 @@ class ProfileView extends React.Component {
     this.handleDragSkill = this.handleDragSkill.bind(this);
   }
 
+  componentWillReceiveProps() {
+    this.getUser();
+  }
+
+  componentWillMount() {
+    const that = this;
+    window.addEventListener("hashchange", () => {
+      that.getUser();
+    });
+  }
+
   getUser() {
+    const pathname = this.props.location.pathname;
+    const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
     const xhr = new XMLHttpRequest();
-    xhr.open('get', `/user/get/profile/${this.state.email}`);
+    xhr.open('get', `/user/get/profile/${userEmail}`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
@@ -191,32 +202,40 @@ class ProfileView extends React.Component {
   }
 
   render() {
+    const userEmail = (Auth.isUserAuthenticated) ? Auth.getToken().email.replace(/%40/i, '@') : '';
+
     return (
       <div id="profile-body">
-        <div className="row justify-content-between justify-content-md-around">
-          <div id="profile-picture" className="col-md-6 push-md-3 col-12 text-center">
-            <img src="../../resources/images/default-profile-picture.png" alt="profile-img" />
-          </div>
-          <div className="col-md-3 pull-md-6 col-6 text-center d-flex justify-content-center">
-            <div id="chat-icon-container">
-              <Link to={Paths.chat}>
-                <img id="chat-icon" src="../../resources/images/chat-icon.svg" alt="chat-icon" />
-              </Link>
+      {
+        (Object.keys(this.state.user).length !== 0 && this.state.user.userEmail === userEmail)
+        ? <div className="row justify-content-between justify-content-md-around">
+            <div id="profile-picture" className="col-md-6 push-md-3 col-12 text-center">
+              <img src="../../resources/images/default-profile-picture.png" alt="profile-img" />
+            </div>
+            <div className="col-md-3 pull-md-6 col-6 text-center d-flex justify-content-center">
+              <div id="chat-icon-container">
+                <Link to={Paths.chat}>
+                  <img id="chat-icon" src="../../resources/images/chat-icon.svg" alt="chat-icon" />
+                </Link>
+              </div>
+            </div>
+            <div className="col-md-3 col-6 text-center d-flex justify-content-center" onClick={this.handleEdit}>
+              <div id="edit-icon-container">
+                <img id="edit-icon" src="../../resources/images/edit-icon.svg" alt="edit-icon" />
+              </div>
             </div>
           </div>
-          <div className="col-md-3 col-6 text-center d-flex justify-content-center" onClick={this.handleEdit}>
-            <div id="edit-icon-container">
-              <img id="edit-icon" src="../../resources/images/edit-icon.svg" alt="edit-icon" />
-            </div>
+        : <div id="profile-picture" className="col-12 text-center">
+           <img src="../../resources/images/default-profile-picture.png" alt="profile-img" />
           </div>
-        </div>
+       }
         <div className="profile-info card">
           <div className="card-block">
             <div className="card-text">
               <h4 id="user-name" className="card-title">{this.state.user.userName}</h4>
               <div>
                 <span className="info-type">Email: </span>
-                <span id="user-email" className="user-info">{this.state.email}</span>
+                <span id="user-email" className="user-info">{this.state.user.userEmail}</span>
               </div>
               <div>
                 <span className="info-type">Description: </span>
