@@ -96,3 +96,19 @@ function extractAttendanceInfo(attendance) {
 
 module.exports.extractAttendanceInfo = extractAttendanceInfo;
 
+/**
+ * Extracts out relevant information from a supplied Comment Object.
+ *
+ * @param {Comment.Object} comment:
+ *    The Comment Object returned from a Comment objectClass method.
+ * @returns {{id, userEmail, comments: {postSchema.object: _id, content, time}}
+ */
+function extractCommentInfo(comment) {
+  return {
+    id: comment._id,
+    userEmail: comment.user_email,
+    comments: comment.comments,
+  };
+}
+
+module.exports.extractCommentInfo = extractCommentInfo;
