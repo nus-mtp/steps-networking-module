@@ -35,9 +35,16 @@ class ProfileView extends React.Component {
     this.getUser();
   }
 
-  componentWillMount() {
+  componentDidMount() {
     const that = this;
     window.addEventListener("hashchange", () => {
+      that.getUser();
+    });
+  }
+
+  componentWillUnmount() {
+    const that = this;
+    window.removeEventListener("hashchange", () => {
       that.getUser();
     });
   }
