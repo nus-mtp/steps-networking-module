@@ -16,7 +16,7 @@ router.get('/get/getMessages/:senderEmail/:recipientEmail', (req = {}, res, next
           messages: msgObjs.messages,
         });
       } else {
-        res.status(404).json('Message object from '+ req.params.senderEmail+ ' to '+ req.params.recipientEmail+ ' was not found!');
+        res.status(204).json('Message object from '+ req.params.senderEmail+ ' to '+ req.params.recipientEmail+ ' was not found!');
       }  
       next();
     });
@@ -36,7 +36,7 @@ router.get('/get/getMessagesFrom/:senderEmail', (req = {}, res, next) => {
           emails: msgObj.recipient_email,
         })));
       } else {
-        res.status(404).json('Message object from '+ req.params.senderEmail+ ' was not found!');
+        res.status(204).json('Message object from '+ req.params.senderEmail+ ' was not found!');
       }
       next();
     });
@@ -57,7 +57,7 @@ router.get('/get/getMessagesTo/:recipientEmail', (req = {}, res, next) => {
           emails: msgObj.sender_email,
         })));
       } else {
-        res.status(404).json('Message object to '+req.params.recipientEmail+' was not found!');
+        res.status(204).json('Message object to '+req.params.recipientEmail+' was not found!');
       }
       next();
     });
@@ -75,7 +75,7 @@ router.get('/get/getMessagesInvolving/:userEmail', (req = {}, res, next) => {
       } else if (msgObjs[0]) {
         res.status(200).json(msgObjs);
       } else {
-        res.status(404).json(req.params.userEmail + ' not found!');
+        res.status(204).json(req.params.userEmail + ' not found!');
       }
       next();
     });

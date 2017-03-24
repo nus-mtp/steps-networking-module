@@ -87,6 +87,25 @@ class Comment {
     });
   }
 
+    /**
+   * Retrieve list of Comments for a specific Exhibition.
+   *
+   * @param {String} userEmail: The unique email used to identify user
+   * @param {mongoose.Schema.ObjectId} exhibitionKey: The ObjectID of the Exhibition.
+   * @param {function} callback: A function that is executed once the operation is done.
+   */
+  static getUserCommentsForExhibition(userEmail, exhibitionKey, callback) {
+    const query = {
+      user_email: userEmail,
+      exhibition_key: exhibitionKey,
+    }
+    Comment.connectDB();
+    this.CommentModel.findOne(query, (err, matchedComments) => {
+      Comment.disconnectDB();
+      callback(err, matchedComments);
+    });
+  }
+  
   /**
    * Retrieve list of Comments for a specific Exhibition.
    *

@@ -4,9 +4,12 @@ const router = new express.Router();
 
 const Exhibition = require('../database/objectClasses/Exhibition');
 
+// Note: Exhibition Routes return JSON objects with key names
+//       that differ from the Exhibition Mongoose Schema:
+// See extractExhibitionInfo under ../utils/utils to see actual conversion
 const extractExhibitionInfo = require('../utils/utils').extractExhibitionInfo;
 
-// All Routes prefixed with 'exhibition/'
+// Note: All Routes prefixed with 'exhibition/'
 
 router.get('/get/allExhibitions', (req = {}, res, next) => {
   Exhibition.getAllExhibitions((err, exhibitions) => {
@@ -16,7 +19,7 @@ router.get('/get/allExhibitions', (req = {}, res, next) => {
     } else if (exhibitions) {
       res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
     } else {
-      res.status(404).json('Nothing found!');
+      res.status(204).json('Nothing found!');
     }
     next();
   });
@@ -31,7 +34,7 @@ router.get('/get/oneEventExhibitions/:eventName', (req = {}, res, next) => {
       } else if (exhibitions) {
         res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(204).json('Nothing found!');
       }
       next();
     });
@@ -50,7 +53,7 @@ router.get('/get/oneExhibition/:eventName/:exhibitionName', (req = {}, res, next
       } else if (exhibition) {
         res.status(200).json(extractExhibitionInfo(exhibition));
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(204).json('Nothing found!');
       }
       next();
     });
@@ -74,7 +77,7 @@ router.get('/get/oneExhibitionById/:exhibitionId', (req = {}, res, next) => {
       } else if (exhibition) {
         res.status(200).json(extractExhibitionInfo(exhibition));
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(204).json('Nothing found!');
       }
       next();
     });
@@ -98,7 +101,7 @@ router.post('/post/search/tag', (req = {}, res, next) => {
       } else if (exhibitions) {
         res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(204).json('Nothing found!');
       }
       next();
     });
@@ -126,7 +129,7 @@ router.post('/post/oneExhibition/set/tags', (req = {}, res, next) => {
               } else if (exhibition) {
                 res.status(200).json(extractExhibitionInfo(exhibition));
               } else {
-                res.status(404).json('Nothing found!');
+                res.status(204).json('Nothing found!');
               }
               next();
             });
