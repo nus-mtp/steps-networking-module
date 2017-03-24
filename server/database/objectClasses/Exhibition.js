@@ -114,7 +114,7 @@ class Exhibition {
   }
 
   /**
-   * Retrieve a specific Exhibition in the Database, using its ID.
+   * Retrieve a specific Exhibition in the Database, using its Id.
    *
    * @param {mongoose.Schema.ObjectId} exhibitionId:
    *    The id of an Exhibition to search for.
