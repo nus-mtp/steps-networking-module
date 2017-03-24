@@ -1,7 +1,7 @@
 import React from 'react';
 import { sampleComments } from './sampleData';
 
-class ProjectView extends React.Component {
+class ExhibitionView extends React.Component {
   constructor(props) {
     super(props);
 
@@ -14,7 +14,10 @@ class ProjectView extends React.Component {
       media: [],
       tagChange: '',
       mediaChange: '',
+      exhibition: {},
     };
+
+    this.getExhibition();
 
     this.editComment = this.editComment.bind(this);
     this.submitComment = this.submitComment.bind(this);
@@ -24,6 +27,25 @@ class ProjectView extends React.Component {
     this.handleAddMedia = this.handleAddMedia.bind(this);
     this.handleTagInputChange = this.handleTagInputChange.bind(this);
     this.handleMediaInputChange = this.handleMediaInputChange.bind(this);
+  }
+
+  getExhibition() {
+    let pathname = this.props.location.pathname;
+    const exhibitionName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
+    pathname = pathname.slice(0, pathname.lastIndexOf('/'));
+    const eventName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/exhibition/get/oneExhibition/${eventName}/${exhibitionName}/`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      this.setState({
+        exhibition: xhr.response,
+      });
+    });
+    xhr.send();
   }
 
   editComment(event) {
@@ -96,20 +118,27 @@ class ProjectView extends React.Component {
     });
   }
 
+  addDefaultSrc(event) {
+    event.target.src = "../../resources/images/empty-poster-placeholder.png";
+  }
+
   render() {
     return (
       <div id="project-body">
         <div className="row justify-content-center">
           <div>
-            <img className="img-fluid project-poster" src="../../resources/images/dummy-poster.png" alt="project-poster" />
+            {
+              (Object.keys(this.state.exhibition).length !== 0) ?
+              <img className="img-fluid project-poster" src={`${this.state.exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" /> :
+              <img className="img-fluid project-poster" src="../../resources/images/dummy-poster.png" alt="project-poster" />
+            }
           </div>
         </div>
         <div className="card">
           <div className="exhibition-info card-block">
-            <div className="info-type">Project Title: </div>
+            <h4 className="info-type">{this.state.exhibition.exhibitionName}</h4>
             <div className="project-name project-info" />
-            <div className="info-type">Description: </div>
-            <div id="project-desc" className="project-info" />
+            <div id="project-desc" className="project-info">{this.state.exhibition.exhibitionDescription}</div>
             <div className="info-type" id="tag-container">
               <span>Tags: </span>
               {
@@ -148,7 +177,17 @@ class ProjectView extends React.Component {
                 }
               </div>
               <div id="project-url" />
-              <div id="project-media" />
+              <div id="project-media">
+              {
+                (Object.keys(this.state.exhibition).length !== 0) ?
+                  this.state.exhibition.videos.map(media =>
+                    <div className="embed-responsive embed-responsive-16by9" key={media}>
+                      <iframe width="560" height="315"  className="embed-responsive-item" src={`https://www.youtube.com/embed/${media.slice(media.lastIndexOf('/') + 1, media.length)}`} allowFullScreen></iframe>
+                    </div>
+                  ) :
+                  <div />
+              }
+              </div>
             </li>
 
             <li className="exhibition-info text-center list-group-item">
@@ -186,4 +225,4 @@ class ProjectView extends React.Component {
   }
 }
 
-export default ProjectView;
+export default ExhibitionView;
