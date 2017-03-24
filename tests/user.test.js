@@ -39,7 +39,7 @@ describe('User Create', () => {
       false,
       'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png',
       ['Project Management', 'Programming skills', 'Objective C', 'C++', 'C#'],
-      ['usertesting_1@user.com', 'usertesting_2@user.com'],
+      [],
     );
     userTest3.saveUser((err) => {
       if (err) {
@@ -100,7 +100,7 @@ describe('User Read', () => {
       false, // is_deleted
       'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', // profile_pic
       ['Programming skills', 'C++', 'Java', 'HTML'], // skills
-      ['usertesting_2@user.com'], // bookmarked users
+      [], // bookmarked users
     );
     userTest1.saveUser((err) => {
       if (err) {
@@ -159,13 +159,29 @@ describe('User Update', () => {
       false, // is_deleted
       'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', // profile_pic
       ['Programming skills', 'C++', 'Java', 'HTML'], // skills
-      ['usertesting_2@user.com'], //bookmarked users
+      [], //bookmarked users
+    );
+    const userTest2 = new User(
+        'usertesting_2@user.com', // email
+        'UserTest2', // name
+        'I am the second test user.', // description
+        'password123', // password
+        true, // will_notify
+        false, // is_deleted
+        'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', // profile_pic
+        ['Programming skills', 'C++', 'Java', 'HTML'], // skills
+        [], //bookmarked users
     );
     userTest1.saveUser((err) => {
       if (err) {
         console.log(err);
       }
-      done();
+      userTest2.saveUser((err) => {
+        if (err) {
+          console.log(err);
+        }
+        done();
+      });
     });
   });
 
@@ -240,13 +256,26 @@ describe('User Update', () => {
       assert.equal(result.description, 'edited description');
       assert.equal(result.will_notify, false);
       assert.equal(result.skills.length, 1, result.skills.toString());
-      assert.equal(result.bookmarked_users.length, 1, result.bookmarked_users);
+      assert.equal(result.bookmarked_users.length, 0, result.bookmarked_users);
       done();
     });
   });
 
-  it('Should not be able to push duplicate emails into the bookmarks of the user', (done) => {
-    User.addBookmarkedUserForUser('usertesting_1@user.com', 'usertesting_2@user.com', (err, result) => {
+  it('Should not be able to push duplicate ids into the bookmarks of the user', (done) => {
+    User.getUser('usertesting_2@user.com', (err, user) => {
+      User.addBookmarkedUserForUser('usertesting_1@user.com', user._id, (err, result) => {
+        User.addBookmarkedUserForUser('usertesting_1@user.com', user._id, (err, result) => {
+          assert.equal(err, null, err);
+          assert.notEqual(result, null);
+          assert.equal(result.bookmarked_users.length, 1, result);
+          done();
+        });
+      });
+    });
+  });
+
+  it('Should not be able to remove a non-existing id of the user', (done) => {
+    User.removeBookmarkedUserFromUser('usertesting_1@user.com', '58d5355af085642a0ec42ebe', (err, result) => {
       assert.equal(err, null, err);
       assert.notEqual(result, null);
       assert.equal(result.bookmarked_users.length, 1, result);
@@ -254,30 +283,25 @@ describe('User Update', () => {
     });
   });
 
-  it('Should not be able to remove a non-existing bookmark of the user', (done) => {
-    User.removeBookmarkedUserFromUser('usertesting_1@user.com', 'usertesting_3@user.com', (err, result) => {
-      assert.equal(err, null, err);
-      assert.notEqual(result, null);
-      assert.equal(result.bookmarked_users.length, 1, result);
-      done();
-    });
-  });
-
-  it('Should be able to remove emails from the bookmarks of the user', (done) => {
-    User.removeBookmarkedUserFromUser('usertesting_1@user.com', 'usertesting_2@user.com', (err, result) => {
-      assert.equal(err, null, err);
-      assert.notEqual(result, null);
-      assert.equal(result.bookmarked_users.length, 0, result);
-      done();
+  it('Should be able to remove ids from the bookmarks of the user', (done) => {
+    User.getUser('usertesting_2@user.com', (err, user) => {
+      User.removeBookmarkedUserFromUser('usertesting_1@user.com', user._id, (err, result) => {
+        assert.equal(err, null, err);
+        assert.notEqual(result, null);
+        assert.equal(result.bookmarked_users.length, 0, result);
+        done();
+      });
     });
   });
 
   it('Should be able to set the bookmarks for the user, without duplicates', (done) => {
-    User.setBookmarksForUser('usertesting_1@user.com', ['usertesting_2@user.com', 'usertesting_2@user.com'], (err, result) => {
-      assert.equal(err, null, err);
-      assert.notEqual(result, null);
-      assert.equal(result.bookmarked_users.length, 1, result);
-      done();
+    User.getUser('usertesting_2@user.com', (err, user) => {
+      User.setBookmarksForUser('usertesting_1@user.com', [user._id, user._id], (err, result) => {
+        assert.equal(err, null, err);
+        assert.notEqual(result, null);
+        assert.equal(result.bookmarked_users.length, 1, result);
+        done();
+      });
     });
   });
 
