@@ -18,6 +18,51 @@ const extractAttendanceInfo = require('../utils/utils').extractAttendanceInfo;
 
 // Note: All Routes prefixed with 'attendance/'
 
+// Get the Users attending in either a specified Event / Exhibition
+// Note: Requires Event or Exhibition ID as request parameter 'id'
+router.get('/get/oneAttendanceAttendees/:id', (req = {}, res, next) => {
+  if (req.params && req.params.id) {
+    Attendance.searchAttendancesByKey(req.params.id, (err, attendances) => {
+      if (err) {
+        res.status(500).json('Unable to process data!');
+        next();
+      } else if (attendances) {
+        async.mapLimit(attendances, 5,
+                    (attendance, callback) => {
+                      if (attendance) {
+                        User.getUser(attendance.user_email, (err, user) => {
+                          if (err) {
+                            callback(null, null);
+                          } else if (user) {
+                            callback(null, user);
+                          } else {
+                            callback(null, null);
+                          }
+                        });
+                      } else {
+                        callback(null, null);
+                      }
+                    },
+                    (err, results) => {
+                      if (err || !results) {
+                        res.status(500).json('Unable to process data!');
+                        next();
+                      } else {
+                        res.status(200).json(results.filter(item => (item !== null)));
+                        next();
+                      }
+                    });
+      } else {
+        res.status(204).json();
+        next();
+      }
+    });
+  } else {
+    res.status().json('Bad Request!');
+    next();
+  }
+});
+
 // Get the Users attending an Event
 router.get('/get/oneEventAttendances/:eventName', (req = {}, res, next) => {
   if (req.params && req.params.eventName) {
