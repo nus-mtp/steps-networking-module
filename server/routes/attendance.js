@@ -51,7 +51,7 @@ router.get('/get/oneEventAttendances/:eventName', (req = {}, res, next) => {
                   }
                 });
           } else {
-            res.status(200).json([]);
+            res.status(204).json('Nothing found!');
             next();
           }
         });
@@ -100,7 +100,7 @@ router.get('/get/oneExhibitionParticipants/:eventName/:exhibitionName', (req = {
                               }
                             });
           } else {
-            res.status(200).json([]);
+            res.status(204).json('Nothing found!');
             next();
           }
         });
@@ -163,7 +163,7 @@ router.get('/get/oneUserAttendances/:email', (req = {}, res, next) => {
               }
             });
       } else {
-        res.status(200).json([]);
+        res.status(204).json('Nothing found!');
         next();
       }
     });
@@ -213,7 +213,7 @@ router.get('/get/oneUserEventAttendances/:email', (req = {}, res, next) => {
               }
             });
       } else {
-        res.status(200).json([]);
+        res.status(204).json('Nothing found!');
         next();
       }
     });
@@ -265,7 +265,7 @@ router.get('/get/oneUserAttendancesForEvent/:email/:eventName', (req = {}, res, 
               }
             });
       } else {
-        res.status(200).json([]);
+        res.status(204).json('Nothing found!');
         next();
       }
     });
@@ -283,7 +283,7 @@ router.post('/post/search/oneEventAttendancesWithReason/', (req = {}, res, next)
         res.status(500).json('Unable to process data!');
         next();
       } else if (event) {
-        Attendance.searchAttendanceByKeyAndReason(event._id,
+        Attendance.searchAttendancesByKeyAndReason(event._id,
                     req.body.reason, (err, attendances) => {
                       if (err) {
                         res.status(500).json('Unable to process data!');
@@ -309,7 +309,7 @@ router.post('/post/search/oneEventAttendancesWithReason/', (req = {}, res, next)
                                   }
                                 });
                       } else {
-                        res.status(200).json([]);
+                        res.status(204).json('Nothing found!');
                         next();
                       }
                     });
@@ -338,7 +338,7 @@ router.post('/post/set/oneAttendanceReasons', (req = {}, res, next) => {
         res.status(200).json(extractAttendanceInfo(attendance));
         next();
       } else {
-        res.status(204).json('Unable to find attendance for specified User and Event / Exhibition');
+        res.status(204).json('Nothing found!');
         next();
       }
     });
