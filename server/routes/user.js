@@ -20,7 +20,7 @@ router.get('/get/profile/:email', (req = {}, res, next) => {
       } else if (user) {
         res.status(200).json(extractUserInfo(user));
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(204).json('Nothing found!');
       }
       next();
     });
@@ -44,7 +44,7 @@ router.post('/post/search/skill', (req = {}, res, next) => {
       } else if (users) {
         res.status(200).json(users.map(user => extractUserInfo(user)));
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(204).json('Nothing found!');
       }
       next();
     });
@@ -68,7 +68,7 @@ router.post('/post/profile/set/description', (req = {}, res, next) => {
       } else if (user) {
         res.status(200).json(extractUserInfo(user));
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(204).json('Nothing found!');
       }
       next();
     });
@@ -92,7 +92,7 @@ router.post('/post/profile/set/picture', (req = {}, res, next) => {
       } else if (user) {
         res.status(200).json(extractUserInfo(user));
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(204).json('Nothing found!');
       }
       next();
     });
@@ -117,7 +117,7 @@ router.post('/post/profile/set/notification', (req = {}, res, next) => {
           } else if (user) {
             res.status(200).json(extractUserInfo(user));
           } else {
-            res.status(404).json('Nothing found!');
+            res.status(204).json('Nothing found!');
           }
           next();
         });
@@ -141,7 +141,7 @@ router.post('/post/profile/add/skill', (req = {}, res, next) => {
       } else if (user) {
         res.status(200).json(extractUserInfo(user));
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(204).json('Nothing found!');
       }
       next();
     });
@@ -165,7 +165,7 @@ router.post('/post/profile/add/bUser', (req = {}, res, next) => {
       } else if (user) {
         res.status(200).json(extractUserInfo(user));
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(204).json('Nothing found!');
       }
       next();
     });
@@ -189,7 +189,7 @@ router.post('/post/profile/remove/skill', (req = {}, res, next) => {
       } else if (user) {
         res.status(200).json(extractUserInfo(user));
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(204).json('Nothing found!');
       }
       next();
     });
@@ -213,7 +213,7 @@ router.post('/post/profile/remove/bUser', (req = {}, res, next) => {
       } else if (user) {
         res.status(200).json(extractUserInfo(user));
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(204).json('Nothing found!');
       }
       next();
     });
@@ -240,7 +240,7 @@ router.post('/post/profile/set/skills', (req = {}, res, next) => {
       } else if (user) {
         res.status(200).json(extractUserInfo(user));
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(204).json('Nothing found!');
       }
       next();
     });
@@ -264,7 +264,7 @@ router.post('/post/profile/set/bUsers', (req = {}, res, next) => {
       } else if (user) {
         res.status(200).json(extractUserInfo(user));
       } else {
-        res.status(404).json('Nothing found!');
+        res.status(204).json('Nothing found!');
       }
       next();
     });

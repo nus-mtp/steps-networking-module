@@ -239,7 +239,7 @@ describe('Attendance Read', () => {
         console.log(err);
         done();
       } else{
-        Attendance.searchAttendanceByKeyAndReason(result._id, 'investor', (err, obj) => {
+        Attendance.searchAttendancesByKeyAndReason(result._id, 'investor', (err, obj) => {
           if (err) {
             console.log("unable to get attendance object");
           } else {

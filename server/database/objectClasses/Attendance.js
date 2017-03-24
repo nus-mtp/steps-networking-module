@@ -189,7 +189,7 @@ class Attendance {
    * @param {function} callback: A function that executes once the
    *    operation is done.
    */
-  static searchAttendanceByKeyAndReason(attendanceKey, reason, callback) {
+  static searchAttendancesByKeyAndReason(attendanceKey, reason, callback) {
     Attendance.connectDB();
     const query = { attendance_key: attendanceKey,
       reason: { $regex: new RegExp(reason.trim().toLowerCase().replace('+', '\\+'), 'i') },
