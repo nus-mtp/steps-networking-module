@@ -32,7 +32,7 @@ class Attendance {
    * @param {function} callback: A function to be executed upon disconnection.
    */
   static disconnectDB(callback) {
-      this.ModelHandler.disconnect(callback);
+    this.ModelHandler.disconnect(callback);
   }
 
   /**

@@ -30,7 +30,7 @@ class Comment {
    * @param {function} callback: A function to be executed upon disconnection.
    */
   static disconnectDB(callback) {
-      this.ModelHandler.disconnect(callback);
+    this.ModelHandler.disconnect(callback);
   }
 
   /**
@@ -102,7 +102,7 @@ class Comment {
     const query = {
       user_email: userEmail,
       exhibition_key: exhibitionKey,
-    }
+    };
     Comment.connectDB();
     this.CommentModel.findOne(query, (err, matchedComments) => {
       Comment.disconnectDB(() => {
@@ -110,7 +110,7 @@ class Comment {
       });
     });
   }
-  
+
   /**
    * Retrieve list of Comments for a specific Exhibition.
    *
