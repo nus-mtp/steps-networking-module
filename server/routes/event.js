@@ -28,7 +28,6 @@ router.get('/get/oneEvent/:eventName', (req = {}, res, next) => {
   Event.setDBConnection(req.app.locals.db);
   Event.getEvent(req.params.eventName, (err, eventObj) => {
     if (err) {
-      console.log(err);
       res.status(500).json('Unable to fetch data!');
       next();
     } else if (eventObj) {
