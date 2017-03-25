@@ -1,15 +1,6 @@
 const ModelHandler = require('../models/ourModels.js');
 const removeDuplicates = require('../../utils/utils').removeDuplicates;
 
-const config = require('../../config.json');
-const currentdb = require('../../currentdb.js');
-
-const username = config[currentdb].username;
-const password = config[currentdb].password;
-const host = config[currentdb].host;
-const port = config[currentdb].port;
-const dbName = config[currentdb].database;
-
 /**
  * This is the wrapper class used extract out and store information
  * about the Messages from the Database between view and model
@@ -17,25 +8,30 @@ const dbName = config[currentdb].database;
  *
  */
 class Message {
-
   /**
-   * Creates a connection to the Database.
+   * Establishes the Message Model on an existing connection.
+   *
+   * @param {Mongoose.Connection} db: The connection to the db.
    */
-  static connectDB() {
-    this.ModelHandler = new ModelHandler()
-      .initWithParameters(username, password, host, port, dbName);
-    this.MessageModel = this.ModelHandler.getMessageModel();
+  static setDBConnection(db) {
+    if (!Message.db || !Message.MessageModel) {
+      Message.db = db;
+      Message.MessageModel = new ModelHandler().initWithConnection(db).getMessageModel();
+    }
   }
 
   /**
-   * Disconnects from the database.
+   * A function which checks whether the Database connection can be used.
+   *
+   * @returns {Mongoose.Connection|*|*|Aggregate|Model|boolean}
    */
-  static disconnectDB() {
-    this.ModelHandler.disconnect();
+  static checkConnection() {
+    return (Message.db && Message.MessageModel &&
+      (Message.db.readyState === 1 || Message.db.readyState === 2));
   }
 
   /**
-   * Creates a Message Document and stores it internally.
+   * Creates a Message JSON and stores it internally.
    *
    * @param {String} recipientEmail: The email of the User recipient.
    * @param {String} senderEmail: The email of the User sender.
@@ -43,28 +39,27 @@ class Message {
    * @param {Date} timeStamp: Date object to map when the Message was sent.
    */
   constructor(senderEmail, recipientEmail, content, timeStamp) {
-    this.ModelHandler = new ModelHandler()
-      .initWithParameters(username, password, host, port, dbName);
-    this.MessageModel = this.ModelHandler.getMessageModel();
-    this.messageModelDoc = new this.MessageModel({
+    this.messageJSON = {
       recipient_email: recipientEmail,
       sender_email: senderEmail,
       messages: { content, timestamp: timeStamp },
-    });
-    this.ModelHandler.disconnect();
+    };
   }
 
   /**
-   * Saves Message Document stored internally into Database.
+   * Saves Message JSON into the Database as an actual Document.
    *
    * @param {function} callback: A function that is executed once the operation is done.
    */
   saveMessage(callback) {
-    Message.connectDB();
-    this.messageModelDoc.save((err) => {
-      Message.disconnectDB();
-      callback(err);
-    });
+    if (Message.checkConnection()) {
+      const messageDoc = new Message.MessageModel(this.messageJSON);
+      messageDoc.save((err, result) => {
+        callback(err, result);
+      });
+    } else {
+      callback(null);
+    }
   }
 
   /**
@@ -74,11 +69,13 @@ class Message {
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static getMessagesToUser(recipientEmail, callback) {
-    Message.connectDB();
-    this.MessageModel.find({ recipient_email: recipientEmail }, (err, matchedMessages) => {
-      Message.disconnectDB();
-      callback(err, matchedMessages);
-    });
+    if (Message.checkConnection()) {
+      Message.MessageModel.find({ recipient_email: recipientEmail }, (err, matchedMessages) => {
+        callback(err, matchedMessages);
+      });
+    } else {
+      callback('Not Connected!', null);
+    }
   }
 
   /**
@@ -88,33 +85,40 @@ class Message {
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static getMessagesFromUser(senderEmail, callback) {
-    Message.connectDB();
-    this.MessageModel.find({ sender_email: senderEmail }, (err, matchedMessages) => {
-      Message.disconnectDB();
-      callback(err, matchedMessages);
-    });
+    if (Message.checkConnection()) {
+      Message.MessageModel.find({ sender_email: senderEmail }, (err, matchedMessages) => {
+        callback(err, matchedMessages);
+      });
+    } else {
+      callback('Not Connected!', null);
+    }
   }
 
   /**
    * Retrieve Messages that involves a certain user.
    *
    * @param {String} userEmail: The email of the targeted user.
-   * @param {String} callback: A function that is executed once the operation is done.
+   * @param {function} callback: A function that is executed once the operation is done.
    */
-  static getEmailsInvolvingUser(userEmail, callback){
-    Message.connectDB();
-    this.MessageModel.find( { $or: [ {recipient_email: userEmail}, {sender_email: userEmail}] }, (err, matchedMessages) => {
-      Message.disconnectDB();
-      const emailArray= [];
-      for (var i = 0; i< matchedMessages.length; i++){
-        if (matchedMessages[i].sender_email !== userEmail){
-          emailArray.push(matchedMessages[i].sender_email);
-        } else {
-          emailArray.push(matchedMessages[i].recipient_email);
-        }
-      }
-      callback(err, removeDuplicates(emailArray));
-    });
+  static getEmailsInvolvingUser(userEmail, callback) {
+    if (Message.checkConnection()) {
+      Message.MessageModel.find(
+        { $or: [{ recipient_email: userEmail },
+              { sender_email: userEmail }] },
+          (err, matchedMessages) => {
+            const emailArray = [];
+            for (let i = 0; i < matchedMessages.length; i++) {
+              if (matchedMessages[i].sender_email !== userEmail) {
+                emailArray.push(matchedMessages[i].sender_email);
+              } else {
+                emailArray.push(matchedMessages[i].recipient_email);
+              }
+            }
+            callback(err, removeDuplicates(emailArray));
+          });
+    } else {
+      callback('Not Connected!', null);
+    }
   }
 
   /**
@@ -125,15 +129,17 @@ class Message {
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static getConversation(senderEmail, recipientEmail, callback) {
-    Message.connectDB();
-    const query = {
-      recipient_email: recipientEmail,
-      sender_email: senderEmail,
-    };
-    this.MessageModel.findOne(query, (err, matchedMessage) => {
-      Message.disconnectDB();
-      callback(err, matchedMessage);
-    });
+    if (Message.checkConnection()) {
+      const query = {
+        recipient_email: recipientEmail,
+        sender_email: senderEmail,
+      };
+      Message.MessageModel.findOne(query, (err, matchedMessage) => {
+        callback(err, matchedMessage);
+      });
+    } else {
+      callback('Not Connected!', null);
+    }
   }
 
   /**
@@ -146,17 +152,19 @@ class Message {
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static addMessage(senderEmail, recipientEmail, content, timeStamp, callback) {
-    Message.connectDB();
-    const query = {
-      recipient_email: recipientEmail,
-      sender_email: senderEmail,
-    };
-    const update = { $push: { messages: { content, timestamp: timeStamp } } };
-    const options = { new: true };
-    this.MessageModel.findOneAndUpdate(query, update, options, (err, results) => {
-      Message.disconnectDB();
-      callback(err, results);
-    });
+    if (Message.checkConnection()) {
+      const query = {
+        recipient_email: recipientEmail,
+        sender_email: senderEmail,
+      };
+      const update = { $push: { messages: { content, timestamp: timeStamp } } };
+      const options = { new: true };
+      Message.MessageModel.findOneAndUpdate(query, update, options, (err, results) => {
+        callback(err, results);
+      });
+    } else {
+      callback('Not Connected!', null);
+    }
   }
 
   /**
@@ -165,11 +173,13 @@ class Message {
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static clearAllMessage(callback) {
-    Message.connectDB();
-    this.MessageModel.collection.remove({}, (err) => {
-      Message.disconnectDB();
-      callback(err);
-    });
+    if (Message.checkConnection()) {
+      Message.MessageModel.collection.remove({}, (err) => {
+        callback(err);
+      });
+    } else {
+      callback('Not Connected!', null);
+    }
   }
 }
 module.exports = Message;
