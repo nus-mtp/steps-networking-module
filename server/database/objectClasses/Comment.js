@@ -25,10 +25,12 @@ class Comment {
   }
 
   /**
-   * Disconnect from database.
+   * Disconnects from the Database.
+   *
+   * @param {function} callback: A function to be executed upon disconnection.
    */
-  static disconnectDB() {
-    this.ModelHandler.disconnect();
+  static disconnectDB(callback) {
+      this.ModelHandler.disconnect(callback);
   }
 
   /**
@@ -59,8 +61,9 @@ class Comment {
   saveComment(callback) {
     Comment.connectDB();
     this.commentModelDoc.save((err, result) => {
-      Comment.disconnectDB();
-      callback(err, result);
+      Comment.disconnectDB(() => {
+        callback(err, result);
+      });
     });
   }
 
@@ -82,8 +85,9 @@ class Comment {
     const update = { $push: { comments: { content: comment, timestamp: date } } };
     const options = { new: true };
     this.CommentModel.findOneAndUpdate(query, update, options, (err, results) => {
-      Comment.disconnectDB();
-      callback(err, results);
+      Comment.disconnectDB(() => {
+        callback(err, results);
+      });
     });
   }
 
@@ -101,8 +105,9 @@ class Comment {
     }
     Comment.connectDB();
     this.CommentModel.findOne(query, (err, matchedComments) => {
-      Comment.disconnectDB();
-      callback(err, matchedComments);
+      Comment.disconnectDB(() => {
+        callback(err, matchedComments);
+      });
     });
   }
   
@@ -115,8 +120,9 @@ class Comment {
   static getCommentsForExhibition(exhibitionKey, callback) {
     Comment.connectDB();
     this.CommentModel.find({ exhibition_key: exhibitionKey }, (err, matchedComments) => {
-      Comment.disconnectDB();
-      callback(err, matchedComments);
+      Comment.disconnectDB(() => {
+        callback(err, matchedComments);
+      });
     });
   }
 
@@ -129,8 +135,9 @@ class Comment {
   static clearCommentsForExhibition(exhibitionKey, callback) {
     Comment.connectDB();
     this.CommentModel.find({ exhibition_key: exhibitionKey }).remove().exec((err, results) => {
-      Comment.disconnectDB();
-      callback(err, results);
+      Comment.disconnectDB(() => {
+        callback(err, results);
+      });
     });
   }
 
@@ -142,8 +149,9 @@ class Comment {
   static clearAllComments(callback) {
     Comment.connectDB();
     this.CommentModel.collection.remove({}, (err) => {
-      Comment.disconnectDB();
-      callback(err);
+      Comment.disconnectDB(() => {
+        callback(err);
+      });
     });
   }
 
