@@ -28,9 +28,11 @@ class Attendance {
 
   /**
    * Disconnects from the Database.
+   *
+   * @param {function} callback: A function to be executed upon disconnection.
    */
-  static disconnectDB() {
-    this.ModelHandler.disconnect();
+  static disconnectDB(callback) {
+      this.ModelHandler.disconnect(callback);
   }
 
   /**
@@ -67,8 +69,9 @@ class Attendance {
   saveAttendance(callback) {
     Attendance.connectDB();
     this.attendanceModelDoc.save((err, result) => {
-      Attendance.disconnectDB();
-      callback(err, result);
+      Attendance.disconnectDB(() => {
+        callback(err, result);
+      });
     });
   }
 
@@ -90,8 +93,9 @@ class Attendance {
       attendance_key: attendanceKey,
     };
     this.AttendanceModel.findOne(query, (err, attendance) => {
-      Attendance.disconnectDB();
-      callback(err, attendance);
+      Attendance.disconnectDB(() => {
+        callback(err, attendance);
+      });
     });
   }
 
@@ -104,8 +108,9 @@ class Attendance {
   static getAllAttendances(callback) {
     Attendance.connectDB();
     this.AttendanceModel.find({}, (err, allAttendances) => {
-      Attendance.disconnectDB();
-      callback(err, allAttendances);
+      Attendance.disconnectDB(() => {
+        callback(err, allAttendances);
+      });
     });
   }
 
@@ -119,8 +124,9 @@ class Attendance {
   static searchAttendancesByUser(userEmail, callback) {
     Attendance.connectDB();
     this.AttendanceModel.find({ user_email: userEmail }, (err, matchedAttendances) => {
-      Attendance.disconnectDB();
-      callback(err, matchedAttendances);
+      Attendance.disconnectDB(() => {
+        callback(err, matchedAttendances);
+      });
     });
   }
 
@@ -135,8 +141,9 @@ class Attendance {
   static searchAttendancesByKey(attendanceKey, callback) {
     Attendance.connectDB();
     this.AttendanceModel.find({ attendance_key: attendanceKey }, (err, matchedAttendances) => {
-      Attendance.disconnectDB();
-      callback(err, matchedAttendances);
+      Attendance.disconnectDB(() => {
+        callback(err, matchedAttendances);
+      });
     });
   }
 
@@ -154,8 +161,9 @@ class Attendance {
     this.AttendanceModel
         .findOne({ user_email: userEmail.trim(), attendance_key: attendanceKey },
             (err, matchedAttendance) => {
-              Attendance.disconnectDB();
-              callback(err, matchedAttendance);
+              Attendance.disconnectDB(() => {
+                callback(err, matchedAttendance);
+              });
             });
   }
 
@@ -172,8 +180,9 @@ class Attendance {
     this.AttendanceModel.find(
       { reason: { $regex: new RegExp(reason.trim().toLowerCase().replace('+', '\\+'), 'i') } },
       (err, matchedAttendances) => {
-        Attendance.disconnectDB();
-        callback(err, matchedAttendances);
+        Attendance.disconnectDB(() => {
+          callback(err, matchedAttendances);
+        });
       },
     );
   }
@@ -195,8 +204,9 @@ class Attendance {
       reason: { $regex: new RegExp(reason.trim().toLowerCase().replace('+', '\\+'), 'i') },
     };
     this.AttendanceModel.find(query, (err, matchedAttendances) => {
-      Attendance.disconnectDB();
-      callback(err, matchedAttendances);
+      Attendance.disconnectDB(() => {
+        callback(err, matchedAttendances);
+      });
     });
   }
 
@@ -226,8 +236,9 @@ class Attendance {
     const options = { new: true };
     this.AttendanceModel.findOneAndUpdate(query, update, options,
                                           (err, results) => {
-                                            Attendance.disconnectDB();
-                                            callback(err, results);
+                                            Attendance.disconnectDB(() => {
+                                              callback(err, results);
+                                            });
                                           });
   }
 
@@ -247,8 +258,9 @@ class Attendance {
     };
     Attendance.connectDB();
     this.AttendanceModel.findOneAndRemove(query, (err) => {
-      Attendance.disconnectDB();
-      callback(err);
+      Attendance.disconnectDB(() => {
+        callback(err);
+      });
     });
   }
 
@@ -261,8 +273,9 @@ class Attendance {
   static clearAllAttendances(callback) {
     Attendance.connectDB();
     this.AttendanceModel.collection.remove({}, (err, results) => {
-      Attendance.disconnectDB();
-      callback(err, results);
+      Attendance.disconnectDB(() => {
+        callback(err, results);
+      });
     });
   }
 }
