@@ -1,9 +1,22 @@
-const Comment = require("../server/database/objectClasses/Comment.js");
-const Exhibition = require("../server/database/objectClasses/Exhibition.js");
+const config = require('../server/config.json').fakeDbUri;
+const ModelHandler = require('../server/database/models/ourModels');
+const Exhibition = require('../server/database/objectClasses/Exhibition.js');
+const Comment = require('../server/database/objectClasses/Comment.js');
 const assert = require('assert');
 
+let ModelHandlerObj;
 describe('Comment Create', () => {
   before((done) => {
+    ModelHandlerObj = new ModelHandler().initWithParameters(
+        config.username,
+        config.password,
+        config.host,
+        config.port,
+        config.database);
+
+    Exhibition.setDBConnection(ModelHandlerObj.getConnection());
+    Comment.setDBConnection(ModelHandlerObj.getConnection());
+
     const testexhibition1 = new Exhibition(
       'MAMA! LAVA!',
       'description',
@@ -18,7 +31,7 @@ describe('Comment Create', () => {
       if (err) {
         console.log(err, results);
       }
-      var testcomment1 = new Comment(
+      const testcomment1 = new Comment(
         'user1@user.com',
         results._id,
         'awesome!',
@@ -34,7 +47,7 @@ describe('Comment Create', () => {
     });
   });
 
-  after ((done) => {
+  after((done) => {
     Exhibition.clearAllExhibitions((err) => {
       if (err) {
         console.log(err);
@@ -43,19 +56,21 @@ describe('Comment Create', () => {
         if (err) {
           console.log(err);
         }
-        done();
+        ModelHandlerObj.disconnect(() => {
+          done();
+        });
       });
     });
   });
 
   it('should be able to add a new message object', (done) => {
-    //first retrieve exhibition ID
+    // first retrieve exhibition ID
     Exhibition.getExhibition('STEPS', 'MAMA! LAVA!', (err, result) => {
-      if (err){
+      if (err) {
         console.log(err);
         done();
       } else {
-        var testcomment2 = new Comment(
+        const testcomment2 = new Comment(
           'user2@user.com',
           result._id,
           'hey man thanks!',
@@ -67,10 +82,10 @@ describe('Comment Create', () => {
           }
           // check that its inside the databse
           Comment.getCommentsForExhibition(result.exhibition_key, (err, commentObj) => {
-            if (err){
-              console.log("error with getting comment for an event");
+            if (err) {
+              console.log('error with getting comment for an event');
             } else {
-              assert.equal(commentObj[1].comments[0].content,'hey man thanks!');
+              assert.equal(commentObj[1].comments[0].content, 'hey man thanks!');
             }
             done();
           });
@@ -82,6 +97,16 @@ describe('Comment Create', () => {
 
 describe('Comment Read', () => {
   before((done) => {
+    ModelHandlerObj = new ModelHandler().initWithParameters(
+        config.username,
+        config.password,
+        config.host,
+        config.port,
+        config.database);
+
+    Exhibition.setDBConnection(ModelHandlerObj.getConnection());
+    Comment.setDBConnection(ModelHandlerObj.getConnection());
+
     const testexhibition1 = new Exhibition(
       'EXI',
       'description',
@@ -96,7 +121,7 @@ describe('Comment Read', () => {
       if (err) {
         console.log(err, results);
       }
-      var testcomment1 = new Comment('user1@user.com',
+      const testcomment1 = new Comment('user1@user.com',
                                      results._id,
                                      'Could use work',
                                      new Date('October 14, 2014 21:00:00'),
@@ -111,7 +136,7 @@ describe('Comment Read', () => {
     });
   });
 
-  after ((done) => {
+  after((done) => {
     Exhibition.clearAllExhibitions((err) => {
       if (err) {
         console.log(err);
@@ -120,36 +145,38 @@ describe('Comment Read', () => {
         if (err) {
           console.log(err);
         }
-        done();
+        ModelHandlerObj.disconnect(() => {
+          done();
+        });
       });
     });
   });
 
 
   it('Should be able to obtain comments from an existing exhibition', (done) => {
-    //obtain _id of exhibition
+    // obtain _id of exhibition
     Exhibition.getExhibition('EVENTNAME', 'EXI', (err, results) => {
       if (err) {
         console.log(err);
         done();
       } else {
         Comment.getCommentsForExhibition(results._id, (err, commentObj) => {
-          if (err){
-            console.log("error with getting comment for an event");
+          if (err) {
+            console.log('error with getting comment for an event');
           } else {
-            assert.equal(commentObj[0].comments[0].content,'Could use work');
+            assert.equal(commentObj[0].comments[0].content, 'Could use work');
           }
           done();
         });
       }
-    })
+    });
   });
 
   it('Should not be able to obtain comments from a non-existing exhibition', (done) => {
     // non-existing exhibition means an invalid object ID
     Comment.getCommentsForExhibition(1234567, (err, commentObj) => {
-      if (err){
-        console.log("error with getting comment for an event");
+      if (err) {
+        console.log('error with getting comment for an event');
       } else {
         assert.equal(commentObj[0], null);
       }
@@ -160,6 +187,16 @@ describe('Comment Read', () => {
 
 describe('Comment Update', () => {
   before((done) => {
+    ModelHandlerObj = new ModelHandler().initWithParameters(
+        config.username,
+        config.password,
+        config.host,
+        config.port,
+        config.database);
+
+    Exhibition.setDBConnection(ModelHandlerObj.getConnection());
+    Comment.setDBConnection(ModelHandlerObj.getConnection());
+
     const testexhibition1 = new Exhibition(
       'EXI',
       'description',
@@ -174,7 +211,7 @@ describe('Comment Update', () => {
       if (err) {
         console.log(err, results);
       }
-      var testcomment1 = new Comment(
+      const testcomment1 = new Comment(
         'user4@user.com',
         results._id,
         'awesome!',
@@ -190,7 +227,7 @@ describe('Comment Update', () => {
     });
   });
 
-  after ((done) => {
+  after((done) => {
     Exhibition.clearAllExhibitions((err) => {
       if (err) {
         console.log(err);
@@ -199,13 +236,15 @@ describe('Comment Update', () => {
         if (err) {
           console.log(err);
         }
-        done();
+        ModelHandlerObj.disconnect(() => {
+          done();
+        });
       });
     });
   });
 
 
-  it ('should be able to append more comments into the object', (done)=> {
+  it('should be able to append more comments into the object', (done) => {
     Exhibition.getExhibition('EVENTNAME', 'EXI', (err, results) => {
       if (err) {
         console.log(err);
@@ -217,7 +256,7 @@ describe('Comment Update', () => {
           'I agree',
           new Date('October 14, 2014 22:20:20'),
           (err, results) => {
-            if (err){
+            if (err) {
               console.log(err);
             } else {
               assert.equal(results.comments[1].content, 'I agree');
@@ -225,7 +264,6 @@ describe('Comment Update', () => {
             done();
           });
       }
-    })
+    });
   });
-
 });
