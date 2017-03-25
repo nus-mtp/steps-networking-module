@@ -165,7 +165,7 @@ Collapsable.propTypes = {
   serial: React.PropTypes.number.isRequired,
   open: React.PropTypes.arrayOf(React.PropTypes.any).isRequired,
   width: React.PropTypes.number.isRequired,
-  event: React.PropTypes.objectOf(React.PropTypes.string).isRequired,
+  event: React.PropTypes.objectOf(React.PropTypes.any).isRequired,
   attendance: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
   changeAttendance: React.PropTypes.func.isRequired,
 };
