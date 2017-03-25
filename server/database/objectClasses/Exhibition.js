@@ -13,7 +13,7 @@ class Exhibition {
    * @param {Mongoose.Connection} db: The connection to the db.
    */
   static setDBConnection(db) {
-    if (!Exhibition.db || !Exhibition.ExhibitionModel) {
+    if ((!Exhibition.db || !Exhibition.ExhibitionModel) || (!Exhibition.checkConnection())) {
       Exhibition.db = db;
       Exhibition.ExhibitionModel = new ModelHandler().initWithConnection(db).getExhibitionModel();
     }
