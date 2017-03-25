@@ -12,6 +12,7 @@ const extractExhibitionInfo = require('../utils/utils').extractExhibitionInfo;
 // Note: All Routes prefixed with 'exhibition/'
 
 router.get('/get/allExhibitions', (req = {}, res, next) => {
+  Exhibition.setDBConnection(req.app.locals.db);
   Exhibition.getAllExhibitions((err, exhibitions) => {
     if (err) {
       console.log(err);
@@ -27,6 +28,7 @@ router.get('/get/allExhibitions', (req = {}, res, next) => {
 
 router.get('/get/oneEventExhibitions/:eventName', (req = {}, res, next) => {
   if (req.params && req.params.eventName) {
+    Exhibition.setDBConnection(req.app.locals.db);
     Exhibition.searchExhibitionsByEvent(req.params.eventName, (err, exhibitions) => {
       if (err) {
         console.log(err);
@@ -46,6 +48,7 @@ router.get('/get/oneEventExhibitions/:eventName', (req = {}, res, next) => {
 
 router.get('/get/oneExhibition/:eventName/:exhibitionName', (req = {}, res, next) => {
   if (req.params && req.params.eventName && req.params.exhibitionName) {
+    Exhibition.setDBConnection(req.app.locals.db);
     Exhibition.getExhibition(req.params.eventName, req.params.exhibitionName, (err, exhibition) => {
       if (err) {
         console.log(err);
@@ -65,6 +68,7 @@ router.get('/get/oneExhibition/:eventName/:exhibitionName', (req = {}, res, next
 
 router.get('/get/oneExhibitionById/:exhibitionId', (req = {}, res, next) => {
   if (req.params && req.params.exhibitionId) {
+    Exhibition.setDBConnection(req.app.locals.db);
     Exhibition.getExhibitionById(req.params.exhibitionId, (err, exhibition) => {
       if (err) {
         if (err.name === 'CastError') {
@@ -89,6 +93,7 @@ router.get('/get/oneExhibitionById/:exhibitionId', (req = {}, res, next) => {
 
 router.post('/post/search/tag', (req = {}, res, next) => {
   if (req.body && req.body.tag) {
+    Exhibition.setDBConnection(req.app.locals.db);
     Exhibition.searchExhibitionsByTag(req.body.tag, (err, exhibitions) => {
       if (err) {
         if (err.name === 'ValidationError') {
@@ -116,6 +121,7 @@ router.post('/post/search/tag', (req = {}, res, next) => {
 
 router.post('/post/oneExhibition/set/tags', (req = {}, res, next) => {
   if (req.body && req.body.eventName && req.body.exhibitionName && req.body.tags) {
+    Exhibition.setDBConnection(req.app.locals.db);
     Exhibition.setTagsForExhibition(
             req.body.eventName, req.body.exhibitionName, req.body.tags.split(','), (err, exhibition) => {
               if (err) {
