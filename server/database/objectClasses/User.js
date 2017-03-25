@@ -276,11 +276,9 @@ class User {
         if (user) {
           user.set('skills', removeDuplicates(user.get('skills').concat(skill.trim().toLowerCase())));
           user.save((err, updatedUser) => {
-            User.disconnectDB();
             callback(err, updatedUser);
           });
         } else {
-          User.disconnectDB();
           callback(err, user);
         }
       });

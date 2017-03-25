@@ -149,7 +149,6 @@ class Event {
   static searchEventsByTag(tag, callback) {
     if (Event.checkConnection()) {
       Event.EventModel.find({ tags: { $regex: new RegExp(tag.replace('+', '\\+'), 'i') } }, (err, matchedEvents) => {
-        Event.disconnectDB();
         callback(err, matchedEvents);
       });
     } else {
