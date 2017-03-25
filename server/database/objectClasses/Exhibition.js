@@ -26,10 +26,12 @@ class Exhibition {
   }
 
   /**
-   * Disconnects from the database.
+   * Disconnects from the Database.
+   *
+   * @param {function} callback: A function to be executed upon disconnection.
    */
-  static disconnectDB() {
-    this.ModelHandler.disconnect();
+  static disconnectDB(callback) {
+    this.ModelHandler.disconnect(callback);
   }
 
   /**
@@ -70,8 +72,9 @@ class Exhibition {
   saveExhibition(callback) {
     Exhibition.connectDB();
     this.exhibitionModelDoc.save((err, result) => {
-      Exhibition.disconnectDB();
-      callback(err, result);
+      Exhibition.disconnectDB(() => {
+        callback(err, result);
+      });
     });
   }
 
@@ -86,14 +89,15 @@ class Exhibition {
     Exhibition.connectDB();
     this.ExhibitionModel.findOne({ event_name: eventName, exhibition_name: exhibitionName },
         (err, exhibition) => {
-          Exhibition.disconnectDB();
-          if (err) {
-            callback(err, false);
-          } else if (exhibition) {
-            callback(null, true);
-          } else {
-            callback(null, false);
-          }
+          Exhibition.disconnectDB(() => {
+            if (err) {
+              callback(err, false);
+            } else if (exhibition) {
+              callback(null, true);
+            } else {
+              callback(null, false);
+            }
+          });
         });
   }
 
@@ -108,8 +112,9 @@ class Exhibition {
     Exhibition.connectDB();
     this.ExhibitionModel.findOne({ event_name: eventName, exhibition_name: exhibitionName },
         (err, exhibition) => {
-          Exhibition.disconnectDB();
-          callback(err, exhibition);
+          Exhibition.disconnectDB(() => {
+            callback(err, exhibition);
+          });
         });
   }
 
@@ -123,8 +128,9 @@ class Exhibition {
   static getExhibitionById(exhibitionId, callback) {
     Exhibition.connectDB();
     this.ExhibitionModel.findById(exhibitionId, (err, exhibition) => {
-      Exhibition.disconnectDB();
-      callback(err, exhibition);
+      Exhibition.disconnectDB(() => {
+        callback(err, exhibition);
+      });
     });
   }
 
@@ -136,8 +142,9 @@ class Exhibition {
   static getAllExhibitions(callback) {
     Exhibition.connectDB();
     this.ExhibitionModel.find({}, (err, allExhibitions) => {
-      Exhibition.disconnectDB();
-      callback(err, allExhibitions);
+      Exhibition.disconnectDB(() => {
+        callback(err, allExhibitions);
+      });
     });
   }
 
@@ -150,8 +157,9 @@ class Exhibition {
   static searchExhibitionsByTag(tag, callback) {
     Exhibition.connectDB();
     this.ExhibitionModel.find({ tags: { $regex: new RegExp(tag.trim().toLowerCase().replace('+', '\\+'), 'i') } }, (err, matchedExhibitions) => {
-      Exhibition.disconnectDB();
-      callback(err, matchedExhibitions);
+      Exhibition.disconnectDB(() => {
+        callback(err, matchedExhibitions);
+      });
     });
   }
 
@@ -164,8 +172,9 @@ class Exhibition {
   static searchExhibitionsByEvent(eventName, callback) {
     Exhibition.connectDB();
     this.ExhibitionModel.find({ event_name: { $regex: new RegExp(eventName.replace('+', '\\+'), 'i') } }, (err, docs) => {
-      Exhibition.disconnectDB();
-      callback(err, docs);
+      Exhibition.disconnectDB(() => {
+        callback(err, docs);
+      });
     });
   }
 
@@ -186,12 +195,14 @@ class Exhibition {
           if (exhibition) {
             exhibition.set('tags', removeDuplicates(tags.map(tag => tag.trim().toLowerCase())));
             exhibition.save((err, updatedExhibition) => {
-              Exhibition.disconnectDB();
-              callback(err, updatedExhibition);
+              Exhibition.disconnectDB(() => {
+                callback(err, updatedExhibition);
+              });
             });
           } else {
-            Exhibition.disconnectDB();
-            callback(err, exhibition);
+            Exhibition.disconnectDB(() => {
+              callback(err, exhibition);
+            });
           }
         });
   }
@@ -227,8 +238,9 @@ class Exhibition {
             update,
             options,
             (err, results) => {
-              Exhibition.disconnectDB();
-              callback(err, results);
+              Exhibition.disconnectDB(() => {
+                callback(err, results);
+              });
             },
     );
   }
@@ -243,8 +255,9 @@ class Exhibition {
   static deleteExhibition(exhibitionName, callback) {
     Exhibition.connectDB();
     this.ExhibitionModel.findOneAndRemove({ exhibition_name: exhibitionName }, (err) => {
-      Exhibition.disconnectDB();
-      callback(err);
+      Exhibition.disconnectDB(() => {
+        callback(err);
+      });
     });
   }
 
@@ -256,8 +269,9 @@ class Exhibition {
   static clearAllExhibitions(callback) {
     Exhibition.connectDB();
     this.ExhibitionModel.collection.remove({}, (err) => {
-      Exhibition.disconnectDB();
-      callback(err);
+      Exhibition.disconnectDB(() => {
+        callback(err);
+      });
     });
   }
 }
