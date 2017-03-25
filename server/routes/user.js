@@ -15,6 +15,7 @@ const extractUserInfo = require('../utils/utils').extractUserInfo;
 router.get('/get/profile/:email', (req = {}, res, next) => {
   if (req.params && req.params.email) {
     User.setDBConnection(req.app.locals.db);
+
     User.getUser(req.params.email, (err, user) => {
       if (err) {
         console.log(err);
@@ -35,6 +36,7 @@ router.get('/get/profile/:email', (req = {}, res, next) => {
 router.get('/get/chat/:email', (req = {}, res, next) => {
   if (req.params && req.params.email) {
     User.setDBConnection(req.app.locals.db);
+
     User.getBookmarksForUser(req.params.email, (err, bUsers) => {
       if (err) {
         res.status(500).json('Unable to process data!');
@@ -56,6 +58,7 @@ router.get('/get/chat/:email', (req = {}, res, next) => {
 router.post('/post/search/skill', (req = {}, res, next) => {
   if (req.body && req.body.skill) {
     User.setDBConnection(req.app.locals.db);
+
     User.searchUsersBySkills(req.body.skill, (err, users) => {
       if (err) {
         if (err.name === 'ValidationError') {
@@ -81,6 +84,7 @@ router.post('/post/search/skill', (req = {}, res, next) => {
 router.post('/post/profile/set/description', (req = {}, res, next) => {
   if (req.body && req.body.userEmail && req.body.userDescription) {
     User.setDBConnection(req.app.locals.db);
+
     User.updateUserDescription(req.body.userEmail, req.body.userDescription, (err, user) => {
       if (err) {
         if (err.name === 'ValidationError') {
@@ -106,6 +110,7 @@ router.post('/post/profile/set/description', (req = {}, res, next) => {
 router.post('/post/profile/set/picture', (req = {}, res, next) => {
   if (req.body && req.body.userEmail && req.body.userProfilePicture) {
     User.setDBConnection(req.app.locals.db);
+
     User.updateUserProfilePicture(req.body.userEmail, req.body.userProfilePicture, (err, user) => {
       if (err) {
         if (err.name === 'ValidationError') {
@@ -131,6 +136,7 @@ router.post('/post/profile/set/picture', (req = {}, res, next) => {
 router.post('/post/profile/set/notification', (req = {}, res, next) => {
   if (req.body && req.body.userEmail && req.body.userNotification) {
     User.setDBConnection(req.app.locals.db);
+
     User.updateUserNotification(
         req.body.userEmail, req.body.userNotification.toLowerCase() === 'true', (err, user) => {
           if (err) {
@@ -157,6 +163,7 @@ router.post('/post/profile/set/notification', (req = {}, res, next) => {
 router.post('/post/profile/add/skill', (req = {}, res, next) => {
   if (req.body && req.body.userEmail && req.body.userSkill) {
     User.setDBConnection(req.app.locals.db);
+
     User.addSkillToUserSkills(req.body.userEmail, req.body.userSkill, (err, user) => {
       if (err) {
         if (err.name === 'ValidationError') {
@@ -183,6 +190,7 @@ router.post('/post/profile/add/skill', (req = {}, res, next) => {
 router.post('/post/profile/add/bUser', (req = {}, res, next) => {
   if (req.body && req.body.userEmail && req.body.bookmarkedUserId) {
     User.setDBConnection(req.app.locals.db);
+
     User.getUserById(req.body.bookmarkedUserId, (err, bUser) => {
       if (err) {
         if (err.name === 'CastError') {
@@ -229,6 +237,7 @@ router.post('/post/profile/add/bUser', (req = {}, res, next) => {
 router.post('/post/profile/remove/skill', (req = {}, res, next) => {
   if (req.body && req.body.userEmail && req.body.userSkill) {
     User.setDBConnection(req.app.locals.db);
+
     User.removeSkillFromUser(req.body.userEmail, req.body.userSkill, (err, user) => {
       if (err) {
         if (err.name === 'ValidationError') {
@@ -255,6 +264,7 @@ router.post('/post/profile/remove/skill', (req = {}, res, next) => {
 router.post('/post/profile/remove/bUser', (req = {}, res, next) => {
   if (req.body && req.body.userEmail && req.body.bookmarkedUserId) {
     User.setDBConnection(req.app.locals.db);
+
     User.getUserById(req.body.bookmarkedUserId, (err, bUser) => {
       if (err) {
         if (err.name === 'CastError') {
@@ -303,6 +313,7 @@ router.post('/post/profile/remove/bUser', (req = {}, res, next) => {
 
 router.post('/post/profile/set/skills', (req = {}, res, next) => {
   User.setDBConnection(req.app.locals.db);
+
   if (req.body && req.body.userEmail && req.body.userSkills) {
     User.setSkillsForUser(req.body.userEmail, req.body.userSkills.split(','), (err, user) => {
       if (err) {
@@ -330,6 +341,7 @@ router.post('/post/profile/set/skills', (req = {}, res, next) => {
 router.post('/post/profile/set/bUsers', (req = {}, res, next) => {
   if (req.body && req.body.userEmail && req.body.bookmarkedUserIds) {
     User.setDBConnection(req.app.locals.db);
+
     async.mapLimit(req.body.bookmarkedUserIds.split(','), 5,
         (bookmarkedUserId, callback) => {
           User.getUserById(bookmarkedUserId, (err, bUser) => {

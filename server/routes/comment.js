@@ -11,6 +11,7 @@ const Exhibition = require('../database/objectClasses/Exhibition');
 router.get('/get/userComments/:eventName/:exhibitionName/:userEmail', (req = {}, res, next) => {
   Exhibition.setDBConnection(req.app.locals.db);
   Comment.setDBConnection(req.app.locals.db);
+
   Exhibition.getExhibition(req.params.eventName, req.params.exhibitionName, (err, result) => {
     if (err) {
       res.status(500).json(`Unable to fetch${req.params.exhibitionName}`);
@@ -33,6 +34,7 @@ router.get('/get/userComments/:eventName/:exhibitionName/:userEmail', (req = {},
 router.get('/get/:eventName/:exhibitionName', (req = {}, res, next) => {
   Exhibition.setDBConnection(req.app.locals.db);
   Comment.setDBConnection(req.app.locals.db);
+
   Exhibition.getExhibition(req.params.eventName, req.params.exhibitionName, (err, result) => {
     if (err) {
       res.status(500).json(`Unable to fetch${req.params.exhibitionName}`);
@@ -57,6 +59,7 @@ router.post('/post/newComment', (req = {}, res, next) => {
       req.body.exhibitionName && req.body.userEmail && req.body.comment) {
     Exhibition.setDBConnection(req.app.locals.db);
     Comment.setDBConnection(req.app.locals.db);
+
     Exhibition.getExhibition(req.body.eventName, req.body.exhibitionName, (err, results) => {
       if (err) {
         res.status(500).json('Unable to fetch the exhibition id');
@@ -86,6 +89,7 @@ router.post('/post/addComment', (req = {}, res, next) => {
       req.body.eventName && req.body.userEmail && req.body.comment) {
     Exhibition.setDBConnection(req.app.locals.db);
     Comment.setDBConnection(req.app.locals.db);
+
     Exhibition.getExhibition(req.body.eventName, req.body.exhibitionName, (err, results) => {
       if (err) {
         res.status(500).json('Unable to fetch the exhibition id');

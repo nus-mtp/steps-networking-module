@@ -10,6 +10,7 @@ const extractEventInfo = require('../utils/utils').extractEventInfo;
 
 router.get('/get/allEvents', (req = {}, res, next) => {
   Event.setDBConnection(req.app.locals.db);
+
   Event.getAllEvents((err, eventObjs) => {
     if (err) {
       res.status(500).json('Unable to fetch data!');
@@ -26,6 +27,7 @@ router.get('/get/allEvents', (req = {}, res, next) => {
 
 router.get('/get/oneEvent/:eventName', (req = {}, res, next) => {
   Event.setDBConnection(req.app.locals.db);
+
   Event.getEvent(req.params.eventName, (err, eventObj) => {
     if (err) {
       res.status(500).json('Unable to fetch data!');
@@ -42,6 +44,7 @@ router.get('/get/oneEvent/:eventName', (req = {}, res, next) => {
 
 router.get('/get/searchTag/:tag', (req = {}, res, next) => {
   Event.setDBConnection(req.app.locals.db);
+
   Event.searchEventsByTag(req.params.tag, (err, eventObjs) => {
     if (err) {
       res.status(500).json('Unable to fetch data!');
@@ -59,6 +62,7 @@ router.get('/get/searchTag/:tag', (req = {}, res, next) => {
 router.post('/post/updateMap', (req = {}, res, next) => {
   if (req.body && req.body.eventName && req.body.map) {
     Event.setDBConnection(req.app.locals.db);
+
     Event.updateEventMap(req.body.eventName, req.body.map, (err, results) => {
       if (err) {
         res.status(500).json('Unable to save data!');
@@ -77,6 +81,7 @@ router.post('/post/updateMap', (req = {}, res, next) => {
 router.post('/post/updateEventPicture', (req = {}, res, next) => {
   if (req.body && req.body.eventName && req.body.eventPicture) {
     Event.setDBConnection(req.app.locals.db);
+
     Event.updateEventPicture(req.body.eventName, req.body.eventPicture, (err, results) => {
       if (err) {
         res.status(500).json('Unable to save data!');
@@ -96,6 +101,7 @@ router.post('/post/updateEventPicture', (req = {}, res, next) => {
 router.post('/post/updateTags', (req = {}, res, next) => {
   if (req.body && req.body.eventName && req.body.tags) {
     Event.setDBConnection(req.app.locals.db);
+
     Event.updateEventTag(req.body.eventName, req.body.tags.split(','), (err, results) => {
       if (err) {
         res.status(500).json('Unable to save data!');
