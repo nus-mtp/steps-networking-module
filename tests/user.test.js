@@ -1,4 +1,3 @@
-const async = require('async');
 const User = require('../server/database/objectClasses/User.js');
 const assert = require('assert');
 
@@ -162,44 +161,41 @@ describe('User Update', () => {
       ['Programming skills', 'C++', 'Java', 'HTML'], // skills
       [], //bookmarked users
     );
+
     const userTest2 = new User(
-      'usertesting_2@user.com', // email
-      'UserTest2', // name
-      'I am the second test user.', // description
-      'password123', // password
-      true, // will_notify
-      false, // is_deleted
-      'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', // profile_pic
-      ['Programming skills', 'C++', 'Java', 'HTML'], // skills
-      [], //bookmarked users
+        'usertesting_2@user.com', // email
+        'UserTest2', // name
+        'I am the second test user.', // description
+        'password123', // password
+        true, // will_notify
+        false, // is_deleted
+        'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', // profile_pic
+        ['Programming skills', 'C++', 'Java', 'HTML'], // skills
+        [], //bookmarked users
     );
 
-    const save1 = new Promise((resolve, reject) => {
-      userTest1.saveUser((err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
+    const save1 = new Promise((resolve, reject) => userTest1.saveUser((err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    }));
 
-    const save2 = new Promise((resolve, reject) => {
-      userTest2.saveUser((err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
+    const save2 = new Promise((resolve, reject) => userTest2.saveUser((err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    }));
 
     Promise.all([save1, save2])
         .then(() => {
           done();
         })
-        .catch((reasons) => {
-          console.log(reasons);
+        .catch((errs) => {
+          console.log(errs);
           done();
         });
   });
@@ -213,7 +209,7 @@ describe('User Update', () => {
     });
   });
 
-  it('should be able to do nothing', (done) => {
+  it('Should be able to do nothing', (done) => {
     done();
   });
 
