@@ -23,7 +23,7 @@ module.exports.connect = (username, password, host, port, database) => {
   });
 
   db.once('open', () => {
-    // .info(`MongoDB ${database} Connected Successfully.`);
+    // console.info(`MongoDB ${database} Connected Successfully.`);
   });
 
   db.once('close', () => {
