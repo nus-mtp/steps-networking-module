@@ -14,7 +14,7 @@ class Attendance {
    * @param {Mongoose.Connection} db: The connection to the db.
    */
   static setDBConnection(db) {
-    if (!Attendance.db || !Attendance.AttendanceModel) {
+    if ((!Attendance.db || !Attendance.AttendanceModel) || (!Attendance.checkConnection())) {
       Attendance.db = db;
       Attendance.AttendanceModel = new ModelHandler().initWithConnection(db).getAttendanceModel();
     }
