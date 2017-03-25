@@ -28,10 +28,12 @@ class Message {
   }
 
   /**
-   * Disconnects from the database.
+   * Disconnects from the Database.
+   *
+   * @param {function} callback: A function to be executed upon disconnection.
    */
-  static disconnectDB() {
-    this.ModelHandler.disconnect();
+  static disconnectDB(callback) {
+    this.ModelHandler.disconnect(callback);
   }
 
   /**
@@ -62,8 +64,9 @@ class Message {
   saveMessage(callback) {
     Message.connectDB();
     this.messageModelDoc.save((err) => {
-      Message.disconnectDB();
-      callback(err);
+      Message.disconnectDB(() => {
+        callback(err);
+      });
     });
   }
 
@@ -76,8 +79,9 @@ class Message {
   static getMessagesToUser(recipientEmail, callback) {
     Message.connectDB();
     this.MessageModel.find({ recipient_email: recipientEmail }, (err, matchedMessages) => {
-      Message.disconnectDB();
-      callback(err, matchedMessages);
+      Message.disconnectDB(() => {
+        callback(err, matchedMessages);
+      });
     });
   }
 
@@ -90,8 +94,9 @@ class Message {
   static getMessagesFromUser(senderEmail, callback) {
     Message.connectDB();
     this.MessageModel.find({ sender_email: senderEmail }, (err, matchedMessages) => {
-      Message.disconnectDB();
-      callback(err, matchedMessages);
+      Message.disconnectDB(() => {
+        callback(err, matchedMessages);
+      });
     });
   }
 
@@ -101,19 +106,20 @@ class Message {
    * @param {String} userEmail: The email of the targeted user.
    * @param {String} callback: A function that is executed once the operation is done.
    */
-  static getEmailsInvolvingUser(userEmail, callback){
+  static getEmailsInvolvingUser(userEmail, callback) {
     Message.connectDB();
-    this.MessageModel.find( { $or: [ {recipient_email: userEmail}, {sender_email: userEmail}] }, (err, matchedMessages) => {
-      Message.disconnectDB();
-      const emailArray= [];
-      for (var i = 0; i< matchedMessages.length; i++){
-        if (matchedMessages[i].sender_email !== userEmail){
-          emailArray.push(matchedMessages[i].sender_email);
-        } else {
-          emailArray.push(matchedMessages[i].recipient_email);
+    this.MessageModel.find({ $or: [{ recipient_email: userEmail }, { sender_email: userEmail }] }, (err, matchedMessages) => {
+      Message.disconnectDB(() => {
+        const emailArray = [];
+        for (let i = 0; i < matchedMessages.length; i++) {
+          if (matchedMessages[i].sender_email !== userEmail) {
+            emailArray.push(matchedMessages[i].sender_email);
+          } else {
+            emailArray.push(matchedMessages[i].recipient_email);
+          }
         }
-      }
-      callback(err, removeDuplicates(emailArray));
+        callback(err, removeDuplicates(emailArray));
+      });
     });
   }
 
@@ -131,8 +137,9 @@ class Message {
       sender_email: senderEmail,
     };
     this.MessageModel.findOne(query, (err, matchedMessage) => {
-      Message.disconnectDB();
-      callback(err, matchedMessage);
+      Message.disconnectDB(() => {
+        callback(err, matchedMessage);
+      });
     });
   }
 
@@ -154,8 +161,9 @@ class Message {
     const update = { $push: { messages: { content, timestamp: timeStamp } } };
     const options = { new: true };
     this.MessageModel.findOneAndUpdate(query, update, options, (err, results) => {
-      Message.disconnectDB();
-      callback(err, results);
+      Message.disconnectDB(() => {
+        callback(err, results);
+      });
     });
   }
 
@@ -167,8 +175,9 @@ class Message {
   static clearAllMessage(callback) {
     Message.connectDB();
     this.MessageModel.collection.remove({}, (err) => {
-      Message.disconnectDB();
-      callback(err);
+      Message.disconnectDB(() => {
+        callback(err);
+      });
     });
   }
 }
