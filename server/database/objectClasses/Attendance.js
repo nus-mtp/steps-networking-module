@@ -74,7 +74,7 @@ class Attendance {
 
   /**
    * Retrieve the specific Attendance Document from the Database.
-   * Using a User's email, Attendance name and type as the unique identifer.
+   * Using a User's email, Attendance name and type as the unique identifier.
    *
    * @param {String} userEmail: The name for Users. Does not check if User actually exists or not.
    * @param {mongoose.Schema.ObjectId} attendanceKey: The ObjectID of the Event / Exhibition.
@@ -125,7 +125,7 @@ class Attendance {
   }
 
   /**
-   * Retrieve the Attendance Documents that contain the specified Event / Exhibition ID
+   * Retrieve the Attendance Documents that contain the specified Event / Exhibition Id
    *
    * @param {mongoose.Schema.ObjectId} attendanceKey: Used to match against the
    *    attendance_key contained in all Attendances.
@@ -141,7 +141,7 @@ class Attendance {
   }
 
   /**
-   * Retrieve the Attendance Document for a User that contains a specific Event / Exhibition ID
+   * Retrieve the Attendance Document for a User that contains a specific Event / Exhibition Id
    *
    * @param {String} userEmail: Used to match against the user_emails contained in all Attendances.
    * @param {mongoose.Schema.ObjectId} attendanceKey: Used to match against the
@@ -204,9 +204,9 @@ class Attendance {
    * Update the Attendance Document stored internally in this object.
    *
    * @param {String} userEmail: The name for Users. Does not check if User actually exists or not.
-   * @param {mongoose.Schema.ObjectId} attendanceKey: The ObjectID of the Event / Exhibition.
+   * @param {mongoose.Schema.ObjectId} attendanceKey: The ObjectId of the Event / Exhibition.
    *    Does not check if the Event / Exhibition exists or not.
-   *    Use attendanceType to determine if tthis is for an Exhibition, or an Event.
+   *    Use attendanceType to determine if this is for an Exhibition, or an Event.
    *    Used to determine the type of activity attendanceName represents.
    * @param {Array} reason: The User's reasons for attending the Event.
    *    Each reason is a unique String element of the Array.

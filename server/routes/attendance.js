@@ -218,7 +218,7 @@ router.get('/get/oneEventExhibitors/:id', (req = {}, res, next) => {
                               res.status(500).json('Unable to process data!');
                               next();
                             } else {
-                              res.status(200).json(results);
+                              res.status(200).json(results.filter(item => (item !== null)));
                               next();
                             }
                           },

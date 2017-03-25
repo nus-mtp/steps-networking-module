@@ -62,7 +62,7 @@ class User {
       is_deleted: isDeleted,
       profile_picture: profilePic,
       skills: removeDuplicates(skillSets.map(skill => skill.trim().toLowerCase())),
-      bookmarked_users: removeDuplicates(bookmarkedUsers.map(bookmarkedUser => bookmarkedUser.trim())),
+      bookmarked_users: removeDuplicates(bookmarkedUsers),
     });
     this.ModelHandler.disconnect();
   }
@@ -127,6 +127,43 @@ class User {
   static getUser(userEmail, callback) {
     User.connectDB();
     this.UserModel.findOne({ email: userEmail }, (err, user) => {
+      User.disconnectDB();
+      callback(err, user);
+    });
+  }
+
+  /**
+   * A function that returns a populated variant of the bookmarked_users
+   * array stored in the specified User's document.
+   *
+   * @param {String} userEmail: The email of the User to get the bookmarked_users from.
+   * @param {function} callback: A function that executes once the operation finishes.
+   */
+  static getBookmarksForUser(userEmail, callback) {
+    User.connectDB();
+    this.UserModel
+        .findOne({ email: userEmail })
+        .populate('bookmarked_users', 'email name profile_picture will_notify is_deleted')
+        .exec((err, user) => {
+          User.disconnectDB();
+          if (user) {
+            callback(err, user.bookmarked_users);
+          } else {
+            callback(err, user);
+          }
+        });
+  }
+
+  /**
+   * Retrieve a specific User in the Database, using its Id.
+   *
+   * @param {mongoose.Schema.ObjectId} userId:
+   *    The id of a User to search for.
+   * @param {function} callback: A function that executes once the operation is done.
+   */
+  static getUserById(userId, callback) {
+    User.connectDB();
+    this.UserModel.findById(userId, (err, user) => {
       User.disconnectDB();
       callback(err, user);
     });
@@ -300,18 +337,18 @@ class User {
   }
 
   /**
-   * Saves a User's email into the specified User's bookmarks.
+   * Saves a User's Id into the specified User's bookmarks.
    *
    * @param {String} userEmail: The email of the User to add the bookmark for.
-   * @param {String} bookmarkedUserEmail: The email of the bookmarked User.
-   *    Does not perform validation on supplied email.
+   * @param {mongoose.Schema.ObjectId} bookmarkedUserId: The Id of the bookmarked User.
+   *    Does not perform validation on supplied ObjectId.
    * @param {function} callback: A function that executes once the operation completes.
    */
-  static addBookmarkedUserForUser(userEmail, bookmarkedUserEmail, callback) {
+  static addBookmarkedUserForUser(userEmail, bookmarkedUserId, callback) {
     User.connectDB();
     this.UserModel.findOne({ email: userEmail }, (err, user) => {
       if (user) {
-        user.set('bookmarked_users', removeDuplicates(user.get('bookmarked_users').concat(bookmarkedUserEmail.trim())));
+        user.set('bookmarked_users', removeDuplicates(user.get('bookmarked_users').map(bUserId => bUserId.toString()).concat(bookmarkedUserId.toString())));
         user.save((err, updatedUser) => {
           User.disconnectDB();
           callback(err, updatedUser);
@@ -324,17 +361,17 @@ class User {
   }
 
   /**
-   * Removes a saved User email from a specified User's bookmarks.
+   * Removes a saved User Id from a specified User's bookmarks.
    *
    * @param {String} userEmail: The email of the User to remove the bookmark from.
-   * @param {String} bookmarkedUserEmail: The email of the bookmarked User.
+   * @param {mongoose.Schema.ObjectId} bookmarkedUserId: The Id of the bookmarked User.
    * @param {function} callback: A function that executes once the operation completes.
    */
-  static removeBookmarkedUserFromUser(userEmail, bookmarkedUserEmail, callback) {
+  static removeBookmarkedUserFromUser(userEmail, bookmarkedUserId, callback) {
     User.connectDB();
     this.UserModel.findOne({ email: userEmail }, (err, user) => {
       if (user) {
-        user.set('bookmarked_users', user.get('bookmarked_users').filter(currBookmarkedUserEmail => (currBookmarkedUserEmail !== bookmarkedUserEmail.trim())));
+        user.set('bookmarked_users', user.get('bookmarked_users').filter(currBookmarkedUserId => (currBookmarkedUserId.toString() !== bookmarkedUserId.toString())));
         user.save((err, updatedUser) => {
           User.disconnectDB();
           callback(err, updatedUser);
@@ -349,16 +386,15 @@ class User {
   /**
    * Sets the array of bookmarked Users for the specified User.
    *
-   * @param {String} userEmail: The email of the User to set the skills for.
-   * @param {Array} bookmarkedUsers:
-   *    The array of String objects representing the emails the User has decide to bookmark.
+   * @param {String} userEmail: The email of the User to set the bookmarks for.
+   * @param {Array} bookmarkedUserIds: The array of User Ids to set the bookmarks for.
    * @param {function} callback: A function that executes once the operation is done.
    */
-  static setBookmarksForUser(userEmail, bookmarkedUsers, callback) {
+  static setBookmarksForUser(userEmail, bookmarkedUserIds, callback) {
     User.connectDB();
     this.UserModel.findOne({ email: userEmail }, (err, user) => {
       if (user) {
-        user.set('bookmarked_users', removeDuplicates(bookmarkedUsers.map(markedUser => markedUser.trim())));
+        user.set('bookmarked_users', removeDuplicates(bookmarkedUserIds));
         user.save((err, updatedUser) => {
           User.disconnectDB();
           callback(err, updatedUser);
@@ -383,12 +419,11 @@ class User {
    * @param {String} profilePic: URL String representing an externally hosted depiction of the User.
    * @param {Array} skillSets: A list of Strings representing subject matters the
    *    User has some mastery in.
-   * @param {Array} bookmarkedUsers: A list of Strings representing other
-   *    userEmails that the User has bookmarked.
+   * @param {Array} bookmarkedUserIds: A list of ObjectIds referencing other Users the User has bookmarked.
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static updateUser(email = '', name = '', description = '', password = '',
-    willNotify = true, isDeleted = false, profilePic = '', skillSets = [], bookmarkedUsers = [], callback) {
+    willNotify = true, isDeleted = false, profilePic = '', skillSets = [], bookmarkedUserIds = [], callback) {
     const update = {
       email: email.trim(),
       name: name.trim(),
@@ -397,8 +432,8 @@ class User {
       will_notify: willNotify,
       is_deleted: isDeleted,
       profile_picture: profilePic,
-      skills: skillSets.map(skill => skill.trim().toLowerCase()),
-      bookmarked_users: bookmarkedUsers.map(bookmarkedUser => bookmarkedUser.trim()),
+      skills: removeDuplicates(skillSets.map(skill => skill.trim().toLowerCase())),
+      bookmarked_users: removeDuplicates(bookmarkedUserIds),
     };
     const options = { new: true };
     User.connectDB();

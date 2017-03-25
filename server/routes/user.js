@@ -1,3 +1,4 @@
+const async = require('async');
 const express = require('express');
 
 const router = new express.Router();
@@ -23,6 +24,26 @@ router.get('/get/profile/:email', (req = {}, res, next) => {
         res.status(204).json('Nothing found!');
       }
       next();
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
+router.get('/get/chat/:email', (req = {}, res, next) => {
+  if (req.params && req.params.email) {
+    User.getBookmarksForUser(req.params.email, (err, bUsers) => {
+      if (err) {
+        res.status(500).json('Unable to process data!');
+        next();
+      } else if (bUsers) {
+        res.status(200).json(bUsers.map(bUser => extractUserInfo(bUser)));
+        next();
+      } else {
+        res.status(204).json('Nothing found!');
+        next();
+      }
     });
   } else {
     res.status(400).json('Bad Request!');
@@ -151,23 +172,45 @@ router.post('/post/profile/add/skill', (req = {}, res, next) => {
   }
 });
 
+// Note: Requires User ID as request parameter 'bookmarkedUserid'
 router.post('/post/profile/add/bUser', (req = {}, res, next) => {
-  if (req.body && req.body.userEmail && req.body.bookmarkedUser) {
-    User.addBookmarkedUserForUser(req.body.userEmail, req.body.bookmarkedUser, (err, user) => {
+  if (req.body && req.body.userEmail && req.body.bookmarkedUserId) {
+    User.getUserById(req.body.bookmarkedUserId, (err, bUser) => {
       if (err) {
-        if (err.name === 'ValidationError') {
+        if (err.name === 'CastError') {
+          res.status(204).json('Cannot find User with that Id!');
+          next();
+        } else if (err.name === 'ValidationError') {
           console.log(err);
           res.status(403).json('Unauthorized!');
         } else {
-          console.log(err);
-          res.status(500).json('Unable to post data!');
+          res.status(500).json('Unable to process request!');
+          next();
         }
-      } else if (user) {
-        res.status(200).json(extractUserInfo(user));
+      } else if (bUser) {
+        User.addBookmarkedUserForUser(
+            req.body.userEmail,
+            req.body.bookmarkedUserId,
+            (err, user) => {
+              if (err) {
+                if (err.name === 'ValidationError') {
+                  console.log(err);
+                  res.status(403).json('Unauthorized!');
+                } else {
+                  console.log(err);
+                  res.status(500).json('Unable to post data!');
+                }
+              } else if (user) {
+                res.status(200).json(extractUserInfo(user));
+              } else {
+                res.status(204).json('Nothing found!');
+              }
+              next();
+            });
       } else {
-        res.status(204).json('Nothing found!');
+        res.status(204).json('Unable to find specified bUser!');
+        next();
       }
-      next();
     });
   } else {
     res.status(400).json('Bad Request!');
@@ -199,23 +242,45 @@ router.post('/post/profile/remove/skill', (req = {}, res, next) => {
   }
 });
 
+// Note: Requires User ID as request parameter 'bookmarkedUserid'
 router.post('/post/profile/remove/bUser', (req = {}, res, next) => {
-  if (req.body && req.body.userEmail && req.body.bookmarkedUser) {
-    User.removeBookmarkedUserFromUser(req.body.userEmail, req.body.bookmarkedUser, (err, user) => {
+  if (req.body && req.body.userEmail && req.body.bookmarkedUserId) {
+    User.getUserById(req.body.bookmarkedUserId, (err, bUser) => {
       if (err) {
-        if (err.name === 'ValidationError') {
+        if (err.name === 'CastError') {
+          res.status(204).json('Cannot find User with that Id!');
+          next();
+        } else if (err.name === 'ValidationError') {
           console.log(err);
           res.status(403).json('Unauthorized!');
         } else {
-          console.log(err);
-          res.status(500).json('Unable to post data!');
+          res.status(500).json('Unable to process request!');
+          next();
         }
-      } else if (user) {
-        res.status(200).json(extractUserInfo(user));
+      } else if (bUser) {
+        User.removeBookmarkedUserFromUser(
+            req.body.userEmail,
+            req.body.bookmarkedUserId,
+            (err, user) => {
+              if (err) {
+                if (err.name === 'ValidationError') {
+                  console.log(err);
+                  res.status(403).json('Unauthorized!');
+                } else {
+                  console.log(err);
+                  res.status(500).json('Unable to post data!');
+                }
+              } else if (user) {
+                res.status(200).json(extractUserInfo(user));
+              } else {
+                res.status(204).json('Nothing found!');
+              }
+              next();
+            });
       } else {
-        res.status(204).json('Nothing found!');
+        res.status(204).json('Unable to find specified bUser!');
+        next();
       }
-      next();
     });
   } else {
     res.status(400).json('Bad Request!');
@@ -250,24 +315,51 @@ router.post('/post/profile/set/skills', (req = {}, res, next) => {
   }
 });
 
+// Note: Requires Comma-Separated String of User IDs as request parameter 'bookmarkedUserid'
 router.post('/post/profile/set/bUsers', (req = {}, res, next) => {
-  if (req.body && req.body.userEmail && req.body.bookmarkedUsers) {
-    User.setBookmarksForUser(req.body.userEmail, req.body.bookmarkedUsers.split(','), (err, user) => {
-      if (err) {
-        if (err.name === 'ValidationError') {
-          console.log(err);
-          res.status(403).json('Unauthorized!');
-        } else {
-          console.log(err);
-          res.status(500).json('Unable to post data!');
-        }
-      } else if (user) {
-        res.status(200).json(extractUserInfo(user));
-      } else {
-        res.status(204).json('Nothing found!');
-      }
-      next();
-    });
+  if (req.body && req.body.userEmail && req.body.bookmarkedUserIds) {
+    async.mapLimit(req.body.bookmarkedUserIds.split(','), 5,
+        (bookmarkedUserId, callback) => {
+          User.getUserById(bookmarkedUserId, (err, bUser) => {
+            if (err || !bUser) {
+              callback(null, null);
+            } else {
+              callback(null, bookmarkedUserId);
+            }
+          });
+        },
+        (err, results) => {
+          if (err || !results) {
+            res.status(500).json('Unable to process request!');
+            next();
+          } else {
+            const processedResults = results.filter(item => (item !== null));
+
+            User.setBookmarksForUser(
+                req.body.userEmail, processedResults,
+                (err, user) => {
+                  if (err) {
+                    if (err.name === 'CastError') {
+                      res.status(204).json('Cannot find User with that Id!');
+                      next();
+                    } else if (err.name === 'ValidationError') {
+                      console.log(err);
+                      res.status(403).json('Unauthorized!');
+                    } else {
+                      res.status(500).json('Unable to process request!');
+                      next();
+                    }
+                  } else if (user) {
+                    res.status(200).json(extractUserInfo(user));
+                    next();
+                  } else {
+                    res.status(204).json('Unable to find specified bUser!');
+                    next();
+                  }
+                });
+          }
+        },
+        );
   } else {
     res.status(400).json('Bad Request!');
     next();
