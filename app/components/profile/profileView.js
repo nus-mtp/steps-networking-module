@@ -329,7 +329,7 @@ class ProfileView extends React.Component {
                     <Link to={`/exhibition/${exhibition.eventName}/${exhibition.exhibitionName}`} key={exhibition.id}>
                       <div id="user-exhibition-container">
                         <img className="img-fluid user-page-thumbnail" src={`${exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" />
-                        <div id="user-exhibition" className="user-info">{exhibition.exhibitionName}</div>
+                        <div id="user-exhibition">{exhibition.exhibitionName}</div>
                       </div>
                     </Link>
                   ) : <div />
@@ -345,7 +345,7 @@ class ProfileView extends React.Component {
                     <Link to={`/event/${event.name}`}  key={event.id}>
                       <div id="user-event-container">
                         <img className="img-fluid user-page-thumbnail" src={`${event.event_poster}`} onError={this.addDefaultSrc} alt="event-image" />
-                        <div id="user-events" className="user-info">{event.name}</div>
+                        <div id="user-events">{event.name}</div>
                       </div>
                     </Link>
                   ) : <div />
