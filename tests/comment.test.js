@@ -152,7 +152,6 @@ describe('Comment Read', () => {
     });
   });
 
-
   it('Should be able to obtain comments from an existing exhibition', (done) => {
     // obtain _id of exhibition
     Exhibition.getExhibition('EVENTNAME', 'EXI', (err, results) => {
@@ -235,7 +234,6 @@ describe('Comment Update', () => {
       });
     });
   });
-
 
   it('should be able to append more comments into the object', (done) => {
     Exhibition.getExhibition('EVENTNAME', 'EXI', (err, results) => {
