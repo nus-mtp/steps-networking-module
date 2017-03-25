@@ -14,7 +14,7 @@ class Message {
    * @param {Mongoose.Connection} db: The connection to the db.
    */
   static setDBConnection(db) {
-    if (!Message.db || !Message.MessageModel) {
+    if ((!Message.db || !Message.MessageModel) || (!Message.checkConnection())) {
       Message.db = db;
       Message.MessageModel = new ModelHandler().initWithConnection(db).getMessageModel();
     }
