@@ -62,6 +62,7 @@
     "react-responsive": "^1.2.6",
     "react-router": "^3.0.2",
     "react-swipe": "^5.0.6",
+    "react-tag-input": "^4.6.2",
     "should": "^11.2.0",
     "swipe-js-iso": "^2.0.3",
     "validator": "^6.2.1",

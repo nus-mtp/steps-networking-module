@@ -20,7 +20,14 @@ const eventSchema = new mongoose.Schema({
   event_map: String,
   event_picture: String,
 
-  tags: [String],
+  tags: [
+    {
+      type: String,
+      lowercase: true,
+      trim: true,
+      // unique: true,
+    },
+  ],
 });
 
 module.exports = eventSchema;

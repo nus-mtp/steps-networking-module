@@ -5,10 +5,30 @@
 }
 
 #home-body {
-  margin: 20px 10%;
+  margin: 10px 10%;
+  width: 100vw;
 
   .user-thumbnail {
     max-width: 30px;
+  }
+
+  .no-events {
+    margin-left: auto;
+    margin-right: auto;
+
+    img {
+      max-width: 50vw;
+      display: block;
+      margin: auto;
+    }
+
+    p {
+      margin-top: 10px;
+      text-align: center;
+      color: #3CB371;
+      font-size: 20px;
+      font-weight: 500;
+    }
   }
 
   #event-list {
@@ -25,7 +45,7 @@
   #event-image-container {
     display: block;
     text-align: center;
-    background: black;
+    background: lightgrey;
   }
 
   #event-description {
@@ -91,6 +111,8 @@
   .event-info {
     font-size: 12px;
     color: grey;
+    display: inline-block;
+    width: 100%;
   }
 
   .event-title {
@@ -152,13 +174,63 @@
 }
 
 #event-body {
-  width: 80%;
+  width: 90%;
+
+  .thumbnail-container {
+    min-width: 100px;
+    min-height: 80px;
+    max-width: 100px;
+    max-height: 80px;
+    margin: 0 20px;
+  }
 
   .project-thumbnail {
     max-height: 80px;
   }
 
+  .event-info {
+    font-size: 16px;
+  }
+
   .btn {
     font-size: 15px;
   }
+
+  #exhibition-container {
+    color: black;
+
+    #exhibition:hover {
+      background: lightseagreen;
+      color: white;
+    }
+  }
+}
+
+/* Event map */
+#event-map {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100%;
+  width: 100%;
+  height: 0;
+  padding: 0px;
+  padding-bottom: 50%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 2;
+}
+
+#event-map-pointers {
+  font-size: 12px;
+  padding: 5% 10%;
+  display: block;
+  /*
+  background-color: Transparent;
+  background-repeat:no-repeat;
+  border: none;
+  cursor:pointer;
+  overflow: hidden;
+  outline:none;
+  color: white;
+  */
 }

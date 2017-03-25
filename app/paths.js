@@ -3,10 +3,10 @@ const Paths = {
   login: '/login',
   signup: '/signup',
   logout: '/logout',
-  project: '/project',
-  event: '/event',
+  exhibition: '/exhibition/:eventName/:exhibitionName',
+  event: '/event(/:eventName)',
   chat: '/chat',
-  profile: '/profile',
+  profile: '/profile/:email',
   match: '/match',
 };
 

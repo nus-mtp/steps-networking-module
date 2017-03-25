@@ -15,12 +15,15 @@ class Event extends React.Component {
         return true;
       }
     }
-
     return false;
   }
 
   handleClick() {
     this.props.openCollapsable(this.props.serial);
+  }
+
+  addDefaultSrc(event) {
+    event.target.src = "../../resources/images/empty-poster-placeholder.png";
   }
 
   render() {
@@ -31,6 +34,8 @@ class Event extends React.Component {
       zIndex: 0,
     } : {};
 
+    const eventDate = new Date(this.props.event.start_date);
+
     return (
       <div id="event-info">
         <div
@@ -40,12 +45,12 @@ class Event extends React.Component {
           aria-expanded={this.props.open[this.props.serial]}
         >
           <div id="event-image-container">
-            <Link to="/event">
+            <Link to={`/event/${this.props.event.name}`}>
               <button className="btn btn-danger event-img-button">
                 <img src="../../resources/images/pageview-icon.svg" alt="pageview-icon" />
               </button>
             </Link>
-            <img id="event-poster" className="img-fluid text-center event-poster card-img-top" src="../../resources/images/dummy-poster.png" alt="event-poster" />
+            <img id="event-poster" className="img-fluid text-center event-poster card-img-top" src={this.props.event.event_poster} onError={this.addDefaultSrc} alt="event-poster" />
           </div>
           <div className="card-block event-info-container">
             <div className="card-title event-title">{this.props.event.name}</div>
@@ -54,7 +59,7 @@ class Event extends React.Component {
               ? <div className="attendance-badge"><img id="attendance-badge-image" src="../../resources/images/check-icon.svg" alt="check-icon" />Attending</div>
               : <div className="attendance-badge" />
             }
-            <div className="event-info">{this.props.event.date}</div>
+            <div className="event-info">{eventDate.toDateString()}</div>
             <div className="event-info">{this.props.event.venue}</div>
           </div>
         </div>
@@ -67,7 +72,7 @@ Event.propTypes = {
   serial: React.PropTypes.number.isRequired,
   open: React.PropTypes.arrayOf(React.PropTypes.bool).isRequired,
   openCollapsable: React.PropTypes.func.isRequired,
-  event: React.PropTypes.objectOf(React.PropTypes.string).isRequired,
+  event: React.PropTypes.objectOf(React.PropTypes.any).isRequired,
   attendance: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
 };
 

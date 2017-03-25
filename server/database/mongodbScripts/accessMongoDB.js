@@ -8,13 +8,14 @@
  */
 const mongoose = require('mongoose');
 
-module.exports.connect = (username, password, host, port, database) => {
+module.exports.connect = (username, password, host, port, database,
+                          poolSize = 5, openCallback = () => {}, closeCallback = () => {}) => {
   let loginCredentials = '';
   if (username !== '' || (username !== '' && password !== '')) {
     loginCredentials = `${username}:${password}@`;
   }
 
-  const db = mongoose.createConnection(`mongodb://${loginCredentials}${host}:${port}/${database}`);
+  const db = mongoose.createConnection(`mongodb://${loginCredentials}${host}:${port}/${database}`, { server: { poolSize } });
 
   db.on('error', (err) => {
     if (err) {
@@ -22,12 +23,12 @@ module.exports.connect = (username, password, host, port, database) => {
     }
   });
 
-  db.once('open', () => {
-    console.info(`MongoDB ${database} Connected Successfully.`);
+  db.once('open', (err) => {
+    openCallback(err);
   });
 
-  db.once('close', () => {
-    console.info(`MongoDB ${database} Disconnected Successfully.`);
+  db.once('close', (err) => {
+    closeCallback(err);
   });
 
   return db;
