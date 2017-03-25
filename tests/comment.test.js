@@ -157,15 +157,12 @@ describe('Comment Read', () => {
     // obtain _id of exhibition
     Exhibition.getExhibition('EVENTNAME', 'EXI', (err, results) => {
       if (err) {
-        console.log(err);
+        console.log('error with getting comment for an event');
         done();
       } else {
         Comment.getCommentsForExhibition(results._id, (err, commentObj) => {
-          if (err) {
-            console.log('error with getting comment for an event');
-          } else {
-            assert.equal(commentObj[0].comments[0].content, 'Could use work');
-          }
+          assert.equal(err, null, err);
+          assert.equal(commentObj[0].comments[0].content, 'Could use work');
           done();
         });
       }
@@ -175,11 +172,7 @@ describe('Comment Read', () => {
   it('Should not be able to obtain comments from a non-existing exhibition', (done) => {
     // non-existing exhibition means an invalid object ID
     Comment.getCommentsForExhibition(1234567, (err, commentObj) => {
-      if (err) {
-        console.log('error with getting comment for an event');
-      } else {
-        assert.equal(commentObj[0], null);
-      }
+      assert.equal(commentObj, null);
       done();
     });
   });
