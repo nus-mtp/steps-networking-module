@@ -57,7 +57,7 @@ class Event {
   }
 
   /**
-   * Saves the Event JSON to the database as an actual Document.
+   * Saves the Event JSON to the Database as an actual Document.
    *
    * @param {function} callback: A function that executes after the operation is done.
    */

@@ -56,7 +56,7 @@ class Exhibition {
   }
 
   /**
-   * Saves the Exhibition JSON to the database as an actual Document.
+   * Saves the Exhibition JSON to the Database as an actual Document.
    *
    * @param {function} callback: A function that is executed once the operation is done.
    */

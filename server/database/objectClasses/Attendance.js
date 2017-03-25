@@ -53,7 +53,7 @@ class Attendance {
   }
 
   /**
-   * Saves the Attendance JSON to the database as an actual Document.
+   * Saves the Attendance JSON to the Database as an actual Document.
    *
    * @param {function} callback: A function that is executed once the operation is done.
    */
