@@ -6,12 +6,6 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const config = require('./config.json');
 
-const db = require('./database/mongodbScripts/accessMongoDB').connect(config[currentdb].username,
-                                                                    config[currentdb].password,
-                                                                    config[currentdb].host,
-                                                                    config[currentdb].port,
-                                                                    config[currentdb].database);
-
 const app = express();
 const port = 3000;
 
@@ -60,7 +54,16 @@ app.use('/comment', commentRoutes);
 const messageRoutes = require('./routes/message');
 app.use('/message', messageRoutes);
 
-app.listen(process.env.PORT || port, () => {
-  const listeningPort = process.env.PORT || port;
-  console.log(`Running on ${listeningPort}`);
-});
+const db = require('./database/mongodbScripts/accessMongoDB').connect(
+    config[currentdb].username, config[currentdb].password, config[currentdb].host,
+    config[currentdb].port, config[currentdb].database, 30,
+    (err) => {
+      if (err) {
+        throw err;
+      }
+
+      app.listen(process.env.PORT || port, () => {
+        const listeningPort = process.env.PORT || port;
+        console.log(`Running on ${listeningPort}`);
+      });
+    });
