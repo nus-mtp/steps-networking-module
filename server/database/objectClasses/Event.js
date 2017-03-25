@@ -35,7 +35,6 @@ class Event {
     this.ModelHandler.disconnect(callback);
   }
 
-
   /**
    * Creates an Event Document and stores it internally.
    *
