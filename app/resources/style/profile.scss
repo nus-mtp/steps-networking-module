@@ -27,6 +27,15 @@
     @include transition(opacity, 0.4s, ease);
   }
 
+  #user-exhibition-container, #user-event-container {
+    text-align: center;
+    width: 150px;
+
+    .user-page-thumbnail {
+      width: 80px;
+    }
+  }
+
   #match-body {
     width: 80%;
 

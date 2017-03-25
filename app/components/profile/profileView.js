@@ -12,15 +12,19 @@ class ProfileView extends React.Component {
     this.state = {
       skills: [],
       links: 'N/A',
-      projects: 'none',
-      interestedEvents: 'none',
       interestedOpportunities: 'none',
       isContentEditable: false,
       pastUserData: {},
       user: {},
+      events: [],
+      exhibitions: [],
     };
 
-    this.getUser();
+    const pathname = this.props.location.pathname;
+    const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
+    this.getUser(userEmail);
+    this.getEvent(userEmail);
 
     this.handleEdit = this.handleEdit.bind(this);
     this.changeEdit = this.changeEdit.bind(this);
@@ -49,12 +53,9 @@ class ProfileView extends React.Component {
     });
   }
 
-  getUser() {
-    const pathname = this.props.location.pathname;
-    const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
-
+  getUser(email) {
     const xhr = new XMLHttpRequest();
-    xhr.open('get', `/user/get/profile/${userEmail}`);
+    xhr.open('get', `/user/get/profile/${email}`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
@@ -70,6 +71,44 @@ class ProfileView extends React.Component {
     });
     xhr.send();
   }
+
+  getEvent(email) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/attendance/get/oneUserEventAttendances/${email}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      this.setState({
+        events: xhr.response,
+      });
+
+      if (this.state.events) {
+        this.state.events.map(event => {
+          this.getExhibition(email, event.name);
+        });
+      }
+    });
+    xhr.send();
+  }
+
+  getExhibition(email, event) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/attendance/get/oneUserAttendancesForEvent/${email}/${event}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      let exhibitionArray = this.state.exhibitions;
+      xhr.response.map(event => {
+        exhibitionArray.push(event);
+      });
+
+      this.setState({
+        exhibitions: exhibitionArray,
+      });
+    });
+    xhr.send();
+  }
+
 
   handleDeleteSkill(i) {
     const user = this.state.user;
@@ -131,8 +170,6 @@ class ProfileView extends React.Component {
         description: this.state.user.userDescription,
         skills: this.state.user.userSkills,
         links: this.state.links,
-        projects: this.state.projects,
-        interestedEvents: this.state.interestedEvents,
         interestedOpportunities: this.state.interestedOpportunities,
       },
     });
@@ -144,8 +181,6 @@ class ProfileView extends React.Component {
       description: this.state.user.userDescription,
       skills: this.state.pastUserData.skills,
       links: this.state.pastUserData.links,
-      projects: this.state.pastUserData.projects,
-      interestedEvents: this.state.pastUserData.interestedEvents,
       interestedOpportunities: this.state.pastUserData.interestedOpportunities,
       isContentEditable: false,
     });
@@ -206,6 +241,10 @@ class ProfileView extends React.Component {
     }
 
     callback;
+  }
+
+  addDefaultSrc(event) {
+    event.target.src = "../../resources/images/empty-poster-placeholder.png";
   }
 
   render() {
@@ -281,13 +320,37 @@ class ProfileView extends React.Component {
             </div>
           </div>
           <ul className="list-group list-group-flush">
-            <li className="list-group-item">
-              <div className="info-type">Lists of Projects Involved: </div>
-              <div id="user-projects" className="user-info">{this.state.projects}</div>
+            <li className="list-group-item d-flex flex-column align-items-start">
+              <div className="info-type">Exhibitions Involved: </div>
+              <div className="flex-row">
+                {
+                  (this.state.exhibitions) ?
+                  this.state.exhibitions.map(exhibition =>
+                    <Link to={`/exhibition/${exhibition.eventName}/${exhibition.exhibitionName}`} key={exhibition.id}>
+                      <div id="user-exhibition-container">
+                        <img className="img-fluid user-page-thumbnail" src={`${exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" />
+                        <div id="user-exhibition" className="user-info">{exhibition.exhibitionName}</div>
+                      </div>
+                    </Link>
+                  ) : <div />
+                }
+              </div>
             </li>
-            <li className="list-group-item">
-              <div className="info-type">Interested Events: </div>
-              <div id="user-events" className="user-info">{this.state.interestedEvents}</div>
+            <li className="list-group-item d-flex flex-column align-items-start">
+              <div className="info-type">Events Involved: </div>
+              <div className="flex-row">
+                {
+                  (this.state.events) ?
+                  this.state.events.map(event =>
+                    <Link to={`/event/${event.name}`}  key={event.id}>
+                      <div id="user-event-container">
+                        <img className="img-fluid user-page-thumbnail" src={`${event.event_poster}`} onError={this.addDefaultSrc} alt="event-image" />
+                        <div id="user-events" className="user-info">{event.name}</div>
+                      </div>
+                    </Link>
+                  ) : <div />
+                }
+              </div>
             </li>
             <li className="list-group-item">
               <div className="info-type">What am I Looking For? </div>
