@@ -12,7 +12,7 @@ class Comment {
    * @param {Mongoose.Connection} db: The connection to the db.
    */
   static setDBConnection(db) {
-    if (!Comment.db || !Comment.CommentModel) {
+    if ((!Comment.db || !Comment.CommentModel) || (!Comment.checkConnection())) {
       Comment.db = db;
       Comment.CommentModel = new ModelHandler().initWithConnection(db).getCommentModel();
     }
