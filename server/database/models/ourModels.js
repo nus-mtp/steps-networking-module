@@ -85,6 +85,15 @@ class ModelHandler {
   }
 
   /**
+   * Returns a connection established with MongoDB.
+   *
+   * @returns {Mongoose.Connection|*}
+   */
+  getConnection() {
+    return this.db;
+  }
+
+  /**
    * Returns a User Mongoose Model Object - configured for
    * the parameters specified in the constructor.
    *
