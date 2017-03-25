@@ -60,7 +60,16 @@ app.use('/comment', commentRoutes);
 var messageRoutes = require('./routes/message');
 app.use('/message', messageRoutes);
 
-app.listen(process.env.PORT || port, function() {
+var server = app.listen(process.env.PORT || port, function() {
   var listeningPort = process.env.PORT || port;
   console.log(`Running on ${listeningPort}`);
+});
+
+var io = require('socket.io').listen(server);
+
+io.sockets.on('connection', (socket) => {
+  socket.emit('news', { hello: 'world' });
+  socket.on('my other event', function (data) {
+    console.log(data);
+  });
 });
