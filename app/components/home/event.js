@@ -22,6 +22,10 @@ class Event extends React.Component {
     this.props.openCollapsable(this.props.serial);
   }
 
+  addDefaultSrc(event) {
+    event.target.src = "../../resources/images/empty-poster-placeholder.png";
+  }
+
   render() {
     const style = (this.props.open[this.props.serial]) ?
     {
@@ -46,7 +50,7 @@ class Event extends React.Component {
                 <img src="../../resources/images/pageview-icon.svg" alt="pageview-icon" />
               </button>
             </Link>
-            <img id="event-poster" className="img-fluid text-center event-poster card-img-top" src="../../resources/images/dummy-poster.png" alt="event-poster" />
+            <img id="event-poster" className="img-fluid text-center event-poster card-img-top" src={this.props.event.event_poster} onError={this.addDefaultSrc} alt="event-poster" />
           </div>
           <div className="card-block event-info-container">
             <div className="card-title event-title">{this.props.event.name}</div>
