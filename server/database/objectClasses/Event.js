@@ -9,7 +9,7 @@ const ModelHandler = require('../models/ourModels.js');
 
 class Event {
   /**
-   * Establishes the User Model on an existing connection.
+   * Establishes the Event Model on an existing connection.
    *
    * @param {Mongoose.Connection} db: The connection to the db.
    */

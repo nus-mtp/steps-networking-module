@@ -8,7 +8,7 @@ const ModelHandler = require('../models/ourModels.js');
 
 class Exhibition {
   /**
-   * Establishes the User Model on an existing connection.
+   * Establishes the Exhibition Model on an existing connection.
    *
    * @param {Mongoose.Connection} db: The connection to the db.
    */
@@ -62,7 +62,7 @@ class Exhibition {
    */
   saveExhibition(callback) {
     if (Exhibition.checkConnection()) {
-      const exhibitionDoc = new Exhibition.ExhibitionModel(this.eventJSON);
+      const exhibitionDoc = new Exhibition.ExhibitionModel(this.exhibitionJSON);
       exhibitionDoc.save((err, result) => {
         callback(err, result);
       });
