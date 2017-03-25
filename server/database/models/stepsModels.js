@@ -129,9 +129,7 @@ class StepsModelHandler {
           console.log(err);
         }
 
-        if (typeof callback === 'function') {
-          callback(err);
-        }
+        callback(err);
       });
   }
 
