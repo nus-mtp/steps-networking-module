@@ -27,9 +27,11 @@ class User {
 
   /**
    * Disconnects from the Database.
+   *
+   * @param {function} callback: A function to be executed upon disconnection.
    */
-  static disconnectDB() {
-    this.ModelHandler.disconnect();
+  static disconnectDB(callback) {
+    this.ModelHandler.disconnect(callback);
   }
 
   /**
@@ -75,8 +77,9 @@ class User {
   saveUser(callback) {
     User.connectDB();
     this.userModelDoc.save((err) => {
-      User.disconnectDB();
-      callback(err);
+      User.disconnectDB(() => {
+        callback(err);
+      });
     });
   }
 
@@ -89,8 +92,9 @@ class User {
   comparePassword(testPassword, callback) {
     User.connectDB();
     this.userModelDoc.comparePassword(testPassword, (err, result) => {
-      User.disconnectDB();
-      callback(err, result);
+      User.disconnectDB(() => {
+        callback(err, result);
+      });
     });
   }
 
@@ -103,18 +107,19 @@ class User {
   static isValidUser(userEmail, callback) {
     User.connectDB();
     this.UserModel.findOne({ email: userEmail }, (err, user) => {
-      User.disconnectDB();
-      if (err) {
-        callback(err, null);
-      } else if (user) {
-        if (!user.is_deleted) {
-          callback(null, true);
+      User.disconnectDB(() => {
+        if (err) {
+          callback(err, null);
+        } else if (user) {
+          if (!user.is_deleted) {
+            callback(null, true);
+          } else {
+            callback(null, false);
+          }
         } else {
           callback(null, false);
         }
-      } else {
-        callback(null, false);
-      }
+      });
     });
   }
 
@@ -127,8 +132,9 @@ class User {
   static getUser(userEmail, callback) {
     User.connectDB();
     this.UserModel.findOne({ email: userEmail }, (err, user) => {
-      User.disconnectDB();
-      callback(err, user);
+      User.disconnectDB(() => {
+        callback(err, user);
+      });
     });
   }
 
@@ -145,12 +151,13 @@ class User {
         .findOne({ email: userEmail })
         .populate('bookmarked_users', 'email name profile_picture will_notify is_deleted')
         .exec((err, user) => {
-          User.disconnectDB();
-          if (user) {
-            callback(err, user.bookmarked_users);
-          } else {
-            callback(err, user);
-          }
+          User.disconnectDB(() => {
+            if (user) {
+              callback(err, user.bookmarked_users);
+            } else {
+              callback(err, user);
+            }
+          });
         });
   }
 
@@ -164,8 +171,9 @@ class User {
   static getUserById(userId, callback) {
     User.connectDB();
     this.UserModel.findById(userId, (err, user) => {
-      User.disconnectDB();
-      callback(err, user);
+      User.disconnectDB(() => {
+        callback(err, user);
+      });
     });
   }
 
@@ -177,8 +185,9 @@ class User {
   static getAllUsers(callback) {
     User.connectDB();
     this.UserModel.find({}, (err, users) => {
-      User.disconnectDB();
-      callback(err, users);
+      User.disconnectDB(() => {
+        callback(err, users);
+      });
     });
   }
 
@@ -191,8 +200,9 @@ class User {
   static searchUsersBySkills(skillToBeSearched, callback) {
     User.connectDB();
     this.UserModel.find({ skills: { $regex: new RegExp(skillToBeSearched.trim().toLowerCase().replace('+', '\\+'), 'i') } }, (err, matchedUsers) => {
-      User.disconnectDB();
-      callback(err, matchedUsers);
+      User.disconnectDB(() => {
+        callback(err, matchedUsers);
+      });
     });
   }
 
@@ -209,12 +219,14 @@ class User {
       if (user) {
         user.set('description', description);
         user.save((err, updatedUser) => {
-          User.disconnectDB();
-          callback(err, updatedUser);
+          User.disconnectDB(() => {
+            callback(err, updatedUser);
+          });
         });
       } else {
-        User.disconnectDB();
-        callback(err, user);
+        User.disconnectDB(() => {
+          callback(err, user);
+        });
       }
     });
   }
@@ -232,12 +244,14 @@ class User {
       if (user) {
         user.set('will_notify', willNotify);
         user.save((err, updatedUser) => {
-          User.disconnectDB();
-          callback(err, updatedUser);
+          User.disconnectDB(() => {
+            callback(err, updatedUser);
+          });
         });
       } else {
-        User.disconnectDB();
-        callback(err, user);
+        User.disconnectDB(() => {
+          callback(err, user);
+        });
       }
     });
   }
@@ -256,12 +270,14 @@ class User {
       if (user) {
         user.set('profile_picture', profilePicURL);
         user.save((err, updatedUser) => {
-          User.disconnectDB();
-          callback(err, updatedUser);
+          User.disconnectDB(() => {
+            callback(err, updatedUser);
+          });
         });
       } else {
-        User.disconnectDB();
-        callback(err, user);
+        User.disconnectDB(() => {
+          callback(err, user);
+        });
       }
     });
   }
@@ -279,12 +295,14 @@ class User {
       if (user) {
         user.set('skills', removeDuplicates(user.get('skills').concat(skill.trim().toLowerCase())));
         user.save((err, updatedUser) => {
-          User.disconnectDB();
-          callback(err, updatedUser);
+          User.disconnectDB(() => {
+            callback(err, updatedUser);
+          });
         });
       } else {
-        User.disconnectDB();
-        callback(err, user);
+        User.disconnectDB(() => {
+          callback(err, user);
+        });
       }
     });
   }
@@ -302,12 +320,14 @@ class User {
       if (user) {
         user.set('skills', user.get('skills').filter(currSkill => (currSkill !== skill.trim().toLowerCase())));
         user.save((err, updatedUser) => {
-          User.disconnectDB();
-          callback(err, updatedUser);
+          User.disconnectDB(() => {
+            callback(err, updatedUser);
+          });
         });
       } else {
-        User.disconnectDB();
-        callback(err, user);
+        User.disconnectDB(() => {
+          callback(err, user);
+        });
       }
     });
   }
@@ -326,12 +346,14 @@ class User {
       if (user) {
         user.set('skills', removeDuplicates(skills.map(skill => skill.trim().toLowerCase())));
         user.save((err, updatedUser) => {
-          User.disconnectDB();
-          callback(err, updatedUser);
+          User.disconnectDB(() => {
+            callback(err, updatedUser);
+          });
         });
       } else {
-        User.disconnectDB();
-        callback(err, user);
+        User.disconnectDB(() => {
+          callback(err, user);
+        });
       }
     });
   }
@@ -350,12 +372,14 @@ class User {
       if (user) {
         user.set('bookmarked_users', removeDuplicates(user.get('bookmarked_users').map(bUserId => bUserId.toString()).concat(bookmarkedUserId.toString())));
         user.save((err, updatedUser) => {
-          User.disconnectDB();
-          callback(err, updatedUser);
+          User.disconnectDB(() => {
+            callback(err, updatedUser);
+          });
         });
       } else {
-        User.disconnectDB();
-        callback(err, user);
+        User.disconnectDB(() => {
+          callback(err, user);
+        });
       }
     });
   }
@@ -373,12 +397,14 @@ class User {
       if (user) {
         user.set('bookmarked_users', user.get('bookmarked_users').filter(currBookmarkedUserId => (currBookmarkedUserId.toString() !== bookmarkedUserId.toString())));
         user.save((err, updatedUser) => {
-          User.disconnectDB();
-          callback(err, updatedUser);
+          User.disconnectDB(() => {
+            callback(err, updatedUser);
+          });
         });
       } else {
-        User.disconnectDB();
-        callback(err, user);
+        User.disconnectDB(() => {
+          callback(err, user);
+        });
       }
     });
   }
@@ -396,12 +422,14 @@ class User {
       if (user) {
         user.set('bookmarked_users', removeDuplicates(bookmarkedUserIds));
         user.save((err, updatedUser) => {
-          User.disconnectDB();
-          callback(err, updatedUser);
+          User.disconnectDB(() => {
+            callback(err, updatedUser);
+          });
         });
       } else {
-        User.disconnectDB();
-        callback(err, user);
+        User.disconnectDB(() => {
+          callback(err, user);
+        });
       }
     });
   }
@@ -438,8 +466,9 @@ class User {
     const options = { new: true };
     User.connectDB();
     this.UserModel.findOneAndUpdate({ email }, update, options, (err, results) => {
-      User.disconnectDB();
-      callback(err, results);
+      User.disconnectDB(() => {
+        callback(err, results);
+      });
     });
   }
 
@@ -459,8 +488,9 @@ class User {
       { $set: update },
       options,
       (err, results) => {
-        User.disconnectDB();
-        callback(err, results);
+        User.disconnectDB(() => {
+          callback(err, results);
+        });
       });
   }
 
@@ -472,8 +502,9 @@ class User {
   static clearAllUsers(callback) {
     User.connectDB();
     this.UserModel.remove({}, (err) => {
-      User.disconnectDB();
-      callback(err);
+      User.disconnectDB(() => {
+        callback(err);
+      });
     });
   }
 }
