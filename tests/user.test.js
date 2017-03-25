@@ -1,8 +1,20 @@
+const config = require('../server/config.json').fakeDbUri;
+const ModelHandler = require('../server/database/models/ourModels');
 const User = require('../server/database/objectClasses/User.js');
 const assert = require('assert');
 
+let ModelHandlerObj;
 describe('User Create', () => {
   before((done) => {
+    ModelHandlerObj = new ModelHandler().initWithParameters(
+        config.username,
+        config.password,
+        config.host,
+        config.port,
+        config.database);
+
+    User.setDBConnection(ModelHandlerObj.getConnection());
+
     const userTest2 = new User(
             'usertesting_2@user.com',
             'UserTest2',
@@ -25,7 +37,10 @@ describe('User Create', () => {
       if (err) {
         console.log(err);
       }
-      done();
+
+      ModelHandlerObj.disconnect(() => {
+        done();
+      });
     });
   });
 
@@ -91,6 +106,15 @@ describe('User Create', () => {
 
 describe('User Read', () => {
   before((done) => {
+    ModelHandlerObj = new ModelHandler().initWithParameters(
+        config.username,
+        config.password,
+        config.host,
+        config.port,
+        config.database);
+
+    User.setDBConnection(ModelHandlerObj.getConnection());
+
     const userTest1 = new User(
             'usertesting_1@user.com', // email
             'UserTest1', // name
@@ -115,7 +139,9 @@ describe('User Read', () => {
       if (err) {
         console.log(err);
       }
-      done();
+      ModelHandlerObj.disconnect(() => {
+        done();
+      });
     });
   });
 
@@ -147,9 +173,18 @@ describe('User Read', () => {
   });
 });
 
-/*
+
 describe('User Update', () => {
   before((done) => {
+    ModelHandlerObj = new ModelHandler().initWithParameters(
+       config.username,
+       config.password,
+       config.host,
+       config.port,
+       config.database);
+
+    User.setDBConnection(ModelHandlerObj.getConnection());
+
     const userTest1 = new User(
       'usertesting_1@user.com', // email
       'UserTest1', // name
@@ -205,7 +240,9 @@ describe('User Update', () => {
       if (err) {
         console.log(err);
       }
-      done();
+      ModelHandlerObj.disconnect(() => {
+        done();
+      });
     });
   });
 
@@ -367,10 +404,19 @@ describe('User Update', () => {
             });
   });
 });
-*/
+
 
 describe('User Delete', () => {
   before((done) => {
+    ModelHandlerObj = new ModelHandler().initWithParameters(
+        config.username,
+        config.password,
+        config.host,
+        config.port,
+        config.database);
+
+    User.setDBConnection(ModelHandlerObj.getConnection());
+
     const userTest2 = new User(
             'usertesting_2@user.com',
             'UserTest2',
@@ -392,7 +438,9 @@ describe('User Delete', () => {
       if (err) {
         console.log(err);
       }
-      done();
+      ModelHandlerObj.disconnect(() => {
+        done();
+      });
     });
   });
 

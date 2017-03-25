@@ -1,15 +1,6 @@
 const removeDuplicates = require('../../utils/utils').removeDuplicates;
 const ModelHandler = require('../models/ourModels.js');
 
-const config = require('../../config.json');
-const currentdb = require('../../currentdb.js');
-
-const username = config[currentdb].username;
-const password = config[currentdb].password;
-const host = config[currentdb].host;
-const port = config[currentdb].port;
-const dbName = config[currentdb].database;
-
 /**
  * This is the wrapper class used extract out and store information about the
  * Exhibitions from the Database between view and model.
@@ -17,23 +8,29 @@ const dbName = config[currentdb].database;
 
 class Exhibition {
   /**
-   * Creates a connection to the Database.
+   * Establishes the Exhibition Model on an existing connection.
+   *
+   * @param {Mongoose.Connection} db: The connection to the db.
    */
-  static connectDB() {
-    this.ModelHandler = new ModelHandler()
-          .initWithParameters(username, password, host, port, dbName);
-    this.ExhibitionModel = this.ModelHandler.getExhibitionModel();
+  static setDBConnection(db) {
+    if ((!Exhibition.db || !Exhibition.ExhibitionModel) || (!Exhibition.checkConnection())) {
+      Exhibition.db = db;
+      Exhibition.ExhibitionModel = new ModelHandler().initWithConnection(db).getExhibitionModel();
+    }
   }
 
   /**
-   * Disconnects from the database.
+   * A function which checks whether the Database connection can be used.
+   *
+   * @returns {Mongoose.Connection|*|*|Aggregate|Model|boolean}
    */
-  static disconnectDB() {
-    this.ModelHandler.disconnect();
+  static checkConnection() {
+    return (Exhibition.db && Exhibition.ExhibitionModel &&
+      (Exhibition.db.readyState === 1 || Exhibition.db.readyState === 2));
   }
 
   /**
-   * Creates an Exhibition Document and stores it internally.
+   * Creates an Exhibition JSON and stores it internally.
    *
    * @param {String} exhibitionName: The name for the Exhibition.
    * @param {String} exhibitionDescription: The description for the Exhibition.
@@ -46,10 +43,7 @@ class Exhibition {
    * @param {Array} tags: List of tags that can be used to search for Exhibitions.
    */
   constructor(exhibitionName = '', exhibitionDescription = '', eventName, posterURL, images, videos, website, tags) {
-    this.ModelHandler = new ModelHandler()
-        .initWithParameters(username, password, host, port, dbName);
-    this.ExhibitionModel = this.ModelHandler.getExhibitionModel();
-    this.exhibitionModelDoc = new this.ExhibitionModel({
+    this.exhibitionJSON = {
       exhibition_name: exhibitionName,
       exhibition_description: exhibitionDescription,
       event_name: eventName,
@@ -58,21 +52,23 @@ class Exhibition {
       videos,
       website,
       tags: removeDuplicates(tags.map(tag => tag.trim().toLowerCase())),
-    });
-    this.ModelHandler.disconnect();
+    };
   }
 
   /**
-   * Saves the Exhibition Document stored internally to the Database.
+   * Saves the Exhibition JSON to the Database as an actual Document.
    *
    * @param {function} callback: A function that is executed once the operation is done.
    */
   saveExhibition(callback) {
-    Exhibition.connectDB();
-    this.exhibitionModelDoc.save((err, result) => {
-      Exhibition.disconnectDB();
-      callback(err, result);
-    });
+    if (Exhibition.checkConnection()) {
+      const exhibitionDoc = new Exhibition.ExhibitionModel(this.exhibitionJSON);
+      exhibitionDoc.save((err, result) => {
+        callback(err, result);
+      });
+    } else {
+      callback(null);
+    }
   }
 
   /**
@@ -83,18 +79,20 @@ class Exhibition {
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static isExistingExhibition(eventName, exhibitionName, callback) {
-    Exhibition.connectDB();
-    this.ExhibitionModel.findOne({ event_name: eventName, exhibition_name: exhibitionName },
-        (err, exhibition) => {
-          Exhibition.disconnectDB();
-          if (err) {
-            callback(err, false);
-          } else if (exhibition) {
-            callback(null, true);
-          } else {
-            callback(null, false);
-          }
-        });
+    if (Exhibition.checkConnection()) {
+      Exhibition.ExhibitionModel.findOne({ event_name: eventName, exhibition_name: exhibitionName },
+            (err, exhibition) => {
+              if (err) {
+                callback(err, false);
+              } else if (exhibition) {
+                callback(null, true);
+              } else {
+                callback(null, false);
+              }
+            });
+    } else {
+      callback('Not Connected!', undefined);
+    }
   }
 
   /**
@@ -105,12 +103,14 @@ class Exhibition {
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static getExhibition(eventName, exhibitionName, callback) {
-    Exhibition.connectDB();
-    this.ExhibitionModel.findOne({ event_name: eventName, exhibition_name: exhibitionName },
-        (err, exhibition) => {
-          Exhibition.disconnectDB();
-          callback(err, exhibition);
-        });
+    if (Exhibition.checkConnection()) {
+      Exhibition.ExhibitionModel.findOne({ event_name: eventName, exhibition_name: exhibitionName },
+          (err, exhibition) => {
+            callback(err, exhibition);
+          });
+    } else {
+      callback('Not Connected!', null);
+    }
   }
 
   /**
@@ -121,11 +121,13 @@ class Exhibition {
    * @param {function} callback: A function that executes once the operation is done.
    */
   static getExhibitionById(exhibitionId, callback) {
-    Exhibition.connectDB();
-    this.ExhibitionModel.findById(exhibitionId, (err, exhibition) => {
-      Exhibition.disconnectDB();
-      callback(err, exhibition);
-    });
+    if (Exhibition.checkConnection()) {
+      Exhibition.ExhibitionModel.findById(exhibitionId, (err, exhibition) => {
+        callback(err, exhibition);
+      });
+    } else {
+      callback('Not Connected!', null);
+    }
   }
 
   /**
@@ -134,11 +136,13 @@ class Exhibition {
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static getAllExhibitions(callback) {
-    Exhibition.connectDB();
-    this.ExhibitionModel.find({}, (err, allExhibitions) => {
-      Exhibition.disconnectDB();
-      callback(err, allExhibitions);
-    });
+    if (Exhibition.checkConnection()) {
+      Exhibition.ExhibitionModel.find({}, (err, allExhibitions) => {
+        callback(err, allExhibitions);
+      });
+    } else {
+      callback('Not Connected!', null);
+    }
   }
 
   /**
@@ -148,11 +152,13 @@ class Exhibition {
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static searchExhibitionsByTag(tag, callback) {
-    Exhibition.connectDB();
-    this.ExhibitionModel.find({ tags: { $regex: new RegExp(tag.trim().toLowerCase().replace('+', '\\+'), 'i') } }, (err, matchedExhibitions) => {
-      Exhibition.disconnectDB();
-      callback(err, matchedExhibitions);
-    });
+    if (Exhibition.checkConnection()) {
+      Exhibition.ExhibitionModel.find({ tags: { $regex: new RegExp(tag.trim().toLowerCase().replace('+', '\\+'), 'i') } }, (err, matchedExhibitions) => {
+        callback(err, matchedExhibitions);
+      });
+    } else {
+      callback('Not Connected!', null);
+    }
   }
 
   /**
@@ -162,11 +168,13 @@ class Exhibition {
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static searchExhibitionsByEvent(eventName, callback) {
-    Exhibition.connectDB();
-    this.ExhibitionModel.find({ event_name: { $regex: new RegExp(eventName.replace('+', '\\+'), 'i') } }, (err, docs) => {
-      Exhibition.disconnectDB();
-      callback(err, docs);
-    });
+    if (Exhibition.checkConnection()) {
+      Exhibition.ExhibitionModel.find({ event_name: { $regex: new RegExp(eventName.replace('+', '\\+'), 'i') } }, (err, docs) => {
+        callback(err, docs);
+      });
+    } else {
+      callback('Not Connected!', null);
+    }
   }
 
   /**
@@ -179,21 +187,22 @@ class Exhibition {
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static setTagsForExhibition(eventName, exhibitionName, tags, callback) {
-    Exhibition.connectDB();
-    this.ExhibitionModel.findOne(
-        { event_name: eventName, exhibition_name: exhibitionName },
-        (err, exhibition) => {
-          if (exhibition) {
-            exhibition.set('tags', removeDuplicates(tags.map(tag => tag.trim().toLowerCase())));
-            exhibition.save((err, updatedExhibition) => {
-              Exhibition.disconnectDB();
-              callback(err, updatedExhibition);
+    if (Exhibition.checkConnection()) {
+      Exhibition.ExhibitionModel.findOne(
+            { event_name: eventName, exhibition_name: exhibitionName },
+            (err, exhibition) => {
+              if (exhibition) {
+                exhibition.set('tags', removeDuplicates(tags.map(tag => tag.trim().toLowerCase())));
+                exhibition.save((err, updatedExhibition) => {
+                  callback(err, updatedExhibition);
+                });
+              } else {
+                callback(err, exhibition);
+              }
             });
-          } else {
-            Exhibition.disconnectDB();
-            callback(err, exhibition);
-          }
-        });
+    } else {
+      callback('Not Connected!', null);
+    }
   }
 
   /**
@@ -211,26 +220,28 @@ class Exhibition {
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static updateExhibition(exhibitionName = '', exhibitionDescription = '', eventName, posterURL, images, videos, website, tags, callback) {
-    Exhibition.connectDB();
-    const update = {
-      exhibition_description: exhibitionDescription,
-      event_name: eventName,
-      poster: posterURL,
-      images,
-      videos,
-      website,
-      tags: removeDuplicates(tags.map(tag => tag.trim().toLowerCase())),
-    };
-    const options = { new: true };
-    this.ExhibitionModel
-        .findOneAndUpdate({ exhibition_name: exhibitionName },
-            update,
-            options,
-            (err, results) => {
-              Exhibition.disconnectDB();
-              callback(err, results);
-            },
-    );
+    if (Exhibition.checkConnection()) {
+      const update = {
+        exhibition_description: exhibitionDescription,
+        event_name: eventName,
+        poster: posterURL,
+        images,
+        videos,
+        website,
+        tags: removeDuplicates(tags.map(tag => tag.trim().toLowerCase())),
+      };
+      const options = { new: true };
+      Exhibition.ExhibitionModel
+            .findOneAndUpdate({ exhibition_name: exhibitionName },
+                update,
+                options,
+                (err, results) => {
+                  callback(err, results);
+                },
+            );
+    } else {
+      callback('Not Connected!', null);
+    }
   }
 
   /**
@@ -241,11 +252,13 @@ class Exhibition {
    * @param {function} callback: A function that is executed once the operation has completed.
    */
   static deleteExhibition(exhibitionName, callback) {
-    Exhibition.connectDB();
-    this.ExhibitionModel.findOneAndRemove({ exhibition_name: exhibitionName }, (err) => {
-      Exhibition.disconnectDB();
-      callback(err);
-    });
+    if (Exhibition.checkConnection()) {
+      Exhibition.ExhibitionModel.findOneAndRemove({ exhibition_name: exhibitionName }, (err) => {
+        callback(err);
+      });
+    } else {
+      callback('Not Connected!', null);
+    }
   }
 
   /**
@@ -254,11 +267,13 @@ class Exhibition {
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static clearAllExhibitions(callback) {
-    Exhibition.connectDB();
-    this.ExhibitionModel.collection.remove({}, (err) => {
-      Exhibition.disconnectDB();
-      callback(err);
-    });
+    if (Exhibition.checkConnection()) {
+      Exhibition.ExhibitionModel.collection.remove({}, (err) => {
+        callback(err);
+      });
+    } else {
+      callback('Not Connected!', null);
+    }
   }
 }
 module.exports = Exhibition;
