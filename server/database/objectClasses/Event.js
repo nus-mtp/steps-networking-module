@@ -14,7 +14,7 @@ class Event {
    * @param {Mongoose.Connection} db: The connection to the db.
    */
   static setDBConnection(db) {
-    if (!Event.db || !Event.EventModel) {
+    if ((!Event.db || !Event.EventModel) || (!Event.checkConnection())) {
       Event.db = db;
       Event.EventModel = new ModelHandler().initWithConnection(db).getEventModel();
     }
