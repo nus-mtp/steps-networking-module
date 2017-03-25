@@ -24,6 +24,11 @@ const extractAttendanceInfo = require('../utils/utils').extractAttendanceInfo;
 // Note: Requires Event or Exhibition ID as request parameter 'id'
 router.get('/get/oneAttendanceAttendees/:id', (req = {}, res, next) => {
   if (req.params && req.params.id) {
+    User.setDBConnection(req.app.locals.db);
+    Event.setDBConnection(req.app.locals.db);
+    Exhibition.setDBConnection(req.app.locals.db);
+    Attendance.setDBConnection(req.app.locals.db);
+
     Attendance.searchAttendancesByKey(req.params.id, (err, attendances) => {
       if (err) {
         res.status(500).json('Unable to process data!');
@@ -68,6 +73,11 @@ router.get('/get/oneAttendanceAttendees/:id', (req = {}, res, next) => {
 // Get the Users attending a particular Event
 router.get('/get/oneEventAttendances/:eventName', (req = {}, res, next) => {
   if (req.params && req.params.eventName) {
+    User.setDBConnection(req.app.locals.db);
+    Event.setDBConnection(req.app.locals.db);
+    Exhibition.setDBConnection(req.app.locals.db);
+    Attendance.setDBConnection(req.app.locals.db);
+
     Event.getEvent(req.params.eventName, (err, event) => {
       if (err) {
         res.status(500).json('Unable to fetch data!');
@@ -116,6 +126,11 @@ router.get('/get/oneEventAttendances/:eventName', (req = {}, res, next) => {
 // Get the Users participating in a particular Exhibition
 router.get('/get/oneExhibitionParticipants/:eventName/:exhibitionName', (req = {}, res, next) => {
   if (req.params && req.params.eventName && req.params.exhibitionName) {
+    User.setDBConnection(req.app.locals.db);
+    Event.setDBConnection(req.app.locals.db);
+    Exhibition.setDBConnection(req.app.locals.db);
+    Attendance.setDBConnection(req.app.locals.db);
+
     Exhibition.getExhibition(req.params.eventName, req.params.exhibitionName, (err, exhibition) => {
       if (err) {
         res.status(500).json('Unable to fetch data!');
@@ -166,6 +181,11 @@ router.get('/get/oneExhibitionParticipants/:eventName/:exhibitionName', (req = {
 // Note: Requires Event ID as request parameter 'id'
 router.get('/get/oneEventExhibitors/:id', (req = {}, res, next) => {
   if (req.params && req.params.id) {
+    User.setDBConnection(req.app.locals.db);
+    Event.setDBConnection(req.app.locals.db);
+    Exhibition.setDBConnection(req.app.locals.db);
+    Attendance.setDBConnection(req.app.locals.db);
+
     Event.getEventById(req.params.id, (err, event) => {
       if (err) {
         res.status(500).json('Unable to fetch data!');
@@ -244,6 +264,11 @@ router.get('/get/oneEventExhibitors/:id', (req = {}, res, next) => {
 // Get all the Events and Exhibitions that a User is participating in / has participated in
 router.get('/get/oneUserAttendances/:email', (req = {}, res, next) => {
   if (req.params && req.params.email) {
+    User.setDBConnection(req.app.locals.db);
+    Event.setDBConnection(req.app.locals.db);
+    Exhibition.setDBConnection(req.app.locals.db);
+    Attendance.setDBConnection(req.app.locals.db);
+
     Attendance.searchAttendancesByUser(req.params.email, (err, attendances) => {
       if (err) {
         res.status(500).json('Unable to fetch data!');
@@ -302,6 +327,11 @@ router.get('/get/oneUserAttendances/:email', (req = {}, res, next) => {
 // Get all Events a User is attending / has attended
 router.get('/get/oneUserEventAttendances/:email', (req = {}, res, next) => {
   if (req.params && req.params.email) {
+    User.setDBConnection(req.app.locals.db);
+    Event.setDBConnection(req.app.locals.db);
+    Exhibition.setDBConnection(req.app.locals.db);
+    Attendance.setDBConnection(req.app.locals.db);
+
     Attendance.searchAttendancesByUser(req.params.email, (err, attendances) => {
       if (err) {
         res.status(500).json('Unable to fetch data!');
@@ -352,6 +382,11 @@ router.get('/get/oneUserEventAttendances/:email', (req = {}, res, next) => {
 // Get all the Exhibitions a User is participating in / has participated in under one Event
 router.get('/get/oneUserAttendancesForEvent/:email/:eventName', (req = {}, res, next) => {
   if (req.params && req.params.email && req.params.eventName) {
+    User.setDBConnection(req.app.locals.db);
+    Event.setDBConnection(req.app.locals.db);
+    Exhibition.setDBConnection(req.app.locals.db);
+    Attendance.setDBConnection(req.app.locals.db);
+
     Attendance.searchAttendancesByUser(req.params.email, (err, attendances) => {
       if (err) {
         res.status(500).json('Unable to fetch data!');
@@ -404,6 +439,11 @@ router.get('/get/oneUserAttendancesForEvent/:email/:eventName', (req = {}, res, 
 // Search for Users attending an Event with a specified Reason
 router.post('/post/search/oneEventAttendancesWithReason/', (req = {}, res, next) => {
   if (req.body && req.body.eventName && req.body.reason) {
+    User.setDBConnection(req.app.locals.db);
+    Event.setDBConnection(req.app.locals.db);
+    Exhibition.setDBConnection(req.app.locals.db);
+    Attendance.setDBConnection(req.app.locals.db);
+
     Event.getEvent(req.body.eventName, (err, event) => {
       if (err) {
         res.status(500).json('Unable to process data!');
@@ -456,6 +496,11 @@ router.post('/post/search/oneEventAttendancesWithReason/', (req = {}, res, next)
 // Use <Array>.toString() to generate a Comma-Separated String from an Array
 router.post('/post/set/oneAttendanceReasons', (req = {}, res, next) => {
   if (req.body && req.body.userEmail && req.body.id && req.body.reasons) {
+    User.setDBConnection(req.app.locals.db);
+    Event.setDBConnection(req.app.locals.db);
+    Exhibition.setDBConnection(req.app.locals.db);
+    Attendance.setDBConnection(req.app.locals.db);
+
     Attendance.updateReason(req.body.userEmail, req.body.id, req.body.reasons.split(','), (err, attendance) => {
       if (err) {
         res.status(500).json('Unable to process data!');
@@ -477,6 +522,11 @@ router.post('/post/set/oneAttendanceReasons', (req = {}, res, next) => {
 // Toggle User's Attendance for an Event
 router.post('/post/oneEventAttendance/', (req = {}, res, next) => {
   if (req.body && req.body.userEmail && req.body.eventName) {
+    User.setDBConnection(req.app.locals.db);
+    Event.setDBConnection(req.app.locals.db);
+    Exhibition.setDBConnection(req.app.locals.db);
+    Attendance.setDBConnection(req.app.locals.db);
+
     User.getUser(req.body.userEmail, (err, user) => {
       if (err) {
         if (err.name === 'ValidationError') {
