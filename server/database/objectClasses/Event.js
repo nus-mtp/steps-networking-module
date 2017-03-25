@@ -28,10 +28,13 @@ class Event {
 
   /**
    * Disconnects from the Database.
+   *
+   * @param {function} callback: A function to be executed upon disconnection.
    */
-  static disconnectDB() {
-    this.ModelHandler.disconnect();
+  static disconnectDB(callback) {
+    this.ModelHandler.disconnect(callback);
   }
+
 
   /**
    * Creates an Event Document and stores it internally.
@@ -71,8 +74,9 @@ class Event {
   saveEvent(callback) {
     Event.connectDB();
     this.eventModelDoc.save((err, result) => {
-      Event.disconnectDB();
-      callback(err, result);
+      Event.disconnectDB(() => {
+        callback(err, result);
+      });
     });
   }
 
@@ -85,8 +89,9 @@ class Event {
   static getEvent(eventName, callback) {
     Event.connectDB();
     this.EventModel.findOne({ event_name: eventName }, (err, event) => {
-      Event.disconnectDB();
-      callback(err, event);
+      Event.disconnectDB(() => {
+        callback(err, event);
+      });
     });
   }
 
@@ -100,8 +105,9 @@ class Event {
   static getEventById(eventId, callback) {
     Event.connectDB();
     this.EventModel.findById(eventId, (err, event) => {
-      Event.disconnectDB();
-      callback(err, event);
+      Event.disconnectDB(() => {
+        callback(err, event);
+      });
     });
   }
 
@@ -113,8 +119,9 @@ class Event {
   static getAllEvents(callback) {
     Event.connectDB();
     this.EventModel.find({}, (err, allEvents) => {
-      Event.disconnectDB();
-      callback(err, allEvents);
+      Event.disconnectDB(() => {
+        callback(err, allEvents);
+      });
     });
   }
 
@@ -127,12 +134,13 @@ class Event {
   static isExistingEvent(eventName, callback) {
     Event.connectDB();
     this.EventModel.findOne({ event_name: eventName }, (err, result) => {
-      Event.disconnectDB();
-      if (err || !result) {
-        callback(err, false);
-      } else {
-        callback(null, true);
-      }
+      Event.disconnectDB(() => {
+        if (err || !result) {
+          callback(err, false);
+        } else {
+          callback(null, true);
+        }
+      });
     });
   }
 
@@ -145,8 +153,9 @@ class Event {
   static searchEventsByTag(tag, callback) {
     Event.connectDB();
     this.EventModel.find({ tags: { $regex: new RegExp(tag.replace('+', '\\+'), 'i') } }, (err, matchedEvents) => {
-      Event.disconnectDB();
-      callback(err, matchedEvents);
+      Event.disconnectDB(() => {
+        callback(err, matchedEvents);
+      });
     });
   }
 
@@ -168,8 +177,9 @@ class Event {
       update,
       options,
       (err, results) => {
-        Event.disconnectDB();
-        callback(err, results);
+        Event.disconnectDB(() => {
+          callback(err, results);
+        });
       });
   }
 
@@ -192,8 +202,9 @@ class Event {
       update,
       options,
       (err, results) => {
-        Event.disconnectDB();
-        callback(err, results);
+        Event.disconnectDB(() => {
+          callback(err, results);
+        });
       });
   }
 
@@ -215,8 +226,9 @@ class Event {
       update,
       options,
       (err, results) => {
-        Event.disconnectDB();
-        callback(err, results);
+        Event.disconnectDB(() => {
+          callback(err, results);
+        });
       });
   }
 
@@ -229,8 +241,9 @@ class Event {
   static deleteEvent(eventName, callback) {
     Event.connectDB();
     this.EventModel.findOneAndRemove({ event_name: eventName }, (err) => {
-      Event.disconnectDB();
-      callback(err);
+      Event.disconnectDB(() => {
+        callback(err);
+      });
     });
   }
 
@@ -242,8 +255,9 @@ class Event {
   static clearAllEvents(callback) {
     Event.connectDB();
     this.EventModel.collection.remove({}, (err) => {
-      Event.disconnectDB();
-      callback(err);
+      Event.disconnectDB(() => {
+        callback(err);
+      });
     });
   }
 }
