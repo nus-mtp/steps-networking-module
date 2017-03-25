@@ -13,7 +13,7 @@ class User {
    * @param {Mongoose.Connection} db: The connection to the db.
    */
   static setDBConnection(db) {
-    if (!User.db || !User.UserModel) {
+    if ((!User.db || !User.UserModel) || (!User.checkConnection())) {
       User.db = db;
       User.UserModel = new ModelHandler().initWithConnection(db).getUserModel();
     }
