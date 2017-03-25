@@ -148,6 +148,7 @@ describe('User Read', () => {
   });
 });
 
+
 describe('User Update', () => {
   before((done) => {
     const userTest1 = new User(
@@ -370,6 +371,7 @@ describe('User Update', () => {
             });
   });
 });
+
 
 describe('User Delete', () => {
   before((done) => {
