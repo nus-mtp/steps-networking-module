@@ -40,7 +40,7 @@ async.series([
                           if (err) {
                             console.log(err);
                           }
-                          callback(null);
+                          callback(err);
                         });
         },
       ], callback);
@@ -64,7 +64,7 @@ async.series([
                       if (err) {
                         console.log(err);
                       }
-                      callback(null);
+                      callback(err);
                     });
       },
     ], callback);
@@ -115,14 +115,13 @@ async.series([
     ], callback);
     // End: Bring in Guests
   },
-  (callback) => {
-    async.parallel([
-      (callback) => {
-        converter.Models.disconnect(callback);
-      },
-      (callback) => {
-        converter.StepsModels.disconnect(callback);
-      },
-    ], callback);
-  },
-]);
+], () => {
+  async.parallel([
+    (callback) => {
+      converter.Models.disconnect(callback);
+    },
+    (callback) => {
+      converter.StepsModels.disconnect(callback);
+    },
+  ]);
+});
