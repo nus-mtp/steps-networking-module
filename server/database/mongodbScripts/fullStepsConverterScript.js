@@ -1,10 +1,13 @@
 /**
  * This file contains a script to populate the a target database with
  * information that can be used for our own App based on all the information on the STePs DB.
- * Ensure that a MongoDB local server connection is running before executing.
+ * Ensure that both the src and dest MongoDB server connections are running before executing.
  */
 
 const config = require('../../config');
+
+const src = config.stepsDbUri;
+const dest = config.devDbUri;
 
 // For ensuring all tasks are completed before db closes
 
@@ -15,9 +18,9 @@ const ModelHandler = require('../models/ourModels');
 const StepsModelHandler = require('../models/stepsModels');
 
 const Models = new ModelHandler()
-    .initWithParameters(config.devDbUri.username, config.devDbUri.password,
-        config.devDbUri.host, config.devDbUri.port,
-        config.devDbUri.database);
+    .initWithParameters(dest.username, dest.password,
+        dest.host, dest.port,
+        dest.database);
 
 const User = Models.getUserModel();
 const Event = Models.getEventModel();
@@ -25,9 +28,9 @@ const Exhibition = Models.getExhibitionModel();
 const Attendance = Models.getAttendanceModel();
 
 const StepsModels = new StepsModelHandler()
-    .initWithParameters(config.stepsDbUri.username, config.stepsDbUri.password,
-        config.stepsDbUri.host, config.stepsDbUri.port,
-        config.stepsDbUri.database);
+    .initWithParameters(src.username, src.password,
+        src.host, src.port,
+        src.database);
 
 const stepsUser = StepsModels.getUserModel();
 const stepsGuest = StepsModels.getGuestModel();
