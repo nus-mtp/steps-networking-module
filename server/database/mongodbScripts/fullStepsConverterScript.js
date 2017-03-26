@@ -406,7 +406,7 @@ function upsertModule(stepsModuleObj, callback) {
  * @param {function} callback: Callback to indicate when
  *    this asynchronous function has been completed.
  */
-function upsertGuests(stepsGuestObj, callback) {
+function upsertGuest(stepsGuestObj, callback) {
   async.waterfall([
     (callback) => { // Extract out relevant information from each Guest
       const eventName = String(stepsGuestObj.event).trim();
@@ -617,7 +617,7 @@ async.series([
         });
       },
       (allGuests, callback) => {
-        async.eachLimit(allGuests, 15, upsertGuests, (err) => {
+        async.eachLimit(allGuests, 15, upsertGuest, (err) => {
           if (err) {
             console.log(err);
           }
