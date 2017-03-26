@@ -17,3 +17,27 @@ const upsertEvent = converter.upsertEvent;
 const upsertUser = converter.upsertUser;
 const upsertModule = converter.upsertModule;
 const upsertGuest = converter.upsertGuest;
+
+// Start
+
+async.waterfall([
+  (callback) => {
+    stepsEvent.findOne({ isDefault: true }, (err, stepsEvent) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(stepsEvent);
+      }
+      callback(err);
+    });
+  },
+], () => {
+  async.parallel([
+    (callback) => {
+      converter.Models.disconnect(callback);
+    },
+    (callback) => {
+      converter.StepsModels.disconnect(callback);
+    },
+  ]);
+});
