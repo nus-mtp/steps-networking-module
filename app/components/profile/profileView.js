@@ -10,14 +10,14 @@ class ProfileView extends React.Component {
     super(props);
 
     this.state = {
-      skills: [],
-      links: 'N/A',
-      interestedOpportunities: 'none',
-      isContentEditable: false,
-      pastUserData: {},
+      skills: [], // Skills that the user claimed to have
+      links: '-', // Link to user profile of another website
+      interestedOpportunities: '-', // What am I looking for
+      isContentEditable: false, //  Edit mode
+      pastUserData: {}, // State restore if user cancel edit
       user: {},
-      events: [],
-      exhibitions: [],
+      events: [], // List of event user attended
+      exhibitions: [], // List of exhibition user participated
     };
 
     const pathname = this.props.location.pathname;
@@ -320,38 +320,6 @@ class ProfileView extends React.Component {
             </div>
           </div>
           <ul className="list-group list-group-flush">
-            <li className="list-group-item d-flex flex-column align-items-start">
-              <div className="info-type">Exhibitions Involved: </div>
-              <div className="flex-row">
-                {
-                  (this.state.exhibitions) ?
-                  this.state.exhibitions.map(exhibition =>
-                    <Link to={`/exhibition/${exhibition.eventName}/${exhibition.exhibitionName}`} key={exhibition.id}>
-                      <div id="user-exhibition-container">
-                        <img className="img-fluid user-page-thumbnail" src={`${exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" />
-                        <div id="user-exhibition">{exhibition.exhibitionName}</div>
-                      </div>
-                    </Link>
-                  ) : <div />
-                }
-              </div>
-            </li>
-            <li className="list-group-item d-flex flex-column align-items-start">
-              <div className="info-type">Events Involved: </div>
-              <div className="flex-row">
-                {
-                  (this.state.events) ?
-                  this.state.events.map(event =>
-                    <Link to={`/event/${event.name}`}  key={event.id}>
-                      <div id="user-event-container">
-                        <img className="img-fluid user-page-thumbnail" src={`${event.event_poster}`} onError={this.addDefaultSrc} alt="event-image" />
-                        <div id="user-events">{event.name}</div>
-                      </div>
-                    </Link>
-                  ) : <div />
-                }
-              </div>
-            </li>
             <li className="list-group-item">
               <div className="info-type">What am I Looking For? </div>
               { (this.state.isContentEditable) ?
@@ -363,6 +331,56 @@ class ProfileView extends React.Component {
               }
             </li>
           </ul>
+          <div id="accordion" role="tablist" aria-multiselectable="true">
+            <div className="card">
+              <div className="card-header" role="tab" id="headingOne">
+                <h5 className="mb-0">
+                  <a data-toggle="collapse" data-parent="#accordion" href="#exhibition-involved" aria-expanded="true" aria-controls="collapseOne">
+                    Exhibitions Involved
+                  </a>
+                </h5>
+              </div>
+              <div id="exhibition-involved" className="collapse" role="tabpanel" aria-labelledby="headingOne">
+                <div className="card-block">
+                  {
+                    (this.state.exhibitions) ?
+                    this.state.exhibitions.map(exhibition =>
+                      <Link to={`/exhibition/${exhibition.eventName}/${exhibition.exhibitionName}`} key={exhibition.id}>
+                        <div id="user-exhibition-container">
+                          <img className="img-fluid user-page-thumbnail" src={`${exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" />
+                          <div id="user-exhibition">{exhibition.exhibitionName}</div>
+                        </div>
+                      </Link>
+                    ) : <div />
+                  }
+                </div>
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-header" role="tab" id="headingTwo">
+                <h5 className="mb-0">
+                  <a className="collapsed" data-toggle="collapse" data-parent="#accordion" href="#event-involved" aria-expanded="false" aria-controls="collapseTwo">
+                    Events Involved
+                  </a>
+                </h5>
+              </div>
+              <div id="event-involved" className="collapse" role="tabpanel" aria-labelledby="headingTwo">
+                <div className="card-block">
+                  {
+                    (this.state.events) ?
+                    this.state.events.map(event =>
+                      <Link to={`/event/${event.name}`}  key={event.id}>
+                        <div id="user-event-container">
+                          <img className="img-fluid user-page-thumbnail" src={`${event.event_poster}`} onError={this.addDefaultSrc} alt="event-image" />
+                          <div id="user-events">{event.name}</div>
+                        </div>
+                      </Link>
+                    ) : <div />
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
           { (this.state.isContentEditable) ?
             <div className="card-block text-right">
               <button className="btn btn-primary post-edit" onClick={this.submitForm}>Save</button>
