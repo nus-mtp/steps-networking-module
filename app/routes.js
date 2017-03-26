@@ -2,7 +2,7 @@ import App from './components/app';
 import Home from './components/home/homeView';
 import Chat from './components/chat/chatView';
 import Event from './components/event/eventView';
-import Project from './components/project/projectView';
+import Exhibition from './components/exhibition/exhibitionView';
 import Profile from './components/profile/profileView';
 import Login from './components/auth/loginView';
 import Signup from './components/auth/signupView';
@@ -40,8 +40,8 @@ const routes = {
       },
     },
     {
-      path: Paths.project,
-      component: Project,
+      path: Paths.exhibition,
+      component: Exhibition,
     },
     {
       path: Paths.chat,

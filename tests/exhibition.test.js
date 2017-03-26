@@ -1,8 +1,20 @@
+const config = require('../server/config.json').fakeDbUri;
+const ModelHandler = require('../server/database/models/ourModels');
 const Exhibition = require('../server/database/objectClasses/Exhibition.js');
 const assert = require('assert');
 
+let ModelHandlerObj;
 describe('Exhibition Create', () => {
   before((done) => {
+    ModelHandlerObj = new ModelHandler().initWithParameters(
+        config.username,
+        config.password,
+        config.host,
+        config.port,
+        config.database);
+
+    Exhibition.setDBConnection(ModelHandlerObj.getConnection());
+
     const testexhibition1 = new Exhibition('exhibitionTest1',
                                            'description',
                                            'testingEvent_1',
@@ -26,7 +38,9 @@ describe('Exhibition Create', () => {
       if (err) {
         console.log(err);
       }
-      done();
+      ModelHandlerObj.disconnect(() => {
+        done();
+      });
     });
   });
 
@@ -58,6 +72,15 @@ describe('Exhibition Create', () => {
 
 describe('Exhibition Read', () => {
   before((done) => {
+    ModelHandlerObj = new ModelHandler().initWithParameters(
+        config.username,
+        config.password,
+        config.host,
+        config.port,
+        config.database);
+
+    Exhibition.setDBConnection(ModelHandlerObj.getConnection());
+
     const testexhibition2 = new Exhibition('exhibitionTest2',
                                            'This is another description',
                                            'eventName2',
@@ -80,7 +103,9 @@ describe('Exhibition Read', () => {
       if (err) {
         console.log(err);
       }
-      done();
+      ModelHandlerObj.disconnect(() => {
+        done();
+      });
     });
   });
 
@@ -184,6 +209,15 @@ describe('Exhibition Read', () => {
 
 describe('Exhibition Update', () => {
   before((done) => {
+    ModelHandlerObj = new ModelHandler().initWithParameters(
+        config.username,
+        config.password,
+        config.host,
+        config.port,
+        config.database);
+
+    Exhibition.setDBConnection(ModelHandlerObj.getConnection());
+
     const testexhibition2 = new Exhibition(
       'exhibitionTest2',
       'This is another description',
@@ -208,7 +242,9 @@ describe('Exhibition Update', () => {
       if (err) {
         console.log(err);
       }
-      done();
+      ModelHandlerObj.disconnect(() => {
+        done();
+      });
     });
   });
 
@@ -243,6 +279,15 @@ describe('Exhibition Update', () => {
 
 describe('Exhibition Delete', () => {
   before((done) => {
+    ModelHandlerObj = new ModelHandler().initWithParameters(
+        config.username,
+        config.password,
+        config.host,
+        config.port,
+        config.database);
+
+    Exhibition.setDBConnection(ModelHandlerObj.getConnection());
+
     const testexhibition1 = new Exhibition(
       'exhibitionTest2',
       'This is another description',
@@ -266,7 +311,9 @@ describe('Exhibition Delete', () => {
       if (err) {
         console.log(err);
       }
-      done();
+      ModelHandlerObj.disconnect(() => {
+        done();
+      });
     });
   });
 

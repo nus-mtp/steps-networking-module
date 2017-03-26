@@ -45,7 +45,7 @@
   #event-image-container {
     display: block;
     text-align: center;
-    background: black;
+    background: lightgrey;
   }
 
   #event-description {
@@ -195,11 +195,19 @@
   .btn {
     font-size: 15px;
   }
+
+  #exhibition-container {
+    color: black;
+
+    #exhibition:hover {
+      background: lightseagreen;
+      color: white;
+    }
+  }
 }
 
 /* Event map */
 #event-map {
-  background-image: url(../images/sitemap.png);
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100%;
