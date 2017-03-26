@@ -22,16 +22,56 @@ const upsertGuest = converter.upsertGuest;
 
 async.waterfall([
   (callback) => {
-    stepsEvent.findOne({ isDefault: true }, (err, stepsEvent) => {
+    stepsEvent.findOne({ isDefault: true }, (err, matchedEvent) => {
       if (err) {
-        console.log(err);
+        callback(err, null);
+      } else if (matchedEvent) {
+        upsertEvent(matchedEvent, () => {
+          callback(null, matchedEvent.code);
+        });
       } else {
-        console.log(stepsEvent);
+        callback(null, null);
       }
-      callback(err);
     });
   },
-], () => {
+  (eventName, callback) => {
+    stepsModule.find({ event: eventName }, (err, matchedModules) => {
+      if (err) {
+        callback(err, null);
+      } else if (matchedModules) {
+        async.eachSeries(matchedModules,
+            (matchedModule, callback) => {
+              upsertModule(matchedModule, callback);
+            },
+            (err, results) => {
+              callback(err, eventName);
+            });
+      } else {
+        callback(null, eventName);
+      }
+    });
+  },
+  (eventName, callback) => {
+    stepsGuest.find({ event: eventName }, (err, matchedGuests) => {
+      if (err) {
+        callback(err);
+      } else if (matchedGuests) {
+        async.eachSeries(matchedGuests,
+            (matchedGuest, callback) => {
+              upsertGuest(matchedGuest, callback);
+            },
+            (err, results) => {
+              callback(err);
+            });
+      } else {
+        callback(null);
+      }
+    });
+  },
+], (err) => {
+  if (err) {
+    console.log(err);
+  }
   async.parallel([
     (callback) => {
       converter.Models.disconnect(callback);
