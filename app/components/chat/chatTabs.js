@@ -4,7 +4,6 @@ class ChatTabs extends Component {
   constructor(props) {
     super(props);
 
-    this.client = 'turkey@bacon.com'; // the user who is logged in
     this.divStyle = {
       width: this.props.width,
     };
@@ -69,6 +68,7 @@ ChatTabs.propTypes = {
   current: React.PropTypes.number.isRequired,
   width: React.PropTypes.string.isRequired,
   changeConversation: React.PropTypes.func.isRequired,
+  email: React.PropTypes.string.isRequired,
 };
 
 export default ChatTabs;

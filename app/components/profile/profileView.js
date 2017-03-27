@@ -9,21 +9,22 @@ class ProfileView extends React.Component {
   constructor(props) {
     super(props);
 
-    const userEmail = (Auth.isUserAuthenticated) ? Auth.getToken().email : '';
-
     this.state = {
-      email: userEmail.replace(/%40/i, '@'),
       skills: [],
       links: 'N/A',
-      projects: 'none',
-      interestedEvents: 'none',
       interestedOpportunities: 'none',
       isContentEditable: false,
       pastUserData: {},
       user: {},
+      events: [],
+      exhibitions: [],
     };
 
-    this.getUser();
+    const pathname = this.props.location.pathname;
+    const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
+    this.getUser(userEmail);
+    this.getEvent(userEmail);
 
     this.handleEdit = this.handleEdit.bind(this);
     this.changeEdit = this.changeEdit.bind(this);
@@ -34,9 +35,27 @@ class ProfileView extends React.Component {
     this.handleDragSkill = this.handleDragSkill.bind(this);
   }
 
-  getUser() {
+  componentWillReceiveProps() {
+    this.getUser();
+  }
+
+  componentDidMount() {
+    const that = this;
+    window.addEventListener("hashchange", () => {
+      that.getUser();
+    });
+  }
+
+  componentWillUnmount() {
+    const that = this;
+    window.removeEventListener("hashchange", () => {
+      that.getUser();
+    });
+  }
+
+  getUser(email) {
     const xhr = new XMLHttpRequest();
-    xhr.open('get', `/user/get/profile/${this.state.email}`);
+    xhr.open('get', `/user/get/profile/${email}`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
@@ -52,6 +71,44 @@ class ProfileView extends React.Component {
     });
     xhr.send();
   }
+
+  getEvent(email) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/attendance/get/oneUserEventAttendances/${email}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      this.setState({
+        events: xhr.response,
+      });
+
+      if (this.state.events) {
+        this.state.events.map(event => {
+          this.getExhibition(email, event.name);
+        });
+      }
+    });
+    xhr.send();
+  }
+
+  getExhibition(email, event) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/attendance/get/oneUserAttendancesForEvent/${email}/${event}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      let exhibitionArray = this.state.exhibitions;
+      xhr.response.map(event => {
+        exhibitionArray.push(event);
+      });
+
+      this.setState({
+        exhibitions: exhibitionArray,
+      });
+    });
+    xhr.send();
+  }
+
 
   handleDeleteSkill(i) {
     const user = this.state.user;
@@ -113,8 +170,6 @@ class ProfileView extends React.Component {
         description: this.state.user.userDescription,
         skills: this.state.user.userSkills,
         links: this.state.links,
-        projects: this.state.projects,
-        interestedEvents: this.state.interestedEvents,
         interestedOpportunities: this.state.interestedOpportunities,
       },
     });
@@ -126,8 +181,6 @@ class ProfileView extends React.Component {
       description: this.state.user.userDescription,
       skills: this.state.pastUserData.skills,
       links: this.state.pastUserData.links,
-      projects: this.state.pastUserData.projects,
-      interestedEvents: this.state.pastUserData.interestedEvents,
       interestedOpportunities: this.state.pastUserData.interestedOpportunities,
       isContentEditable: false,
     });
@@ -190,33 +243,45 @@ class ProfileView extends React.Component {
     callback;
   }
 
+  addDefaultSrc(event) {
+    event.target.src = "../../resources/images/empty-poster-placeholder.png";
+  }
+
   render() {
+    const userEmail = (Auth.isUserAuthenticated) ? Auth.getToken().email.replace(/%40/i, '@') : '';
+
     return (
       <div id="profile-body">
-        <div className="row justify-content-between justify-content-md-around">
-          <div id="profile-picture" className="col-md-6 push-md-3 col-12 text-center">
-            <img src="../../resources/images/default-profile-picture.png" alt="profile-img" />
-          </div>
-          <div className="col-md-3 pull-md-6 col-6 text-center d-flex justify-content-center">
-            <div id="chat-icon-container">
-              <Link to={Paths.chat}>
-                <img id="chat-icon" src="../../resources/images/chat-icon.svg" alt="chat-icon" />
-              </Link>
+      {
+        (Object.keys(this.state.user).length !== 0 && this.state.user.userEmail === userEmail)
+        ? <div className="row justify-content-between justify-content-md-around">
+            <div id="profile-picture" className="col-md-6 push-md-3 col-12 text-center">
+              <img src="../../resources/images/default-profile-picture.png" alt="profile-img" />
+            </div>
+            <div className="col-md-3 pull-md-6 col-6 text-center d-flex justify-content-center">
+              <div id="chat-icon-container">
+                <Link to={Paths.chat}>
+                  <img id="chat-icon" src="../../resources/images/chat-icon.svg" alt="chat-icon" />
+                </Link>
+              </div>
+            </div>
+            <div className="col-md-3 col-6 text-center d-flex justify-content-center" onClick={this.handleEdit}>
+              <div id="edit-icon-container">
+                <img id="edit-icon" src="../../resources/images/edit-icon.svg" alt="edit-icon" />
+              </div>
             </div>
           </div>
-          <div className="col-md-3 col-6 text-center d-flex justify-content-center" onClick={this.handleEdit}>
-            <div id="edit-icon-container">
-              <img id="edit-icon" src="../../resources/images/edit-icon.svg" alt="edit-icon" />
-            </div>
+        : <div id="profile-picture" className="col-12 text-center">
+           <img src="../../resources/images/default-profile-picture.png" alt="profile-img" />
           </div>
-        </div>
+       }
         <div className="profile-info card">
           <div className="card-block">
             <div className="card-text">
               <h4 id="user-name" className="card-title">{this.state.user.userName}</h4>
               <div>
                 <span className="info-type">Email: </span>
-                <span id="user-email" className="user-info">{this.state.email}</span>
+                <span id="user-email" className="user-info">{this.state.user.userEmail}</span>
               </div>
               <div>
                 <span className="info-type">Description: </span>
@@ -255,13 +320,37 @@ class ProfileView extends React.Component {
             </div>
           </div>
           <ul className="list-group list-group-flush">
-            <li className="list-group-item">
-              <div className="info-type">Lists of Projects Involved: </div>
-              <div id="user-projects" className="user-info">{this.state.projects}</div>
+            <li className="list-group-item d-flex flex-column align-items-start">
+              <div className="info-type">Exhibitions Involved: </div>
+              <div className="flex-row">
+                {
+                  (this.state.exhibitions) ?
+                  this.state.exhibitions.map(exhibition =>
+                    <Link to={`/exhibition/${exhibition.eventName}/${exhibition.exhibitionName}`} key={exhibition.id}>
+                      <div id="user-exhibition-container">
+                        <img className="img-fluid user-page-thumbnail" src={`${exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" />
+                        <div id="user-exhibition">{exhibition.exhibitionName}</div>
+                      </div>
+                    </Link>
+                  ) : <div />
+                }
+              </div>
             </li>
-            <li className="list-group-item">
-              <div className="info-type">Interested Events: </div>
-              <div id="user-events" className="user-info">{this.state.interestedEvents}</div>
+            <li className="list-group-item d-flex flex-column align-items-start">
+              <div className="info-type">Events Involved: </div>
+              <div className="flex-row">
+                {
+                  (this.state.events) ?
+                  this.state.events.map(event =>
+                    <Link to={`/event/${event.name}`}  key={event.id}>
+                      <div id="user-event-container">
+                        <img className="img-fluid user-page-thumbnail" src={`${event.event_poster}`} onError={this.addDefaultSrc} alt="event-image" />
+                        <div id="user-events">{event.name}</div>
+                      </div>
+                    </Link>
+                  ) : <div />
+                }
+              </div>
             </li>
             <li className="list-group-item">
               <div className="info-type">What am I Looking For? </div>

@@ -23,11 +23,13 @@ module.exports = (req, res, next) => {
 
     const userId = decoded.sub;
 
-    const ModelHandlerObj = new ModelHandler(config[currentdb].username,
-                                             config[currentdb].password,
-                                             config[currentdb].host,
-                                             config[currentdb].port,
-                                             config[currentdb].database);
+    const ModelHandlerObj = new ModelHandler().initWithParameters(
+        [currentdb].username,
+        config[currentdb].password,
+        config[currentdb].host,
+        config[currentdb].port,
+        config[currentdb].database);
+
     const User = ModelHandlerObj.getUserModel();
 
     // check if a user exists

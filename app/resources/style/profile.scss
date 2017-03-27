@@ -27,6 +27,24 @@
     @include transition(opacity, 0.4s, ease);
   }
 
+  #user-exhibition-container, #user-event-container {
+    text-align: center;
+    width: 130px;
+    padding: 10px;
+    color: black;
+    margin: 0 10px;
+    font-size: 14px;
+
+    .user-page-thumbnail {
+      width: 80px;
+    }
+  }
+
+  #user-exhibition-container:hover, #user-event-container:hover {
+    background: lightseagreen;
+    color: white;
+  }
+
   #match-body {
     width: 80%;
 

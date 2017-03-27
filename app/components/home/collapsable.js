@@ -88,24 +88,22 @@ class Collapsable extends React.Component {
               <span className="event-attendance-title">Attendance: </span>
               <label className={`btn btn-success attendance-indicator ${attending}`}>
                 <input
-                  type="radio"
-                  name="option"
-                  id="attend-yes"
-                  value="Yes"
-                  className="custom-control-input"
-                  onChange={this.setPresent}
-                />
+                type="radio"
+                name="option"
+                id="attend-yes"
+                value="Yes"
+                className="custom-control-input"
+                onChange={this.setPresent} />
                 Yes
               </label>
               <label className={`btn btn-secondary attendance-indicator ${notAttending}`}>
                 <input
-                  type="radio"
-                  name="option"
-                  id="attend-no"
-                  value="No"
-                  className="custom-control-input"
-                  onChange={this.setAbsent}
-                />
+                type="radio"
+                name="option"
+                id="attend-no"
+                value="No"
+                className="custom-control-input"
+                onChange={this.setAbsent} />
                 No
               </label>
             </div>
@@ -165,7 +163,7 @@ Collapsable.propTypes = {
   serial: React.PropTypes.number.isRequired,
   open: React.PropTypes.arrayOf(React.PropTypes.any).isRequired,
   width: React.PropTypes.number.isRequired,
-  event: React.PropTypes.objectOf(React.PropTypes.string).isRequired,
+  event: React.PropTypes.objectOf(React.PropTypes.any).isRequired,
   attendance: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
   changeAttendance: React.PropTypes.func.isRequired,
 };

@@ -6,6 +6,11 @@
   width: 80%;
   margin-bottom: 30px;
 
+  #project-desc {
+    margin: 20px 0;
+    font-size: 16px;
+  }
+
   #comment-input-container {
     width: 90%;
     display: flex;
@@ -20,6 +25,10 @@
     .badge {
       margin-right: 5px;
     }
+  }
+
+  .info-type {
+    font-weight: 500;
   }
 
   #tag-container, #media-container {
