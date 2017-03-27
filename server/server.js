@@ -72,9 +72,5 @@ const db = require('./database/mongodbScripts/accessMongoDB').connect(
       console.log(`Running on ${app.get('port')}`);
     });
 
-    app.get('/test', function (req, res) {
-      res.sendFile("test/testviewer.html", {"root": __dirname});
-    });
-
     require('./routes/messageSocket')(io);
   });
