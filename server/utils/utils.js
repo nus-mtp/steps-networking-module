@@ -36,7 +36,7 @@ module.exports.extractUserInfo = extractUserInfo;
  * Extracts out the relevant information from a supplied Event Object.
  *
  * @param {Event.Object} event: The Event Object returned from a Event objectClass method.
- * @returns {{id, name, start_date: (*|Date|eventSchema.start_date|{type, default}), end_date: (*|Date|eventSchema.end_date|{type, default}), venue: (*|string|String), description: (string|*|string|string|string|String), event_poster: (*|String|string|string), siteMap, tags}}
+ * @returns {{id, name, start_date: (*|Date|eventSchema.start_date|{type, default}), end_date: (*|Date|eventSchema.end_date|{type, default}), venue: (string|*|String), description: (string|string|string|*|string|String), event_poster: (*|String|string|string), siteMap: (String|string|*), tags}}
  */
 function extractEventInfo(event) {
   return {
