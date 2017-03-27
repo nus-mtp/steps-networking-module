@@ -22,7 +22,7 @@ const extractAttendanceInfo = require('../utils/utils').extractAttendanceInfo;
 
 // Get the Users attending in either a specified Event / Exhibition
 // Note: Requires Event or Exhibition ID as request parameter 'id'
-router.get('/get/oneAttendanceAttendees/:id', (req = {}, res, next) => {
+router.get('/get/oneActivityAttendees/:id', (req = {}, res, next) => {
   if (req.params && req.params.id) {
     User.setDBConnection(req.app.locals.db);
     Event.setDBConnection(req.app.locals.db);
@@ -71,7 +71,7 @@ router.get('/get/oneAttendanceAttendees/:id', (req = {}, res, next) => {
 });
 
 // Get the Users attending a particular Event
-router.get('/get/oneEventAttendances/:eventName', (req = {}, res, next) => {
+router.get('/get/oneEventAttendees/:eventName', (req = {}, res, next) => {
   if (req.params && req.params.eventName) {
     User.setDBConnection(req.app.locals.db);
     Event.setDBConnection(req.app.locals.db);
@@ -124,7 +124,7 @@ router.get('/get/oneEventAttendances/:eventName', (req = {}, res, next) => {
 });
 
 // Get the Users participating in a particular Exhibition
-router.get('/get/oneExhibitionParticipants/:eventName/:exhibitionName', (req = {}, res, next) => {
+router.get('/get/oneExhibitionExhibitors/:eventName/:exhibitionName', (req = {}, res, next) => {
   if (req.params && req.params.eventName && req.params.exhibitionName) {
     User.setDBConnection(req.app.locals.db);
     Event.setDBConnection(req.app.locals.db);
@@ -262,7 +262,7 @@ router.get('/get/oneEventExhibitors/:id', (req = {}, res, next) => {
 });
 
 // Get all the Events and Exhibitions that a User is participating in / has participated in
-router.get('/get/oneUserAttendances/:email', (req = {}, res, next) => {
+router.get('/get/oneUserEventsAndExhibitions/:email', (req = {}, res, next) => {
   if (req.params && req.params.email) {
     User.setDBConnection(req.app.locals.db);
     Event.setDBConnection(req.app.locals.db);
@@ -325,7 +325,7 @@ router.get('/get/oneUserAttendances/:email', (req = {}, res, next) => {
 });
 
 // Get all Events a User is attending / has attended
-router.get('/get/oneUserEventAttendances/:email', (req = {}, res, next) => {
+router.get('/get/oneUserEvents/:email', (req = {}, res, next) => {
   if (req.params && req.params.email) {
     User.setDBConnection(req.app.locals.db);
     Event.setDBConnection(req.app.locals.db);
@@ -380,7 +380,7 @@ router.get('/get/oneUserEventAttendances/:email', (req = {}, res, next) => {
 });
 
 // Get all the Exhibitions a User is participating in / has participated in under one Event
-router.get('/get/oneUserAttendancesForEvent/:email/:eventName', (req = {}, res, next) => {
+router.get('/get/oneUserExhibitionsInEvent/:email/:eventName', (req = {}, res, next) => {
   if (req.params && req.params.email && req.params.eventName) {
     User.setDBConnection(req.app.locals.db);
     Event.setDBConnection(req.app.locals.db);

@@ -53,7 +53,7 @@ class ExhibitionView extends React.Component {
 
   getAttendance(event, exhibition) {
     const xhr = new XMLHttpRequest();
-    xhr.open('get', `/attendance/get/oneExhibitionParticipants/${event}/${exhibition}`);
+    xhr.open('get', `/attendance/get/oneExhibitionExhibitors/${event}/${exhibition}`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
