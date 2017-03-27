@@ -1,7 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router';
 import { sampleComments } from './sampleData';
 
-class ProjectView extends React.Component {
+class ExhibitionView extends React.Component {
   constructor(props) {
     super(props);
 
@@ -14,7 +15,18 @@ class ProjectView extends React.Component {
       media: [],
       tagChange: '',
       mediaChange: '',
+      exhibition: {},
+      attendance: {},
     };
+
+    let pathname = this.props.location.pathname;
+    const exhibitionName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
+    pathname = pathname.slice(0, pathname.lastIndexOf('/'));
+    const eventName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
+    this.getExhibition(eventName, exhibitionName);
+    this.getAttendance(eventName, exhibitionName);
 
     this.editComment = this.editComment.bind(this);
     this.submitComment = this.submitComment.bind(this);
@@ -24,6 +36,32 @@ class ProjectView extends React.Component {
     this.handleAddMedia = this.handleAddMedia.bind(this);
     this.handleTagInputChange = this.handleTagInputChange.bind(this);
     this.handleMediaInputChange = this.handleMediaInputChange.bind(this);
+  }
+
+  getExhibition(event, exhibition) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/exhibition/get/oneExhibition/${event}/${exhibition}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      this.setState({
+        exhibition: xhr.response,
+      });
+    });
+    xhr.send();
+  }
+
+  getAttendance(event, exhibition) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/attendance/get/oneExhibitionParticipants/${event}/${exhibition}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      this.setState({
+        attendance: xhr.response,
+      });
+    });
+    xhr.send();
   }
 
   editComment(event) {
@@ -96,22 +134,29 @@ class ProjectView extends React.Component {
     });
   }
 
+  addDefaultSrc(event) {
+    event.target.src = "../../resources/images/empty-poster-placeholder.png";
+  }
+
   render() {
     return (
       <div id="project-body">
         <div className="row justify-content-center">
           <div>
-            <img className="img-fluid project-poster" src="../../resources/images/dummy-poster.png" alt="project-poster" />
+            {
+              (Object.keys(this.state.exhibition).length !== 0) ?
+              <img className="img-fluid project-poster" src={`${this.state.exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" /> :
+              <img className="img-fluid project-poster" src="../../resources/images/dummy-poster.png" alt="project-poster" />
+            }
           </div>
         </div>
         <div className="card">
           <div className="exhibition-info card-block">
-            <div className="info-type">Project Title: </div>
+            <h4 className="info-type">{this.state.exhibition.exhibitionName}</h4>
             <div className="project-name project-info" />
-            <div className="info-type">Description: </div>
-            <div id="project-desc" className="project-info" />
-            <div className="info-type" id="tag-container">
-              <span>Tags: </span>
+            <div id="project-desc" className="project-info">{this.state.exhibition.exhibitionDescription}</div>
+            <div id="tag-container">
+              <span  className="info-type">Tags </span>
               {
                 (this.state.isTagEditable) ?
                   <span>
@@ -133,8 +178,8 @@ class ProjectView extends React.Component {
           </div>
           <ul className="list-group list-group-flush">
             <li className="exhibition-info text-center list-group-item">
-              <div className="info-type" id="media-container">
-                <span>Related Media</span>
+              <div id="media-container">
+                <span  className="info-type">Related Media</span>
                 {
                   (this.state.isMediaEditable) ?
                   <span>
@@ -148,15 +193,34 @@ class ProjectView extends React.Component {
                 }
               </div>
               <div id="project-url" />
-              <div id="project-media" />
+              <div id="project-media">
+              {
+                (Object.keys(this.state.exhibition).length !== 0) ?
+                  this.state.exhibition.videos.map(media =>
+                    <div className="embed-responsive embed-responsive-16by9" key={media}>
+                      <iframe width="560" height="315"  className="embed-responsive-item" src={`https://www.youtube.com/embed/${media.slice(media.lastIndexOf('/') + 1, media.length)}`} allowFullScreen></iframe>
+                    </div>
+                  ) :
+                  <div />
+              }
+              </div>
             </li>
-
-            <li className="exhibition-info text-center list-group-item">
+            <li className="exhibition-info d-flex flex-column align-items-start list-group-item">
               <div className="info-type">Project Members</div>
-              <div id="project-members" />
-              <button id="broadcast-msg" type="button" className="btn btn-info">Broadcast Message</button>
+              {
+                (Object.keys(this.state.attendance).length !== 0) ?
+                  this.state.attendance.map(attend =>
+                    <Link to={`/profile/${attend.userEmail}`} key={attend.id}>
+                      <div className="project-members">{attend.userEmail}</div>
+                      {
+                        (attend.reasons) ?
+                          attend.reasons.map((reason, i) => <span className="badge badge-pill badge-primary" key={`${reason}${i}`}>{reason}</span>) :
+                          <span />
+                      }
+                    </Link>
+                  ) : <div />
+              }
             </li>
-
             <li className="exhibition-info text-center card-block list-group-item">
               <div className="info-type">Comments</div>
               <div id="project-comments" />
@@ -186,4 +250,4 @@ class ProjectView extends React.Component {
   }
 }
 
-export default ProjectView;
+export default ExhibitionView;

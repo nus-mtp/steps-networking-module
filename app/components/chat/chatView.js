@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import MediaQuery from 'react-responsive';
 import ChatBody from './chatBody';
 import ChatTabs from './chatTabs';
+import Auth from '../../database/auth';
 
 export default class ChatView extends Component {
   constructor(props) {
@@ -11,18 +12,6 @@ export default class ChatView extends Component {
       users: [ // Store the emails
         'gun@dam.com',
         'gun@dam',
-        'gun@dam.com',
-        'gun@dam',
-        'gun@dam.com',
-        'gun@dam',
-        'gun@dam.com',
-        'gun@dam',
-        'gun@dam.com',
-        'gun@dam',
-        'gun@dam.com',
-        'gun@dam',
-        'gun@dam.com',
-        'Turkey',
         'Bacon',
         'Turkey',
         'gun@dam',
@@ -31,11 +20,34 @@ export default class ChatView extends Component {
       minWidth: '700px',
     };
 
-    this.query = `screen and (min-width: ${this.state.minWidth})`;
+    this.query = 'screen and (min-width: ' + this.state.minWidth + ')';
     this.widthOfChatTabs = '25%';
+  }
+  
+  componentWillMount() {
+    if(Auth.isUserAuthenticated) {
+      let email = Auth.getToken().email;
+      email = email.replace(/%40/gi, '@');
+      
+      this.setState({ email });
+      this.getAllUsers(email);
+    }
+  }
 
-    this.changeConversation = this.changeConversation.bind(this);
-    this.showChatTabs = this.showChatTabs.bind(this);
+  getAllUsers(email) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/message/get/getMessagesInvolving/${email}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        // success
+        this.setState({users: xhr.response});
+      } else {
+        // failure
+      }
+    });
+    xhr.send();
   }
 
   changeConversation(index) {
@@ -51,7 +63,8 @@ export default class ChatView extends Component {
             width={this.widthOfChatTabs}
             users={this.state.users}
             current={this.state.current}
-            changeConversation={this.changeConversation}
+            changeConversation={this.changeConversation.bind(this)}
+            email={this.state.email}
           />
         </div>
       );
@@ -63,13 +76,14 @@ export default class ChatView extends Component {
     return (
       <div id="chat">
         <MediaQuery query={this.query}>
-          {this.showChatTabs}
+          {this.showChatTabs.bind(this)}
         </MediaQuery>
         <ChatBody
           query={this.query}
           marginLeft={this.widthOfChatTabs}
           users={this.state.users}
           current={this.state.current}
+          email={this.state.email}
         />
       </div>
     );

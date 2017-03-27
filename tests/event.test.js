@@ -1,8 +1,20 @@
+const config = require('../server/config.json').fakeDbUri;
+const ModelHandler = require('../server/database/models/ourModels');
 const Event = require('../server/database/objectClasses/Event.js');
 const assert = require('assert');
 
+let ModelHandlerObj;
 describe('Event Create', () => {
   before((done) => {
+    ModelHandlerObj = new ModelHandler().initWithParameters(
+        config.username,
+        config.password,
+        config.host,
+        config.port,
+        config.database);
+
+    Event.setDBConnection(ModelHandlerObj.getConnection());
+
     const testevent1 = new Event(
       'eventTest1',
       'description',
@@ -27,7 +39,9 @@ describe('Event Create', () => {
       if (err) {
         console.log(err);
       }
-      done();
+      ModelHandlerObj.disconnect(() => {
+        done();
+      });
     });
   });
 
@@ -83,6 +97,15 @@ describe('Event Create', () => {
 
 describe('Event Read', () => {
   before((done) => {
+    ModelHandlerObj = new ModelHandler().initWithParameters(
+        config.username,
+        config.password,
+        config.host,
+        config.port,
+        config.database);
+
+    Event.setDBConnection(ModelHandlerObj.getConnection());
+
     const testevent2 = new Event(
       'eventTest2',
       'description',
@@ -104,7 +127,9 @@ describe('Event Read', () => {
       if (err) {
         console.log(err);
       }
-      done();
+      ModelHandlerObj.disconnect(() => {
+        done();
+      });
     });
   });
 
@@ -192,6 +217,14 @@ describe('Event Read', () => {
 
 describe('Event Update', () => {
   before((done) => {
+    ModelHandlerObj = new ModelHandler().initWithParameters(
+        config.username,
+        config.password,
+        config.host,
+        config.port,
+        config.database);
+
+    Event.setDBConnection(ModelHandlerObj.getConnection());
     const testevent2 = new Event(
       'eventTest2',
       'description',
@@ -216,15 +249,17 @@ describe('Event Update', () => {
       if (err) {
         console.log(err);
       }
-      done();
+      ModelHandlerObj.disconnect(() => {
+        done();
+      });
     });
   });
 
-  it ('should be able to update an existing event Picture', function(done) {
+  it('should be able to update an existing event Picture', (done) => {
     Event.updateEventPicture(
       'eventTest2',
       'newimage.png',
-      (err,  results) => {
+      (err, results) => {
         if (err) {
           console.log('unable to update');
         } else {
@@ -234,11 +269,11 @@ describe('Event Update', () => {
       });
   });
 
-  it ('should be able to update an existing event Picture', function(done) {
+  it('should be able to update an existing event Picture', (done) => {
     Event.updateEventMap(
       'eventTest2',
       'mapString',
-      (err,  results) => {
+      (err, results) => {
         if (err) {
           console.log('unable to update');
         } else {
@@ -248,11 +283,11 @@ describe('Event Update', () => {
       });
   });
 
-  it ('should be able to update an existing event Picture', function(done) {
+  it('should be able to update an existing event Picture', (done) => {
     Event.updateEventTag(
       'eventTest2',
       ['NUS', 'STEPS'],
-      (err,  results) => {
+      (err, results) => {
         if (err) {
           console.log('unable to update');
         } else {
@@ -265,6 +300,15 @@ describe('Event Update', () => {
 
 describe('Event Delete', () => {
   before((done) => {
+    ModelHandlerObj = new ModelHandler().initWithParameters(
+        config.username,
+        config.password,
+        config.host,
+        config.port,
+        config.database);
+
+    Event.setDBConnection(ModelHandlerObj.getConnection());
+
     const testevent1 = new Event(
       'eventTest1',
       'description',
@@ -288,7 +332,9 @@ describe('Event Delete', () => {
       if (err) {
         console.log(err);
       }
-      done();
+      ModelHandlerObj.disconnect(() => {
+        done();
+      });
     });
   });
 

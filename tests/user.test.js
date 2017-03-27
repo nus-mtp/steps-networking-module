@@ -1,17 +1,29 @@
+const config = require('../server/config.json').fakeDbUri;
+const ModelHandler = require('../server/database/models/ourModels');
 const User = require('../server/database/objectClasses/User.js');
 const assert = require('assert');
 
+let ModelHandlerObj;
 describe('User Create', () => {
   before((done) => {
+    ModelHandlerObj = new ModelHandler().initWithParameters(
+        config.username,
+        config.password,
+        config.host,
+        config.port,
+        config.database);
+
+    User.setDBConnection(ModelHandlerObj.getConnection());
+
     const userTest2 = new User(
-      'usertesting_2@user.com',
-      'UserTest2',
-      'I am the second test user.',
-      'password456', false, false,
-      'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png',
-      ['Producing skills', 'Photoshop', 'Illustrator', 'AutoCAD', 'Microsoft Office'],
-      [],
-    );
+            'usertesting_2@user.com',
+            'UserTest2',
+            'I am the second test user.',
+            'password456', false, false,
+            'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png',
+            ['Producing skills', 'Photoshop', 'Illustrator', 'AutoCAD', 'Microsoft Office'],
+            [],
+        );
     userTest2.saveUser((err) => {
       if (err) {
         console.log(err);
@@ -25,22 +37,25 @@ describe('User Create', () => {
       if (err) {
         console.log(err);
       }
-      done();
+
+      ModelHandlerObj.disconnect(() => {
+        done();
+      });
     });
   });
 
   it('Should be able to add new Users', (done) => {
     const userTest3 = new User(
-      'usertesting_3@user.com',
-      'UserTest3',
-      'I am the third test user.',
-      'password789',
-      true,
-      false,
-      'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png',
-      ['Project Management', 'Programming skills', 'Objective C', 'C++', 'C#'],
-      ['usertesting_1@user.com', 'usertesting_2@user.com'],
-    );
+            'usertesting_3@user.com',
+            'UserTest3',
+            'I am the third test user.',
+            'password789',
+            true,
+            false,
+            'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png',
+            ['Project Management', 'Programming skills', 'Objective C', 'C++', 'C#'],
+            [],
+        );
     userTest3.saveUser((err) => {
       if (err) {
         console.log('error with saving user3');
@@ -60,19 +75,19 @@ describe('User Create', () => {
 
   it('Should not be able to add Users with duplicate email', (done) => {
     const userTestDup = new User(
-      'usertesting_2@user.com',
-      'UserTest2 again~!',
-      'I am the duplicated second test user.',
-      'sadawe123',
-      false,
-      false,
-      'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png',
-      ['Project Management', 'Programming skills', 'Objective C', 'C++', 'C#'],
-      [, 'usertesting_2@user.com'],
-    );
+            'usertesting_2@user.com',
+            'UserTest2 again~!',
+            'I am the duplicated second test user.',
+            'sadawe123',
+            false,
+            false,
+            'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png',
+            ['Project Management', 'Programming skills', 'Objective C', 'C++', 'C#'],
+            [],
+        );
     userTestDup.saveUser((err) => {
       if (err) {
-        // duplicate error expected
+                // duplicate error expected
       } else {
         User.getUser('usertesting_2@user.com', (err1, results) => {
           if (err1) {
@@ -91,17 +106,26 @@ describe('User Create', () => {
 
 describe('User Read', () => {
   before((done) => {
+    ModelHandlerObj = new ModelHandler().initWithParameters(
+        config.username,
+        config.password,
+        config.host,
+        config.port,
+        config.database);
+
+    User.setDBConnection(ModelHandlerObj.getConnection());
+
     const userTest1 = new User(
-      'usertesting_1@user.com', // email
-      'UserTest1', // name
-      'I am the first test user.', // description
-      'password123', // password
-      true, // will_notify
-      false, // is_deleted
-      'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', // profile_pic
-      ['Programming skills', 'C++', 'Java', 'HTML'], // skills
-      ['usertesting_2@user.com'], // bookmarked users
-    );
+            'usertesting_1@user.com', // email
+            'UserTest1', // name
+            'I am the first test user.', // description
+            'password123', // password
+            true, // will_notify
+            false, // is_deleted
+            'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', // profile_pic
+            ['Programming skills', 'C++', 'Java', 'HTML'], // skills
+            [], // bookmarked users
+        );
     userTest1.saveUser((err) => {
       if (err) {
         console.log(err);
@@ -115,7 +139,9 @@ describe('User Read', () => {
       if (err) {
         console.log(err);
       }
-      done();
+      ModelHandlerObj.disconnect(() => {
+        done();
+      });
     });
   });
 
@@ -138,7 +164,7 @@ describe('User Read', () => {
     User.getUser('usertesting_4@user.com', (err, userObj) => {
       if (err) {
         console.log('Something went wrong with getting user function');
-        // console.log(err);
+                // console.log(err);
       } else {
         assert.equal(null, userObj);
       }
@@ -150,6 +176,15 @@ describe('User Read', () => {
 
 describe('User Update', () => {
   before((done) => {
+    ModelHandlerObj = new ModelHandler().initWithParameters(
+       config.username,
+       config.password,
+       config.host,
+       config.port,
+       config.database);
+
+    User.setDBConnection(ModelHandlerObj.getConnection());
+
     const userTest1 = new User(
       'usertesting_1@user.com', // email
       'UserTest1', // name
@@ -159,14 +194,45 @@ describe('User Update', () => {
       false, // is_deleted
       'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', // profile_pic
       ['Programming skills', 'C++', 'Java', 'HTML'], // skills
-      ['usertesting_2@user.com'], //bookmarked users
+      [], //bookmarked users
     );
-    userTest1.saveUser((err) => {
+
+    const userTest2 = new User(
+        'usertesting_2@user.com', // email
+        'UserTest2', // name
+        'I am the second test user.', // description
+        'password123', // password
+        true, // will_notify
+        false, // is_deleted
+        'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', // profile_pic
+        ['Programming skills', 'C++', 'Java', 'HTML'], // skills
+        [], //bookmarked users
+    );
+
+    const save1 = new Promise((resolve, reject) => userTest1.saveUser((err) => {
       if (err) {
-        console.log(err);
+        reject(err);
+      } else {
+        resolve();
       }
-      done();
-    });
+    }));
+
+    const save2 = new Promise((resolve, reject) => userTest2.saveUser((err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    }));
+
+    Promise.all([save1, save2])
+        .then(() => {
+          done();
+        })
+        .catch((errs) => {
+          console.log(errs);
+          done();
+        });
   });
 
   after((done) => {
@@ -174,8 +240,14 @@ describe('User Update', () => {
       if (err) {
         console.log(err);
       }
-      done();
+      ModelHandlerObj.disconnect(() => {
+        done();
+      });
     });
+  });
+
+  it('Should be able to do nothing', (done) => {
+    done();
   });
 
   it('Should be able to update the profile picture of the user', (done) => {
@@ -240,13 +312,26 @@ describe('User Update', () => {
       assert.equal(result.description, 'edited description');
       assert.equal(result.will_notify, false);
       assert.equal(result.skills.length, 1, result.skills.toString());
-      assert.equal(result.bookmarked_users.length, 1, result.bookmarked_users);
+      assert.equal(result.bookmarked_users.length, 0, result.bookmarked_users);
       done();
     });
   });
 
-  it('Should not be able to push duplicate emails into the bookmarks of the user', (done) => {
-    User.addBookmarkedUserForUser('usertesting_1@user.com', 'usertesting_2@user.com', (err, result) => {
+  it('Should not be able to push duplicate ids into the bookmarks of the user', (done) => {
+    User.getUser('usertesting_2@user.com', (err, user) => {
+      User.addBookmarkedUserForUser('usertesting_1@user.com', user._id, (err, result) => {
+        User.addBookmarkedUserForUser('usertesting_1@user.com', user._id, (err, result) => {
+          assert.equal(err, null, err);
+          assert.notEqual(result, null);
+          assert.equal(result.bookmarked_users.length, 1, result);
+          done();
+        });
+      });
+    });
+  });
+
+  it('Should not be able to remove a non-existing id of the user', (done) => {
+    User.removeBookmarkedUserFromUser('usertesting_1@user.com', '58d5355af085642a0ec42ebe', (err, result) => {
       assert.equal(err, null, err);
       assert.notEqual(result, null);
       assert.equal(result.bookmarked_users.length, 1, result);
@@ -254,88 +339,92 @@ describe('User Update', () => {
     });
   });
 
-  it('Should not be able to remove a non-existing bookmark of the user', (done) => {
-    User.removeBookmarkedUserFromUser('usertesting_1@user.com', 'usertesting_3@user.com', (err, result) => {
-      assert.equal(err, null, err);
-      assert.notEqual(result, null);
-      assert.equal(result.bookmarked_users.length, 1, result);
-      done();
-    });
-  });
-
-  it('Should be able to remove emails from the bookmarks of the user', (done) => {
-    User.removeBookmarkedUserFromUser('usertesting_1@user.com', 'usertesting_2@user.com', (err, result) => {
-      assert.equal(err, null, err);
-      assert.notEqual(result, null);
-      assert.equal(result.bookmarked_users.length, 0, result);
-      done();
+  it('Should be able to remove ids from the bookmarks of the user', (done) => {
+    User.getUser('usertesting_2@user.com', (err, user) => {
+      User.removeBookmarkedUserFromUser('usertesting_1@user.com', user._id, (err, result) => {
+        assert.equal(err, null, err);
+        assert.notEqual(result, null);
+        assert.equal(result.bookmarked_users.length, 0, result);
+        done();
+      });
     });
   });
 
   it('Should be able to set the bookmarks for the user, without duplicates', (done) => {
-    User.setBookmarksForUser('usertesting_1@user.com', ['usertesting_2@user.com', 'usertesting_2@user.com'], (err, result) => {
-      assert.equal(err, null, err);
-      assert.notEqual(result, null);
-      assert.equal(result.bookmarked_users.length, 1, result);
-      done();
+    User.getUser('usertesting_2@user.com', (err, user) => {
+      User.setBookmarksForUser('usertesting_1@user.com', [user._id, user._id], (err, result) => {
+        assert.equal(err, null, err);
+        assert.notEqual(result, null);
+        assert.equal(result.bookmarked_users.length, 1, result);
+        done();
+      });
     });
   });
 
   it('Should be able to update an existing specific user', (done) => {
     User.updateUser(
-      'usertesting_1@user.com',
-      'User Test 1 Updated',
-      'my description is updated',
-      'changedPassword',
-      false,
-      false,
-      'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
-      ['c++', 'C#', 'java'],
-      [],
-      (err, results) => {
-        if (err) {
-          console.log(err);
-        } else {
-          assert.notEqual(results, null);
-          assert.equal('my description is updated', results.description);
-        }
-        done();
-      });
+            'usertesting_1@user.com',
+            'User Test 1 Updated',
+            'my description is updated',
+            'changedPassword',
+            false,
+            false,
+            'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
+            ['c++', 'C#', 'java'],
+            [],
+            (err, results) => {
+              if (err) {
+                console.log(err);
+              } else {
+                assert.notEqual(results, null);
+                assert.equal('my description is updated', results.description);
+              }
+              done();
+            });
   });
 
   it('Should not be able to update a non-existing user', (done) => {
     User.updateUser(
-      'user2000@user.com',
-      'i am a duplicate',
-      'my descript is useless',
-      'qwe141asdasd1',
-      true,
-      false,
-      'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
-      ['c++', 'C#', 'java'],
-      [],
-      (err, results) => {
-        if (err) {
-          console.log(err);
-        } else {
-          assert.equal(null, results);
-          done();
-        }
-      });
+            'user2000@user.com',
+            'i am a duplicate',
+            'my descript is useless',
+            'qwe141asdasd1',
+            true,
+            false,
+            'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
+            ['c++', 'C#', 'java'],
+            [],
+            (err, results) => {
+              if (err) {
+                console.log(err);
+              } else {
+                assert.equal(null, results);
+              }
+              done();
+            });
   });
 });
 
 
 describe('User Delete', () => {
   before((done) => {
+    ModelHandlerObj = new ModelHandler().initWithParameters(
+        config.username,
+        config.password,
+        config.host,
+        config.port,
+        config.database);
+
+    User.setDBConnection(ModelHandlerObj.getConnection());
+
     const userTest2 = new User(
-      'usertesting_2@user.com',
-      'UserTest2',
-      'I am the second test user.',
-      'password456', false, false,
-      'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png',
-      ['Producing skills', 'Photoshop', 'Illustrator', 'AutoCAD', 'Microsoft Office'],
-      []);
+            'usertesting_2@user.com',
+            'UserTest2',
+            'I am the second test user.',
+            'password456', false, false,
+            'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png',
+            ['Producing skills', 'Photoshop', 'Illustrator', 'AutoCAD', 'Microsoft Office'],
+            []);
     userTest2.saveUser((err) => {
       if (err) {
         console.log(err);
@@ -349,7 +438,9 @@ describe('User Delete', () => {
       if (err) {
         console.log(err);
       }
-      done();
+      ModelHandlerObj.disconnect(() => {
+        done();
+      });
     });
   });
 
