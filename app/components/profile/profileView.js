@@ -62,7 +62,6 @@ class ProfileView extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       this.setState({ attendances: xhr.response });
-      console.log(xhr.response);
     });
     xhr.send();
   }
@@ -74,6 +73,7 @@ class ProfileView extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       const user = xhr.response;
+      // Buggy and I not sure why
       user.userSkills = (xhr.response.userSkills) ? xhr.response.userSkills.map((skill, i) => {
         return {
           id: i,

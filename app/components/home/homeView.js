@@ -59,7 +59,7 @@ class HomeView extends React.Component {
 
   openCollapsable(serial) {
     const newStatus = this.createFalseArray(this.state.open.length); // ignore previous state and change all to false
-    newStatus[serial] = true;
+    newStatus[serial] = !this.state.open[serial];
     this.setState({ open: newStatus });
   }
 
