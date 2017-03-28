@@ -72,5 +72,5 @@ const db = require('./database/mongodbScripts/accessMongoDB').connect(
       console.log(`Running on ${app.get('port')}`);
     });
 
-    require('./routes/messageSocket')(io);
+    require('./routes/messageSocket')(io, db);
   });
