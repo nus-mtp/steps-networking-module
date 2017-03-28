@@ -1,13 +1,7 @@
-exports = module.exports = function(io) {  
+exports = module.exports = function(io, db) {  
   const Message = require('../database/objectClasses/Message');
-  const config = require('../config.json').devDbUri;
   const ModelHandler = require('../database/models/ourModels');
-  let ModelHandlerObj = new ModelHandler().initWithParameters(
-    config.username,
-    config.password,
-    config.host,
-    config.port,
-    config.database);
+  let ModelHandlerObj = new ModelHandler().initWithConnection(db);
 
   Message.setDBConnection(ModelHandlerObj.getConnection());
 
