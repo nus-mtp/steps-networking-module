@@ -7,7 +7,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    const userEmail = (Auth.isUserAuthenticated) ? Auth.getToken().email : '';
+    const userEmail = (Auth.isUserAuthenticated()) ? Auth.getToken().email : '';
 
     this.state = {
       email: userEmail.replace(/%40/i, '@'),
