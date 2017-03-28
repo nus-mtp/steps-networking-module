@@ -77,7 +77,7 @@ class App extends React.Component {
           <button id="hamburger-toggle" onClick={this.shiftBody} className="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbar-supported-content" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon" />
           </button>
-          <Link onClick={this.removeDropdown} to={Paths.home}><img id="brand-logo" src="resources/images/home.svg" alt="Home" /></Link>
+          <Link onClick={this.removeDropdown} to={Paths.home}><img id="brand-logo" src="resources/images/home-icon.svg" alt="Home" /></Link>
           <div className="collapse navbar-collapse flex-column flex-lg-row justify-content-between" id="navbar-supported-content">
             <form className="form-inline mt-2 mt-lg-0 row" id="search-container">
               <input id="search-input" className="form-control col-9" type="text" placeholder="Search" />
