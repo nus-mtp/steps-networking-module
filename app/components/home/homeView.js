@@ -3,12 +3,14 @@ import Tabs from './tabs';
 import Event from './event';
 import Collapsable from './collapsable';
 import { sampleAttendance } from './sampleData';
+import Auth from '../../database/auth';
 
 class HomeView extends React.Component {
   constructor(props) {
     super(props);
 
     const nowDate = new Date();
+    const userEmail = (Auth.isUserAuthenticated()) ? Auth.getToken().email : '';
 
     this.state = {
       open: null,
@@ -20,6 +22,7 @@ class HomeView extends React.Component {
     };
 
     this.initializeStates();
+    this.getAttendances(userEmail.replace(/%40/i, '@'));
 
     this.openCollapsable = this.openCollapsable.bind(this);
     this.changeAttendance = this.changeAttendance.bind(this);
@@ -29,6 +32,8 @@ class HomeView extends React.Component {
   }
 
   initializeStates() {
+    //const userEmail = (Auth.isUserAuthenticated()) ? Auth.getToken().email : '';
+    //console.log(userEmail.replace(/%40/i, '@'));
     const xhr = new XMLHttpRequest();
     xhr.open('get', '/event/get/allEvents');
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -45,6 +50,17 @@ class HomeView extends React.Component {
         displayedEvents: remainder,
         open: this.createFalseArray(remainder.length),
       });
+    });
+    xhr.send();
+  }
+
+  getAttendances(email) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/attendance/get/oneUserAttendances/${email}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      this.setState({ attendance: xhr.response });
     });
     xhr.send();
   }
