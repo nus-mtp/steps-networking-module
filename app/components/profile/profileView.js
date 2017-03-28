@@ -18,7 +18,7 @@ class ProfileView extends React.Component {
       user: {},
       events: [], // List of event user attended
       exhibitions: [], // List of exhibition user participated
-      attendance: [], // For all the attendance objects
+      attendances: [], // For all the attendance objects
     };
 
     const pathname = this.props.location.pathname;
@@ -26,7 +26,7 @@ class ProfileView extends React.Component {
 
     this.getUser(userEmail);
     this.getEvent(userEmail);
-    //this.getAttendance(userEmail);
+    this.getAttendances(userEmail);
 
     this.handleEdit = this.handleEdit.bind(this);
     this.changeEdit = this.changeEdit.bind(this);
@@ -55,13 +55,14 @@ class ProfileView extends React.Component {
     });
   }
 
-  getAttendance(email) {
+  getAttendances(email) {
     const xhr = new XMLHttpRequest();
-    xhr.open('get', `/attendance/get/oneAttendanceAttendees/${email}`);
+    xhr.open('get', `/attendance/get/oneUserAttendances/${email}`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      this.setState({ attendance: xhr.response });
+      this.setState({ attendances: xhr.response });
+      console.log(xhr.response);
     });
     xhr.send();
   }
@@ -361,8 +362,15 @@ class ProfileView extends React.Component {
                       <Link to={`/exhibition/${exhibition.eventName}/${exhibition.exhibitionName}`} key={exhibition.id}>
                         <div id="user-exhibition-container">
                           <img className="img-fluid user-page-thumbnail" src={`${exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" />
-                          <div id="user-exhibition">{exhibition.exhibitionName}</div>
-                          <div>Attendance</div>
+                          <div id="user-exhibition">
+                            <div>{exhibition.exhibitionName}</div>
+                            <div className="tag-container">{(this.state.attendances) ? this.state.attendances.filter(
+                              attendance => {if (attendance.attendanceKey === exhibition.id) return attendance;}).map(
+                                attendance => attendance.reasons.map(
+                                  reason => <span className="tag badge badge-pill badge-success">{reason}</span>)) :
+                                  <div/>
+                            }</div>
+                          </div>
                         </div>
                       </Link>
                     ) : <div />
@@ -386,7 +394,15 @@ class ProfileView extends React.Component {
                       <Link to={`/event/${event.name}`}  key={event.id}>
                         <div id="user-event-container">
                           <img className="img-fluid user-page-thumbnail" src={`${event.event_poster}`} onError={this.addDefaultSrc} alt="event-image" />
-                          <div id="user-events">{event.name}</div>
+                          <div id="user-events">
+                            <div>{event.name}</div>
+                            <div className="tag-container">{(this.state.attendances) ? this.state.attendances.filter(
+                              attendance => {if (attendance.attendanceKey === event.id) return attendance;}).map(
+                                attendance => attendance.reasons.map(
+                                  reason => <span className="tag badge badge-pill badge-success">{reason}</span>)) :
+                                  <div/>
+                            }</div>
+                          </div>
                         </div>
                       </Link>
                     ) : <div />
