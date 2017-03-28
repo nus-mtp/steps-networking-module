@@ -87,7 +87,7 @@ class ProfileView extends React.Component {
 
   getEvent(email) {
     const xhr = new XMLHttpRequest();
-    xhr.open('get', `/attendance/get/oneUserEventAttendances/${email}`);
+    xhr.open('get', `/attendance/get/oneUserEvents/${email}`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
@@ -106,7 +106,7 @@ class ProfileView extends React.Component {
 
   getExhibition(email, event) {
     const xhr = new XMLHttpRequest();
-    xhr.open('get', `/attendance/get/oneUserAttendancesForEvent/${email}/${event}`);
+    xhr.open('get', `/attendance/get/oneUserExhibitionsInEvent/${email}/${event}`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
@@ -261,7 +261,7 @@ class ProfileView extends React.Component {
   }
 
   render() {
-    const userEmail = (Auth.isUserAuthenticated) ? Auth.getToken().email.replace(/%40/i, '@') : '';
+    const userEmail = (Auth.isUserAuthenticated()) ? Auth.getToken().email.replace(/%40/i, '@') : '';
 
     return (
       <div id="profile-body">
