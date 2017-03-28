@@ -18,6 +18,7 @@ class ProfileView extends React.Component {
       user: {},
       events: [], // List of event user attended
       exhibitions: [], // List of exhibition user participated
+      attendance: [], // For all the attendance objects
     };
 
     const pathname = this.props.location.pathname;
@@ -25,6 +26,7 @@ class ProfileView extends React.Component {
 
     this.getUser(userEmail);
     this.getEvent(userEmail);
+    //this.getAttendance(userEmail);
 
     this.handleEdit = this.handleEdit.bind(this);
     this.changeEdit = this.changeEdit.bind(this);
@@ -51,6 +53,17 @@ class ProfileView extends React.Component {
     window.removeEventListener("hashchange", () => {
       that.getUser();
     });
+  }
+
+  getAttendance(email) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/attendance/get/oneAttendanceAttendees/${email}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      this.setState({ attendance: xhr.response });
+    });
+    xhr.send();
   }
 
   getUser(email) {
@@ -349,6 +362,7 @@ class ProfileView extends React.Component {
                         <div id="user-exhibition-container">
                           <img className="img-fluid user-page-thumbnail" src={`${exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" />
                           <div id="user-exhibition">{exhibition.exhibitionName}</div>
+                          <div>Attendance</div>
                         </div>
                       </Link>
                     ) : <div />
