@@ -211,7 +211,7 @@ class ExhibitionView extends React.Component {
                 (Object.keys(this.state.attendance).length !== 0) ?
                   this.state.attendance.map(attend =>
                     <Link to={`/profile/${attend.userEmail}`} key={attend.id}>
-                      <div className="project-members">{attend.userEmail}</div>
+                      <div className="project-members">{attend.userName}</div>
                       {
                         (attend.reasons) ?
                           attend.reasons.map((reason, i) => <span className="badge badge-pill badge-primary" key={`${reason}${i}`}>{reason}</span>) :
