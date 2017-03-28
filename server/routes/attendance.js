@@ -43,6 +43,28 @@ router.get('/get/oneUserAttendance/:email/:id', (req = {}, res, next) => {
   }
 });
 
+// Get all the Attendances of a specified User
+router.get('/get/oneUserAttendances/:email', (req = {}, res, next) => {
+  if (req.params && req.params.email) {
+    Attendance.setDBConnection(req.app.locals.db);
+    Attendance.searchAttendancesByUser(req.params.email, (err, attendances) => {
+      if (err) {
+        res.status(500).json('Unable to fetch data!');
+        next();
+      } else if (attendances) {
+        res.status(200).json(attendances.map(attendance => extractAttendanceInfo(attendance)));
+        next();
+      } else {
+        res.status(204).json('No Attendances found!');
+        next();
+      }
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
 // Get all the Events and Exhibitions that a User is participating in / has participated in
 router.get('/get/oneUserEventsAndExhibitions/:email', (req = {}, res, next) => {
   if (req.params && req.params.email) {
