@@ -2,7 +2,6 @@ import React from 'react';
 import Tabs from './tabs';
 import Event from './event';
 import Collapsable from './collapsable';
-import { sampleAttendance } from './sampleData';
 import Auth from '../../database/auth';
 
 class HomeView extends React.Component {
@@ -16,7 +15,7 @@ class HomeView extends React.Component {
       open: null,
       events: null,
       displayedEvents: [],
-      attendance: sampleAttendance,
+      attendance: [],
       todayDate: nowDate,
       currentTab: 'ongoing',
     };
@@ -32,8 +31,6 @@ class HomeView extends React.Component {
   }
 
   initializeStates() {
-    //const userEmail = (Auth.isUserAuthenticated()) ? Auth.getToken().email : '';
-    //console.log(userEmail.replace(/%40/i, '@'));
     const xhr = new XMLHttpRequest();
     xhr.open('get', '/event/get/allEvents');
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
