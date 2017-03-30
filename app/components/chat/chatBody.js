@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import MediaQuery from 'react-responsive';
 
-const sockets = io();
-
 export default class ChatBody extends Component {
   constructor(props) {
     super(props);
@@ -31,8 +29,7 @@ export default class ChatBody extends Component {
       marginLeft: this.props.marginLeft,
     };
     
-    sockets.on('refresh message', function(results){
-      console.log("Refreshed");
+    this.props.sockets.on('refresh message', function(results){
       this.initialiseMessages();
     }.bind(this));
   }
@@ -47,7 +44,7 @@ export default class ChatBody extends Component {
   
   retrieveAllMessages(senderEmail, recipientEmail) {
     //*
-    sockets.emit('get message', { senderEmail, recipientEmail }, function(err, conversation) {
+    this.props.sockets.emit('get message', { senderEmail, recipientEmail }, function(err, conversation) {
       if (err) {
         this.setState({[`${senderEmail}`]: [] });
       } else {
@@ -85,11 +82,10 @@ export default class ChatBody extends Component {
   }
 
   sendMessage(senderEmail, recipientEmail, content) {
-    sockets.emit('add message', { senderEmail, recipientEmail, content }, function(successful) {
+    this.props.sockets.emit('add message', { senderEmail, recipientEmail, content }, function(successful) {
       if (!successful) {
         console.log("The message failed to send.");
       } else {
-        console.log(content);
         this.initialiseMessages();
       }
     }.bind(this));

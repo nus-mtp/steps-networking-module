@@ -32,12 +32,12 @@ export default class ChatView extends Component {
     if(Auth.isUserAuthenticated) {
       let email = Auth.getToken().email;
       email = email.replace(/%40/gi, '@');
-
+      
       sockets.on('new', function(socket) {
         console.log(email);
         sockets.emit('new user', {userEmail: email});
       });
-
+      
       this.setState({ email });
       this.getAllUsers(email);
     }
@@ -53,22 +53,6 @@ export default class ChatView extends Component {
         console.log(userList);
       }
     }.bind(this));
-    
-    /*// Old version
-    const xhr = new XMLHttpRequest();
-    xhr.open('get', `/message/get/getMessagesInvolving/${email}`);
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.responseType = 'json';
-    xhr.addEventListener('load', () => {
-      if (xhr.status === 200) {
-        // success
-        this.setState({users: xhr.response});
-      } else {
-        // failure
-      }
-    });
-    xhr.send();
-    //*/
   }
 
   changeConversation(index) {
@@ -105,6 +89,7 @@ export default class ChatView extends Component {
           users={this.state.users}
           current={this.state.current}
           email={this.state.email}
+          sockets={sockets}
         />
       </div>
     );

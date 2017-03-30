@@ -11,12 +11,12 @@ exports = module.exports = function(io, db) {
     
     socket.on('new user', (userObject, callback) => {
       if (userObject.userEmail) {
-        socketIDs[userObject.userEmail] = socket;
-      }  
+        socketIDs[userObject.userEmail] = socket.id;
+      }
     });
     
     socket.on('get message', (messageObj, callback) => {
-      console.log(messageObj.senderEmail + ' and ' + messageObj.recipientEmail);
+      //console.log(messageObj.senderEmail + ' and ' + messageObj.recipientEmail);
       if (messageObj.senderEmail && messageObj.recipientEmail) {
         Message.getConversation(messageObj.senderEmail, messageObj.recipientEmail, (err, conversation) => {
           callback(err, conversation);
@@ -38,9 +38,13 @@ exports = module.exports = function(io, db) {
             if (err) {
               callback(false);
             } else if (results) {
-              socketIDs[messageObj.recipientEmail].emit('refresh message', results);
+              const socketId = socketIDs[messageObj.recipientEmail];
+              if (socketId) {
+                socket.to(socketId).emit('refresh message', results);
+              }
               callback(true);
             } else {
+              /*
               const newMessage = new Message(
                 messageObj.senderEmail,
                 messageObj.recipientEmail,
@@ -51,10 +55,14 @@ exports = module.exports = function(io, db) {
                 if (err) {
                   callback(false);
                 } else {
-                  socketIDs[messageObj.recipientEmail].emit('refresh message', results);
+                  const socketId = socketIDs[messageObj.recipientEmail];
+                  if (socketId) {
+                    io.to(socketId).emit('refresh message', results);
+                  }
                   callback(true);
                 }
               });
+              //*/
             }
           });
       } else {
