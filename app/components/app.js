@@ -182,7 +182,6 @@ class App extends React.Component {
                 <ul className="dropdown-menu" aria-labelledby="search-filter">
                   <li className="dropdown-item" onClick={this.changeFilterInput.bind(this, "Event")}>Event</li>
                   <li className="dropdown-item" onClick={this.changeFilterInput.bind(this, "Exhibition")}>Exhibition</li>
-                  <li className="dropdown-item" onClick={this.changeFilterInput.bind(this, "User")}>User</li>
                   <li className="dropdown-item" onClick={this.changeFilterInput.bind(this, "Skills")}>User Skills</li>
                   <li className="dropdown-item" onClick={this.changeFilterInput.bind(this, "Tags")}>Exhibition Tags</li>
                 </ul>
