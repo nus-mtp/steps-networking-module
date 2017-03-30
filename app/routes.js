@@ -7,6 +7,7 @@ import Profile from './components/profile/profileView';
 import Login from './components/auth/loginView';
 import Signup from './components/auth/signupView';
 import Match from './components/profile/match';
+import Search from './components/home/searchView';
 import Auth from './database/auth';
 import Paths from './paths';
 
@@ -58,6 +59,10 @@ const routes = {
     {
       path: Paths.match,
       component: Match,
+    },
+    {
+      path: Paths.search,
+      component: SearchView,
     },
   ],
 };

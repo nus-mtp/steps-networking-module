@@ -8,6 +8,7 @@ const Paths = {
   chat: '/chat',
   profile: '/profile/:email',
   match: '/match',
+  search: '/search/:category(/:tags)',
 };
 
 export default Paths;
