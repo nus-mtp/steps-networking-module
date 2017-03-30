@@ -127,7 +127,7 @@ router.post('/post/search/tag', (req = {}, res, next) => {
 router.post('/post/search/tags', (req = {}, res, next) => {
   if (req.body && req.body.tags) {
     Exhibition.setDBConnection(req.app.locals.db);
-    
+
     Exhibition.searchExhibitionsByTags(req.body.tags.split(','), (err, exhibitions) => {
       if (err) {
         if (err.name === 'ValidationError') {
