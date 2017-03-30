@@ -8,10 +8,16 @@ exports = module.exports = function(io, db) {
 
   io.on('connection', (socket) => {
     socket.emit('new', {new: 'new'});
+    
+    socket.on('new user', (userObject, callback) => {
+      if (userObject.userEmail) {
+         socketIDs[messageObj.senderEmail] = socket;
+      }  
+    });
+    
     socket.on('get message', (messageObj, callback) => {
       console.log(messageObj.senderEmail+' and '+messageObj.recipientEmail);
       if (messageObj.senderEmail && messageObj.recipientEmail) {
-        socketIDs[messageObj.senderEmail] = socket;
         Message.getConversation(messageObj.senderEmail, messageObj.recipientEmail, (err, conversation) => {
           console.log(conversation);
           callback(err, conversation);
