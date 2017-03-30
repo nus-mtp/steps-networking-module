@@ -203,7 +203,7 @@ class User {
   static searchUsersByMultipleSkills(skillsToBeSearched, callback) {
     if (User.checkConnection()) {
       const refinedSkills = skillsToBeSearched.map(
-        skillToBeSearched => skillToBeSearched.trim().toLowerCase()
+        skillToBeSearched => skillToBeSearched.trim().toLowerCase(),
       );
       User.UserModel.find({ skills: { $all: refinedSkills } }, (err, matchedUsers) => {
         callback(err, matchedUsers);
