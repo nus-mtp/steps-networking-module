@@ -3,6 +3,10 @@ import MediaQuery from 'react-responsive';
 import ChatBody from './chatBody';
 import ChatTabs from './chatTabs';
 import Auth from '../../database/auth';
+const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io').listen(server);
 
 export default class ChatView extends Component {
   constructor(props) {
@@ -32,6 +36,10 @@ export default class ChatView extends Component {
       this.setState({ email });
       this.getAllUsers(email);
     }
+    
+    io.sockets.on('connection', function(socket) {
+      console.log("Turkey");
+    });
   }
 
   getAllUsers(email) {
