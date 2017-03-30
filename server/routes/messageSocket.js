@@ -11,26 +11,24 @@ exports = module.exports = function(io, db) {
     
     socket.on('new user', (userObject, callback) => {
       if (userObject.userEmail) {
-         socketIDs[messageObj.senderEmail] = socket;
+        socketIDs[userObject.userEmail] = socket;
       }  
     });
     
     socket.on('get message', (messageObj, callback) => {
-      console.log(messageObj.senderEmail+' and '+messageObj.recipientEmail);
+      console.log(messageObj.senderEmail + ' and ' + messageObj.recipientEmail);
       if (messageObj.senderEmail && messageObj.recipientEmail) {
         Message.getConversation(messageObj.senderEmail, messageObj.recipientEmail, (err, conversation) => {
-          console.log(conversation);
           callback(err, conversation);
         });
       } else {
-        console.log('fail');
+        console.log('Failed to get message');
         callback('Expecting senderEmail and recipientEmail', null);
       }
     });
 
     socket.on('add message',(messageObj, callback) => {
       if (messageObj.senderEmail && messageObj.senderEmail && messageObj.content && callback){
-        console.log('in new message: '+ messageObj.content);
         Message.addMessage(
           messageObj.senderEmail,
           messageObj.recipientEmail,
@@ -40,10 +38,9 @@ exports = module.exports = function(io, db) {
             if (err) {
               callback(false);
             } else if (results) {
-              socketIDs[messageObj.senderEmail].emit('refresh message', results);
+              socketIDs[messageObj.recipientEmail].emit('refresh message', results);
               callback(true);
             } else {
-              socketIDs[messageObj.senderEmail] = socket;
               const newMessage = new Message(
                 messageObj.senderEmail,
                 messageObj.recipientEmail,
@@ -54,7 +51,7 @@ exports = module.exports = function(io, db) {
                 if (err) {
                   callback(false);
                 } else {
-                  socketIDs[messageObj.senderEmail].emit('refresh message', results);
+                  socketIDs[messageObj.recipientEmail].emit('refresh message', results);
                   callback(true);
                 }
               });
@@ -65,13 +62,13 @@ exports = module.exports = function(io, db) {
       }
     });
 
-    socket.on('get message involving user', (messageObj, callback) => {
+    socket.on('get all emails involving user', (messageObj, callback) => {
       if (messageObj.userEmail) {
-        Message.getEmailsInvolvingUser(messageObj.userEmail, (err, msgObjs) => {
+        Message.getEmailsInvolvingUser(messageObj.userEmail, (err, listOfUserEmails) => {
           if (err){
             callback('Error with getting emails method', null);
           } else {
-            callback(err, msgObjs);
+            callback(err, listOfUserEmails);
           }
         });
       } else {

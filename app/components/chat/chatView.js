@@ -12,11 +12,13 @@ export default class ChatView extends Component {
 
     this.state = {
       users: [ // Store the emails
+        /*// 
         'gun@dam.com',
         'gun@dam',
         'Bacon',
         'Turkey',
         'gun@dam',
+        //*/
       ],
       current: 0, // current conversation being displayed
       minWidth: '700px',
@@ -30,17 +32,29 @@ export default class ChatView extends Component {
     if(Auth.isUserAuthenticated) {
       let email = Auth.getToken().email;
       email = email.replace(/%40/gi, '@');
-      
+
+      sockets.on('new', function(socket) {
+        console.log(email);
+        sockets.emit('new user', {userEmail: email});
+      });
+
       this.setState({ email });
       this.getAllUsers(email);
     }
-    
-    sockets.on('connection', function(socket) {
-      console.log("Turkey");
-    });
   }
 
   getAllUsers(email) {
+    sockets.emit('get all emails involving user', {userEmail: email}, function(err, userList) {
+      if (err) {
+        // Stuff went wrong
+        console.log('Unable to retrieve userList');
+      } else {
+        this.setState({ users: userList });
+        console.log(userList);
+      }
+    }.bind(this));
+    
+    /*// Old version
     const xhr = new XMLHttpRequest();
     xhr.open('get', `/message/get/getMessagesInvolving/${email}`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -54,6 +68,7 @@ export default class ChatView extends Component {
       }
     });
     xhr.send();
+    //*/
   }
 
   changeConversation(index) {
