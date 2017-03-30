@@ -189,7 +189,7 @@ class Attendance {
 
   /**
    * Retrieve the Attendance Documents that have the Event / Exhibition name and the specified
-   * reasons for attending above-mentioned activity.
+   * reason for attending above-mentioned activity.
    *
    * @param {mongoose.Schema.ObjectId} attendanceKey: Used to match against the
    *    attendance_key contained in all Attendances.
@@ -206,6 +206,31 @@ class Attendance {
       Attendance.AttendanceModel.find(query, (err, matchedAttendances) => {
         callback(err, matchedAttendances);
       });
+    } else {
+      callback('Not Connected!', null);
+    }
+  }
+
+
+  /**
+   * Retrieve the Attendance Documents that have the Event / Exhibition name and the specified
+   * reasons for attending above-mentioned activity.
+   *
+   * @param {mongoose.Schema.ObjectId} attendanceKey: Used to match against the
+   *    attendance_key contained in all Attendances.
+   * @param {Array} reasons: An Array of Strings used to denote reasons a User is
+   *    Attending an Event / Exhibition to match for.
+   * @param {function} callback: A function that executes once the operation is done.
+   */
+  static searchAttendancesByKeyAndReasons(attendanceKey, reasons, callback) {
+    if (Attendance.checkConnection()) {
+      const refinedReasons = reasons.map(reason => reason.trim().toLowerCase());
+
+      Attendance.AttendanceModel.find(
+        { attendance_key: attendanceKey, reason: { $all: { refinedReasons } } },
+        (err, matchedAttendances) => {
+          callback(err, matchedAttendances);
+        });
     } else {
       callback('Not Connected!', null);
     }
