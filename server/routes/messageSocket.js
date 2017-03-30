@@ -61,7 +61,7 @@ exports = module.exports = function(io, db) {
 
     socket.on('get message involving user', (messageObj, callback) => {
       if (messageObj.userEmail) {
-        Message.getEmailsInvolvingUser(req.params.userEmail, (err, msgObjs) => {
+        Message.getEmailsInvolvingUser(messageObj.userEmail, (err, msgObjs) => {
           if (err){
             callback('Error with getting emails method', null);
           } else {
