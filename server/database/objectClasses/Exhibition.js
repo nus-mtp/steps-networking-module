@@ -153,7 +153,7 @@ class Exhibition {
    */
   static searchExhibitionsByTag(tag, callback) {
     if (Exhibition.checkConnection()) {
-      const refinedTag = tag.trim().toLowerCase()
+      const refinedTag = tag.trim().toLowerCase();
       Exhibition.ExhibitionModel.find(
         { tags: { $elemMatch: { $eq: refinedTag } } },
         (err, matchedExhibitions) => {
