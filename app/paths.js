@@ -5,7 +5,7 @@ const Paths = {
   logout: '/logout',
   exhibition: '/exhibition/:eventName/:exhibitionName',
   event: '/event(/:eventName)',
-  chat: '/chat',
+  chat: '/chat(/:email)',
   profile: '/profile/:email',
   match: '/match',
 };

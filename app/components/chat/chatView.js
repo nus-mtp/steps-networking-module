@@ -22,6 +22,13 @@ export default class ChatView extends Component {
 
     this.query = 'screen and (min-width: ' + this.state.minWidth + ')';
     this.widthOfChatTabs = '25%';
+    
+    // Get a specific user that wants to be talked to
+    const pathname = this.props.location.pathname;
+    this.talkToEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length).trim();
+    if (this.talkToEmail===''||this.talkToEmail==='chat') {
+      this.talkToEmail = null;
+    }
   }
   
   componentWillMount() {
@@ -42,6 +49,15 @@ export default class ChatView extends Component {
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
         // success
+        if (this.talkToEmail!==null) {
+          const current = users.find(function(user){
+            return user===this.talkToEmail;
+          });
+          
+          if (current==null) {
+            
+          }
+        }
         this.setState({users: xhr.response});
       } else {
         // failure
