@@ -177,11 +177,15 @@ class App extends React.Component {
           <button id="hamburger-toggle" onClick={this.shiftBody} className="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbar-supported-content" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon" />
           </button>
-          <Link onClick={this.removeDropdown} to={Paths.home}><img id="brand-logo" src="resources/images/home-icon.svg" alt="Home" /></Link>
+          <Link onClick={this.removeDropdown} to={Paths.home}><img id="brand-logo" src="../resources/images/home-icon.svg" alt="Home" /></Link>
           <div className="collapse navbar-collapse flex-column flex-lg-row justify-content-between" id="navbar-supported-content">
-            <form className="form-inline mt-2 mt-lg-0 row" id="search-container" onSubmit={this.handleSearch}>
-              <div className="dropdown col-md-3 col-4">
-                <button className="btn btn-success dropdown-toggle" type="button" id="search-filter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <form className="form-inline mt-1 mt-lg-0 row" id="search-container" onSubmit={this.handleSearch}>
+              <input id="search-input" className="form-control col-7 col-md-9" type="text" placeholder="Search" onChange={this.getSearchAsync} value={this.state.search} />
+              <button id="search-submit" className="btn btn-secondary col-2 col-md-1" type="submit">
+                <img id="search-icon" src="../resources/images/search-icon.svg" alt="chat-icon" />
+              </button>
+              <div className="dropdown col-md-2 col-3">
+                <button className="btn btn-secondary dropdown-toggle" type="button" id="search-filter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   {this.state.searchFilter}
                 </button>
                 <ul className="dropdown-menu" aria-labelledby="search-filter">
@@ -191,10 +195,6 @@ class App extends React.Component {
                   <li className="dropdown-item" onClick={this.changeFilterInput.bind(this, "Tags")}>Exhibition Tags</li>
                 </ul>
               </div>
-              <input id="search-input" className="form-control col-6 col-md-7" type="text" placeholder="Search" onChange={this.getSearchAsync} value={this.state.search} />
-              <button id="search-submit" className="btn btn-secondary col-2" type="submit">
-                <img id="search-icon" src="../resources/images/search-icon.svg" alt="chat-icon" />
-              </button>
             </form>
             <ul id="search-results" className="list-group hidden-md-down">
               {
