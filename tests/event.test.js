@@ -1,4 +1,4 @@
-const config = require('../server/config.json').fakeDbUri;
+const config = process.env.TEST_DB;
 const ModelHandler = require('../server/database/models/ourModels');
 const Event = require('../server/database/objectClasses/Event.js');
 const assert = require('assert');
@@ -276,7 +276,7 @@ describe('Event Update', () => {
         if (err) {
           console.log('unable to update');
         } else {
-          assert.equal(results.tags[0], 'NUS');
+          assert.equal(results.tags[0], 'nus');
         }
         done();
       });
