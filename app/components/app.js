@@ -63,7 +63,7 @@ class App extends React.Component {
       baseState.loginActive = 'active';
     } else if (this.props.location.pathname === Paths.event) {
       baseState.eventActive = 'active';
-    } else if (this.props.location.pathname === Paths.chat) {
+    } else if (this.props.location.pathname === Paths.chat_empty) {
       baseState.chatActive = 'active';
     } // Else base state is empty
 

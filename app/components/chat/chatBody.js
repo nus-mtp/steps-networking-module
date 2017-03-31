@@ -45,7 +45,7 @@ export default class ChatBody extends Component {
   retrieveAllMessages(senderEmail, recipientEmail) {
     //*
     this.props.sockets.emit('get message', { senderEmail, recipientEmail }, function(err, conversation) {
-      if (err) {
+      if (err||conversation===null||conversation.messages===undefined) {
         this.setState({[`${senderEmail}`]: [] });
       } else {
         this.setState({[`${senderEmail}`]: conversation.messages });
