@@ -6,12 +6,7 @@ const assert = require('assert');
 let ModelHandlerObj;
 describe('User Create', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     User.setDBConnection(ModelHandlerObj.getConnection());
 
@@ -106,12 +101,7 @@ describe('User Create', () => {
 
 describe('User Read', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     User.setDBConnection(ModelHandlerObj.getConnection());
 
@@ -176,12 +166,7 @@ describe('User Read', () => {
 
 describe('User Update', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-       config.username,
-       config.password,
-       config.host,
-       config.port,
-       config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     User.setDBConnection(ModelHandlerObj.getConnection());
 
@@ -408,12 +393,7 @@ describe('User Update', () => {
 
 describe('User Delete', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     User.setDBConnection(ModelHandlerObj.getConnection());
 

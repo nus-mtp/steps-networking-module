@@ -8,12 +8,7 @@ const assert = require('assert');
 let ModelHandlerObj;
 describe('Attendance Create', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Event.setDBConnection(ModelHandlerObj.getConnection());
     Exhibition.setDBConnection(ModelHandlerObj.getConnection());
@@ -153,12 +148,7 @@ describe('Attendance Create', () => {
 
 describe('Attendance Read', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Event.setDBConnection(ModelHandlerObj.getConnection());
     Exhibition.setDBConnection(ModelHandlerObj.getConnection());
@@ -293,12 +283,7 @@ describe('Attendance Read', () => {
 
 describe('Attendance Update', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Event.setDBConnection(ModelHandlerObj.getConnection());
     Exhibition.setDBConnection(ModelHandlerObj.getConnection());
@@ -377,12 +362,7 @@ describe('Attendance Update', () => {
 
 describe('Attendance Delete', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Event.setDBConnection(ModelHandlerObj.getConnection());
     Exhibition.setDBConnection(ModelHandlerObj.getConnection());

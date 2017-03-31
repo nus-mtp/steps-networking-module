@@ -6,12 +6,7 @@ const assert = require('assert');
 let ModelHandlerObj;
 describe('Exhibition Create', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Exhibition.setDBConnection(ModelHandlerObj.getConnection());
 
@@ -72,12 +67,7 @@ describe('Exhibition Create', () => {
 
 describe('Exhibition Read', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Exhibition.setDBConnection(ModelHandlerObj.getConnection());
 
@@ -209,12 +199,7 @@ describe('Exhibition Read', () => {
 
 describe('Exhibition Update', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Exhibition.setDBConnection(ModelHandlerObj.getConnection());
 
@@ -279,12 +264,7 @@ describe('Exhibition Update', () => {
 
 describe('Exhibition Delete', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Exhibition.setDBConnection(ModelHandlerObj.getConnection());
 

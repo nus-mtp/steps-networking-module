@@ -6,12 +6,7 @@ const assert = require('assert');
 let ModelHandlerObj;
 describe('Event Create', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Event.setDBConnection(ModelHandlerObj.getConnection());
 
@@ -97,12 +92,7 @@ describe('Event Create', () => {
 
 describe('Event Read', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Event.setDBConnection(ModelHandlerObj.getConnection());
 
@@ -217,12 +207,7 @@ describe('Event Read', () => {
 
 describe('Event Update', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Event.setDBConnection(ModelHandlerObj.getConnection());
     const testevent2 = new Event(
@@ -300,12 +285,7 @@ describe('Event Update', () => {
 
 describe('Event Delete', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Event.setDBConnection(ModelHandlerObj.getConnection());
 

@@ -7,12 +7,7 @@ const assert = require('assert');
 let ModelHandlerObj;
 describe('Comment Create', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Exhibition.setDBConnection(ModelHandlerObj.getConnection());
     Comment.setDBConnection(ModelHandlerObj.getConnection());
@@ -97,12 +92,7 @@ describe('Comment Create', () => {
 
 describe('Comment Read', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Exhibition.setDBConnection(ModelHandlerObj.getConnection());
     Comment.setDBConnection(ModelHandlerObj.getConnection());
@@ -179,12 +169,7 @@ describe('Comment Read', () => {
 
 describe('Comment Update', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Exhibition.setDBConnection(ModelHandlerObj.getConnection());
     Comment.setDBConnection(ModelHandlerObj.getConnection());

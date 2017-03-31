@@ -6,12 +6,7 @@ const assert = require('assert');
 let ModelHandlerObj;
 describe('Message Create', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Message.setDBConnection(ModelHandlerObj.getConnection());
 
@@ -65,12 +60,7 @@ describe('Message Create', () => {
 
 describe('Message Read', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Message.setDBConnection(ModelHandlerObj.getConnection());
 
@@ -169,12 +159,7 @@ describe('Message Read', () => {
 
 describe('Message Update', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithUri(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Message.setDBConnection(ModelHandlerObj.getConnection());
 
