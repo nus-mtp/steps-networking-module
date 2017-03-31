@@ -16,8 +16,7 @@ app.use('/tether', express.static(path.join(`${__dirname}/../node_modules/tether
 app.use('/jquery', express.static(path.join(`${__dirname}/../node_modules/jquery/dist`)));  // redirect jquery
 
 const db = require('./database/mongodbScripts/accessMongoDB').connect(
-    config[currentdb].username, config[currentdb].password, config[currentdb].host,
-    config[currentdb].port, config[currentdb].database, 30,
+    config[currentdb], 30,
     (err) => {
       if (err) {
         throw err;
@@ -67,4 +66,5 @@ const db = require('./database/mongodbScripts/accessMongoDB').connect(
         const listeningPort = process.env.PORT || port;
         console.log(`Running on ${listeningPort}`);
       });
-    });
+    }
+);
