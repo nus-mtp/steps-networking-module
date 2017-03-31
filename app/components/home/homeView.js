@@ -79,14 +79,14 @@ class HomeView extends React.Component {
   changeAttendance(event, attendance) {
     // modify attendance data here
     if (attendance) {
-      const newEvent = { name: event };
-      const newAttendance = this.state.attendance;
-      newAttendance.push(newEvent);
+      const attendanceObj = { attendanceKey: event.id  };
+      const allAttendance = this.state.attendance;
+      allAttendance.push(attendanceObj);
       this.setState({
-        attendance: newAttendance,
+        attendance: allAttendance,
       });
     } else {
-      const newAttendance = this.state.attendance.filter(attend => attend.name !== event);
+      const newAttendance = this.state.attendance.filter(attend => attend.attendanceKey !== event.id);
       this.setState({
         attendance: newAttendance,
       });
