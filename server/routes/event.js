@@ -15,7 +15,7 @@ router.get('/get/allEvents', (req = {}, res, next) => {
     if (err) {
       res.status(500).json('Unable to fetch data!');
       next();
-    } else if (eventObjs[0]) {
+    } else if (eventObjs && eventObjs[0]) {
       res.status(200).json(eventObjs.map(eventObj => extractEventInfo(eventObj)));
       next();
     } else {
@@ -49,7 +49,7 @@ router.get('/get/searchTag/:tag', (req = {}, res, next) => {
     if (err) {
       res.status(500).json('Unable to fetch data!');
       next();
-    } else if (eventObjs[0]) {
+    } else if (eventObjs && eventObjs[0]) {
       res.status(200).json(eventObjs.map(eventObj => extractEventInfo(eventObj)));
       next();
     } else {
@@ -113,7 +113,7 @@ router.post('/post/search/tags', (req = {}, res, next) => {
           console.log(err);
           res.status(500).json('Unable to post data!');
         }
-      } else if (events) {
+      } else if (events && events[0]) {
         res.status(200).json(events.map(event => extractEventInfo(event)));
       } else {
         res.status(204).json('Nothing found!');
