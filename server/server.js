@@ -5,7 +5,7 @@ const passport = require('passport');
 
 const app = express();
 const port = process.env.PORT || '3000';
-const db_config = process.env.PRODUCTION_DB_URI;
+const dbConfig = process.env.MONGODB_URI;
 
 app.use(express.static(path.join(__dirname, '/../dist')));
 app.use('/css', express.static(path.join(`${__dirname}/../node_modules/bootstrap/dist/css`)));  // redirect CSS bootstrap
@@ -14,7 +14,7 @@ app.use('/tether', express.static(path.join(`${__dirname}/../node_modules/tether
 app.use('/jquery', express.static(path.join(`${__dirname}/../node_modules/jquery/dist`)));  // redirect jquery
 
 const db = require('./database/mongodbScripts/accessMongoDB').connect(
-    db_config, 30,
+    dbConfig, 30,
     (err) => {
       if (err) {
         throw err;

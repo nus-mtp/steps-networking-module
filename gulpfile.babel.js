@@ -90,7 +90,7 @@ gulp.task('watch', () => {
 });
 
 gulp.task('buildServer', () => {
-  process.env.PRODUCTION_DB_URI = 'mongodb://localhost:27017/dev';
+  process.env.MONGODB_URI = 'mongodb://localhost:27017/dev';
   gulp.src('./server/server.js')
       .pipe(webpack(webpackServerConfig))
       .pipe(gulp.dest('./server/'));
