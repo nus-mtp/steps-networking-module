@@ -62,7 +62,7 @@ const routes = {
     },
     {
       path: Paths.search,
-      component: SearchView,
+      component: Search,
     },
   ],
 };
