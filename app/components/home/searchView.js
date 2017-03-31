@@ -12,6 +12,24 @@ class SearchView extends React.Component {
       errors: '',
     };
 
+    this.checkPath();
+  }
+
+  componentDidMount() {
+    const that = this;
+    window.addEventListener("hashchange", () => {
+      that.checkPath();
+    });
+  }
+
+  componentWillUnmount() {
+    const that = this;
+    window.removeEventListener("hashchange", () => {
+      that.checkPath();
+    });
+  }
+
+  checkPath() {
     let pathname = this.props.location.pathname;
     const tags = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
     pathname = pathname.slice(0, pathname.lastIndexOf('/'));
@@ -34,7 +52,6 @@ class SearchView extends React.Component {
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
         // success
-        console.log(xhr.response);
 
         // change the component-container state
         this.setState({
@@ -49,7 +66,6 @@ class SearchView extends React.Component {
           searchResults: [],
           errors: 'Not found!'
         });
-        console.log(xhr.response);
       }
     });
     xhr.send(`tags=${formData}`);
@@ -63,7 +79,6 @@ class SearchView extends React.Component {
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
         // success
-        console.log(xhr.response);
 
         // change the component-container state
         this.setState({
@@ -78,7 +93,6 @@ class SearchView extends React.Component {
           searchResults: [],
           errors: 'Not found!'
         });
-          console.log(xhr.response);
       }
     });
     xhr.send(`userSkills=${formData}`);
@@ -90,40 +104,43 @@ class SearchView extends React.Component {
 
   render() {
     let render = <div />;
-    console.log(this.state.errors);
 
     if (this.state.searchResults) {
       if (this.state.searchCategory === 'exhibition') {
         render = this.state.searchResults.map(result =>
-          <div id="search-result" className="card" key={result.id}>
-            <img className="card-img-top card-image align-self-center" src={result.poster} onError={this.addDefaultSrc} alt="poster" />
-            <div className="card-block">
-              <h4 className="card-title">{result.exhibitionName}</h4>
-              <div className="card-text">Event: {result.eventName}</div>
-              <div className="card-text">Tags:
-                {
-                  result.tags.map(tag =>
-                    <span className="badge badge-pill badge-success" key={tag}>{tag}</span>
-                )}
+          <Link to={`/exhibition/${result.exhibitionName}`} key={result.id}>
+            <div id="search-result" className="card">
+              <img className="card-img-top card-image align-self-center" src={result.poster} onError={this.addDefaultSrc} alt="poster" />
+              <div className="card-block">
+                <h4 className="card-title">{result.exhibitionName}</h4>
+                <div className="card-text">Event: {result.eventName}</div>
+                <div className="card-text">Tags:
+                  {
+                    result.tags.map(tag =>
+                      <span className="badge badge-pill badge-success" key={tag}>{tag}</span>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          </Link>
         );
       } else if (this.state.searchCategory === 'user') {
         render = this.state.searchResults.map(result =>
-          <div id="search-result" className="card" key={result.id}>
-            <img className="card-img-top card-image align-self-center" src={result.userProfilePicture} onError={this.addDefaultSrc} alt="profile picture" />
-            <div className="card-block">
-              <h4 className="card-title">{result.userName}</h4>
-              <div className="card-text">Email: {result.userEmail}</div>
-              <div className="card-text">Skills:
-                {
-                  result.userSkills.map(skill =>
-                    <span className="badge badge-pill badge-success" key={skill}>{skill}</span>
-                )}
+          <Link to={`/user/${result.userEmail}`} key={result.id}>
+            <div id="search-result" className="card">
+              <img className="card-img-top card-image align-self-center" src={result.userProfilePicture} onError={this.addDefaultSrc} alt="profile picture" />
+              <div className="card-block">
+                <h4 className="card-title">{result.userName}</h4>
+                <div className="card-text">Email: {result.userEmail}</div>
+                <div className="card-text">Skills:
+                  {
+                    result.userSkills.map(skill =>
+                      <span className="badge badge-pill badge-success" key={skill}>{skill}</span>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          </Link>
         );
       }
     }
@@ -134,7 +151,7 @@ class SearchView extends React.Component {
         {
           (this.state.errors) ? this.state.errors : <div />
         }
-        <div className="d-flex flex-row flex-wrap justify-content-around">
+        <div className="d-flex flex-row flex-wrap justify-content-center">
           {render}
         </div>
       </div>
