@@ -6,7 +6,7 @@ const assert = require('assert');
 let ModelHandlerObj;
 describe('Event Create', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,
@@ -97,7 +97,7 @@ describe('Event Create', () => {
 
 describe('Event Read', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,
@@ -217,7 +217,7 @@ describe('Event Read', () => {
 
 describe('Event Update', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,
@@ -300,7 +300,7 @@ describe('Event Update', () => {
 
 describe('Event Delete', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,

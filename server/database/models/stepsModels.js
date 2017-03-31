@@ -45,7 +45,7 @@ class StepsModelHandler {
    * @param {String} mongoURI: The string representing MongoDB connection information.
    * @returns {StepsModelHandler}: This instance.
    */
-  initWithParameters(mongoURI) {
+  initWithUri(mongoURI) {
     this.db = mongoDBConnector.connect(mongoURI);
     this.UserModel = this
       .db

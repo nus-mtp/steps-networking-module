@@ -6,7 +6,7 @@ const assert = require('assert');
 let ModelHandlerObj;
 describe('Message Create', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,
@@ -65,7 +65,7 @@ describe('Message Create', () => {
 
 describe('Message Read', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,
@@ -169,7 +169,7 @@ describe('Message Read', () => {
 
 describe('Message Update', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,

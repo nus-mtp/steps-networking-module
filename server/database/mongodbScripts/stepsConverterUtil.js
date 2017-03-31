@@ -14,10 +14,7 @@ const ModelHandler = require('../models/ourModels');
 const StepsModelHandler = require('../models/stepsModels');
 
 const Models = new ModelHandler()
-    .initWithParameters(
-        dest.username, dest.password,
-        dest.host, dest.port,
-        dest.database);
+    .initWithUri(dest);
 
 module.exports.Models = Models;
 
@@ -27,10 +24,7 @@ const Exhibition = Models.getExhibitionModel();
 const Attendance = Models.getAttendanceModel();
 
 const StepsModels = new StepsModelHandler()
-    .initWithParameters(
-        src.username, src.password,
-        src.host, src.port,
-        src.database);
+    .initWithUri(src);
 
 module.exports.StepsModels = StepsModels;
 

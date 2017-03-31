@@ -6,7 +6,7 @@ const assert = require('assert');
 let ModelHandlerObj;
 describe('User Create', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,
@@ -106,7 +106,7 @@ describe('User Create', () => {
 
 describe('User Read', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,
@@ -176,7 +176,7 @@ describe('User Read', () => {
 
 describe('User Update', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
        config.username,
        config.password,
        config.host,
@@ -408,7 +408,7 @@ describe('User Update', () => {
 
 describe('User Delete', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,

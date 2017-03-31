@@ -8,7 +8,7 @@ const assert = require('assert');
 let ModelHandlerObj;
 describe('Attendance Create', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,
@@ -153,7 +153,7 @@ describe('Attendance Create', () => {
 
 describe('Attendance Read', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,
@@ -293,7 +293,7 @@ describe('Attendance Read', () => {
 
 describe('Attendance Update', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,
@@ -377,7 +377,7 @@ describe('Attendance Update', () => {
 
 describe('Attendance Delete', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,

@@ -23,7 +23,7 @@ module.exports = (req, res, next) => {
 
     const userId = decoded.sub;
 
-    const ModelHandlerObj = new ModelHandler().initWithParameters(
+    const ModelHandlerObj = new ModelHandler().initWithUri(
         [currentdb].username,
         config[currentdb].password,
         config[currentdb].host,

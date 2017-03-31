@@ -7,7 +7,7 @@ const assert = require('assert');
 let ModelHandlerObj;
 describe('Comment Create', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,
@@ -97,7 +97,7 @@ describe('Comment Create', () => {
 
 describe('Comment Read', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,
@@ -179,7 +179,7 @@ describe('Comment Read', () => {
 
 describe('Comment Update', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,

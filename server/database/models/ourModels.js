@@ -53,7 +53,7 @@ class ModelHandler {
    * @param {String} mongoURI: The string representing MongoDB connection information.
    * @returns {ModelHandler}: This instance.
    */
-  initWithParameters(mongoURI) {
+  initWithUri(mongoURI) {
     this.db = mongoDBConnector.connect(mongoURI);
     this.UserModel = this
       .db

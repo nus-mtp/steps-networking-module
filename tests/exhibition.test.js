@@ -6,7 +6,7 @@ const assert = require('assert');
 let ModelHandlerObj;
 describe('Exhibition Create', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,
@@ -72,7 +72,7 @@ describe('Exhibition Create', () => {
 
 describe('Exhibition Read', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,
@@ -209,7 +209,7 @@ describe('Exhibition Read', () => {
 
 describe('Exhibition Update', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,
@@ -279,7 +279,7 @@ describe('Exhibition Update', () => {
 
 describe('Exhibition Delete', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
+    ModelHandlerObj = new ModelHandler().initWithUri(
         config.username,
         config.password,
         config.host,
