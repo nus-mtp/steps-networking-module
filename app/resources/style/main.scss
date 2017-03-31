@@ -1,6 +1,9 @@
 @import '/css/bootstrap.min.css';
+@import url('https://fonts.googleapis.com/css?family=Quicksand');
 
 #root {
+  font-family: 'Quicksand', sans-serif;
+
   @import 'header';
   @import 'body';
   @import 'chat';

@@ -1,10 +1,6 @@
 @import 'mixin';
 
-$font-family: Quicksand;
-$font-file: '../fonts/Quicksand-Regular';
-
 #app-body {
-  @include font-face($font-family, $font-file, normal, normal);
   position: relative;
   margin-top: 10px;
   display: flex;
