@@ -41,7 +41,7 @@ router.get('/get/chat/:email', (req = {}, res, next) => {
       if (err) {
         res.status(500).json('Unable to process data!');
         next();
-      } else if (bUsers) {
+      } else if (bUsers && bUsers.length > 0) {
         res.status(200).json(bUsers.map(bUser => extractUserInfo(bUser)));
         next();
       } else {
@@ -298,7 +298,7 @@ router.post('/post/search/skills', (req = {}, res, next) => {
           console.log(err);
           res.status(500).json('Unable to post data!');
         }
-      } else if (users) {
+      } else if (users && users.length > 0) {
         res.status(200).json(users.map(user => extractUserInfo(user)));
       } else {
         res.status(204).json('Nothing found!');
