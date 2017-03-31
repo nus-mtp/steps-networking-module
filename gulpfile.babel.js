@@ -10,6 +10,7 @@ const webpack = require('webpack-stream');
 
 const webpackConfig = require('./webpack.client.config.js');
 const webpackServerConfig = require('./webpack.server.config.js');
+
 const rootDir = './dist';
 
 require('babel-register');
