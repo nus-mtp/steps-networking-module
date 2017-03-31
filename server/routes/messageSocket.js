@@ -19,7 +19,7 @@ exports = module.exports = function(io, db) {
           socketIDs[userObject.userEmail].push(socket.id);
           userEmails[socket.id] = userObject.userEmail;
         }
-        //console.log(socket.id +' is connected');
+        console.log(userObject.userEmail + ' ' + socket.id +' is connected');
         callback(socket.id);
       }
     });
@@ -49,9 +49,10 @@ exports = module.exports = function(io, db) {
             } else if (results) {
               const socketIdList = socketIDs[messageObj.recipientEmail];
               if (socketIdList) {
-                for (let socketId in socketIdList) {
+                socketIdList.forEach(function(socketId) {
+                  console.log('Emitted refresh message ' + messageObj.recipientEmail + ' ' + socketId);
                   socket.to(socketId).emit('refresh message', results);
-                }
+                });
               }
               callback(true);
             } else {
@@ -66,9 +67,10 @@ exports = module.exports = function(io, db) {
                   callback(false);
                 } else {
                   if (socketIdList) {
-                    for (let socketId in socketIdList) {
+                    socketIdList.forEach(function(socketId) {
+                      console.log('Emitted new message to ' + messageObj.recipientEmail + ' ' + socketId);
                       socket.to(socketId).emit('refresh message', results);
-                    }
+                    });
                   }
                   callback(true);
                 }
