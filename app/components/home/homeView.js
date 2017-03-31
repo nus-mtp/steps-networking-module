@@ -18,6 +18,7 @@ class HomeView extends React.Component {
       attendance: [],
       todayDate: nowDate,
       currentTab: 'ongoing',
+      email: userEmail.replace(/%40/i, '@'),
     };
 
     this.initializeStates();
@@ -36,17 +37,27 @@ class HomeView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      const nowTime = this.state.todayDate.getTime();
-      const copy = xhr.response;
-      const remainder = copy.filter((event) => {
-        if (nowTime > this.formatMilli(event.start_date) && nowTime < this.formatMilli(event.end_date))
-          return event;
-      });
-      this.setState({
-        events: xhr.response,
-        displayedEvents: remainder,
-        open: this.createFalseArray(remainder.length),
-      });
+      console.log('initialize state success');
+      if (xhr.status === 200) {
+        const nowTime = this.state.todayDate.getTime();
+        const copy = xhr.response;
+        const remainder = copy.filter((event) => {
+          if (nowTime > this.formatMilli(event.start_date) && nowTime < this.formatMilli(event.end_date))
+            return event;
+        });
+        this.setState({
+          events: xhr.response,
+          displayedEvents: remainder,
+          open: this.createFalseArray(remainder.length),
+        });
+      } else {
+        console.log('initialize state fail');
+        this.setState({
+          events: [],
+          displayedEvents: [],
+          open: [],
+        });
+      }
     });
     xhr.send();
   }
@@ -57,7 +68,13 @@ class HomeView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      this.setState({ attendance: xhr.response });
+      if (xhr.status === 200) {
+        console.log('get attendance success');
+        this.setState({ attendance: xhr.response });
+      } else {
+        console.log('get attendance fail');
+        this.setState({ attendance: [] });
+      }
     });
     xhr.send();
   }
@@ -78,6 +95,22 @@ class HomeView extends React.Component {
 
   changeAttendance(event, attendance) {
     // modify attendance data here
+    const userEmail = encodeURIComponent(this.state.email);
+    const eventName = encodeURIComponent(event.name);
+    const formData = `userEmail=${userEmail}&eventName=${eventName}`;
+    const xhr = new XMLHttpRequest();
+    xhr.open('post', `attendance/post/oneEventAttendance/`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        console.log('change attendance success');
+      } else {
+        console.log('change attendance fail');
+      }
+    });
+    xhr.send(formData);
+
     if (attendance) {
       const attendanceObj = { attendanceKey: event.id  };
       const allAttendance = this.state.attendance;
