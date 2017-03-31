@@ -14,7 +14,7 @@ app.use('/tether', express.static(path.join(`${__dirname}/../node_modules/tether
 app.use('/jquery', express.static(path.join(`${__dirname}/../node_modules/jquery/dist`)));  // redirect jquery
 
 const db = require('./database/mongodbScripts/accessMongoDB').connect(
-    dbConfig, 30,
+    dbConfig, 128,
     (err) => {
       if (err) {
         throw err;
