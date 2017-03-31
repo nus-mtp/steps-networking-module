@@ -137,7 +137,8 @@ class App extends React.Component {
   }
 
   handleSearch(term) {
-    let searchUrl = term || this.state.search;
+    console.log(this.state.search + '....' + term);
+    let searchUrl = (typeof term === 'string') ? term : this.state.search.replace(/ /g, ",");
 
     if (this.state.searchFilter === 'Event') {
       this.context.router.push(`/event/${searchUrl}`);
@@ -149,11 +150,15 @@ class App extends React.Component {
         }
       });
       this.context.router.push(`/exhibition/${eventName}/${searchUrl}`);
+    } else if (this.state.searchFilter === 'Skills') {
+      this.context.router.push(`/search/user/${searchUrl}`);
+    } else if (this.state.searchFilter === 'Tags') {
+      this.context.router.push(`/search/exhibition/${searchUrl}`);
     }
 
     this.setState({
       searchResults: [],
-      search: searchUrl,
+      search: '',
     });
   }
 
@@ -191,7 +196,7 @@ class App extends React.Component {
                 <img id="search-icon" src="../resources/images/search-icon.svg" alt="chat-icon" />
               </button>
             </form>
-            <ul id="search-results" className="list-group">
+            <ul id="search-results" className="list-group hidden-md-down">
               {
                 (this.state.searchResults) ?
                   this.state.searchResults.map(term =>

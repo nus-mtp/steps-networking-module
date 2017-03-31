@@ -1,0 +1,32 @@
+#search-body {
+  margin: 20px;
+
+  #search-result {
+    width: 180px;
+    margin: 5px;
+    background: white;
+    border: none;
+  }
+
+  .card-block {
+    background: white;
+    padding: 10px;
+  }
+
+  .card-title {
+    font-size: 18px;
+    margin: 5px;
+  }
+
+  .card-text {
+    font-size: 16px;
+    color: grey;
+  }
+
+  .card-image {
+    max-width: 180px;
+    max-height: 250px;
+    min-height: 250px;
+    border-radius: 0;
+  }
+}

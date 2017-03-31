@@ -19,14 +19,7 @@ class ExhibitionView extends React.Component {
       attendance: {},
     };
 
-    let pathname = this.props.location.pathname;
-    const exhibitionName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
-
-    pathname = pathname.slice(0, pathname.lastIndexOf('/'));
-    const eventName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
-
-    this.getExhibition(eventName, exhibitionName);
-    this.getAttendance(eventName, exhibitionName);
+    this.retrieveData();
 
     this.editComment = this.editComment.bind(this);
     this.submitComment = this.submitComment.bind(this);
@@ -36,6 +29,31 @@ class ExhibitionView extends React.Component {
     this.handleAddMedia = this.handleAddMedia.bind(this);
     this.handleTagInputChange = this.handleTagInputChange.bind(this);
     this.handleMediaInputChange = this.handleMediaInputChange.bind(this);
+  }
+
+  componentDidMount() {
+    const that = this;
+    window.addEventListener("hashchange", () => {
+      that.retrieveData();
+    });
+  }
+
+  componentWillUnmount() {
+    const that = this;
+    window.removeEventListener("hashchange", () => {
+      that.retrieveData();
+    });
+  }
+
+  retrieveData() {
+    let pathname = this.props.location.pathname;
+    const exhibitionName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
+    pathname = pathname.slice(0, pathname.lastIndexOf('/'));
+    const eventName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
+    this.getExhibition(eventName, exhibitionName);
+    this.getAttendance(eventName, exhibitionName);
   }
 
   getExhibition(event, exhibition) {
