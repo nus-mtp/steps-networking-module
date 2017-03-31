@@ -62,9 +62,15 @@ const db = require('./database/mongodbScripts/accessMongoDB').connect(
       app.use('/comment', commentRoutes);
       app.use('/message', messageRoutes);
 
-      app.listen(process.env.PORT || port, () => {
-        const listeningPort = process.env.PORT || port;
-        console.log(`Running on ${listeningPort}`);
+      const server = require('http').createServer(app);
+      const io = require('socket.io').listen(server);
+      const port = process.env.PORT || '3000';
+
+      app.set('port', port);
+      server.listen(app.get('port'), () => {
+        console.log(`Running on ${app.get('port')}`);
       });
-    }
+
+      require('./routes/messageSocket')(io, db);
+    },
 );

@@ -77,7 +77,7 @@ class App extends React.Component {
       baseState.loginActive = 'active';
     } else if (this.props.location.pathname === Paths.event) {
       baseState.eventActive = 'active';
-    } else if (this.props.location.pathname === Paths.chat) {
+    } else if (this.props.location.pathname === Paths.chat_empty) {
       baseState.chatActive = 'active';
     } // Else base state is empty
 
@@ -214,7 +214,7 @@ class App extends React.Component {
               </li>
               <li className="nav-item">
                 { Auth.isUserAuthenticated() ?
-                  <Link onClick={this.removeDropdown.bind(this)} className={`navbar-buttons ${this.state.chatActive}`} to={Paths.chat}>Chat</Link> :
+                  <Link onClick={this.removeDropdown.bind(this)} className={`navbar-buttons ${this.state.chatActive}`} to={Paths.chat_empty}>Chat</Link> :
                   <Link></Link>
 
                 }

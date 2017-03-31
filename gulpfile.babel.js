@@ -20,7 +20,7 @@ gulp.task('lint', () =>
   gulp.src(['./app/**/*.js', '!node_modules/**', '!./app/resources/**/*.js'])
     .pipe(eslint())
     .pipe(eslint.formatEach())
-    .pipe(eslint.failAfterError())
+    .pipe(eslint.failAfterError()),
 );
 
 /** run test **/
@@ -31,7 +31,7 @@ gulp.task('test', () =>
     }))
     .pipe(mocha({
       reporter: 'Spec',
-    }))
+    })),
 );
 
 /** minimizing files and bundling **/
@@ -43,29 +43,29 @@ gulp.task('css', () =>
         errLogToConsole: true,
       }))
     .pipe(csso())
-    .pipe(gulp.dest(`${rootDir}/resources/style/`))
+    .pipe(gulp.dest(`${rootDir}/resources/style/`)),
 );
 
 gulp.task('html', () =>
   gulp.src('./app/*.html')
-    .pipe(gulp.dest(rootDir))
+    .pipe(gulp.dest(rootDir)),
 );
 
 gulp.task('image', () =>
   gulp.src('./app/resources/images/*.+(png|jpg|svg)')
     .pipe(imagemin())
-    .pipe(gulp.dest(`${rootDir}/resources/images/`))
+    .pipe(gulp.dest(`${rootDir}/resources/images/`)),
 );
 
 gulp.task('bundle', () =>
   gulp.src('./app/main.js')
     .pipe(webpack(webpackConfig))
-    .pipe(gulp.dest(rootDir))
+    .pipe(gulp.dest(rootDir)),
 );
 
 gulp.task('fonts', () =>
   gulp.src('./app/resources/fonts/*.+(otf|ttf|eof|ttc|woff)')
-    .pipe(gulp.dest(`${rootDir}/resources/fonts/`))
+    .pipe(gulp.dest(`${rootDir}/resources/fonts/`)),
 );
 
 /** watch file changes **/
@@ -78,7 +78,7 @@ gulp.task('watch', () => {
 gulp.task('buildServer', () =>
   gulp.src('./server/server.js')
     .pipe(webpack(webpackServerConfig))
-    .pipe(gulp.dest('./server/'))
+    .pipe(gulp.dest('./server/')),
 );
 
 gulp.task('buildClient', ['css', 'html', 'image', 'bundle']);
