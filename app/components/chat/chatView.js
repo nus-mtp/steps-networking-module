@@ -26,17 +26,26 @@ export default class ChatView extends Component {
 
     this.query = 'screen and (min-width: ' + this.state.minWidth + ')';
     this.widthOfChatTabs = '25%';
+    this.socketId = null;
+  }
+  
+  componentDidUpdate() {
+    if (!this.socketId) {
+      sockets.on('new', function(socket) {
+        console.log(email);
+        sockets.emit('new user', {userEmail: email}, function(socketId) {
+          this.socketId = socketId;
+        }.bind(this));
+      }.bind(this));
+    }
+    ChatBody.scrollToBottom();
+    this.textInput.focus();
   }
   
   componentWillMount() {
     if(Auth.isUserAuthenticated) {
       let email = Auth.getToken().email;
       email = email.replace(/%40/gi, '@');
-      
-      sockets.on('new', function(socket) {
-        console.log(email);
-        sockets.emit('new user', {userEmail: email});
-      });
       
       this.setState({ email });
       this.getAllUsers(email);

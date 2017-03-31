@@ -12,11 +12,13 @@ exports = module.exports = function(io, db) {
     
     socket.on('new user', (userObject, callback) => {
       if (userObject.userEmail) {
-        if (socketIDs[userObject.userEmail]===null) {
-          socketIDs[userObject.userEmail] = [];
+        if (userEmails[socket.id]===undefined) {
+          if (socketIDs[userObject.userEmail]===undefined) {
+            socketIDs[userObject.userEmail] = [];
+          }
+          socketIDs[userObject.userEmail].push(socket.id);
+          userEmails[socket.id] = userObject.userEmail;
         }
-        socketIDs[userObject.userEmail].push(socket.id);
-        userEmails[socket.id] = userObject.userEmail;
         //console.log(socket.id +' is connected');
         callback(socket.id);
       }
