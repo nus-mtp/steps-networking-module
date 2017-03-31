@@ -51,7 +51,7 @@ router.get('/get/oneUserAttendances/:email', (req = {}, res, next) => {
       if (err) {
         res.status(500).json('Unable to fetch data!');
         next();
-      } else if (attendances) {
+      } else if (attendances && attendances.length > 0) {
         res.status(200).json(attendances.map(attendance => extractAttendanceInfo(attendance)));
         next();
       } else {
@@ -77,7 +77,7 @@ router.get('/get/oneUserEventsAndExhibitions/:email', (req = {}, res, next) => {
       if (err) {
         res.status(500).json('Unable to fetch data!');
         next();
-      } else if (attendances) {
+      } else if (attendances && attendances.length > 0) {
         async.mapLimit(attendances, 5,
                     (attendance, callback) => {
                         // Limit number of concurrent connections made by this request to 5
@@ -113,8 +113,14 @@ router.get('/get/oneUserEventsAndExhibitions/:email', (req = {}, res, next) => {
                         res.status(500).json('Unable to process data!');
                         next();
                       } else {
-                        res.status(200).json(results.filter(item => (item !== null)));
-                        next();
+                        const finalizedResults = results.filter(item => (item !== null));
+                        if (finalizedResults && finalizedResults.length > 0) {
+                          res.status(200).json(finalizedResults);
+                          next();
+                        } else {
+                          res.status(204).json('Nothing found!');
+                          next();
+                        }
                       }
                     });
       } else {
@@ -140,7 +146,7 @@ router.get('/get/oneUserEvents/:email', (req = {}, res, next) => {
       if (err) {
         res.status(500).json('Unable to fetch data!');
         next();
-      } else if (attendances) {
+      } else if (attendances && attendances.length > 0) {
         async.mapLimit(attendances, 5,
                     (attendance, callback) => {
                         // Limit number of concurrent connections made by this request to 5
@@ -168,8 +174,14 @@ router.get('/get/oneUserEvents/:email', (req = {}, res, next) => {
                         res.status(500).json('Unable to process data!');
                         next();
                       } else {
-                        res.status(200).json(results.filter(item => (item !== null)));
-                        next();
+                        const finalizedResults = results.filter(item => (item !== null));
+                        if (finalizedResults && finalizedResults.length > 0) {
+                          res.status(200).json(finalizedResults);
+                          next();
+                        } else {
+                          res.status(204).json('Nothing found!');
+                          next();
+                        }
                       }
                     });
       } else {
@@ -195,7 +207,7 @@ router.get('/get/oneUserExhibitionsInEvent/:email/:eventName', (req = {}, res, n
       if (err) {
         res.status(500).json('Unable to fetch data!');
         next();
-      } else if (attendances) {
+      } else if (attendances && attendances.length > 0) {
         async.mapLimit(attendances, 5,
                     (attendance, callback) => {
                         // Limit number of concurrent connections made by this request to 5
@@ -225,8 +237,14 @@ router.get('/get/oneUserExhibitionsInEvent/:email/:eventName', (req = {}, res, n
                         res.status(500).json('Unable to process data!');
                         next();
                       } else {
-                        res.status(200).json(results.filter(item => (item !== null)));
-                        next();
+                        const finalizedResults = results.filter(item => (item !== null));
+                        if (finalizedResults && finalizedResults.length > 0) {
+                          res.status(200).json(finalizedResults);
+                          next();
+                        } else {
+                          res.status(204).json('Nothing found!');
+                          next();
+                        }
                       }
                     });
       } else {
@@ -253,7 +271,7 @@ router.get('/get/oneActivityAttendees/:id', (req = {}, res, next) => {
       if (err) {
         res.status(500).json('Unable to process data!');
         next();
-      } else if (attendances) {
+      } else if (attendances && attendances.length > 0) {
         async.mapLimit(attendances, 5,
                     (attendance, callback) => {
                       if (attendance) {
@@ -275,12 +293,18 @@ router.get('/get/oneActivityAttendees/:id', (req = {}, res, next) => {
                         res.status(500).json('Unable to process data!');
                         next();
                       } else {
-                        res.status(200).json(results.filter(item => (item !== null)));
-                        next();
+                        const finalizedResults = results.filter(item => (item !== null));
+                        if (finalizedResults && finalizedResults.length > 0) {
+                          res.status(200).json(finalizedResults);
+                          next();
+                        } else {
+                          res.status(204).json('Nothing found!');
+                          next();
+                        }
                       }
                     });
       } else {
-        res.status(204).json();
+        res.status(204).json('Nothing found!');
         next();
       }
     });
@@ -307,7 +331,7 @@ router.get('/get/oneEventAttendees/:eventName', (req = {}, res, next) => {
           if (err) {
             res.status(500).json('Unable to fetch data!');
             next();
-          } else if (attendances) {
+          } else if (attendances && attendances.length > 0) {
             async.mapLimit(attendances, 5,
                 (attendance, callback) => {
                   User.getUser(attendance.user_email, (err, user) => {
@@ -323,8 +347,14 @@ router.get('/get/oneEventAttendees/:eventName', (req = {}, res, next) => {
                     res.status(500).json('Unable to process data!');
                     next();
                   } else {
-                    res.status(200).json(results.filter(item => (item !== null)));
-                    next();
+                    const finalizedResults = results.filter(item => (item !== null));
+                    if (finalizedResults && finalizedResults.length > 0) {
+                      res.status(200).json(finalizedResults);
+                      next();
+                    } else {
+                      res.status(204).json('Nothing found!');
+                      next();
+                    }
                   }
                 });
           } else {
@@ -360,7 +390,7 @@ router.get('/get/oneExhibitionExhibitors/:eventName/:exhibitionName', (req = {},
           if (err) {
             res.status(500).json('Unable to fetch data!');
             next();
-          } else if (attendances) {
+          } else if (attendances && attendances.length > 0) {
             async.mapLimit(attendances, 5,
                             (attendance, callback) => {
                               // Limit number of concurrent connections made by this request to 5
@@ -377,8 +407,14 @@ router.get('/get/oneExhibitionExhibitors/:eventName/:exhibitionName', (req = {},
                                 res.status(500).json('Unable to process data!');
                                 next();
                               } else {
-                                res.status(200).json(results.filter(item => (item !== null)));
-                                next();
+                                const finalizedResults = results.filter(item => (item !== null));
+                                if (finalizedResults && finalizedResults.length > 0) {
+                                  res.status(200).json(finalizedResults);
+                                  next();
+                                } else {
+                                  res.status(204).json('Nothing found!');
+                                  next();
+                                }
                               }
                             });
           } else {
@@ -416,7 +452,7 @@ router.get('/get/oneEventExhibitors/:id', (req = {}, res, next) => {
           if (err) {
             res.status(500).json('Unable to fetch data!');
             next();
-          } else if (exhibitions) {
+          } else if (exhibitions && exhibitions.length > 0) {
             async.mapLimit(exhibitions, 5,
                   (exhibition, callback) => {
                     if (exhibition) {
@@ -458,8 +494,14 @@ router.get('/get/oneEventExhibitors/:id', (req = {}, res, next) => {
                               res.status(500).json('Unable to process data!');
                               next();
                             } else {
-                              res.status(200).json(results.filter(item => (item !== null)));
-                              next();
+                              const finalizedResults = results.filter(item => (item !== null));
+                              if (finalizedResults && finalizedResults.length > 0) {
+                                res.status(200).json(finalizedResults);
+                                next();
+                              } else {
+                                res.status(204).json('Nothing found!');
+                                next();
+                              }
                             }
                           },
                       );
@@ -499,7 +541,7 @@ router.post('/post/search/oneEventAttendancesWithReason/', (req = {}, res, next)
                       if (err) {
                         res.status(500).json('Unable to process data!');
                         next();
-                      } else if (attendances) {
+                      } else if (attendances && attendances.length > 0) {
                         async.mapLimit(attendances, 5,
                                 (attendance, callback) => {
                                   User.getUser(attendance.user_email, (err, user) => {
@@ -515,8 +557,15 @@ router.post('/post/search/oneEventAttendancesWithReason/', (req = {}, res, next)
                                     res.status(500).json('Unable to process data!');
                                     next();
                                   } else {
-                                    res.status(200).json(results.filter(item => (item !== null)));
-                                    next();
+                                    const finalizedResults =
+                                      results.filter(item => (item !== null));
+                                    if (finalizedResults && finalizedResults.length > 0) {
+                                      res.status(200).json(finalizedResults);
+                                      next();
+                                    } else {
+                                      res.status(204).json('Nothing found!');
+                                      next();
+                                    }
                                   }
                                 });
                       } else {
@@ -631,7 +680,7 @@ router.post('/post/search/activity/reasons', (req = {}, res, next) => {
           console.log(err);
           res.status(500).json('Unable to post data!');
         }
-      } else if (attendances) {
+      } else if (attendances && attendances.length > 0) {
         async.mapLimit(attendances, 5,
           (attendance, callback) => {
             User.getUser(attendance.user_email, (err, user) => {
@@ -647,8 +696,14 @@ router.post('/post/search/activity/reasons', (req = {}, res, next) => {
               res.status(500).json('Unable to process data!');
               next();
             } else {
-              res.status(200).json(results.filter(item => (item !== null)));
-              next();
+              const finalizedResults = results.filter(item => (item !== null));
+              if (finalizedResults && finalizedResults.length > 0) {
+                res.status(200).json(finalizedResults);
+                next();
+              } else {
+                res.status(204).json('Nothing found!');
+                next();
+              }
             }
           });
       } else {
