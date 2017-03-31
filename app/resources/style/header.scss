@@ -13,20 +13,47 @@
     box-shadow: none;
   }
 
-  #search-input {
-    border-radius: 10px 0 0 10px;
-    font-size: 16px;
-    margin: 0;
+  #search-results {
+    overflow: auto;
+    max-height: 300px;
+
+    .list-group-item {
+      display: block;
+      padding: 10px;
+    }
   }
 
   #search-container {
     margin-bottom: 5px;
-  }
 
-  #search-submit {
-    border-radius: 0 10px 10px 0;
-    font-size: 16px;
-    padding: 10px;
+    .dropdown {
+      padding: 0;
+    }
+
+    .dropdown-item {
+      font-size: 14px;
+    }
+
+    #search-input {
+      border-radius: 0;
+      font-size: 16px;
+      margin: 0;
+    }
+
+    #search-filter {
+      font-size: 14px;
+      width: 100%;
+      min-height: 100%;
+      border-radius: 10px 0px 0 10px;
+      padding: 10px;
+    }
+
+    #search-submit {
+      border-radius: 0 10px 10px 0;
+      font-size: 16px;
+      padding: 10px;
+      max-height: 41px;
+    }
   }
 
   #login, #signin, #logout, .navbar-buttons {

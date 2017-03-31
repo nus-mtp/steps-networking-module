@@ -153,9 +153,32 @@ class Exhibition {
    */
   static searchExhibitionsByTag(tag, callback) {
     if (Exhibition.checkConnection()) {
-      Exhibition.ExhibitionModel.find({ tags: { $regex: new RegExp(tag.trim().toLowerCase().replace('+', '\\+'), 'i') } }, (err, matchedExhibitions) => {
-        callback(err, matchedExhibitions);
-      });
+      const refinedTag = tag.trim().toLowerCase()
+      Exhibition.ExhibitionModel.find(
+        { tags: { $elemMatch: { $eq: refinedTag } } },
+        (err, matchedExhibitions) => {
+          callback(err, matchedExhibitions);
+        },
+      );
+    } else {
+      callback('Not Connected!', null);
+    }
+  }
+
+  /**
+   * Retrieve all Exhibitions tagged with the specified tags.
+   *
+   * @param {Array} tags: The tags to check each Exhibition for.
+   * @param {function} callback: A function that is executed once the operation is done.
+   */
+  static searchExhibitionsByTags(tags, callback) {
+    if (Exhibition.checkConnection()) {
+      const refinedTags = tags.map(tag => tag.trim().toLowerCase());
+      Exhibition.ExhibitionModel.find(
+        { tags: { $all: refinedTags } },
+        (err, matchedExhibitions) => {
+          callback(err, matchedExhibitions);
+        });
     } else {
       callback('Not Connected!', null);
     }
