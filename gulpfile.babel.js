@@ -41,8 +41,8 @@ const activeStepsConverterFunction = require('./server/database/mongodbScripts/a
 const fullStepsConverterFunction = require('./server/database/mongodbScripts/fullStepsConverterScript');
 
 gulp.task('set-convert-dbs', () => {
-  process.env.SRC_DB = 'mongodb://localhost:27017/steps-api-sanitised';
-  process.env.DEST_DB = 'mongodb://localhost:27017/dev';
+  process.env.SRC_DB_URI = 'mongodb://localhost:27017/steps-api-sanitised';
+  process.env.DEST_DB_URI = 'mongodb://localhost:27017/dev';
 });
 
 gulp.task('active-convert', ['set-convert-dbs'], activeStepsConverterFunction);

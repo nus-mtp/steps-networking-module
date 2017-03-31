@@ -4,8 +4,8 @@
  */
 const async = require('async');
 
-const src = process.env.SRC_DB;
-const dest = process.env.DEST_DB;
+const src = process.env.SRC_DB_URI;
+const dest = process.env.DEST_DB_URI;
 
 // Obtain the Models of the STePs DB
 const ModelHandler = require('../models/ourModels');
