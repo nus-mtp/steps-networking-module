@@ -4,17 +4,21 @@ import ChatBody from './chatBody';
 import ChatTabs from './chatTabs';
 import Auth from '../../database/auth';
 
+const sockets = io();
+
 export default class ChatView extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       users: [ // Store the emails
+        /*// 
         'gun@dam.com',
         'gun@dam',
         'Bacon',
         'Turkey',
         'gun@dam',
+        //*/
       ],
       current: 0, // current conversation being displayed
       minWidth: '700px',
@@ -22,48 +26,31 @@ export default class ChatView extends Component {
 
     this.query = 'screen and (min-width: ' + this.state.minWidth + ')';
     this.widthOfChatTabs = '25%';
-    
-    // Get a specific user that wants to be talked to
-    const pathname = this.props.location.pathname;
-    this.talkToEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length).trim();
-    if (this.talkToEmail===''||this.talkToEmail==='chat') {
-      this.talkToEmail = null;
-    }
   }
   
   componentWillMount() {
     if(Auth.isUserAuthenticated) {
       let email = Auth.getToken().email;
       email = email.replace(/%40/gi, '@');
-      
+
+      sockets.emit('new user', {userEmail: email}, function(socketId) {
+        this.socketId = socketId; // save the socket id
+      }.bind(this));
+
       this.setState({ email });
       this.getAllUsers(email);
     }
   }
 
   getAllUsers(email) {
-    const xhr = new XMLHttpRequest();
-    xhr.open('get', `/message/get/getMessagesInvolving/${email}`);
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.responseType = 'json';
-    xhr.addEventListener('load', () => {
-      if (xhr.status === 200) {
-        // success
-        if (this.talkToEmail!==null) {
-          const current = users.find(function(user){
-            return user===this.talkToEmail;
-          });
-          
-          if (current==null) {
-            
-          }
-        }
-        this.setState({users: xhr.response});
+    sockets.emit('get all emails involving user', {userEmail: email}, function(err, userList) {
+      if (err) {
+        // Stuff went wrong
+        console.log('Unable to retrieve userList');
       } else {
-        // failure
+        this.setState({ users: userList });
       }
-    });
-    xhr.send();
+    }.bind(this));
   }
 
   changeConversation(index) {
@@ -100,6 +87,7 @@ export default class ChatView extends Component {
           users={this.state.users}
           current={this.state.current}
           email={this.state.email}
+          sockets={sockets}
         />
       </div>
     );
