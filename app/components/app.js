@@ -92,7 +92,7 @@ class App extends React.Component {
               </li>
               <li className="nav-item">
                 { Auth.isUserAuthenticated() ?
-                  <Link onClick={this.removeDropdown.bind(this)} className={`navbar-buttons ${this.state.chatActive}`} to={Paths.chat}>Chat</Link> :
+                  <Link onClick={this.removeDropdown.bind(this)} className={`navbar-buttons ${this.state.chatActive}`} to={Paths.chat_empty}>Chat</Link> :
                   <Link></Link>
 
                 }
