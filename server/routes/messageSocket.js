@@ -12,6 +12,8 @@ exports = module.exports = function(io, db) {
     socket.on('new user', (userObject, callback) => {
       if (userObject.userEmail) {
         socketIDs[userObject.userEmail] = socket.id;
+        //console.log(socket.id +' is connected');
+        callback(socket.id);
       }
     });
     
@@ -44,7 +46,6 @@ exports = module.exports = function(io, db) {
               }
               callback(true);
             } else {
-              /*
               const newMessage = new Message(
                 messageObj.senderEmail,
                 messageObj.recipientEmail,
@@ -55,14 +56,12 @@ exports = module.exports = function(io, db) {
                 if (err) {
                   callback(false);
                 } else {
-                  const socketId = socketIDs[messageObj.recipientEmail];
                   if (socketId) {
                     io.to(socketId).emit('refresh message', results);
                   }
                   callback(true);
                 }
               });
-              //*/
             }
           });
       } else {
@@ -82,6 +81,11 @@ exports = module.exports = function(io, db) {
       } else {
         callback('Expecting userEmail', null);
       }
+    });
+    
+    socket.on('disconnect', () => {
+      //console.log(socket.id+' is disconnected');
+      delete socketIDs[socket.id];
     });
 
   });
