@@ -8,18 +8,13 @@
  */
 const mongoose = require('mongoose');
 
-module.exports.connect = (username, password, host, port, database,
+module.exports.connect = (mongoURI,
                           poolSize = 5, openCallback = () => {}, closeCallback = () => {}) => {
-  let loginCredentials = '';
-  if (username !== '' || (username !== '' && password !== '')) {
-    loginCredentials = `${username}:${password}@`;
-  }
-
-  const db = mongoose.createConnection(`mongodb://${loginCredentials}${host}:${port}/${database}`, { server: { poolSize } });
+  const db = mongoose.createConnection(mongoURI, { server: { poolSize } });
 
   db.on('error', (err) => {
     if (err) {
-      console.info(`MongoDB ${database} has encountered a problem.`);
+      console.info(`MongoDB at ${mongoURI} has encountered a problem.`);
     }
   });
 
