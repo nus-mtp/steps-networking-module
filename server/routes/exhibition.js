@@ -18,7 +18,7 @@ router.get('/get/allExhibitions', (req = {}, res, next) => {
     if (err) {
       console.log(err);
       res.status(500).json('Unable to fetch data!');
-    } else if (exhibitions) {
+    } else if (exhibitions && exhibitions.length > 0) {
       res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
     } else {
       res.status(204).json('Nothing found!');
@@ -35,7 +35,7 @@ router.get('/get/oneEventExhibitions/:eventName', (req = {}, res, next) => {
       if (err) {
         console.log(err);
         res.status(500).json('Unable to fetch data!');
-      } else if (exhibitions) {
+      } else if (exhibitions && exhibitions.length > 0) {
         res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
       } else {
         res.status(204).json('Nothing found!');
@@ -95,11 +95,14 @@ router.get('/get/oneExhibitionById/:exhibitionId', (req = {}, res, next) => {
   }
 });
 
-router.post('/post/search/tag', (req = {}, res, next) => {
-  if (req.body && req.body.tag) {
+// The Routes below utilize Comma-Separated Strings for the second argument in the Post Request
+// Use <Array>.toString() to generate a Comma-Separated String from an Array
+
+router.post('/post/search/tags', (req = {}, res, next) => {
+  if (req.body && req.body.tags) {
     Exhibition.setDBConnection(req.app.locals.db);
 
-    Exhibition.searchExhibitionsByTag(req.body.tag, (err, exhibitions) => {
+    Exhibition.searchExhibitionsByTags(req.body.tags.split(','), (err, exhibitions) => {
       if (err) {
         if (err.name === 'ValidationError') {
           console.log(err);
@@ -108,7 +111,7 @@ router.post('/post/search/tag', (req = {}, res, next) => {
           console.log(err);
           res.status(500).json('Unable to post data!');
         }
-      } else if (exhibitions) {
+      } else if (exhibitions && exhibitions.length > 0) {
         res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
       } else {
         res.status(204).json('Nothing found!');
@@ -120,9 +123,6 @@ router.post('/post/search/tag', (req = {}, res, next) => {
     next();
   }
 });
-
-// The Routes below utilize Comma-Separated Strings for the second argument in the Post Request
-// Use <Array>.toString() to generate a Comma-Separated String from an Array
 
 router.post('/post/oneExhibition/set/tags', (req = {}, res, next) => {
   if (req.body && req.body.eventName && req.body.exhibitionName && req.body.tags) {

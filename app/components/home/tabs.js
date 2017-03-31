@@ -4,7 +4,7 @@ class Tabs extends React.Component {
   render() {
     return (
       <div className="event-tabs">
-        <ul className="nav nav-tabs justify-content-between" role="tablist">
+        <ul className="nav nav-tabs" role="tablist">
           <li className="nav-item">
             <a id="ongoing" className="nav-link active" data-toggle="tab" href="#ongoing" role="tab" onClick={this.props.onClick}>Ongoing</a>
           </li>

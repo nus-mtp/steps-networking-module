@@ -141,16 +141,38 @@ class Event {
   }
 
   /**
-   * Retrieve all the Event with the specified tags listed in the Database.
+   * Retrieve all the Events tagged with the specified Tag.
    *
-   * @param {Array} tag: List of tags that can be used to search for Exhibitions.
+   * @param {String} tag: A tag that can be used to search for Events.
    * @param {function} callback: A function that is executed once the operation has completed.
    */
   static searchEventsByTag(tag, callback) {
     if (Event.checkConnection()) {
-      Event.EventModel.find({ tags: { $regex: new RegExp(tag.replace('+', '\\+'), 'i') } }, (err, matchedEvents) => {
-        callback(err, matchedEvents);
-      });
+      const refinedTag = tag.trim().toLowerCase();
+      Event.EventModel.find(
+        { tags: { $elemMatch: { $eq: refinedTag } } },
+        (err, matchedEvents) => {
+          callback(err, matchedEvents);
+        });
+    } else {
+      callback('Not Connected!', null);
+    }
+  }
+
+  /**
+   * Retrieve all the Events with the specified Tags.
+   *
+   * @param {Array} tags: An array of tags to search for within Events.
+   * @param {function} callback: A function that is executed once the operation has completed.
+   */
+  static searchEventsByTags(tags, callback) {
+    if (Event.checkConnection()) {
+      const refinedTags = tags.map(tag => tag.trim().toLowerCase());
+      Event.EventModel.find(
+        { tags: { $all: refinedTags } },
+        (err, matchedEvents) => {
+          callback(err, matchedEvents);
+        });
     } else {
       callback('Not Connected!', null);
     }
@@ -217,7 +239,7 @@ class Event {
   static updateEventTag(eventName = '', tags = [], callback) {
     if (Event.checkConnection()) {
       const update = {
-        tags,
+        tags: tags.map(tag => tag.trim().toLowerCase()),
       };
       const options = { new: true };
       Event.EventModel.findOneAndUpdate(

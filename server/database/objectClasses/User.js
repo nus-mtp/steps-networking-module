@@ -182,7 +182,30 @@ class User {
    */
   static searchUsersBySkills(skillToBeSearched, callback) {
     if (User.checkConnection()) {
-      User.UserModel.find({ skills: { $regex: new RegExp(skillToBeSearched.trim().toLowerCase().replace('+', '\\+'), 'i') } }, (err, matchedUsers) => {
+      const refinedSkill = skillToBeSearched.trim().toLowerCase();
+      User.UserModel.find(
+        { skills: { $elemMatch: { $eq: refinedSkill } } },
+        (err, matchedUsers) => {
+          callback(err, matchedUsers);
+        },
+      );
+    } else {
+      callback('Not Connected!', null);
+    }
+  }
+
+  /**
+   * Finds Users that have all specified skills.
+   *
+   * @param {Array} skillsToBeSearched: An array of skills to find for.
+   * @param {function} callback: A function that executes once the operation is done.
+   */
+  static searchUsersByMultipleSkills(skillsToBeSearched, callback) {
+    if (User.checkConnection()) {
+      const refinedSkills = skillsToBeSearched.map(
+        skillToBeSearched => skillToBeSearched.trim().toLowerCase(),
+      );
+      User.UserModel.find({ skills: { $all: refinedSkills } }, (err, matchedUsers) => {
         callback(err, matchedUsers);
       });
     } else {

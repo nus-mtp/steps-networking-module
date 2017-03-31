@@ -2,24 +2,27 @@ import React from 'react';
 import Tabs from './tabs';
 import Event from './event';
 import Collapsable from './collapsable';
-import { sampleAttendance } from './sampleData';
+import Auth from '../../database/auth';
 
 class HomeView extends React.Component {
   constructor(props) {
     super(props);
 
     const nowDate = new Date();
+    const userEmail = (Auth.isUserAuthenticated()) ? Auth.getToken().email : '';
 
     this.state = {
       open: null,
       events: null,
       displayedEvents: [],
-      attendance: sampleAttendance,
+      attendance: [],
       todayDate: nowDate,
       currentTab: 'ongoing',
+      email: userEmail.replace(/%40/i, '@'),
     };
 
     this.initializeStates();
+    this.getAttendances(userEmail.replace(/%40/i, '@'));
 
     this.openCollapsable = this.openCollapsable.bind(this);
     this.changeAttendance = this.changeAttendance.bind(this);
@@ -34,17 +37,44 @@ class HomeView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      const nowTime = this.state.todayDate.getTime();
-      const copy = xhr.response;
-      const remainder = copy.filter((event) => {
-        if (nowTime > this.formatMilli(event.start_date) && nowTime < this.formatMilli(event.end_date))
-          return event;
-      });
-      this.setState({
-        events: xhr.response,
-        displayedEvents: remainder,
-        open: this.createFalseArray(remainder.length),
-      });
+      console.log('initialize state success');
+      if (xhr.status === 200) {
+        const nowTime = this.state.todayDate.getTime();
+        const copy = xhr.response;
+        const remainder = copy.filter((event) => {
+          if (nowTime > this.formatMilli(event.start_date) && nowTime < this.formatMilli(event.end_date))
+            return event;
+        });
+        this.setState({
+          events: xhr.response,
+          displayedEvents: remainder,
+          open: this.createFalseArray(remainder.length),
+        });
+      } else {
+        console.log('initialize state fail');
+        this.setState({
+          events: [],
+          displayedEvents: [],
+          open: [],
+        });
+      }
+    });
+    xhr.send();
+  }
+
+  getAttendances(email) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/attendance/get/oneUserAttendances/${email}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        console.log('get attendance success');
+        this.setState({ attendance: xhr.response });
+      } else {
+        console.log('get attendance fail');
+        this.setState({ attendance: [] });
+      }
     });
     xhr.send();
   }
@@ -59,21 +89,37 @@ class HomeView extends React.Component {
 
   openCollapsable(serial) {
     const newStatus = this.createFalseArray(this.state.open.length); // ignore previous state and change all to false
-    newStatus[serial] = true;
+    newStatus[serial] = !this.state.open[serial];
     this.setState({ open: newStatus });
   }
 
   changeAttendance(event, attendance) {
     // modify attendance data here
+    const userEmail = encodeURIComponent(this.state.email);
+    const eventName = encodeURIComponent(event.name);
+    const formData = `userEmail=${userEmail}&eventName=${eventName}`;
+    const xhr = new XMLHttpRequest();
+    xhr.open('post', `attendance/post/oneEventAttendance/`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        console.log('change attendance success');
+      } else {
+        console.log('change attendance fail');
+      }
+    });
+    xhr.send(formData);
+
     if (attendance) {
-      const newEvent = { name: event };
-      const newAttendance = this.state.attendance;
-      newAttendance.push(newEvent);
+      const attendanceObj = { attendanceKey: event.id  };
+      const allAttendance = this.state.attendance;
+      allAttendance.push(attendanceObj);
       this.setState({
-        attendance: newAttendance,
+        attendance: allAttendance,
       });
     } else {
-      const newAttendance = this.state.attendance.filter(attend => attend.name !== event);
+      const newAttendance = this.state.attendance.filter(attend => attend.attendanceKey !== event.id);
       this.setState({
         attendance: newAttendance,
       });
