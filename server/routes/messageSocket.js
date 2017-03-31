@@ -94,7 +94,14 @@ exports = module.exports = function(io, db) {
     
     socket.on('disconnect', () => {
       //console.log(socket.id+' is disconnected');
-      delete socketIDs[socket.id];
+      const userEmail = userEmails[socket.id];
+      
+      // remove the socket from the list
+      const socketIdList = socketIDs[userEmail];
+      socketIdList.splice(socketIdList.indexOf(socket.id), 1); // remove 1 item from this position
+      socketIDs[userEmail] = socketIdList;
+      
+      delete userEmails[socket.id];
     });
 
   });
