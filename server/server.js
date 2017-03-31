@@ -1,13 +1,11 @@
-import currentdb from './currentdb';
-
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const passport = require('passport');
-const config = require('./config.json');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || '3000';
+const db_config = process.env.PRODUCTION_DB_URI;
 
 app.use(express.static(path.join(__dirname, '/../dist')));
 app.use('/css', express.static(path.join(`${__dirname}/../node_modules/bootstrap/dist/css`)));  // redirect CSS bootstrap
@@ -16,7 +14,7 @@ app.use('/tether', express.static(path.join(`${__dirname}/../node_modules/tether
 app.use('/jquery', express.static(path.join(`${__dirname}/../node_modules/jquery/dist`)));  // redirect jquery
 
 const db = require('./database/mongodbScripts/accessMongoDB').connect(
-    config[currentdb], 30,
+    db_config, 30,
     (err) => {
       if (err) {
         throw err;
@@ -64,7 +62,6 @@ const db = require('./database/mongodbScripts/accessMongoDB').connect(
 
       const server = require('http').createServer(app);
       const io = require('socket.io').listen(server);
-      const port = process.env.PORT || '3000';
 
       app.set('port', port);
       server.listen(app.get('port'), () => {
