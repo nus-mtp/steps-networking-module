@@ -5,13 +5,18 @@ exports = module.exports = function(io, db) {
 
   Message.setDBConnection(ModelHandlerObj.getConnection());
   var socketIDs = {};
+  var userEmails = {};
 
   io.on('connection', (socket) => {
     socket.emit('new', {new: 'new'});
     
     socket.on('new user', (userObject, callback) => {
       if (userObject.userEmail) {
-        socketIDs[userObject.userEmail] = socket.id;
+        if (socketIDs[userObject.userEmail]===null) {
+          socketIDs[userObject.userEmail] = [];
+        }
+        socketIDs[userObject.userEmail].push(socket.id);
+        userEmails[socket.id] = userObject.userEmail;
         //console.log(socket.id +' is connected');
         callback(socket.id);
       }
@@ -40,9 +45,11 @@ exports = module.exports = function(io, db) {
             if (err) {
               callback(false);
             } else if (results) {
-              const socketId = socketIDs[messageObj.recipientEmail];
-              if (socketId) {
-                socket.to(socketId).emit('refresh message', results);
+              const socketIdList = socketIDs[messageObj.recipientEmail];
+              if (socketIdList) {
+                for (let socketId in socketIdList) {
+                  socket.to(socketId).emit('refresh message', results);
+                }
               }
               callback(true);
             } else {
@@ -56,8 +63,10 @@ exports = module.exports = function(io, db) {
                 if (err) {
                   callback(false);
                 } else {
-                  if (socketId) {
-                    io.to(socketId).emit('refresh message', results);
+                  if (socketIdList) {
+                    for (let socketId in socketIdList) {
+                      socket.to(socketId).emit('refresh message', results);
+                    }
                   }
                   callback(true);
                 }
