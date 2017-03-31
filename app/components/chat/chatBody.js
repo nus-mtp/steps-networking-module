@@ -19,76 +19,90 @@ export default class ChatBody extends Component {
         ChatBody.PostOther('Bacon', 1),
         ChatBody.PostSelf('Test', 2),
       ],
+      //update: true,
     };
 
+    this.update = true;
     this.placeholder = 'Type a message...';
     this.divStyle = {
       paddingLeft: '15px',
       marginLeft: this.props.marginLeft,
     };
+    
+    this.props.sockets.on('refresh message', function(results){
+      this.initialiseMessages();
+    }.bind(this));
   }
 
   componentDidUpdate() {
+    if (this.update) {
+      this.initialiseMessages();
+    }
     ChatBody.scrollToBottom();
     this.textInput.focus();
   }
   
   retrieveAllMessages(senderEmail, recipientEmail) {
-    const xhr = new XMLHttpRequest();
-    xhr.open('get', `/message/get/getMessages/${senderEmail}/${recipientEmail}`);
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.responseType = 'json';
-    xhr.addEventListener('load', () => {
-      if (xhr.status === 200) {
-        // success
-        this.setState({[`${senderEmail}`]: xhr.response.messages});
+    //*
+    this.props.sockets.emit('get message', { senderEmail, recipientEmail }, function(err, conversation) {
+      if (err) {
+        this.setState({[`${senderEmail}`]: [] });
       } else {
-        // failure
-        this.setState({[`${senderEmail}`]: []});
+        this.setState({[`${senderEmail}`]: conversation.messages });
       }
-    });
-    xhr.send();
+    }.bind(this));
   }
   
   initialiseMessages() {
-    this.retrieveAllMessages(this.props.email, this.props.users[this.props.current]);
-    this.retrieveAllMessages(this.props.users[this.props.current], this.props.email);
+    const senderEmail = this.props.email;
+    const recipientEmail = this.props.users[this.props.current];
+    
+    if (!senderEmail||!recipientEmail) {
+      if (!this.update) {
+        //console.log("Failed to get messages");
+        this.update = true;
+      }
+    } else {
+      this.getReceivedMessages();
+      this.getSentMessages();
+      this.update = false;
+    }
+  }
+  
+  getReceivedMessages() {
+    const senderEmail = this.props.email;
+    const recipientEmail = this.props.users[this.props.current];
+    this.retrieveAllMessages(recipientEmail, senderEmail);
+  }
+  
+  getSentMessages() {
+    const senderEmail = this.props.email;
+    const recipientEmail = this.props.users[this.props.current];
+    this.retrieveAllMessages(senderEmail, recipientEmail);
   }
 
   sendMessage(senderEmail, recipientEmail, content) {
-    const body = {
-      senderEmail: encodeURIComponent(senderEmail),
-      recipientEmail: encodeURIComponent(recipientEmail),
-      content: encodeURIComponent(content),
-    };
-    
-    const formData = `senderEmail=${body.senderEmail}&recipientEmail=${body.recipientEmail}&content=${body.content}`;
-
-    const xhr = new XMLHttpRequest();
-    xhr.open('post', '/message/post/addMessage');
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.responseType = 'json';
-    xhr.addEventListener('load', () => {
-      if (xhr.status === 200) {
-        // success
-        this.initialiseMessages();
+    this.props.sockets.emit('add message', { senderEmail, recipientEmail, content }, function(successful) {
+      if (!successful) {
+        console.log("The message failed to send.");
       } else {
-        // failure
-        console.log(xhr.response);
+        this.initialiseMessages();
       }
-    });
-    xhr.send(formData);
-    
-    return ChatBody.PostSelf(content, this.state.messages.length);
+    }.bind(this));
   }
   
   createPostList(array = [], postFunc = ChatBody.PostSelf) {
-    return array.map(function(object, index) {
-      return { // return an object that has been made into a post and keep time stamp
-        content: postFunc(object.content, index),
-        timestamp: object.timestamp,
-      };
-    });
+    if (array.length==0) {
+      return [];
+    } else {
+      return array.map(function(object, index) {
+        // return an object that has been made into a post and keep time stamp
+        return { 
+          content: postFunc(object.content, index),
+          timestamp: object.timestamp,
+        };
+      });
+    }
   }
 
   // Expects to receive arrays made of objects containing { content, timestamp }. Sorts by timestamp
@@ -120,14 +134,17 @@ export default class ChatBody extends Component {
   }
   
   getMessages() {
-    if (this.state[this.props.email]!=null && 
-      this.state[this.props.users[this.props.current]]!=null && // if not null and
-      (this.state[this.props.email].length!=0 ||
-      this.state[this.props.users[this.props.current]].length!=0)) { // if not empty
+    const userEmail = this.props.email;
+    const recipientEmail = this.props.users[this.props.current];
+    
+    if (this.state[userEmail]!=null && 
+      this.state[recipientEmail]!=null && // if not null and
+      (this.state[userEmail].length!=0 ||
+      this.state[recipientEmail].length!=0)) { // if not empty
       
       return this.mergeSortLists(
-        this.createPostList(this.state[this.props.email], ChatBody.PostSelf),
-        this.createPostList(this.state[this.props.users[this.props.current]], ChatBody.PostOther)
+        this.createPostList(this.state[userEmail], ChatBody.PostSelf),
+        this.createPostList(this.state[recipientEmail], ChatBody.PostOther)
       );
       /*
       .map(function(object){ // return only the div objects
@@ -196,12 +213,6 @@ export default class ChatBody extends Component {
     );
   }
 
-  addMessages(text) {
-    const messages = this.state.messages.slice();
-    messages.push(text);
-    this.setState({ messages }); // Replace the messages inside state
-  }
-
   handleChange() {
     if (this.textInput.value === '\n') {
       this.textInput.value = '';
@@ -212,12 +223,11 @@ export default class ChatBody extends Component {
     const str = this.textInput.value;
     const strStrip = str.trim();
     if (strStrip.length > 0) {
-      const newDiv = this.sendMessage(
+      this.sendMessage(
         this.props.email,
         this.props.users[this.props.current],
         this.textInput.value,
       );
-      this.addMessages(newDiv);
     }
     this.textInput.value = '';
   }
@@ -240,10 +250,12 @@ export default class ChatBody extends Component {
 
  /* Static functions used throughout */
   static PostSelf(text, key = 0) {
+    key = 's' + key;
     return ChatBody.createPost(text, 'chat-self', key);
   }
 
   static PostOther(text, key = 0) {
+    key = 'o' + key;
     return ChatBody.createPost(text, 'chat-other', key);
   }
 
