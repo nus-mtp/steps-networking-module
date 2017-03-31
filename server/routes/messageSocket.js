@@ -100,8 +100,10 @@ exports = module.exports = function(io, db) {
       
       // remove the socket from the list
       const socketIdList = socketIDs[userEmail];
-      socketIdList.splice(socketIdList.indexOf(socket.id), 1); // remove 1 item from this position
-      socketIDs[userEmail] = socketIdList;
+      if (socketIdList!==undefined) {
+        socketIdList.splice(socketIdList.indexOf(socket.id), 1); // remove 1 item from this position
+        socketIDs[userEmail] = socketIdList;
+      }
       
       delete userEmails[socket.id];
     });
