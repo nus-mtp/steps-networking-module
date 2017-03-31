@@ -24,15 +24,16 @@ gulp.task('lint', () =>
 );
 
 /** run test **/
-gulp.task('test', () =>
+gulp.task('test', () => {
+  process.env.TEST_DB = 'mongodb://localhost:27017/fake-data';
   gulp.src('tests/*.test.js')
     .pipe(babel({
       presets: ['es2015'],
     }))
     .pipe(mocha({
       reporter: 'Spec',
-    })),
-);
+    }));
+});
 
 /** minimizing files and bundling **/
 gulp.task('css', () =>
@@ -75,10 +76,11 @@ gulp.task('watch', () => {
   gulp.watch('./app/**/*.js', ['bundle']);
 });
 
-gulp.task('buildServer', () =>
+gulp.task('buildServer', () => {
   gulp.src('./server/server.js')
-    .pipe(webpack(webpackServerConfig))
-    .pipe(gulp.dest('./server/')),
+      .pipe(webpack(webpackServerConfig))
+      .pipe(gulp.dest('./server/'));
+},
 );
 
 gulp.task('buildClient', ['css', 'html', 'image', 'bundle']);

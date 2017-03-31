@@ -1,4 +1,4 @@
-const config = require('../server/config.json').fakeDbUri;
+const config = process.env.TEST_DB;
 const ModelHandler = require('../server/database/models/ourModels');
 const Event = require('../server/database/objectClasses/Event.js');
 const Exhibition = require('../server/database/objectClasses/Exhibition.js');
