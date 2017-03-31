@@ -4,10 +4,8 @@
  */
 const async = require('async');
 
-const config = require('../../config');
-
-const src = config.stepsDbUri;
-const dest = config.devDbUri;
+const src = process.env.SRC_DB;
+const dest = process.env.DEST_DB;
 
 // Obtain the Models of the STePs DB
 const ModelHandler = require('../models/ourModels');
