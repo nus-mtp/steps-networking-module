@@ -18,7 +18,7 @@ router.get('/get/allExhibitions', (req = {}, res, next) => {
     if (err) {
       console.log(err);
       res.status(500).json('Unable to fetch data!');
-    } else if (exhibitions) {
+    } else if (exhibitions && exhibitions.length > 0) {
       res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
     } else {
       res.status(204).json('Nothing found!');
@@ -35,7 +35,7 @@ router.get('/get/oneEventExhibitions/:eventName', (req = {}, res, next) => {
       if (err) {
         console.log(err);
         res.status(500).json('Unable to fetch data!');
-      } else if (exhibitions) {
+      } else if (exhibitions && exhibitions.length > 0) {
         res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
       } else {
         res.status(204).json('Nothing found!');
@@ -111,7 +111,7 @@ router.post('/post/search/tags', (req = {}, res, next) => {
           console.log(err);
           res.status(500).json('Unable to post data!');
         }
-      } else if (exhibitions) {
+      } else if (exhibitions && exhibitions.length > 0) {
         res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
       } else {
         res.status(204).json('Nothing found!');
