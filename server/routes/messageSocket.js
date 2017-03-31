@@ -48,7 +48,7 @@ exports = module.exports = function(io, db) {
               callback(false);
             } else if (results) {
               const socketIdList = socketIDs[messageObj.recipientEmail];
-              if (socketIdList) {
+              if (socketIdList!==undefined) {
                 socketIdList.forEach(function(socketId) {
                   console.log('Emitted refresh message ' + messageObj.recipientEmail + ' ' + socketId);
                   socket.to(socketId).emit('refresh message', results);
@@ -66,7 +66,7 @@ exports = module.exports = function(io, db) {
                 if (err) {
                   callback(false);
                 } else {
-                  if (socketIdList) {
+                  if (socketIdList!==undefined) {
                     socketIdList.forEach(function(socketId) {
                       console.log('Emitted new message to ' + messageObj.recipientEmail + ' ' + socketId);
                       socket.to(socketId).emit('refresh message', results);
