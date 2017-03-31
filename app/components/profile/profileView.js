@@ -61,7 +61,13 @@ class ProfileView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      this.setState({ attendances: xhr.response });
+      if (xhr.status === 200) {
+        console.log('profile attendance success');
+        this.setState({ attendances: xhr.response });
+      } else {
+        console.log('profile attendance fail');
+        this.setState({ attendances: []});
+      }
     });
     xhr.send();
   }
@@ -72,16 +78,22 @@ class ProfileView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      const user = xhr.response;
-      // Buggy and I not sure why
-      user.userSkills = (xhr.response.userSkills) ? xhr.response.userSkills.map((skill, i) => {
-        return {
-          id: i,
-          text: skill,
-        };
-      }) : [],
+      console.log('profile get user success');
+      if (xhr.status === 200) {
+        const user = xhr.response;
+        // Buggy and I not sure why
+        user.userSkills = (xhr.response.userSkills) ? xhr.response.userSkills.map((skill, i) => {
+          return {
+            id: i,
+            text: skill,
+          };
+        }) : [],
 
-      this.setState({ user, });
+        this.setState({ user, });
+      } else {
+        console.log('profile get user fail');
+        this.setState({ user: [] });
+      }
     });
     xhr.send();
   }
