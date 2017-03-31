@@ -25,6 +25,22 @@ class EventView extends React.Component {
     this.updateDisplayedExhibitions = this.updateDisplayedExhibitions.bind(this);
   }
 
+  componentDidMount() {
+    const that = this;
+    window.addEventListener("hashchange", () => {
+      that.getEvent();
+      that.getExhibitions();
+    });
+  }
+
+  componentWillUnmount() {
+    const that = this;
+    window.removeEventListener("hashchange", () => {
+      that.getEvent();
+      that.getExhibitions();
+    });
+  }
+
   getExhibitions() {
     const pathname = this.props.location.pathname;
     const eventName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
@@ -34,10 +50,17 @@ class EventView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      this.setState({
-        exhibitions: xhr.response,
-        displayExhibitions: xhr.response,
-      });
+      if (xhr.status === 200) {
+        // success
+        this.setState({
+          exhibitions: xhr.response,
+          displayExhibitions: xhr.response,
+        });
+      } else {
+        this.setState({
+          exhibitions: [],
+        });
+      }
     });
     xhr.send();
   }
@@ -51,9 +74,16 @@ class EventView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      this.setState({
-        event: xhr.response,
-      });
+      if (xhr.status === 200) {
+        // success
+        this.setState({
+          event: xhr.response,
+        });
+      } else {
+        this.setState({
+          event: [],
+        });
+      }
     });
     xhr.send();
   }
@@ -122,8 +152,8 @@ class EventView extends React.Component {
   }
 
   render() {
-    const startDate = new Date(this.state.event.start_date).toDateString();
-    const endDate = new Date(this.state.event.end_date).toDateString();
+    const startDate = (this.state.event) ? new Date(this.state.event.start_date).toDateString() : '';
+    const endDate = (this.state.event) ? new Date(this.state.event.end_date).toDateString() : '';
 
     return (
       <div id="event-body" className="d-f1lex flex-column justify-content-center">
