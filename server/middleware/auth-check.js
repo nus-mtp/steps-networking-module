@@ -1,5 +1,3 @@
-import currentdb from '../currentdb';
-
 const jwt = require('jsonwebtoken');
 
 const ModelHandler = require('../database/models/ourModels'); // require('mongoose').model('User');
@@ -23,12 +21,7 @@ module.exports = (req, res, next) => {
 
     const userId = decoded.sub;
 
-    const ModelHandlerObj = new ModelHandler().initWithUri(
-        [currentdb].username,
-        config[currentdb].password,
-        config[currentdb].host,
-        config[currentdb].port,
-        config[currentdb].database);
+    const ModelHandlerObj = new ModelHandler().initWithConnection(req.app.locals.db);
 
     const User = ModelHandlerObj.getUserModel();
 
