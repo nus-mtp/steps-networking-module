@@ -48,19 +48,19 @@ class Collapsable extends React.Component {
     this.setState({
       isAttended: false,
     });
-    this.props.changeAttendance(this.props.event.name, false);
+    this.props.changeAttendance(this.props.event, false);
   }
 
   setPresent() {
     this.setState({
       isAttended: true,
     });
-    this.props.changeAttendance(this.props.event.name, true);
+    this.props.changeAttendance(this.props.event, true);
   }
 
   checkAttendance() {
     for (const attend of this.props.attendance) {
-      if (this.props.event.name === attend.name) {
+      if (this.props.event.id === attend.attendanceKey) {
         this.setState({
           isAttended: true,
         });
