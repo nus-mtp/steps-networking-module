@@ -1,43 +1,90 @@
 #header {
   display: flex;
-  box-shadow: 0px 3px 5px #888888;
-  background-color: mediumseagreen;
+  background-color: white;
+  border-bottom: 1px solid lightgrey;
+  height: 55px;
+  padding: 0;
 
   #hamburger-toggle {
-    top: 10px;
+    top: 0;
+    height: 55px;
     border: none;
     cursor: pointer;
   }
 
   #navbar-supported-content {
     box-shadow: none;
+    padding: 0;
+    height: 100%;
   }
 
-  #search-input {
-    border-radius: 10px 0 0 10px;
-    font-size: 16px;
-    margin: 0;
+  #search-results {
+    overflow: auto;
+    max-height: 300px;
+    position: absolute;
+    top: 60px;
+    left: 175px;
+    background-color: rgba(255, 255, 255, 0.9);
+
+    .list-group-item {
+      display: block;
+      padding: 10px;
+      font-size: 14px;
+      background-color: rgba(255, 255, 255, 0.5);
+    }
   }
 
   #search-container {
-    margin-bottom: 5px;
-  }
+    height: 55px;
+    width: 100%;
 
-  #search-submit {
-    border-radius: 0 10px 10px 0;
-    font-size: 16px;
-    padding: 10px;
+    .dropdown {
+      padding: 0;
+    }
+
+    .dropdown-item {
+      font-size: 14px;
+    }
+
+    #search-input {
+      border-radius: 0;
+      font-size: 16px;
+      margin: 0;
+      height: 54.5px;
+      border-top: none;
+      border-bottom: none;
+      border-right: none;
+    }
+
+    #search-filter {
+      border-radius: 0;
+      font-size: 14px;
+      width: 100%;
+      height: 54px;
+      padding: 10px;
+      border-left: none;
+      border-top: none;
+      border-bottom: none;
+    }
+
+    #search-submit {
+      border-radius: 0;
+      font-size: 16px;
+      padding: 10px;
+      height: 54.5px;
+      border-left: none;
+      border-top: none;
+      border-bottom: none;
+    }
   }
 
   #login, #signin, #logout, .navbar-buttons {
-    padding: 10px;
     border-radius: 20px;
-    color: white;
   }
 
   #brand-logo {
     height: 50px;
-    margin-right: 20px
+    margin: 0 15px
   }
 }
 
@@ -48,14 +95,29 @@ a {
 
 #navbar-links {
   display: flex;
+  flex-direction: row;
   justify-content: flex-end;
+  align-items: center;
   font-size: 16px;
+  background-color: white;
+  border-top: 1px solid lightgrey;
+  border-bottom: 1px solid lightgrey;
+
+  .nav-item:hover {
+    background-color: lightgrey;
+  }
 
   .nav-item {
-    margin: 5px;
+    background-color: white;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     .navbar-buttons {
-      padding: 5px 10px;
+      padding: 20px;
+      color: black;
     }
 
     .active {

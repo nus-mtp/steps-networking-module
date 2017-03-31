@@ -15,7 +15,7 @@ router.get('/get/allEvents', (req = {}, res, next) => {
     if (err) {
       res.status(500).json('Unable to fetch data!');
       next();
-    } else if (eventObjs[0]) {
+    } else if (eventObjs && eventObjs[0]) {
       res.status(200).json(eventObjs.map(eventObj => extractEventInfo(eventObj)));
       next();
     } else {
@@ -49,7 +49,7 @@ router.get('/get/searchTag/:tag', (req = {}, res, next) => {
     if (err) {
       res.status(500).json('Unable to fetch data!');
       next();
-    } else if (eventObjs[0]) {
+    } else if (eventObjs && eventObjs[0]) {
       res.status(200).json(eventObjs.map(eventObj => extractEventInfo(eventObj)));
       next();
     } else {
@@ -98,15 +98,43 @@ router.post('/post/updateEventPicture', (req = {}, res, next) => {
   }
 });
 
+// The Routes below utilize Comma-Separated Strings for the second argument in the Post Request
+// Use <Array>.toString() to generate a Comma-Separated String from an Array
+router.post('/post/search/tags', (req = {}, res, next) => {
+  if (req.body && req.body.tags) {
+    Event.setDBConnection(req.app.locals.db);
+
+    Event.searchEventsByTags(req.body.tags.split(','), (err, events) => {
+      if (err) {
+        if (err.name === 'ValidationError') {
+          console.log(err);
+          res.status(403).json('Unauthorized!');
+        } else {
+          console.log(err);
+          res.status(500).json('Unable to post data!');
+        }
+      } else if (events && events[0]) {
+        res.status(200).json(events.map(event => extractEventInfo(event)));
+      } else {
+        res.status(204).json('Nothing found!');
+      }
+      next();
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
 router.post('/post/updateTags', (req = {}, res, next) => {
   if (req.body && req.body.eventName && req.body.tags) {
     Event.setDBConnection(req.app.locals.db);
 
-    Event.updateEventTag(req.body.eventName, req.body.tags.split(','), (err, results) => {
+    Event.updateEventTag(req.body.eventName, req.body.tags.split(','), (err, event) => {
       if (err) {
         res.status(500).json('Unable to save data!');
-      } else if (results) {
-        res.status(200).send('Added!');
+      } else if (event) {
+        res.status(200).send(extractEventInfo(event));
       } else {
         res.status(204).json('Message object not found!');
       }

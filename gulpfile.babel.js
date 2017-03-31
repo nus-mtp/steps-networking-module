@@ -63,6 +63,11 @@ gulp.task('bundle', () =>
     .pipe(gulp.dest(rootDir))
 );
 
+gulp.task('fonts', () =>
+  gulp.src('./app/resources/fonts/*.+(otf|ttf|eof|ttc|woff)')
+    .pipe(gulp.dest(`${rootDir}/resources/fonts/`))
+);
+
 /** watch file changes **/
 gulp.task('watch', () => {
   gulp.watch('./app/resources/style/**/*.scss', ['css']);
@@ -79,7 +84,7 @@ gulp.task('buildServer', () =>
 gulp.task('buildClient', ['css', 'html', 'image', 'bundle']);
 
 /** run gulp task for development **/
-gulp.task('default', ['watch', 'css', 'html', 'image', 'bundle', 'buildServer'], () => {
+gulp.task('default', ['watch', 'css', 'html', 'image', 'bundle', 'fonts', 'buildServer'], () => {
   nodemon({
     script: './server/server.bundle.js',
     ignore: ['./dist/'],

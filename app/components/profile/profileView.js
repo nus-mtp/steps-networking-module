@@ -10,14 +10,15 @@ class ProfileView extends React.Component {
     super(props);
 
     this.state = {
-      skills: [],
-      links: 'N/A',
-      interestedOpportunities: 'none',
-      isContentEditable: false,
-      pastUserData: {},
+      skills: [], // Skills that the user claimed to have
+      links: '-', // Link to user profile of another website
+      interestedOpportunities: '-', // What am I looking for
+      isContentEditable: false, //  Edit mode
+      pastUserData: {}, // State restore if user cancel edit
       user: {},
-      events: [],
-      exhibitions: [],
+      events: [], // List of event user attended
+      exhibitions: [], // List of exhibition user participated
+      attendances: [], // For all the attendance objects
     };
 
     const pathname = this.props.location.pathname;
@@ -25,6 +26,7 @@ class ProfileView extends React.Component {
 
     this.getUser(userEmail);
     this.getEvent(userEmail);
+    this.getAttendances(userEmail);
 
     this.handleEdit = this.handleEdit.bind(this);
     this.changeEdit = this.changeEdit.bind(this);
@@ -53,21 +55,45 @@ class ProfileView extends React.Component {
     });
   }
 
+  getAttendances(email) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/attendance/get/oneUserAttendances/${email}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        console.log('profile attendance success');
+        this.setState({ attendances: xhr.response });
+      } else {
+        console.log('profile attendance fail');
+        this.setState({ attendances: []});
+      }
+    });
+    xhr.send();
+  }
+
   getUser(email) {
     const xhr = new XMLHttpRequest();
     xhr.open('get', `/user/get/profile/${email}`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      const user = xhr.response;
-      user.userSkills = (xhr.response.userSkills) ? xhr.response.userSkills.map((skill, i) => {
-        return {
-          id: i,
-          text: skill,
-        };
-      }) : [],
+      console.log('profile get user success');
+      if (xhr.status === 200) {
+        const user = xhr.response;
+        // Buggy and I not sure why
+        user.userSkills = (xhr.response.userSkills) ? xhr.response.userSkills.map((skill, i) => {
+          return {
+            id: i,
+            text: skill,
+          };
+        }) : [],
 
-      this.setState({ user, });
+        this.setState({ user, });
+      } else {
+        console.log('profile get user fail');
+        this.setState({ user: [] });
+      }
     });
     xhr.send();
   }
@@ -320,38 +346,6 @@ class ProfileView extends React.Component {
             </div>
           </div>
           <ul className="list-group list-group-flush">
-            <li className="list-group-item d-flex flex-column align-items-start">
-              <div className="info-type">Exhibitions Involved: </div>
-              <div className="flex-row">
-                {
-                  (this.state.exhibitions) ?
-                  this.state.exhibitions.map(exhibition =>
-                    <Link to={`/exhibition/${exhibition.eventName}/${exhibition.exhibitionName}`} key={exhibition.id}>
-                      <div id="user-exhibition-container">
-                        <img className="img-fluid user-page-thumbnail" src={`${exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" />
-                        <div id="user-exhibition">{exhibition.exhibitionName}</div>
-                      </div>
-                    </Link>
-                  ) : <div />
-                }
-              </div>
-            </li>
-            <li className="list-group-item d-flex flex-column align-items-start">
-              <div className="info-type">Events Involved: </div>
-              <div className="flex-row">
-                {
-                  (this.state.events) ?
-                  this.state.events.map(event =>
-                    <Link to={`/event/${event.name}`}  key={event.id}>
-                      <div id="user-event-container">
-                        <img className="img-fluid user-page-thumbnail" src={`${event.event_poster}`} onError={this.addDefaultSrc} alt="event-image" />
-                        <div id="user-events">{event.name}</div>
-                      </div>
-                    </Link>
-                  ) : <div />
-                }
-              </div>
-            </li>
             <li className="list-group-item">
               <div className="info-type">What am I Looking For? </div>
               { (this.state.isContentEditable) ?
@@ -363,6 +357,72 @@ class ProfileView extends React.Component {
               }
             </li>
           </ul>
+          <div id="accordion" role="tablist" aria-multiselectable="true">
+            <div className="card">
+              <div className="card-header" role="tab" id="headingOne">
+                <h5 className="mb-0">
+                  <a data-toggle="collapse" data-parent="#accordion" href="#exhibition-involved" aria-expanded="true" aria-controls="collapseOne">
+                    Exhibitions Involved
+                  </a>
+                </h5>
+              </div>
+              <div id="exhibition-involved" className="collapse" role="tabpanel" aria-labelledby="headingOne">
+                <div className="card-block">
+                  {
+                    (this.state.exhibitions) ?
+                    this.state.exhibitions.map(exhibition =>
+                      <Link to={`/exhibition/${exhibition.eventName}/${exhibition.exhibitionName}`} key={exhibition.id}>
+                        <div id="user-exhibition-container">
+                          <img className="img-fluid user-page-thumbnail" src={`${exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" />
+                          <div id="user-exhibition">
+                            <div>{exhibition.exhibitionName}</div>
+                            <div className="tag-container">{(this.state.attendances) ? this.state.attendances.filter(
+                              attendance => {if (attendance.attendanceKey === exhibition.id) return attendance;}).map(
+                                attendance => attendance.reasons.map(
+                                  reason => <span className="tag badge badge-pill badge-success">{reason}</span>)) :
+                                  <div/>
+                            }</div>
+                          </div>
+                        </div>
+                      </Link>
+                    ) : <div />
+                  }
+                </div>
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-header" role="tab" id="headingTwo">
+                <h5 className="mb-0">
+                  <a className="collapsed" data-toggle="collapse" data-parent="#accordion" href="#event-involved" aria-expanded="false" aria-controls="collapseTwo">
+                    Events Involved
+                  </a>
+                </h5>
+              </div>
+              <div id="event-involved" className="collapse" role="tabpanel" aria-labelledby="headingTwo">
+                <div className="card-block">
+                  {
+                    (this.state.events) ?
+                    this.state.events.map(event =>
+                      <Link to={`/event/${event.name}`}  key={event.id}>
+                        <div id="user-event-container">
+                          <img className="img-fluid user-page-thumbnail" src={`${event.event_poster}`} onError={this.addDefaultSrc} alt="event-image" />
+                          <div id="user-events">
+                            <div>{event.name}</div>
+                            <div className="tag-container">{(this.state.attendances) ? this.state.attendances.filter(
+                              attendance => {if (attendance.attendanceKey === event.id) return attendance;}).map(
+                                attendance => attendance.reasons.map(
+                                  reason => <span className="tag badge badge-pill badge-success">{reason}</span>)) :
+                                  <div/>
+                            }</div>
+                          </div>
+                        </div>
+                      </Link>
+                    ) : <div />
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
           { (this.state.isContentEditable) ?
             <div className="card-block text-right">
               <button className="btn btn-primary post-edit" onClick={this.submitForm}>Save</button>
