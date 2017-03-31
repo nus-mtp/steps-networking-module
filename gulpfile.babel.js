@@ -35,6 +35,18 @@ gulp.task('test', () => {
     }));
 });
 
+/** steps db conversion **/
+const activeStepsConverterFunction = require('./server/database/mongodbScripts/activeStepsConverterScript');
+const fullStepsConverterFunction = require('./server/database/mongodbScripts/fullStepsConverterScript');
+
+gulp.task('set-convert-dbs', () => {
+  process.env.SRC_DB = 'mongodb://localhost:27017/steps-api-sanitised';
+  process.env.DEST_DB = 'mongodb://localhost:27017/dev';
+});
+
+gulp.task('active-convert', ['set-convert-dbs'], activeStepsConverterFunction);
+gulp.task('full-convert', ['set-convert-dbs'], fullStepsConverterFunction);
+
 /** minimizing files and bundling **/
 gulp.task('css', () =>
   gulp.src('./app/resources/style/**/*.scss')
