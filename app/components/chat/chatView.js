@@ -26,6 +26,13 @@ export default class ChatView extends Component {
 
     this.query = 'screen and (min-width: ' + this.state.minWidth + ')';
     this.widthOfChatTabs = '25%';
+
+    // Get a specific user that wants to be talked to
+    const pathname = this.props.location.pathname;
+    this.talkToEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length).trim();
+    if (this.talkToEmail===''||this.talkToEmail==='chat') {
+      this.talkToEmail = null;
+    }
   }
   
   componentWillMount() {
@@ -48,7 +55,18 @@ export default class ChatView extends Component {
         // Stuff went wrong
         console.log('Unable to retrieve userList');
       } else {
-        this.setState({ users: userList });
+        if (this.talkToEmail!==null||this.talkToEmail!==undefined) {
+          let current = usersList.find(function(user){
+            return user===this.talkToEmail;
+          });
+
+          if (current===undefined) {
+            // If not in the list, add it to the top of the list
+            userList.splice(0, 0, this.talkToEmail); 
+            current = 0;
+          }
+        }
+        this.setState({ users: userList, current });
       }
     }.bind(this));
   }
