@@ -1,4 +1,4 @@
-const config = process.env.TEST_DB;
+const config = process.env.TEST_DB_URI;
 const ModelHandler = require('../server/database/models/ourModels');
 const Exhibition = require('../server/database/objectClasses/Exhibition.js');
 const Comment = require('../server/database/objectClasses/Comment.js');

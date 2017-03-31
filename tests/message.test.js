@@ -1,4 +1,4 @@
-const config = process.env.TEST_DB;
+const config = process.env.TEST_DB_URI;
 const ModelHandler = require('../server/database/models/ourModels');
 const Message = require('../server/database/objectClasses/Message.js');
 const assert = require('assert');

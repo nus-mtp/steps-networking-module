@@ -25,7 +25,7 @@ gulp.task('lint', () =>
 
 /** run test **/
 gulp.task('test', () => {
-  process.env.TEST_DB = 'mongodb://localhost:27017/fake-data';
+  process.env.TEST_DB_URI = 'mongodb://localhost:27017/fake-data';
   gulp.src('tests/*.test.js')
     .pipe(babel({
       presets: ['es2015'],
@@ -80,8 +80,7 @@ gulp.task('buildServer', () => {
   gulp.src('./server/server.js')
       .pipe(webpack(webpackServerConfig))
       .pipe(gulp.dest('./server/'));
-},
-);
+});
 
 gulp.task('buildClient', ['css', 'html', 'image', 'bundle']);
 
