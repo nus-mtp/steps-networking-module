@@ -78,8 +78,9 @@ class ProfileView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      console.log('profile get user success');
-      if (xhr.status === 200) {
+      //console.log(xhr.status);
+      //if (xhr.status === 200) {
+        console.log('profile get user success');
         const user = xhr.response;
         // Buggy and I not sure why
         user.userSkills = (xhr.response.userSkills) ? xhr.response.userSkills.map((skill, i) => {
@@ -87,13 +88,12 @@ class ProfileView extends React.Component {
             id: i,
             text: skill,
           };
-        }) : [],
-
+        }) : [];
         this.setState({ user, });
-      } else {
-        console.log('profile get user fail');
-        this.setState({ user: [] });
-      }
+      //} else {
+        //console.log('profile get user fail');
+        //this.setState({ user: [] });
+      //}
     });
     xhr.send();
   }
