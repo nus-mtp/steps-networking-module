@@ -108,7 +108,7 @@ class SearchView extends React.Component {
     if (this.state.searchResults) {
       if (this.state.searchCategory === 'exhibition') {
         render = this.state.searchResults.map(result =>
-          <Link to={`/exhibition/${result.exhibitionName}`} key={result.id}>
+          <Link to={`/exhibition/${result.eventName}/${result.exhibitionName}`} key={result.id}>
             <div id="search-result" className="card">
               <img className="card-img-top card-image align-self-center" src={result.poster} onError={this.addDefaultSrc} alt="poster" />
               <div className="card-block">
