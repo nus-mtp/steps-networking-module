@@ -229,7 +229,7 @@ describe('Attendance Read', () => {
   });
 
   it('should be able to retrieve an array of AttendanceObj by reasons', (done) => {
-    Attendance.searchAttendancesByReason('investors', (err, obj) => {
+    Attendance.searchAttendancesByReason('finding investors', (err, obj) => {
       if (err) {
         console.log('unable to get attendance object');
       } else {
@@ -250,7 +250,7 @@ describe('Attendance Read', () => {
         console.log(err);
         done();
       } else {
-        Attendance.searchAttendancesByKeyAndReason(result._id, 'investor', (err, obj) => {
+        Attendance.searchAttendancesByKeyAndReason(result._id, 'finding investors', (err, obj) => {
           if (err) {
             console.log('unable to get attendance object');
           } else {

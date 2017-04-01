@@ -45,7 +45,7 @@ class Event {
    */
   constructor(eventName = '', eventDescription = '', startDate, endDate, location, map, eventPicture = '', tags = []) {
     this.eventJSON = {
-      event_name: eventName,
+      event_name: eventName.trim(),
       event_description: eventDescription,
       start_date: startDate,
       end_date: endDate,
