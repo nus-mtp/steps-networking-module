@@ -137,7 +137,7 @@ class App extends React.Component {
   }
 
   handleSearch(term) {
-    let searchUrl = (typeof term === 'string') ? term : this.state.search.replace(/ /g, ",");
+    let searchUrl = (typeof term === 'string') ? term : this.state.search;
 
     if (this.state.searchFilter === 'Event') {
       this.context.router.push(`/event/${searchUrl}`);
@@ -150,9 +150,9 @@ class App extends React.Component {
       });
       this.context.router.push(`/exhibition/${eventName}/${searchUrl}`);
     } else if (this.state.searchFilter === 'Skills') {
-      this.context.router.push(`/search/user/${searchUrl}`);
+      this.context.router.push(`/search/user/${searchUrl.replace(/ /g, ",")}`);
     } else if (this.state.searchFilter === 'Tags') {
-      this.context.router.push(`/search/exhibition/${searchUrl}`);
+      this.context.router.push(`/search/exhibition/${searchUrl.replace(/ /g, ",")}`);
     }
 
     this.setState({
