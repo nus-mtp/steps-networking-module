@@ -137,7 +137,6 @@ class App extends React.Component {
   }
 
   handleSearch(term) {
-    console.log(this.state.search + '....' + term);
     let searchUrl = (typeof term === 'string') ? term : this.state.search.replace(/ /g, ",");
 
     if (this.state.searchFilter === 'Event') {
