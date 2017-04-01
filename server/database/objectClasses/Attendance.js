@@ -45,7 +45,7 @@ class Attendance {
    */
   constructor(userEmail, attendanceKey, attendanceType, reason) {
     this.attendanceJSON = {
-      user_email: userEmail,
+      user_email: userEmail.trim(),
       attendance_key: attendanceKey,
       attendance_type: attendanceType,
       reason: removeDuplicates(reason.map(currReason => currReason.trim().toLowerCase())),

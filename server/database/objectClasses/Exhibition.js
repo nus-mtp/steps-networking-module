@@ -44,9 +44,9 @@ class Exhibition {
    */
   constructor(exhibitionName = '', exhibitionDescription = '', eventName, posterURL, images, videos, website, tags) {
     this.exhibitionJSON = {
-      exhibition_name: exhibitionName,
+      exhibition_name: exhibitionName.trim(),
       exhibition_description: exhibitionDescription,
-      event_name: eventName,
+      event_name: eventName.trim(),
       poster: posterURL,
       images,
       videos,
