@@ -50,19 +50,11 @@ class ModelHandler {
    *
    * Starts a connection to the backend implicitly.
    *
-   * @param {String} username: The String containing a part of the login
-   *  credentials required to access the DB.
-   * @param {String} password: The String containing a part of the login
-   *  credentials required to access the DB.
-   * @param {String} host: The String containing the name of the host
-   *  that the MongoDB Server is running on.
-   * @param {Number} port: The String containing the port number of the
-   *  MongoDB Server process on host.
-   * @param {String} database: The String representing the name of the database to connect to.
+   * @param {String} mongoURI: The string representing MongoDB connection information.
    * @returns {ModelHandler}: This instance.
    */
-  initWithParameters(username, password, host, port, database) {
-    this.db = mongoDBConnector.connect(username, password, host, port, database);
+  initWithUri(mongoURI) {
+    this.db = mongoDBConnector.connect(mongoURI);
     this.UserModel = this
       .db
       .model('user', userSchema);

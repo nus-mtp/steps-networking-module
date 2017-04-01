@@ -74,22 +74,46 @@
   #comment-list {
     width: 100%;
 
-    .comment-container {
+    #user-comment-list {
+      margin-bottom: 10px;
+    }
+
+    #comment {
+      align-self: flex-start;
+      word-break: break-all;
+      text-align: left;
+    }
+
+    #comment-sender {
+      text-align: initial;
+    }
+
+    .user-comment-container, .others-comment-container {
+      padding: 5px 20px;
+      margin-bottom: 2px;
       display: flex;
       flex-direction: column;
+      align-items: flex-start;
+      font-size: 16px;
+      border: none;
+      border-radius: none;
 
-      #comment {
-        align-self: flex-start;
-      }
-
-      #comment-sender {
-        font-size: 14px;
+      #comment-timestamp {
         color: grey;
-        align-self: flex-end;
+        font-size: 12px;
       }
+    }
+
+    .user-comment-container {
+      background-color: aliceblue;
+    }
+
+    .others-comment-container {
+      background-color: powderblue;
     }
   }
 }
+
 
 #match-project-poster-container {
   margin-bottom: 15px;

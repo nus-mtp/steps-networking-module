@@ -1,4 +1,4 @@
-const config = require('../server/config.json').fakeDbUri;
+const config = process.env.TEST_DB_URI;
 const ModelHandler = require('../server/database/models/ourModels');
 const Event = require('../server/database/objectClasses/Event.js');
 const assert = require('assert');
@@ -6,12 +6,7 @@ const assert = require('assert');
 let ModelHandlerObj;
 describe('Event Create', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Event.setDBConnection(ModelHandlerObj.getConnection());
 
@@ -97,12 +92,7 @@ describe('Event Create', () => {
 
 describe('Event Read', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Event.setDBConnection(ModelHandlerObj.getConnection());
 
@@ -217,12 +207,7 @@ describe('Event Read', () => {
 
 describe('Event Update', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Event.setDBConnection(ModelHandlerObj.getConnection());
     const testevent2 = new Event(
@@ -291,7 +276,7 @@ describe('Event Update', () => {
         if (err) {
           console.log('unable to update');
         } else {
-          assert.equal(results.tags[0], 'NUS');
+          assert.equal(results.tags[0], 'nus');
         }
         done();
       });
@@ -300,12 +285,7 @@ describe('Event Update', () => {
 
 describe('Event Delete', () => {
   before((done) => {
-    ModelHandlerObj = new ModelHandler().initWithParameters(
-        config.username,
-        config.password,
-        config.host,
-        config.port,
-        config.database);
+    ModelHandlerObj = new ModelHandler().initWithUri(config);
 
     Event.setDBConnection(ModelHandlerObj.getConnection());
 

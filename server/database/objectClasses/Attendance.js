@@ -157,7 +157,7 @@ class Attendance {
   static searchAttendanceByUserAndKey(userEmail, attendanceKey, callback) {
     if (Attendance.checkConnection()) {
       Attendance.AttendanceModel
-            .findOne({ user_email: userEmail.trim(), attendance_key: attendanceKey },
+            .findOne({ user_email: userEmail, attendance_key: attendanceKey },
                 (err, matchedAttendance) => {
                   callback(err, matchedAttendance);
                 });
@@ -177,7 +177,7 @@ class Attendance {
   static searchAttendancesByReason(reason, callback) {
     if (Attendance.checkConnection()) {
       Attendance.AttendanceModel.find(
-            { reason: { $regex: new RegExp(reason.trim().toLowerCase().replace('+', '\\+'), 'i') } },
+            { reason: reason.trim().toLowerCase() },
             (err, matchedAttendances) => {
               callback(err, matchedAttendances);
             },
@@ -189,7 +189,7 @@ class Attendance {
 
   /**
    * Retrieve the Attendance Documents that have the Event / Exhibition name and the specified
-   * reasons for attending above-mentioned activity.
+   * reason for attending above-mentioned activity.
    *
    * @param {mongoose.Schema.ObjectId} attendanceKey: Used to match against the
    *    attendance_key contained in all Attendances.
@@ -201,11 +201,36 @@ class Attendance {
   static searchAttendancesByKeyAndReason(attendanceKey, reason, callback) {
     if (Attendance.checkConnection()) {
       const query = { attendance_key: attendanceKey,
-        reason: { $regex: new RegExp(reason.trim().toLowerCase().replace('+', '\\+'), 'i') },
+        reason: reason.trim().toLowerCase(),
       };
       Attendance.AttendanceModel.find(query, (err, matchedAttendances) => {
         callback(err, matchedAttendances);
       });
+    } else {
+      callback('Not Connected!', null);
+    }
+  }
+
+
+  /**
+   * Retrieve the Attendance Documents that have the Event / Exhibition name and the specified
+   * reasons for attending above-mentioned activity.
+   *
+   * @param {mongoose.Schema.ObjectId} attendanceKey: Used to match against the
+   *    attendance_key contained in all Attendances.
+   * @param {Array} reasons: An Array of Strings used to denote reasons a User is
+   *    Attending an Event / Exhibition to match for.
+   * @param {function} callback: A function that executes once the operation is done.
+   */
+  static searchAttendancesByKeyAndReasons(attendanceKey, reasons, callback) {
+    if (Attendance.checkConnection()) {
+      const refinedReasons = reasons.map(reason => reason.trim().toLowerCase());
+
+      Attendance.AttendanceModel.find(
+        { attendance_key: attendanceKey, reason: { $all: { refinedReasons } } },
+        (err, matchedAttendances) => {
+          callback(err, matchedAttendances);
+        });
     } else {
       callback('Not Connected!', null);
     }

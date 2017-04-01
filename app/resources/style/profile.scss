@@ -28,16 +28,27 @@
   }
 
   #user-exhibition-container, #user-event-container {
-    text-align: center;
-    width: 130px;
-    padding: 10px;
-    color: black;
-    margin: 0 10px;
-    font-size: 14px;
+    #user-exhibition, #user-events {
+      float: right;
+    }
 
     .user-page-thumbnail {
       width: 80px;
     }
+
+    .tag-container {
+      float: right;
+    }
+
+    .tag {
+      margin-left: 10px;
+    }
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: black;
+    margin-bottom: 20px;
   }
 
   #user-exhibition-container:hover, #user-event-container:hover {

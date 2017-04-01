@@ -1,13 +1,11 @@
-import currentdb from './currentdb';
-
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const passport = require('passport');
-const config = require('./config.json');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || '3000';
+const dbConfig = process.env.MONGODB_URI;
 
 app.use(express.static(path.join(__dirname, '/../dist')));
 app.use('/css', express.static(path.join(`${__dirname}/../node_modules/bootstrap/dist/css`)));  // redirect CSS bootstrap
@@ -16,8 +14,7 @@ app.use('/tether', express.static(path.join(`${__dirname}/../node_modules/tether
 app.use('/jquery', express.static(path.join(`${__dirname}/../node_modules/jquery/dist`)));  // redirect jquery
 
 const db = require('./database/mongodbScripts/accessMongoDB').connect(
-    config[currentdb].username, config[currentdb].password, config[currentdb].host,
-    config[currentdb].port, config[currentdb].database, 30,
+    dbConfig, 128,
     (err) => {
       if (err) {
         throw err;
@@ -63,8 +60,14 @@ const db = require('./database/mongodbScripts/accessMongoDB').connect(
       app.use('/comment', commentRoutes);
       app.use('/message', messageRoutes);
 
-      app.listen(process.env.PORT || port, () => {
-        const listeningPort = process.env.PORT || port;
-        console.log(`Running on ${listeningPort}`);
+      const server = require('http').createServer(app);
+      const io = require('socket.io').listen(server);
+
+      app.set('port', port);
+      server.listen(app.get('port'), () => {
+        console.log(`Running on ${app.get('port')}`);
       });
-    });
+
+      require('./routes/messageSocket')(io, db);
+    },
+);

@@ -11,7 +11,7 @@ class Event extends React.Component {
 
   isEventAttended() {
     for (const attend of this.props.attendance) {
-      if (this.props.event.name === attend.name) {
+      if (this.props.event.id === attend.attendanceKey) {
         return true;
       }
     }

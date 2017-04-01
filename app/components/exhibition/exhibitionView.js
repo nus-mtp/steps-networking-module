@@ -1,6 +1,6 @@
 import React from 'react';
+import Auth from '../../database/auth';
 import { Link } from 'react-router';
-import { sampleComments } from './sampleData';
 
 class ExhibitionView extends React.Component {
   constructor(props) {
@@ -8,7 +8,7 @@ class ExhibitionView extends React.Component {
 
     this.state = {
       currentComment: '',
-      comments: sampleComments,
+      comments: [],
       isTagEditable: false,
       isMediaEditable: false,
       tags: [],
@@ -19,14 +19,7 @@ class ExhibitionView extends React.Component {
       attendance: {},
     };
 
-    let pathname = this.props.location.pathname;
-    const exhibitionName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
-
-    pathname = pathname.slice(0, pathname.lastIndexOf('/'));
-    const eventName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
-
-    this.getExhibition(eventName, exhibitionName);
-    this.getAttendance(eventName, exhibitionName);
+    this.retrieveData();
 
     this.editComment = this.editComment.bind(this);
     this.submitComment = this.submitComment.bind(this);
@@ -38,14 +31,62 @@ class ExhibitionView extends React.Component {
     this.handleMediaInputChange = this.handleMediaInputChange.bind(this);
   }
 
+  componentDidMount() {
+    const that = this;
+    window.addEventListener("hashchange", () => {
+      that.retrieveData();
+    });
+  }
+
+  componentWillUnmount() {
+    const that = this;
+    window.removeEventListener("hashchange", () => {
+      that.retrieveData();
+    });
+  }
+
+  /**
+    * Function that contains all HTTP GET interactions with database
+    */
+  retrieveData() {
+    let pathname = this.props.location.pathname;
+    const exhibitionName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
+    pathname = pathname.slice(0, pathname.lastIndexOf('/'));
+    const eventName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
+    this.getExhibition(eventName, exhibitionName);
+    this.getComments(eventName, exhibitionName);
+    this.getAttendance(eventName, exhibitionName);
+  }
+
   getExhibition(event, exhibition) {
     const xhr = new XMLHttpRequest();
     xhr.open('get', `/exhibition/get/oneExhibition/${event}/${exhibition}`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        this.setState({
+          exhibition: xhr.response,
+        });
+      } else {
+        this.setState({
+          exhibition: {},
+        });
+      }
+    });
+    xhr.send();
+  }
+
+  getComments(event, exhibition) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/comment/get/${event}/${exhibition}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
       this.setState({
-        exhibition: xhr.response,
+        comments: xhr.response,
       });
     });
     xhr.send();
@@ -57,9 +98,15 @@ class ExhibitionView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      this.setState({
-        attendance: xhr.response,
-      });
+      if (xhr.status === 200) {
+        this.setState({
+          attendance: xhr.response,
+        });
+      } else {
+        this.setState({
+          attendance: {},
+        });
+      }
     });
     xhr.send();
   }
@@ -70,27 +117,67 @@ class ExhibitionView extends React.Component {
     });
   }
 
+  /**
+    * Function to post a save a comment into the database
+    * HTTP POST body requires eventName, exhibitionName, userEmail and comment
+    */
   submitComment() {
-    const comments = sampleComments;
-    const tempEmail = 'test@test.com'; // to be deleted
-    const isEmailPresent = comments.find(obj => obj.email === tempEmail);
+    const comment = encodeURIComponent(this.state.currentComment);
+    const eventName = encodeURIComponent(this.state.exhibition.eventName);
+    const exhibitionName = encodeURIComponent(this.state.exhibition.exhibitionName);
+    const userEmail = (Auth.isUserAuthenticated()) ? encodeURIComponent(Auth.getToken().email.replace(/%40/i, '@')) : '';
+    const formData = `userEmail=${userEmail}&eventName=${eventName}&exhibitionName=${exhibitionName}&comment=${comment}`;
 
-    if (isEmailPresent) {
-      isEmailPresent.comments.push(this.state.currentComment);
-      const newArray = comments.filter(obj => obj.email !== tempEmail);
-      newArray.push(isEmailPresent);
-      this.setState({
-        comments: newArray,
-      })
-    } else {
-      const newComment = {
-        email: 'test@test.com',
-        comments: [this.state.currentComment],
-      };
-      comments.push(newComment);
-      this.setState({
-        comments,
+    const isNewComment = this.state.comments.filter(commentObject => {
+        return commentObject.userEmail === Auth.getToken().email.replace(/%40/i, '@');
+    });
+
+    if (isNewComment.length > 0) {
+      const xhr = new XMLHttpRequest();
+      xhr.open('post', '/comment/post/addComment');
+      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhr.responseType = 'json';
+      xhr.addEventListener('load', () => {
+        if (xhr.status === 200) {
+          // success
+          this.setState({
+            feedback: 'Successfully edited',
+            currentComment: '',
+          });
+
+          this.retrieveData();
+        } else {
+          // failure
+          this.setState({
+            feedback: xhr.response,
+            currentComment: '',
+          });
+        }
       });
+      xhr.send(formData);
+    } else {
+      const xhr = new XMLHttpRequest();
+      xhr.open('post', '/comment/post/newComment');
+      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhr.responseType = 'json';
+      xhr.addEventListener('load', () => {
+        if (xhr.status === 200) {
+          // success
+          this.setState({
+            feedback: 'Successfully edited',
+            currentComment: '',
+          });
+
+          this.retrieveData();
+        } else {
+          // failure
+          this.setState({
+            feedback: xhr.response,
+            currentComment: '',
+          });
+        }
+      });
+      xhr.send(formData);
     }
   }
 
@@ -228,20 +315,31 @@ class ExhibitionView extends React.Component {
                 <textarea className="form-control" rows="2" id="comment-input" value={this.state.currentComment} onChange={this.editComment}></textarea>
                 <button id="submit-comment" type="button" className="btn btn-primary" onClick={this.submitComment}>Submit</button>
               </div>
-              <ul id="comment-list" className="list-group">
-                {
-                  this.state.comments.map(commentObject =>
-                    <div key={commentObject.email}>
-                    {
-                      commentObject.comments.map((comment, i) =>
-                        <li key={`${comment}${commentObject.email}${i}`} className="comment-container list-group-item">
-                          <div id="comment">{comment}</div>
-                          <div id="comment-sender">- {commentObject.email}</div>
-                        </li>
-                    )}
-                    </div>
-                )}
-              </ul>
+              <div id="comment-list">
+              {
+                (this.state.comments.length > 0) ?
+                this.state.comments.map(commentObject =>
+                  <div key={commentObject.userEmail} id="user-comment-list">
+                    <Link to={`/profile/${commentObject.userEmail}`}><h5 id="comment-sender">{commentObject.userEmail}</h5></Link>
+                    <ul className="list-group">
+                      {
+                        commentObject.comments.map((comment, i) =>
+                          (commentObject.userEmail === Auth.getToken().email.replace(/%40/i, '@')) ?
+                            <li key={`${comment.content}${commentObject.userEmail}${i}`} className="user-comment-container list-group-item">
+                              <div id="comment-timestamp">{new Date(comment.timestamp).toDateString()}</div>
+                              <div id="comment">{comment.content}</div>
+                            </li> :
+                            <li key={`${comment.content}${commentObject.userEmail}${i}`} className="others-comment-container list-group-item">
+                              <div id="comment-timestamp">{new Date(comment.timestamp).toDateString()}</div>
+                              <div id="comment">{comment.content}</div>
+                            </li>
+                        )
+                      }
+                    </ul>
+                  </div>
+                ) : <div />
+              }
+              </div>
             </li>
           </ul>
         </div>
