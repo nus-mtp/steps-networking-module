@@ -377,21 +377,41 @@ class ProfileView extends React.Component {
                   {
                     (this.state.exhibitions) ?
                     this.state.exhibitions.map(exhibition =>
-                      <Link to={`/exhibition/${exhibition.eventName}/${exhibition.exhibitionName}`} key={exhibition.id}>
-                        <div id="user-exhibition-container">
-                          <img className="img-fluid user-page-thumbnail" src={`${exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" />
-                          <div id="user-exhibition">
-                            <div>{exhibition.exhibitionName}</div>
-                            <div className="tag-container">{(this.state.attendances) ? this.state.attendances.filter(
-                              attendance => {if (attendance.attendanceKey === exhibition.id) return attendance;}).map(
-                                attendance => attendance.reasons.map(
-                                  reason => <span className="tag badge badge-pill badge-success">{reason}</span>)) :
-                                  <div/>
-                            }</div>
+                      <div>
+                        <Link to={`/exhibition/${exhibition.eventName}/${exhibition.exhibitionName}`} key={exhibition.id}>
+                          <div id="user-exhibition-container">
+                            <img className="img-fluid user-page-thumbnail" src={`${exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" />
+                            <div id="user-exhibition">
+                              <div>{exhibition.exhibitionName}</div>
+                              <div className="tag-container">{(this.state.attendances) ? this.state.attendances.filter(
+                                attendance => {if (attendance.attendanceKey === exhibition.id) return attendance;}).map(
+                                  attendance => attendance.reasons.map(
+                                    reason => <span className="tag badge badge-pill badge-success">{reason}</span>)) :
+                                    <div/>
+                              }</div>
+                            </div>
                           </div>
+                        </Link>
+                        <div>
+                          {
+                            (this.state.isContentEditable) ?
+                              <div className="row">
+                                <span className="input-group-addon">
+                                  <input id="all" type="checkbox" onClick={this.onClick}/>Full-Time
+                                </span>
+                                <span className="input-group-addon">
+                                  <input id="internship" type="checkbox" onClick={this.onClick}/>Internship
+                                </span>
+                                <span className="input-group-addon">
+                                  <input id="partnership" type="checkbox" onClick={this.onClick}/>Partnership
+                                </span>
+                              </div> :
+                              <div/>
+                          }
                         </div>
-                      </Link>
-                    ) : <div />
+                      </div>
+                    )
+                     : <div />
                   }
                 </div>
               </div>
