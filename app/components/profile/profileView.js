@@ -279,22 +279,28 @@ class ProfileView extends React.Component {
     return (
       <div id="profile-body">
       {
-        (Object.keys(this.state.user).length !== 0 && this.state.user.userEmail === userEmail)
+        (Object.keys(this.state.user).length !== 0)
         ? <div className="row justify-content-between justify-content-md-around">
             <div id="profile-picture" className="col-md-6 push-md-3 col-12 text-center">
               <img src="../../resources/images/default-profile-picture.png" alt="profile-img" />
             </div>
             <div className="col-md-3 pull-md-6 col-6 text-center d-flex justify-content-center">
-              <div id="chat-icon-container">
-                <Link to={Paths.chat}>
-                  <img id="chat-icon" src="../../resources/images/chat-icon.svg" alt="chat-icon" />
-                </Link>
-              </div>
+            {
+              (this.state.user.userEmail !== userEmail) ?
+                <div id="chat-icon-container">
+                  <Link to={`/chat/${this.state.user.userEmail}`}>
+                    <img id="chat-icon" src="../../resources/images/chat-icon.svg" alt="chat-icon" />
+                  </Link>
+                </div> : <div />
+            }
             </div>
             <div className="col-md-3 col-6 text-center d-flex justify-content-center" onClick={this.handleEdit}>
-              <div id="edit-icon-container">
-                <img id="edit-icon" src="../../resources/images/edit-icon.svg" alt="edit-icon" />
-              </div>
+            {
+              (this.state.user.userEmail === userEmail) ?
+                <div id="edit-icon-container">
+                  <img id="edit-icon" src="../../resources/images/edit-icon.svg" alt="edit-icon" />
+                </div> : <div />
+            }
             </div>
           </div>
         : <div id="profile-picture" className="col-12 text-center">
