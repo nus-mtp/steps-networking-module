@@ -45,7 +45,7 @@ class Attendance {
    */
   constructor(userEmail, attendanceKey, attendanceType, reason) {
     this.attendanceJSON = {
-      user_email: userEmail.trim(),
+      user_email: userEmail,
       attendance_key: attendanceKey,
       attendance_type: attendanceType,
       reason: removeDuplicates(reason.map(currReason => currReason.trim().toLowerCase())),
@@ -157,7 +157,7 @@ class Attendance {
   static searchAttendanceByUserAndKey(userEmail, attendanceKey, callback) {
     if (Attendance.checkConnection()) {
       Attendance.AttendanceModel
-            .findOne({ user_email: userEmail.trim(), attendance_key: attendanceKey },
+            .findOne({ user_email: userEmail, attendance_key: attendanceKey },
                 (err, matchedAttendance) => {
                   callback(err, matchedAttendance);
                 });
@@ -177,7 +177,7 @@ class Attendance {
   static searchAttendancesByReason(reason, callback) {
     if (Attendance.checkConnection()) {
       Attendance.AttendanceModel.find(
-            { reason: { $regex: new RegExp(reason.trim().toLowerCase().replace('+', '\\+'), 'i') } },
+            { reason: reason.trim().toLowerCase() },
             (err, matchedAttendances) => {
               callback(err, matchedAttendances);
             },
@@ -201,7 +201,7 @@ class Attendance {
   static searchAttendancesByKeyAndReason(attendanceKey, reason, callback) {
     if (Attendance.checkConnection()) {
       const query = { attendance_key: attendanceKey,
-        reason: { $regex: new RegExp(reason.trim().toLowerCase().replace('+', '\\+'), 'i') },
+        reason: reason.trim().toLowerCase(),
       };
       Attendance.AttendanceModel.find(query, (err, matchedAttendances) => {
         callback(err, matchedAttendances);
