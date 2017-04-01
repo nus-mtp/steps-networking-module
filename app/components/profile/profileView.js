@@ -15,7 +15,9 @@ class ProfileView extends React.Component {
       interestedOpportunities: '-', // What am I looking for
       isContentEditable: false, //  Edit mode
       pastUserData: {}, // State restore if user cancel edit
-      user: {},
+      user: {
+        userSkills: [],
+      },
       events: [], // List of event user attended
       exhibitions: [], // List of exhibition user participated
       attendances: [], // For all the attendance objects
@@ -80,7 +82,6 @@ class ProfileView extends React.Component {
     xhr.addEventListener('load', () => {
       //console.log(xhr.status);
       //if (xhr.status === 200) {
-        console.log('profile get user success');
         const user = xhr.response;
         // Buggy and I not sure why
         user.userSkills = (xhr.response.userSkills) ? xhr.response.userSkills.map((skill, i) => {
