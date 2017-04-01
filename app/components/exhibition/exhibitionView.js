@@ -66,7 +66,6 @@ class ExhibitionView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      console.log(xhr.response);
       this.setState({
         exhibition: xhr.response,
       });
@@ -80,7 +79,6 @@ class ExhibitionView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      console.log(xhr.response);
       this.setState({
         comments: xhr.response,
       });
@@ -94,7 +92,6 @@ class ExhibitionView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-        console.log(xhr.response);
       this.setState({
         attendance: xhr.response,
       });
@@ -119,7 +116,11 @@ class ExhibitionView extends React.Component {
     const userEmail = (Auth.isUserAuthenticated()) ? encodeURIComponent(Auth.getToken().email.replace(/%40/i, '@')) : '';
     const formData = `userEmail=${userEmail}&eventName=${eventName}&exhibitionName=${exhibitionName}&comment=${comment}`;
 
-    if (this.state.comments.length > 0) {
+    const isNewComment = this.state.comments.filter(commentObject => {
+        return commentObject.userEmail === Auth.getToken().email.replace(/%40/i, '@');
+    });
+
+    if (isNewComment.length > 0) {
       const xhr = new XMLHttpRequest();
       xhr.open('post', '/comment/post/addComment');
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -129,11 +130,15 @@ class ExhibitionView extends React.Component {
           // success
           this.setState({
             feedback: 'Successfully edited',
+            currentComment: '',
           });
+
+          this.retrieveData();
         } else {
           // failure
           this.setState({
             feedback: xhr.response,
+            currentComment: '',
           });
         }
       });
@@ -148,11 +153,15 @@ class ExhibitionView extends React.Component {
           // success
           this.setState({
             feedback: 'Successfully edited',
+            currentComment: '',
           });
+
+          this.retrieveData();
         } else {
           // failure
           this.setState({
             feedback: xhr.response,
+            currentComment: '',
           });
         }
       });
@@ -205,22 +214,6 @@ class ExhibitionView extends React.Component {
   }
 
   render() {
-    let comments = <div />;
-    //console.log(this.state.comments[0].userEmail);
-    if (this.state.comments.length > 0) {
-      comments = this.state.comments.map(commentObject =>
-        <div key={commentObject.userEmail}>
-        {
-          commentObject.comments.map((comment, i) =>
-            <li key={`${comment.content}${commentObject.userEmail}${i}`} className="comment-container list-group-item">
-              <div id="comment">{comment.content}</div>
-              <div id="comment-sender">- {commentObject.userEmail}</div>
-            </li>
-        )}
-        </div>
-      );
-    }
-
     return (
       <div id="project-body">
         <div className="row justify-content-center">
@@ -310,9 +303,31 @@ class ExhibitionView extends React.Component {
                 <textarea className="form-control" rows="2" id="comment-input" value={this.state.currentComment} onChange={this.editComment}></textarea>
                 <button id="submit-comment" type="button" className="btn btn-primary" onClick={this.submitComment}>Submit</button>
               </div>
-              <ul id="comment-list" className="list-group">
-                {comments}
-              </ul>
+              <div id="comment-list">
+              {
+                (this.state.comments.length > 0) ?
+                this.state.comments.map(commentObject =>
+                  <div key={commentObject.userEmail} id="user-comment-list">
+                    <Link to={`/profile/${commentObject.userEmail}`}><h5 id="comment-sender">{commentObject.userEmail}</h5></Link>
+                    <ul className="list-group">
+                      {
+                        commentObject.comments.map((comment, i) =>
+                          (commentObject.userEmail === Auth.getToken().email.replace(/%40/i, '@')) ?
+                            <li key={`${comment.content}${commentObject.userEmail}${i}`} className="user-comment-container list-group-item">
+                              <div id="comment-timestamp">{new Date(comment.timestamp).toDateString()}</div>
+                              <div id="comment">{comment.content}</div>
+                            </li> :
+                            <li key={`${comment.content}${commentObject.userEmail}${i}`} className="others-comment-container list-group-item">
+                              <div id="comment-timestamp">{new Date(comment.timestamp).toDateString()}</div>
+                              <div id="comment">{comment.content}</div>
+                            </li>
+                        )
+                      }
+                    </ul>
+                  </div>
+                ) : <div />
+              }
+              </div>
             </li>
           </ul>
         </div>
