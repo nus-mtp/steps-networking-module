@@ -15,9 +15,7 @@ class ProfileView extends React.Component {
       interestedOpportunities: '-', // What am I looking for
       isContentEditable: false, //  Edit mode
       pastUserData: {}, // State restore if user cancel edit
-      user: {
-        userSkills: [],
-      },
+      user: {},
       events: [], // List of event user attended
       exhibitions: [], // List of exhibition user participated
       attendances: [], // For all the attendance objects
@@ -64,10 +62,8 @@ class ProfileView extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        console.log('profile attendance success');
         this.setState({ attendances: xhr.response });
       } else {
-        console.log('profile attendance fail');
         this.setState({ attendances: []});
       }
     });
@@ -81,13 +77,15 @@ class ProfileView extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
         const user = xhr.response;
-        user.userSkills = (xhr.response.userSkills.length > 0) ? xhr.response.userSkills.map((skill, i) => {
+        if (user) {
+          user.userSkills = (xhr.response && xhr.response.userSkills.length > 0) ? xhr.response.userSkills.map((skill, i) => {
           return {
             id: i,
             text: skill,
           };
         }) : [];
         this.setState({ user, });
+      }
     });
     xhr.send();
   }
