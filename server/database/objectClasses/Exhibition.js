@@ -192,7 +192,7 @@ class Exhibition {
    */
   static searchExhibitionsByEvent(eventName, callback) {
     if (Exhibition.checkConnection()) {
-      Exhibition.ExhibitionModel.find({ event_name: { $regex: new RegExp(eventName.replace('+', '\\+'), 'i') } }, (err, docs) => {
+      Exhibition.ExhibitionModel.find({ event_name: eventName }, (err, docs) => {
         callback(err, docs);
       });
     } else {
