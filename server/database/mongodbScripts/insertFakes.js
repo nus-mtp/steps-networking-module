@@ -14,7 +14,7 @@ const async = require('async');
 const ModelHandler = require('../models/ourModels');
 
 const Models = new ModelHandler()
-    .initWithParameters(config.fakeDbUri.username, config.fakeDbUri.password,
+    .initWithUri(config.fakeDbUri.username, config.fakeDbUri.password,
         config.fakeDbUri.host, config.fakeDbUri.port,
         config.fakeDbUri.database);
 

@@ -4,20 +4,15 @@
  */
 const async = require('async');
 
-const config = require('../../config');
-
-const src = config.stepsDbUri;
-const dest = config.devDbUri;
+const src = process.env.SRC_DB_URI;
+const dest = process.env.DEST_DB_URI;
 
 // Obtain the Models of the STePs DB
 const ModelHandler = require('../models/ourModels');
 const StepsModelHandler = require('../models/stepsModels');
 
 const Models = new ModelHandler()
-    .initWithParameters(
-        dest.username, dest.password,
-        dest.host, dest.port,
-        dest.database);
+    .initWithUri(dest);
 
 module.exports.Models = Models;
 
@@ -27,10 +22,7 @@ const Exhibition = Models.getExhibitionModel();
 const Attendance = Models.getAttendanceModel();
 
 const StepsModels = new StepsModelHandler()
-    .initWithParameters(
-        src.username, src.password,
-        src.host, src.port,
-        src.database);
+    .initWithUri(src);
 
 module.exports.StepsModels = StepsModels;
 
