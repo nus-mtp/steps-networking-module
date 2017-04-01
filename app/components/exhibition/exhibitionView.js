@@ -62,9 +62,15 @@ class ExhibitionView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      this.setState({
-        exhibition: xhr.response,
-      });
+      if (xhr.status === 200) {
+        this.setState({
+          exhibition: xhr.response,
+        });
+      } else {
+        this.setState({
+          exhibition: {},
+        });
+      }
     });
     xhr.send();
   }
@@ -75,9 +81,15 @@ class ExhibitionView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      this.setState({
-        attendance: xhr.response,
-      });
+      if (xhr.status === 200) {
+        this.setState({
+          attendance: xhr.response,
+        });
+      } else {
+        this.setState({
+          attendance: {},
+        });
+      }
     });
     xhr.send();
   }

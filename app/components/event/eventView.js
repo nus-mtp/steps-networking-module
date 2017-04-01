@@ -50,7 +50,7 @@ class EventView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      if (xhr.status === 200) {
+      if (xhr.response !== null) {
         // success
         this.setState({
           exhibitions: xhr.response,
@@ -59,6 +59,7 @@ class EventView extends React.Component {
       } else {
         this.setState({
           exhibitions: [],
+          displayExhibitions: [],
         });
       }
     });
@@ -74,7 +75,7 @@ class EventView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      if (xhr.status === 200) {
+      if (xhr.response !== null) {
         // success
         this.setState({
           event: xhr.response,
@@ -196,13 +197,15 @@ class EventView extends React.Component {
               <hr/>
               <div className="mb-3">
                 <button className="btn btn-success mr-2" onClick={this.displayAllExhibitions}>
-                  {(this.state.isDisplayExhibitions)
+                  {
+                    (this.state.isDisplayExhibitions)
                     ? "Hide exhibitions"
                     : "Show exhibitions"
                   }
                 </button>
               </div>
-              {(this.state.isDisplayExhibitions)
+              {
+                (this.state.isDisplayExhibitions)
                 ? <div>
                     <div className="row">
                       <span className="input-group-addon">

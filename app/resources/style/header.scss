@@ -22,9 +22,13 @@
     overflow: auto;
     max-height: 300px;
     position: absolute;
-    top: 60px;
-    left: 175px;
-    background-color: rgba(255, 255, 255, 0.9);
+    top: 55px;
+    left: 90px;
+    min-width: 200px;
+    border-radius: 0;
+    max-width: 600px;
+    background-color: rgba(255,255,255,.9);
+    text-align: center;
 
     .list-group-item {
       display: block;
@@ -50,7 +54,7 @@
       border-radius: 0;
       font-size: 16px;
       margin: 0;
-      height: 54.5px;
+      height: 54px;
       border-top: none;
       border-bottom: none;
       border-right: none;
@@ -84,7 +88,8 @@
 
   #brand-logo {
     height: 50px;
-    margin: 0 15px
+    margin: 0 15px;
+    width: 60px;
   }
 }
 
