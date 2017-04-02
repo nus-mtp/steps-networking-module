@@ -179,6 +179,7 @@ class HomeView extends React.Component {
                   event={event}
                   attendance={this.state.attendance}
                   changeAttendance={this.changeAttendance}
+                  email={this.state.email}
                 />
               </div>
             ) : <div className="no-events justify-content-center">

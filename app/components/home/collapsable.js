@@ -16,13 +16,33 @@ class Collapsable extends React.Component {
       isAttended: false,
       users: sampleUsers,
       relevantUsers: [],
+      checkbox: [],
     };
+
+    this.initializeStates();
 
     this.setLayout = this.setLayout.bind(this);
     this.setPresent = this.setPresent.bind(this);
     this.setAbsent = this.setAbsent.bind(this);
     this.updateLayout = this.updateLayout.bind(this);
-    //this.onToggle = this.onToggle.bind(this);
+    this.onToggle = this.onToggle.bind(this);
+  }
+
+  initializeStates() {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `attendance/get/oneUserAttendance/${this.props.email}/${this.props.event.id}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        console.log("Initialize Checkbox Success");
+        this.setState({ checkbox: xhr.response.reasons });
+      } else {
+        console.log("Initialize Checkbox Fail");
+        this.setState({ checkbox: [] });
+      }
+    });
+    xhr.send();
   }
 
   componentDidMount() {
@@ -46,24 +66,38 @@ class Collapsable extends React.Component {
     };
   }
 
-  /*onToggle(e) {
+  onToggle(e) {
     //console.log(e.target.checked);
     if (e.target.checked) {
-      const xhr = new XMLHttpRequest();
-      xhr.open('post', 'attendance/post/set/oneAttendanceReasons');
-      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-      xhr.responseType = 'json';
-      xhr.addEventListener('load', () => {
-        if (xhr.status === 200) {
-          console.log('Add Event Reason Success');
-        }
-      });
-      xhr.send();
+      const array = this.state.checkbox;
+      console.log(array);
+      array.push(e.target.name);
+      console.log(array);
+      this.setState({ checkbox: array });
     } else {
-
+      const array = this.state.checkbox.filter(box => {if (box !== e.target.name) return box;});
+      console.log(this.state.checkbox);
+      console.log(array);
+      this.setState({ checkbox: array });
     }
+    const userEmail = encodeURIComponent(this.props.email);
+    const id = encodeURIComponent(this.props.event.id);
+    const reasons = encodeURIComponent(this.state.checkbox.toString());
+    const formData = `userEmail=${userEmail}&id=${id}&reasons=${reasons}`;
 
-  }*/
+    const xhr = new XMLHttpRequest();
+    xhr.open('post', 'attendance/post/set/oneAttendanceReasons');
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        console.log('Add Event Reason Success');
+      } else {
+        console.log('Add Event Reason Fail');
+      }
+    });
+    xhr.send(formData);
+  }
 
   setAbsent() {
     this.setState({
@@ -134,17 +168,17 @@ class Collapsable extends React.Component {
                 <div id="event-reasons">
                   <span className="event-reason-title">Looking for people looking for: </span>
                   <label htmlFor={"fulltime-reason-" + this.props.serial} className="custom-control custom-checkbox">
-                    <input id={"fulltime-reason-" + this.props.serial} type="checkbox" className="custom-control-input" onChange={this.onToggle} />
+                    <input id={"fulltime-reason-" + this.props.serial} type="checkbox" className="custom-control-input" name="full-time" onChange={this.onToggle} defaultChecked={this.state.checkbox.includes('full-time')} />
                     <span className="custom-control-indicator" />
                     <span className="custom-control-description reasons">Full-time</span>
                   </label>
                   <label htmlFor={"intern-reason-" + this.props.serial} className="custom-control custom-checkbox">
-                    <input id={"intern-reason-" + this.props.serial} type="checkbox" className="custom-control-input" />
+                    <input id={"intern-reason-" + this.props.serial} type="checkbox" className="custom-control-input" name="internship" onChange={this.onToggle} defaultChecked={this.state.checkbox.includes('internship')} />
                     <span className="custom-control-indicator" />
                     <span className="custom-control-description reasons">Internship</span>
                   </label>
                   <label htmlFor={"partner-reason-" + this.props.serial} className="custom-control custom-checkbox">
-                    <input id={"partner-reason-" + this.props.serial} type="checkbox" className="custom-control-input" />
+                    <input id={"partner-reason-" + this.props.serial} type="checkbox" className="custom-control-input" name="partnership" onChange={this.onToggle} defaultChecked={this.state.checkbox.includes('partnership')} />
                     <span className="custom-control-indicator" />
                     <span className="custom-control-description reasons">Partnership</span>
                   </label>
