@@ -30,11 +30,24 @@ export default class ChatView extends Component {
     // Get a specific user that wants to be talked to
     const pathname = this.props.location.pathname;
     this.talkToEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length).trim();
-    //console.log("Before " + this.talkToEmail);
     if (this.talkToEmail===''||this.talkToEmail==='chat') {
       this.talkToEmail = null;
     }
-    //console.log("After " + this.talkToEmail);
+    
+    
+    /* // Get matching users
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `user/get/chat/${this.props.email}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+      } else {
+      }
+      console.log('Get matched users ' + xhr.response);
+    });
+    xhr.send();
+    // */
   }
   
   componentWillMount() {
@@ -105,6 +118,7 @@ export default class ChatView extends Component {
           marginLeft={this.widthOfChatTabs}
           users={this.state.users}
           current={this.state.current}
+          changeConversation={this.changeConversation.bind(this)}
           email={this.state.email}
           sockets={sockets}
         />

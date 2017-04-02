@@ -19,7 +19,7 @@ export default class ChatBody extends Component {
         ChatBody.PostOther('Bacon', 1),
         ChatBody.PostSelf('Test', 2),
       ],
-      //update: true,
+      name: '',
     };
 
     this.update = true;
@@ -186,55 +186,90 @@ export default class ChatBody extends Component {
     );
   }
 
-  getCurrentConversation() {
+  getCurrentConversation(singularMode) {
+    // In singlular mode add a buffer
+    const divStyle = {
+      marginTop: '30px',
+    };
+    
     return (
-      <div id="chat-content-container">
+      <div id="chat-content-container" style={divStyle}>
         {this.getMessages.bind(this)()}
       </div>
     );
   }
   
   getName(fixToTop) {
-    let _classname = '';
-    let divStyle = {};
-    let backgroundStyle = {};
-    if (fixToTop) {
-      _classname += 'fixed-top';
-      divStyle = {
+    if (!fixToTop) {
+      return (
+        <div className="container" id="chat-name-header">
+          {ChatBody.getUserName(this.props.users[this.props.current])}
+        </div>
+      );
+    } else {
+      const _classname = 'fixed-top';
+      const divStyle = {
         marginLeft: 'auto',
         marginRight: 'auto',
         display: 'flex',
       }
-      backgroundStyle = {
+      const backgroundStyle = {
         marginTop: '55px',
         paddingTop: '5px',
+        paddingBottom: '5px',
         backgroundColor: 'white',
         width: '100%',
       };
-    }
-    return (
-      <div className={_classname} style={backgroundStyle}>
-        <div style={divStyle}>
-          <div className="container" id="chat-name-header">
-            {ChatBody.getUserName(this.props.users[this.props.current])}
+      
+      const handleChange = function(index) {
+        return function(event) {
+          event.preventDefault();
+          this.props.changeConversation(index);
+          this.update = true;
+        }.bind(this);
+      }.bind(this);
+      
+      return (
+        <div className={_classname} style={backgroundStyle}>
+          <div style={divStyle}>
+            <div className="dropdown" style={{marginLeft: 'auto', marginRight: 'auto'}}>
+              <button className="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                {ChatBody.getUserName(this.props.users[this.props.current])}
+                <span className="caret"></span>
+              </button>
+              <ul className="dropdown-menu" style={{padding: '0px'}}>
+                {
+                  this.props.users.map(function(user, index) {
+                    return (
+                      <li><button 
+                        className="btn btn-secondary" 
+                        style={{marginLeft: 'auto', marginRight: 'auto', width:'100%'}} 
+                        onClick={handleChange(index)}>
+                          {user}
+                        </button></li>
+                    );
+                  })
+                }
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
-    );
+      ); //<button className="btn btn-secondary" style={{marginLeft: 'auto', marginRight: 'auto', width:'100%'}}>
+    }
   }
 
   checkQuery(matches) {
     let divStyle = {};
-    let fixToTop = true;
+    let singularMode = true;
     if (matches) {
       divStyle = this.divStyle;
-      fixToTop = false;
+      singularMode = false;
     }
     
     return (
       <div id="chat-body" style={divStyle}>
-        {this.getName(fixToTop)}
-        {this.getCurrentConversation()}
+        {this.getName(singularMode)}
+        {this.getCurrentConversation(singularMode)}
         {this.getInputBox()}
       </div>
     );
@@ -310,6 +345,7 @@ ChatBody.propTypes = {
   marginLeft: React.PropTypes.string.isRequired,
   users: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
   current: React.PropTypes.number.isRequired,
+  changeConversation: React.PropTypes.func.isRequired,
   query: React.PropTypes.string.isRequired,
   email: React.PropTypes.string.isRequired,
 };
