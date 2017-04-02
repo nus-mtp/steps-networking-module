@@ -268,7 +268,8 @@ export default class ChatBody extends Component {
   }
 
   static scrollToBottom() {
-    document.body.scrollTop = document.body.scrollHeight;
+    //document.body.scrollTop = document.body.scrollHeight;
+    window.scrollTo(0,document.body.scrollHeight);
   }
 
   static getUserName(email) {
