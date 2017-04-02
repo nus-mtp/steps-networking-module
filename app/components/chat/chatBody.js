@@ -261,7 +261,7 @@ export default class ChatBody extends Component {
 
   static createPost(text, id, key = 0) {
     return (
-      <div className="container-fluid form-control" id={id} key={key}>
+      <div className="container-fluid form-control chat-bubble" id={id} key={key}>
         {text}
       </div>
     );

@@ -63,15 +63,20 @@
   margin-left:0;
 }
 
+/* Message wrapper */
+.chat-bubble {
+  margin-bottom: 5px;
+  max-width: 100%;
+  width: fit-content;
+  width: -moz-fit-content;
+  word-wrap: break-word;
+}
+
 /* Messages sent by other user */
 #chat-other {
   background-color:lightgray;
   margin-left:0;
   margin-right:auto;
-  margin-bottom: 5px;
-  width: -webkit-fit-content;
-  word-wrap: break-word;
-  max-width: 100%;
 }
 
 /* Messages sent by user */
@@ -79,10 +84,6 @@
   background-color:palegreen;
   margin-left: auto;
   margin-right:0;
-  margin-bottom: 5px;
-  width: -webkit-fit-content;
-  word-wrap: break-word;
-  max-width: 100%;
 }
 
 /* Textbox to submit messages */
