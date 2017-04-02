@@ -126,7 +126,7 @@ class SearchView extends React.Component {
         );
       } else if (this.state.searchCategory === 'user') {
         render = this.state.searchResults.map(result =>
-          <Link to={`/user/${result.userEmail}`} key={result.id}>
+          <Link to={`/profile/${result.userEmail}`} key={result.id}>
             <div id="search-result" className="card">
               <img className="card-img-top card-image align-self-center" src={result.userProfilePicture} onError={this.addDefaultSrc} alt="profile picture" />
               <div className="card-block">
