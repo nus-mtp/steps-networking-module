@@ -421,17 +421,23 @@ class ProfileView extends React.Component {
                               <div id="event-reasons">
                                 <span className="event-reason-title">Reason: </span>
                                 <label htmlFor={"fulltime-"+i} className="custom-control custom-checkbox">
-                                  <input id={"fulltime-"+i} type="checkbox" className={"custom-control-input tag-selection-row-"+i} name="Full-Time" />
+                                  <input id={"fulltime-"+i} type="checkbox" className={"custom-control-input tag-selection-row-"+i} name="Full-Time" defaultChecked={this.state.attendances.filter(
+                                      attendance => {if (attendance.attendanceKey === exhibition.id)
+                                        return attendance;})[0].reasons.includes('full-time')} />
                                   <span className="custom-control-indicator" />
                                   <span className="custom-control-description reasons">Full-time</span>
                                 </label>
                                 <label htmlFor={"internship-"+i} className="custom-control custom-checkbox">
-                                  <input id={"internship-"+i} type="checkbox" className={"custom-control-input tag-selection-row-"+i} name="Internship" />
+                                  <input id={"internship-"+i} type="checkbox" className={"custom-control-input tag-selection-row-"+i} name="Internship" defaultChecked={this.state.attendances.filter(
+                                      attendance => {if (attendance.attendanceKey === exhibition.id)
+                                        return attendance;})[0].reasons.includes('internship')} />
                                   <span className="custom-control-indicator" />
                                   <span className="custom-control-description reasons">Internship</span>
                                 </label>
                                 <label htmlFor={"partnership-"+i} className="custom-control custom-checkbox">
-                                  <input id={"partnership-"+i} type="checkbox" className={"custom-control-input tag-selection-row-"+i} name="Partnership" />
+                                  <input id={"partnership-"+i} type="checkbox" className={"custom-control-input tag-selection-row-"+i} name="Partnership" defaultChecked={this.state.attendances.filter(
+                                      attendance => {if (attendance.attendanceKey === exhibition.id)
+                                        return attendance;})[0].reasons.includes('partnership')} />
                                   <span className="custom-control-indicator" />
                                   <span className="custom-control-description reasons">Partnership</span>
                                 </label>
