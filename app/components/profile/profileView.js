@@ -419,7 +419,7 @@ class ProfileView extends React.Component {
                           {
                             (this.state.isContentEditable) ?
                               <div id="event-reasons">
-                                <span className="event-reason-title">Reason: </span>
+                                <span className="event-reason-title">Looking for: </span>
                                 <label htmlFor={"fulltime-"+i} className="custom-control custom-checkbox">
                                   <input id={"fulltime-"+i} type="checkbox" className={"custom-control-input tag-selection-row-"+i} name="Full-Time" defaultChecked={this.state.attendances.filter(
                                       attendance => {if (attendance.attendanceKey === exhibition.id)

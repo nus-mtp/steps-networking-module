@@ -15,12 +15,14 @@ class Collapsable extends React.Component {
       order: this.props.serial,
       isAttended: false,
       users: sampleUsers,
+      relevantUsers: [],
     };
 
     this.setLayout = this.setLayout.bind(this);
     this.setPresent = this.setPresent.bind(this);
     this.setAbsent = this.setAbsent.bind(this);
     this.updateLayout = this.updateLayout.bind(this);
+    //this.onToggle = this.onToggle.bind(this);
   }
 
   componentDidMount() {
@@ -43,6 +45,25 @@ class Collapsable extends React.Component {
       marginTop: '-1px',
     };
   }
+
+  /*onToggle(e) {
+    //console.log(e.target.checked);
+    if (e.target.checked) {
+      const xhr = new XMLHttpRequest();
+      xhr.open('post', 'attendance/post/set/oneAttendanceReasons');
+      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhr.responseType = 'json';
+      xhr.addEventListener('load', () => {
+        if (xhr.status === 200) {
+          console.log('Add Event Reason Success');
+        }
+      });
+      xhr.send();
+    } else {
+
+    }
+
+  }*/
 
   setAbsent() {
     this.setState({
@@ -111,9 +132,9 @@ class Collapsable extends React.Component {
               <div>
                 <hr />
                 <div id="event-reasons">
-                  <span className="event-reason-title">Reason: </span>
+                  <span className="event-reason-title">Looking for people looking for: </span>
                   <label htmlFor={"fulltime-reason-" + this.props.serial} className="custom-control custom-checkbox">
-                    <input id={"fulltime-reason-" + this.props.serial} type="checkbox" className="custom-control-input" />
+                    <input id={"fulltime-reason-" + this.props.serial} type="checkbox" className="custom-control-input" onChange={this.onToggle} />
                     <span className="custom-control-indicator" />
                     <span className="custom-control-description reasons">Full-time</span>
                   </label>
