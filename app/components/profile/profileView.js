@@ -235,6 +235,8 @@ class ProfileView extends React.Component {
         reasons.push(array[i].id);
       }
     }
+    if (reasons.length === 0) reasons.push("No Reason");
+
     const userEmail = encodeURIComponent(this.state.email);
     const id = encodeURIComponent(ExhibitionId);
     const reason = encodeURIComponent(reasons.toString());
