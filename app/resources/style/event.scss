@@ -1,7 +1,11 @@
 @import 'mixin';
 
 .event-poster {
-  max-height: 200px;
+  height: 460px;
+}
+
+.event-thumbnail {
+  height: 400px;
 }
 
 #home-body {
@@ -62,6 +66,7 @@
     display: block;
     text-align: center;
     background: lightgrey;
+    height: 400px;
   }
 
   #event-description {
@@ -127,7 +132,6 @@
   .event-info {
     font-size: 12px;
     color: grey;
-    display: inline-block;
     width: 100%;
   }
 
