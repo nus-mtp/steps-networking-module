@@ -200,10 +200,13 @@ export default class ChatBody extends Component {
   }
   
   getName(fixToTop) {
-    if (!fixToTop) {
+    const recipientEmail = this.props.users[this.props.current];
+    if (recipientEmail===undefined) {
+      return null;
+    } else if (!fixToTop) {
       return (
         <div className="container" id="chat-name-header">
-          {ChatBody.getUserName(this.props.users[this.props.current])}
+          {ChatBody.getUserName(recipientEmail)}
         </div>
       );
     } else {
@@ -234,7 +237,7 @@ export default class ChatBody extends Component {
           <div style={divStyle}>
             <div className="dropdown" style={{marginLeft: 'auto', marginRight: 'auto'}}>
               <button className="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                {ChatBody.getUserName(this.props.users[this.props.current])}
+                {ChatBody.getUserName(recipientEmail)}
                 <span className="caret"></span>
               </button>
               <ul className="dropdown-menu" style={{padding: '0px'}}>
@@ -335,7 +338,10 @@ export default class ChatBody extends Component {
   }
 
   static getUserName(email) {
-    const str = `Name of ${email}`;
+    let str = '';
+    if (email!==undefined) {
+      str = `Name of ${email}`;
+    }
     return str;
   }
 

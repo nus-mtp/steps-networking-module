@@ -107,21 +107,38 @@ export default class ChatView extends Component {
     return markup;
   }
 
+  hasPeopleToTalkTo(){
+    if (this.state.users.length===0) {
+      return (
+        <div style={{textAlign: 'center'}}>
+          You have no one to talk to.<br/>
+          Please find someone to talk to.
+        </div>
+      );
+    } else {
+      return (
+        <div id="chat">
+          <MediaQuery query={this.query}>
+            {this.showChatTabs.bind(this)}
+          </MediaQuery>
+          <ChatBody
+            query={this.query}
+            marginLeft={this.widthOfChatTabs}
+            users={this.state.users}
+            current={this.state.current}
+            changeConversation={this.changeConversation.bind(this)}
+            email={this.state.email}
+            sockets={sockets}
+          />
+        </div>
+      );
+    } //end-else
+  }
+
   render() {
     return (
-      <div id="chat">
-        <MediaQuery query={this.query}>
-          {this.showChatTabs.bind(this)}
-        </MediaQuery>
-        <ChatBody
-          query={this.query}
-          marginLeft={this.widthOfChatTabs}
-          users={this.state.users}
-          current={this.state.current}
-          changeConversation={this.changeConversation.bind(this)}
-          email={this.state.email}
-          sockets={sockets}
-        />
+      <div>
+        {this.hasPeopleToTalkTo()}
       </div>
     );
   }
