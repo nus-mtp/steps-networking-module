@@ -4,10 +4,12 @@ const Paths = {
   signup: '/signup',
   logout: '/logout',
   exhibition: '/exhibition/:eventName/:exhibitionName',
-  event: '/event(/:eventName)',
+  event: '/event/:eventName',
+  event_empty: '/event',
   chat: '/chat(/:email)',
   chat_empty: '/chat',
   profile: '/profile/:email',
+  profile_empty: '/profile',
   match: '/match',
   search: '/search/:category(/:tags)',
 };
