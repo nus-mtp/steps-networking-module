@@ -1,7 +1,11 @@
 @import 'mixin';
 
 .event-poster {
-  max-height: 200px;
+  height: 460px;
+}
+
+.event-thumbnail {
+  height: 400px;
 }
 
 #home-body {

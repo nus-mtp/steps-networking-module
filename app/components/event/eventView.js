@@ -162,8 +162,8 @@ class EventView extends React.Component {
           <div className="col-md-6 col-12 text-center">
           {
             (this.state.event.event_poster)
-              ? <img className="img-fluid event-poster mb-2" src={`${this.state.event.event_poster}`} alt="event-poster"/>
-              : <img className="img-fluid event-poster mb-2" src="../../resources/images/empty-poster-placeholder.png" alt="event-poster"/>
+              ? <embed className="img-fluid event-poster mb-2" src={`${this.state.event.event_poster}`} alt="event-poster" />
+              : <div />
           }
           </div>
           {
