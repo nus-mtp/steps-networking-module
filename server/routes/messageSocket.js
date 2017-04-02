@@ -66,6 +66,7 @@ exports = module.exports = function(io, db) {
                 if (err) {
                   callback(false);
                 } else {
+                  const socketIdList = socketIDs[messageObj.recipientEmail];
                   if (socketIdList!==undefined) {
                     socketIdList.forEach(function(socketId) {
                       console.log('Emitted new message to ' + messageObj.recipientEmail + ' ' + socketId);
