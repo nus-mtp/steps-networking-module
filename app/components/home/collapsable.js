@@ -112,18 +112,18 @@ class Collapsable extends React.Component {
                 <hr />
                 <div id="event-reasons">
                   <span className="event-reason-title">Reason: </span>
-                  <label htmlFor="fulltime-reason" className="custom-control custom-checkbox">
-                    <input id="fulltime-reason" type="checkbox" className="custom-control-input" />
+                  <label htmlFor={"fulltime-reason-" + this.props.serial} className="custom-control custom-checkbox">
+                    <input id={"fulltime-reason-" + this.props.serial} type="checkbox" className="custom-control-input" />
                     <span className="custom-control-indicator" />
                     <span className="custom-control-description reasons">Full-time</span>
                   </label>
-                  <label htmlFor="intern-reason" className="custom-control custom-checkbox">
-                    <input id="intern-reason" type="checkbox" className="custom-control-input" />
+                  <label htmlFor={"intern-reason-" + this.props.serial} className="custom-control custom-checkbox">
+                    <input id={"intern-reason-" + this.props.serial} type="checkbox" className="custom-control-input" />
                     <span className="custom-control-indicator" />
                     <span className="custom-control-description reasons">Internship</span>
                   </label>
-                  <label htmlFor="teammate-reason" className="custom-control custom-checkbox">
-                    <input id="teammate-reason" type="checkbox" className="custom-control-input" />
+                  <label htmlFor={"partner-reason-" + this.props.serial} className="custom-control custom-checkbox">
+                    <input id={"partner-reason-" + this.props.serial} type="checkbox" className="custom-control-input" />
                     <span className="custom-control-indicator" />
                     <span className="custom-control-description reasons">Partnership</span>
                   </label>
