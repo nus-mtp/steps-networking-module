@@ -9,6 +9,9 @@ class ProfileView extends React.Component {
   constructor(props) {
     super(props);
 
+    const pathname = this.props.location.pathname;
+    const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
     this.state = {
       skills: [], // Skills that the user claimed to have
       links: '-', // Link to user profile of another website
@@ -16,13 +19,11 @@ class ProfileView extends React.Component {
       isContentEditable: false, //  Edit mode
       pastUserData: {}, // State restore if user cancel edit
       user: {},
+      email: userEmail,
       events: [], // List of event user attended
       exhibitions: [], // List of exhibition user participated
       attendances: [], // For all the attendance objects
     };
-
-    const pathname = this.props.location.pathname;
-    const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
 
     this.getUser(userEmail);
     this.getEvent(userEmail);
@@ -35,6 +36,8 @@ class ProfileView extends React.Component {
     this.handleDeleteSkill = this.handleDeleteSkill.bind(this);
     this.handleAdditionSkill = this.handleAdditionSkill.bind(this);
     this.handleDragSkill = this.handleDragSkill.bind(this);
+    this.saveReasons = this.saveReasons.bind(this);
+    this.getAttendances = this.getAttendances.bind(this);
   }
 
   componentWillReceiveProps() {
@@ -223,6 +226,35 @@ class ProfileView extends React.Component {
     this.setUserInfo(formData, this.handleEdit());
   }
 
+  saveReasons(clsName, ExhibitionId) {
+    const array = document.getElementsByClassName(clsName);
+    let reasons = new Array();
+    let i;
+    for (i = 0; i < array.length; i += 1) {
+      if (array[i].checked) {
+        reasons.push(array[i].id);
+      }
+    }
+    const userEmail = encodeURIComponent(this.state.email);
+    const id = encodeURIComponent(ExhibitionId);
+    const reason = encodeURIComponent(reasons.toString());
+    const formData = `userEmail=${userEmail}&id=${id}&reasons=${reason}`;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('post', `attendance/post/set/oneAttendanceReasons`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        console.log('save reasons success');
+      } else {
+        console.log('save reasons fail');
+      }
+    });
+    xhr.send(formData);
+    this.getAttendances(userEmail);
+  }
+
   setUserInfo(formData, callback) {
     if (this.state.user.userSkills !== this.state.pastUserData.skills) {
       const xhr = new XMLHttpRequest();
@@ -376,8 +408,8 @@ class ProfileView extends React.Component {
                 <div className="card-block">
                   {
                     (this.state.exhibitions) ?
-                    this.state.exhibitions.map(exhibition =>
-                      <div>
+                    this.state.exhibitions.map((exhibition, i) =>
+                      <div key={i}>
                         <Link to={`/exhibition/${exhibition.eventName}/${exhibition.exhibitionName}`} key={exhibition.id}>
                           <div id="user-exhibition-container">
                             <img className="img-fluid user-page-thumbnail" src={`${exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" />
@@ -397,14 +429,15 @@ class ProfileView extends React.Component {
                             (this.state.isContentEditable) ?
                               <div className="row">
                                 <span className="input-group-addon">
-                                  <input id="all" type="checkbox" onClick={this.onClick}/>Full-Time
+                                  <input id="fulltime" className={"tag-selection-row-"+i} type="checkbox"/>Full-Time
                                 </span>
                                 <span className="input-group-addon">
-                                  <input id="internship" type="checkbox" onClick={this.onClick}/>Internship
+                                  <input id="internship" className={"tag-selection-row-"+i} type="checkbox"/>Internship
                                 </span>
                                 <span className="input-group-addon">
-                                  <input id="partnership" type="checkbox" onClick={this.onClick}/>Partnership
+                                  <input id="partnership" className={"tag-selection-row-"+i} type="checkbox"/>Partnership
                                 </span>
+                                <button className="btn btn-primary post-edit" onClick={this.saveReasons.bind(this, "tag-selection-row-"+i, exhibition.id)}>Save Selection</button>
                               </div> :
                               <div/>
                           }
