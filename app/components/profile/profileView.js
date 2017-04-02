@@ -9,6 +9,9 @@ class ProfileView extends React.Component {
   constructor(props) {
     super(props);
 
+    const pathname = this.props.location.pathname;
+    const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
     this.state = {
       links: '-', // Link to user profile of another website
       interestedOpportunities: '-', // What am I looking for
@@ -16,13 +19,11 @@ class ProfileView extends React.Component {
       descriptionCache: '',
       skillsCache: '',
       user: {},
+      email: userEmail,
       events: [], // List of event user attended
       exhibitions: [], // List of exhibition user participated
       attendances: [], // For all the attendance objects
     };
-
-    const pathname = this.props.location.pathname;
-    const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
 
     this.getUser(userEmail);
     this.getEvent(userEmail);
@@ -35,6 +36,8 @@ class ProfileView extends React.Component {
     this.handleDeleteSkill = this.handleDeleteSkill.bind(this);
     this.handleAdditionSkill = this.handleAdditionSkill.bind(this);
     this.handleDragSkill = this.handleDragSkill.bind(this);
+    this.saveReasons = this.saveReasons.bind(this);
+    this.getAttendances = this.getAttendances.bind(this);
   }
 
   componentDidMount() {
@@ -207,6 +210,37 @@ class ProfileView extends React.Component {
     this.setUserInfo(formData);
   }
 
+  saveReasons(clsName, ExhibitionId) {
+    const array = document.getElementsByClassName(clsName);
+    let reasons = new Array();
+    let i;
+    for (i = 0; i < array.length; i += 1) {
+      if (array[i].checked) {
+        reasons.push(array[i].name);
+      }
+    }
+    if (reasons.length === 0) reasons.push("No Reason");
+
+    const userEmail = encodeURIComponent(this.state.email);
+    const id = encodeURIComponent(ExhibitionId);
+    const reason = encodeURIComponent(reasons.toString());
+    const formData = `userEmail=${userEmail}&id=${id}&reasons=${reason}`;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('post', `attendance/post/set/oneAttendanceReasons`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        console.log('save reasons success');
+      } else {
+        console.log('save reasons fail');
+      }
+    });
+    xhr.send(formData);
+    this.getAttendances(userEmail);
+  }
+
   setUserInfo(formData) {
     if (this.state.user.userSkills !== this.state.skillsCache) {
       const xhr = new XMLHttpRequest();
@@ -365,22 +399,56 @@ class ProfileView extends React.Component {
                 <div className="card-block">
                   {
                     (this.state.exhibitions) ?
-                    this.state.exhibitions.map(exhibition =>
-                      <Link to={`/exhibition/${exhibition.eventName}/${exhibition.exhibitionName}`} key={exhibition.id}>
-                        <div id="user-exhibition-container">
-                          <img className="img-fluid user-page-thumbnail" src={`${exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" />
-                          <div id="user-exhibition">
-                            <div>{exhibition.exhibitionName}</div>
-                            <div className="tag-container">{(this.state.attendances) ? this.state.attendances.filter(
-                              attendance => {if (attendance.attendanceKey === exhibition.id) return attendance;}).map(
-                                attendance => attendance.reasons.map(
-                                  reason => <span className="tag badge badge-pill badge-success">{reason}</span>)) :
-                                  <div/>
-                            }</div>
+                    this.state.exhibitions.map((exhibition, i) =>
+                      <div key={i}>
+                        <Link to={`/exhibition/${exhibition.eventName}/${exhibition.exhibitionName}`} key={exhibition.id}>
+                          <div id="user-exhibition-container">
+                            <img className="img-fluid user-page-thumbnail" src={`${exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" />
+                            <div id="user-exhibition">
+                              <div>{exhibition.exhibitionName}</div>
+                              <div className="tag-container">{(this.state.attendances) ? this.state.attendances.filter(
+                                attendance => {if (attendance.attendanceKey === exhibition.id) return attendance;}).map(
+                                  attendance => attendance.reasons.map(
+                                    reason => <span className="tag badge badge-pill badge-success">{reason}</span>)) :
+                                    <div/>
+                              }</div>
+                            </div>
                           </div>
+                        </Link>
+                        <div>
+                          {
+                            (this.state.isContentEditable) ?
+                              <div id="event-reasons">
+                                <span className="event-reason-title">Reason: </span>
+                                <label htmlFor={"fulltime-"+i} className="custom-control custom-checkbox">
+                                  <input id={"fulltime-"+i} type="checkbox" className={"custom-control-input tag-selection-row-"+i} name="Full-Time" defaultChecked={this.state.attendances.filter(
+                                      attendance => {if (attendance.attendanceKey === exhibition.id)
+                                        return attendance;})[0].reasons.includes('full-time')} />
+                                  <span className="custom-control-indicator" />
+                                  <span className="custom-control-description reasons">Full-time</span>
+                                </label>
+                                <label htmlFor={"internship-"+i} className="custom-control custom-checkbox">
+                                  <input id={"internship-"+i} type="checkbox" className={"custom-control-input tag-selection-row-"+i} name="Internship" defaultChecked={this.state.attendances.filter(
+                                      attendance => {if (attendance.attendanceKey === exhibition.id)
+                                        return attendance;})[0].reasons.includes('internship')} />
+                                  <span className="custom-control-indicator" />
+                                  <span className="custom-control-description reasons">Internship</span>
+                                </label>
+                                <label htmlFor={"partnership-"+i} className="custom-control custom-checkbox">
+                                  <input id={"partnership-"+i} type="checkbox" className={"custom-control-input tag-selection-row-"+i} name="Partnership" defaultChecked={this.state.attendances.filter(
+                                      attendance => {if (attendance.attendanceKey === exhibition.id)
+                                        return attendance;})[0].reasons.includes('partnership')} />
+                                  <span className="custom-control-indicator" />
+                                  <span className="custom-control-description reasons">Partnership</span>
+                                </label>
+                                <button className="btn btn-primary post-edit" onClick={this.saveReasons.bind(this, "tag-selection-row-"+i, exhibition.id)}>Save Selection</button>
+                              </div> :
+                              <div/>
+                          }
                         </div>
-                      </Link>
-                    ) : <div />
+                      </div>
+                    )
+                     : <div />
                   }
                 </div>
               </div>
