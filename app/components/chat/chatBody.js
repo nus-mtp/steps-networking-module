@@ -29,13 +29,15 @@ export default class ChatBody extends Component {
       marginLeft: this.props.marginLeft,
     };
     
+    this.current = this.props.current;
+    
     this.props.sockets.on('refresh message', function(results){
       this.initialiseMessages();
     }.bind(this));
   }
 
   componentDidUpdate() {
-    if (this.update) {
+    if (this.update||this.current!==this.props.current) {
       this.initialiseMessages();
     }
     ChatBody.scrollToBottom();
@@ -66,6 +68,7 @@ export default class ChatBody extends Component {
       this.getReceivedMessages();
       this.getSentMessages();
       this.update = false;
+      this.current = this.props.current;
     }
   }
   
