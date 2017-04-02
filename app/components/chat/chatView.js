@@ -30,11 +30,11 @@ export default class ChatView extends Component {
     // Get a specific user that wants to be talked to
     const pathname = this.props.location.pathname;
     this.talkToEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length).trim();
-    console.log("Before " + this.talkToEmail);
+    //console.log("Before " + this.talkToEmail);
     if (this.talkToEmail===''||this.talkToEmail==='chat') {
       this.talkToEmail = null;
     }
-    console.log("After " + this.talkToEmail);
+    //console.log("After " + this.talkToEmail);
   }
   
   componentWillMount() {
@@ -57,12 +57,11 @@ export default class ChatView extends Component {
         // Stuff went wrong
         console.log('Unable to retrieve userList');
       } else if (userList!==undefined) {
-        console.log("UserList " + userList);
+        //console.log("UserList " + userList);
         let current = this.state.current;
         if (this.talkToEmail!==null&&this.talkToEmail!==undefined) {
-          console.log("TalkToEmail " + this.talkToEmail);
+          //console.log("TalkToEmail " + this.talkToEmail);
           current = userList.indexOf(this.talkToEmail);
-          console.log("Current = " + current);
           if (current===-1) { // If not in the list, add it to the top of the list
             userList.splice(0, 0, this.talkToEmail); 
             current = 0;

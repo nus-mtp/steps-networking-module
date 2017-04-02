@@ -162,7 +162,7 @@ export default class ChatBody extends Component {
 
   getInputBox() {
     return (
-      <div className="fixed-bottom" id="chat-form-container">
+      <div className="fixed-bottom fixed-body-wrapper" id="chat-form-container">
         <textarea
           className="form-control"
           ref={(input) => { this.textInput = input; }}
@@ -188,12 +188,36 @@ export default class ChatBody extends Component {
 
   getCurrentConversation() {
     return (
-      <div>
-        <div className="container" id="chat-name-header">
-          {ChatBody.getUserName(this.props.users[this.props.current])}
-        </div>
-        <div id="chat-content-container">
-          {this.getMessages.bind(this)()}
+      <div id="chat-content-container">
+        {this.getMessages.bind(this)()}
+      </div>
+    );
+  }
+  
+  getName(fixToTop) {
+    let _classname = '';
+    let divStyle = {};
+    let backgroundStyle = {};
+    if (fixToTop) {
+      _classname += 'fixed-top';
+      divStyle = {
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        display: 'flex',
+      }
+      backgroundStyle = {
+        marginTop: '55px',
+        paddingTop: '5px',
+        backgroundColor: 'white',
+        width: '100%',
+      };
+    }
+    return (
+      <div className={_classname} style={backgroundStyle}>
+        <div style={divStyle}>
+          <div className="container" id="chat-name-header">
+            {ChatBody.getUserName(this.props.users[this.props.current])}
+          </div>
         </div>
       </div>
     );
@@ -201,12 +225,15 @@ export default class ChatBody extends Component {
 
   checkQuery(matches) {
     let divStyle = {};
+    let fixToTop = true;
     if (matches) {
       divStyle = this.divStyle;
+      fixToTop = false;
     }
     
     return (
       <div id="chat-body" style={divStyle}>
+        {this.getName(fixToTop)}
         {this.getCurrentConversation()}
         {this.getInputBox()}
       </div>
