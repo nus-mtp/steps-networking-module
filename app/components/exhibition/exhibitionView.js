@@ -233,7 +233,7 @@ class ExhibitionView extends React.Component {
             {
               (Object.keys(this.state.exhibition).length !== 0) ?
               <img className="img-fluid project-poster" src={`${this.state.exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" /> :
-              <img className="img-fluid project-poster" src="../../resources/images/dummy-poster.png" alt="project-poster" />
+              <img className="img-fluid project-poster" src="../../resources/images/empty-poster-placeholder.png" alt="project-poster" />
             }
           </div>
         </div>

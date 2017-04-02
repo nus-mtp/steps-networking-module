@@ -19,7 +19,7 @@ export default class ChatBody extends Component {
         ChatBody.PostOther('Bacon', 1),
         ChatBody.PostSelf('Test', 2),
       ],
-      //update: true,
+      name: '',
     };
 
     this.update = true;
@@ -29,13 +29,15 @@ export default class ChatBody extends Component {
       marginLeft: this.props.marginLeft,
     };
     
+    this.current = this.props.current;
+    
     this.props.sockets.on('refresh message', function(results){
       this.initialiseMessages();
     }.bind(this));
   }
 
   componentDidUpdate() {
-    if (this.update) {
+    if (this.update||this.current!==this.props.current) {
       this.initialiseMessages();
     }
     ChatBody.scrollToBottom();
@@ -66,6 +68,7 @@ export default class ChatBody extends Component {
       this.getReceivedMessages();
       this.getSentMessages();
       this.update = false;
+      this.current = this.props.current;
     }
   }
   
@@ -162,7 +165,7 @@ export default class ChatBody extends Component {
 
   getInputBox() {
     return (
-      <div className="fixed-bottom" id="chat-form-container">
+      <div className="fixed-bottom fixed-body-wrapper" id="chat-form-container">
         <textarea
           className="form-control"
           ref={(input) => { this.textInput = input; }}
@@ -186,28 +189,93 @@ export default class ChatBody extends Component {
     );
   }
 
-  getCurrentConversation() {
+  getCurrentConversation(singularMode) {
+    // In singlular mode add a buffer
+    const divStyle = {
+      marginTop: '30px',
+    };
+    
     return (
-      <div>
-        <div className="container" id="chat-name-header">
-          {ChatBody.getUserName(this.props.users[this.props.current])}
-        </div>
-        <div id="chat-content-container">
-          {this.getMessages.bind(this)()}
-        </div>
+      <div id="chat-content-container" style={divStyle}>
+        {this.getMessages.bind(this)()}
       </div>
     );
+  }
+  
+  getName(fixToTop) {
+    const recipientEmail = this.props.users[this.props.current];
+    if (recipientEmail===undefined) {
+      return null;
+    } else if (!fixToTop) {
+      return (
+        <div className="container" id="chat-name-header">
+          {ChatBody.getUserName(recipientEmail)}
+        </div>
+      );
+    } else {
+      const _classname = 'fixed-top';
+      const divStyle = {
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        display: 'flex',
+      }
+      const backgroundStyle = {
+        marginTop: '55px',
+        paddingTop: '5px',
+        paddingBottom: '5px',
+        backgroundColor: 'white',
+        width: '100%',
+      };
+      
+      const handleChange = function(index) {
+        return function(event) {
+          event.preventDefault();
+          this.props.changeConversation(index);
+          this.update = true;
+        }.bind(this);
+      }.bind(this);
+      
+      return (
+        <div className={_classname} style={backgroundStyle}>
+          <div style={divStyle}>
+            <div className="dropdown" style={{marginLeft: 'auto', marginRight: 'auto'}}>
+              <button className="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                {ChatBody.getUserName(recipientEmail)}
+                <span className="caret"></span>
+              </button>
+              <ul className="dropdown-menu" style={{padding: '0px'}}>
+                {
+                  this.props.users.map(function(user, index) {
+                    return (
+                      <li><button 
+                        className="btn btn-secondary" 
+                        style={{marginLeft: 'auto', marginRight: 'auto', width:'100%'}} 
+                        onClick={handleChange(index)}>
+                          {user}
+                        </button></li>
+                    );
+                  })
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+      ); //<button className="btn btn-secondary" style={{marginLeft: 'auto', marginRight: 'auto', width:'100%'}}>
+    }
   }
 
   checkQuery(matches) {
     let divStyle = {};
+    let singularMode = true;
     if (matches) {
       divStyle = this.divStyle;
+      singularMode = false;
     }
     
     return (
       <div id="chat-body" style={divStyle}>
-        {this.getCurrentConversation()}
+        {this.getName(singularMode)}
+        {this.getCurrentConversation(singularMode)}
         {this.getInputBox()}
       </div>
     );
@@ -261,18 +329,22 @@ export default class ChatBody extends Component {
 
   static createPost(text, id, key = 0) {
     return (
-      <div className="container-fluid form-control" id={id} key={key}>
+      <div className="container-fluid form-control chat-bubble" id={id} key={key}>
         {text}
       </div>
     );
   }
 
   static scrollToBottom() {
-    document.body.scrollTop = document.body.scrollHeight;
+    //document.body.scrollTop = document.body.scrollHeight;
+    window.scrollTo(0,document.body.scrollHeight);
   }
 
   static getUserName(email) {
-    const str = `Name of ${email}`;
+    let str = '';
+    if (email!==undefined) {
+      str = `Name of ${email}`;
+    }
     return str;
   }
 
@@ -282,6 +354,7 @@ ChatBody.propTypes = {
   marginLeft: React.PropTypes.string.isRequired,
   users: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
   current: React.PropTypes.number.isRequired,
+  changeConversation: React.PropTypes.func.isRequired,
   query: React.PropTypes.string.isRequired,
   email: React.PropTypes.string.isRequired,
 };

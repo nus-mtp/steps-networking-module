@@ -50,7 +50,11 @@ class Event extends React.Component {
                 <img src="../../resources/images/pageview-icon.svg" alt="pageview-icon" />
               </button>
             </Link>
-            <img id="event-poster" className="img-fluid text-center event-poster card-img-top" src={this.props.event.event_poster} onError={this.addDefaultSrc} alt="event-poster" />
+            {
+              (this.props.event.event_poster) ?
+              <embed className="img-fluid text-center event-thumbnail card-img-top" width="250" height="auto" src={this.props.event.event_poster} alt="event-poster" /> :
+              <img className="img-fluid text-center event-thumbnail card-img-top" width="250" height="auto" src='../../resources/images/empty-poster-placeholder.png' alt="event-poster" />
+            }
           </div>
           <div className="card-block event-info-container">
             <div className="card-title event-title">{this.props.event.name}</div>

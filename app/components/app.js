@@ -13,7 +13,7 @@ class App extends React.Component {
       email: userEmail.replace(/%40/i, '@'),
       profileActive: '',
       loginActive: '',
-      eventActive: '',
+      signupActive: '',
       chatActive: '',
       isHamburgerToggled: false,
       searchDefaults: [],   // the field we are searching
@@ -31,8 +31,19 @@ class App extends React.Component {
     this.handleSearch = this.handleSearch.bind(this);
   }
 
-  componentWillReceiveProps() {
+  componentDidMount() {
+    const that = this;
     this.handleLinks();
+    window.addEventListener("hashchange", () => {
+      that.handleLinks();
+    });
+  }
+
+  componentWillUnmount() {
+    const that = this;
+    window.removeEventListener("hashchange", () => {
+      that.handleLinks();
+    });
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -67,17 +78,19 @@ class App extends React.Component {
     const baseState = {
       profileActive: '',
       loginActive: '',
-      eventActive: '',
+      signupActive: '',
       chatActive: '',
     };
 
-    if (this.props.location.pathname === Paths.profile) {
+    const currentPath = this.props.location.pathname.slice(0, this.props.location.pathname.lastIndexOf('/'));
+
+    if (currentPath === Paths.profile_empty) {
       baseState.profileActive = 'active';
     } else if (this.props.location.pathname === Paths.login) {
       baseState.loginActive = 'active';
-    } else if (this.props.location.pathname === Paths.event) {
-      baseState.eventActive = 'active';
-    } else if (this.props.location.pathname === Paths.chat_empty) {
+    } else if (this.props.location.pathname === Paths.signup) {
+      baseState.signupActive = 'active';
+    } else if (currentPath === Paths.chat || this.props.location.pathname === Paths.chat_empty) {
       baseState.chatActive = 'active';
     } // Else base state is empty
 
@@ -205,16 +218,16 @@ class App extends React.Component {
               }
             </ul>
             <ul id="navbar-links" className="navbar-nav">
-              <li className="nav-item">
-                { Auth.isUserAuthenticated() ?
-                  <Link onClick={this.removeDropdown} className={`navbar-buttons ${this.state.profileActive}`} to={`/profile/${this.state.email}`}>Profile</Link> :
-                  <Link />
-                }
-              </li>
+              {
+                Auth.isUserAuthenticated() ?
+                <li className="nav-item">
+                  <Link onClick={this.removeDropdown} className={`navbar-buttons ${this.state.profileActive}`} to={`/profile/${this.state.email}`}>Profile</Link>
+                </li> : <div />
+              }
               <li className="nav-item">
                 { Auth.isUserAuthenticated() ?
                   <Link onClick={this.removeDropdown.bind(this)} className={`navbar-buttons ${this.state.chatActive}`} to={Paths.chat_empty}>Chat</Link> :
-                  <Link></Link>
+                  <Link onClick={this.removeDropdown} to={Paths.signup} id="signup" className={`navbar-buttons ${this.state.signupActive}`}>Signup</Link>
 
                 }
               </li>

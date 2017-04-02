@@ -30,11 +30,24 @@ export default class ChatView extends Component {
     // Get a specific user that wants to be talked to
     const pathname = this.props.location.pathname;
     this.talkToEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length).trim();
-    console.log("Before " + this.talkToEmail);
     if (this.talkToEmail===''||this.talkToEmail==='chat') {
       this.talkToEmail = null;
     }
-    console.log("After " + this.talkToEmail);
+    
+    
+    /* // Get matching users
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `user/get/chat/${this.props.email}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+      } else {
+      }
+      console.log('Get matched users ' + xhr.response);
+    });
+    xhr.send();
+    // */
   }
   
   componentWillMount() {
@@ -57,12 +70,11 @@ export default class ChatView extends Component {
         // Stuff went wrong
         console.log('Unable to retrieve userList');
       } else if (userList!==undefined) {
-        console.log("UserList " + userList);
+        //console.log("UserList " + userList);
         let current = this.state.current;
         if (this.talkToEmail!==null&&this.talkToEmail!==undefined) {
-          console.log("TalkToEmail " + this.talkToEmail);
+          //console.log("TalkToEmail " + this.talkToEmail);
           current = userList.indexOf(this.talkToEmail);
-          console.log("Current = " + current);
           if (current===-1) { // If not in the list, add it to the top of the list
             userList.splice(0, 0, this.talkToEmail); 
             current = 0;
@@ -95,20 +107,38 @@ export default class ChatView extends Component {
     return markup;
   }
 
+  hasPeopleToTalkTo(){
+    if (this.state.users.length===0) {
+      return (
+        <div style={{textAlign: 'center'}}>
+          You have no one to talk to.<br/>
+          Please find someone to talk to.
+        </div>
+      );
+    } else {
+      return (
+        <div id="chat">
+          <MediaQuery query={this.query}>
+            {this.showChatTabs.bind(this)}
+          </MediaQuery>
+          <ChatBody
+            query={this.query}
+            marginLeft={this.widthOfChatTabs}
+            users={this.state.users}
+            current={this.state.current}
+            changeConversation={this.changeConversation.bind(this)}
+            email={this.state.email}
+            sockets={sockets}
+          />
+        </div>
+      );
+    } //end-else
+  }
+
   render() {
     return (
       <div id="chat">
-        <MediaQuery query={this.query}>
-          {this.showChatTabs.bind(this)}
-        </MediaQuery>
-        <ChatBody
-          query={this.query}
-          marginLeft={this.widthOfChatTabs}
-          users={this.state.users}
-          current={this.state.current}
-          email={this.state.email}
-          sockets={sockets}
-        />
+        {this.hasPeopleToTalkTo()}
       </div>
     );
   }

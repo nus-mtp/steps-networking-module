@@ -54,7 +54,7 @@ class LoginView extends React.Component {
 
 
         // change the current URL to /
-        this.context.router.replace(Paths.event);
+        this.context.router.replace(Paths.home);
       } else {
         // failure
 
