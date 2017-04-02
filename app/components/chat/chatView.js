@@ -137,7 +137,7 @@ export default class ChatView extends Component {
 
   render() {
     return (
-      <div>
+      <div id="chat">
         {this.hasPeopleToTalkTo()}
       </div>
     );
