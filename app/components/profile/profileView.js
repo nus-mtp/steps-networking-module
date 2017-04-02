@@ -232,7 +232,7 @@ class ProfileView extends React.Component {
     let i;
     for (i = 0; i < array.length; i += 1) {
       if (array[i].checked) {
-        reasons.push(array[i].id);
+        reasons.push(array[i].name);
       }
     }
     if (reasons.length === 0) reasons.push("No Reason");
@@ -429,16 +429,23 @@ class ProfileView extends React.Component {
                         <div>
                           {
                             (this.state.isContentEditable) ?
-                              <div className="row">
-                                <span className="input-group-addon">
-                                  <input id="fulltime" className={"tag-selection-row-"+i} type="checkbox"/>Full-Time
-                                </span>
-                                <span className="input-group-addon">
-                                  <input id="internship" className={"tag-selection-row-"+i} type="checkbox"/>Internship
-                                </span>
-                                <span className="input-group-addon">
-                                  <input id="partnership" className={"tag-selection-row-"+i} type="checkbox"/>Partnership
-                                </span>
+                              <div id="event-reasons">
+                                <span className="event-reason-title">Reason: </span>
+                                <label htmlFor={"fulltime-"+i} className="custom-control custom-checkbox">
+                                  <input id={"fulltime-"+i} type="checkbox" className={"custom-control-input tag-selection-row-"+i} name="Full-Time" />
+                                  <span className="custom-control-indicator" />
+                                  <span className="custom-control-description reasons">Full-time</span>
+                                </label>
+                                <label htmlFor={"internship-"+i} className="custom-control custom-checkbox">
+                                  <input id={"internship-"+i} type="checkbox" className={"custom-control-input tag-selection-row-"+i} name="Internship" />
+                                  <span className="custom-control-indicator" />
+                                  <span className="custom-control-description reasons">Internship</span>
+                                </label>
+                                <label htmlFor={"partnership-"+i} className="custom-control custom-checkbox">
+                                  <input id={"partnership-"+i} type="checkbox" className={"custom-control-input tag-selection-row-"+i} name="Partnership" />
+                                  <span className="custom-control-indicator" />
+                                  <span className="custom-control-description reasons">Partnership</span>
+                                </label>
                                 <button className="btn btn-primary post-edit" onClick={this.saveReasons.bind(this, "tag-selection-row-"+i, exhibition.id)}>Save Selection</button>
                               </div> :
                               <div/>
