@@ -13,11 +13,11 @@ class ProfileView extends React.Component {
     const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
 
     this.state = {
-      skills: [], // Skills that the user claimed to have
       links: '-', // Link to user profile of another website
       interestedOpportunities: '-', // What am I looking for
       isContentEditable: false, //  Edit mode
-      pastUserData: {}, // State restore if user cancel edit
+      descriptionCache: '',
+      skillsCache: '',
       user: {},
       email: userEmail,
       events: [], // List of event user attended
@@ -38,10 +38,6 @@ class ProfileView extends React.Component {
     this.handleDragSkill = this.handleDragSkill.bind(this);
     this.saveReasons = this.saveReasons.bind(this);
     this.getAttendances = this.getAttendances.bind(this);
-  }
-
-  componentWillReceiveProps() {
-    this.getUser();
   }
 
   componentDidMount() {
@@ -65,11 +61,9 @@ class ProfileView extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        console.log('profile attendance success');
-        this.setState({ attendances: xhr.response });
+        this.setState({ attendances: xhr.response, });
       } else {
-        console.log('profile attendance fail');
-        this.setState({ attendances: []});
+        this.setState({ attendances: [], });
       }
     });
     xhr.send();
@@ -81,22 +75,16 @@ class ProfileView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      //console.log(xhr.status);
-      //if (xhr.status === 200) {
-        console.log('profile get user success');
         const user = xhr.response;
-        // Buggy and I not sure why
-        user.userSkills = (xhr.response.userSkills) ? xhr.response.userSkills.map((skill, i) => {
+        if (user) {
+          user.userSkills = (xhr.response && xhr.response.userSkills.length > 0) ? xhr.response.userSkills.map((skill, i) => {
           return {
             id: i,
             text: skill,
           };
         }) : [];
         this.setState({ user, });
-      //} else {
-        //console.log('profile get user fail');
-        //this.setState({ user: [] });
-      //}
+      }
     });
     xhr.send();
   }
@@ -127,9 +115,12 @@ class ProfileView extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       let exhibitionArray = this.state.exhibitions;
-      xhr.response.map(event => {
-        exhibitionArray.push(event);
-      });
+
+      if (xhr.response) {
+        xhr.response.map(event => {
+          exhibitionArray.push(event);
+        });
+      }
 
       this.setState({
         exhibitions: exhibitionArray,
@@ -174,15 +165,11 @@ class ProfileView extends React.Component {
 
   changeEdit(event) {
     const targetId = event.target.id;
-    if (targetId === 'new-user-email') {
+    if (targetId === 'new-user-description') {
+      const user = this.state.user;
+      user.userDescription = event.target.value;
       this.setState({
-        email: event.target.value,
-      });
-    } else if (targetId === 'new-user-description') {
-      const description = this.state.user;
-      description.userDescription = event.target.value;
-      this.setState({
-        user: description,
+        user,
       });
     } else if (targetId === 'new-user-links') {
       this.setState({
@@ -194,21 +181,18 @@ class ProfileView extends React.Component {
   handleEdit() {
     this.setState({
       isContentEditable: !this.state.isContentEditable,
-      pastUserData: {
-        email: this.state.email,
-        description: this.state.user.userDescription,
-        skills: this.state.user.userSkills,
-        links: this.state.links,
-        interestedOpportunities: this.state.interestedOpportunities,
-      },
+      descriptionCache: this.state.user.userDescription,
+      skillsCache: this.state.user.userSkills,
     });
   }
 
   handleCancel() {
+    const user = this.state.user;
+    user.userDescription = this.state.pastUserData.userDescription;
+    user.skills = this.state.pastUserData.userSkills;
+
     this.setState({
-      email: this.state.pastUserData.email,
-      description: this.state.user.userDescription,
-      skills: this.state.pastUserData.skills,
+      user,
       links: this.state.pastUserData.links,
       interestedOpportunities: this.state.pastUserData.interestedOpportunities,
       isContentEditable: false,
@@ -220,10 +204,10 @@ class ProfileView extends React.Component {
 
     const userSkills = encodeURIComponent(skillArray);
     const userDescription = encodeURIComponent(this.state.user.userDescription);
-    const userEmail = encodeURIComponent(this.state.email);
+    const userEmail = encodeURIComponent(this.state.user.userEmail);
     const formData = `userEmail=${userEmail}&userSkills=${userSkills}&userDescription=${userDescription}`;
 
-    this.setUserInfo(formData, this.handleEdit());
+    this.setUserInfo(formData);
   }
 
   saveReasons(clsName, ExhibitionId) {
@@ -257,8 +241,8 @@ class ProfileView extends React.Component {
     this.getAttendances(userEmail);
   }
 
-  setUserInfo(formData, callback) {
-    if (this.state.user.userSkills !== this.state.pastUserData.skills) {
+  setUserInfo(formData) {
+    if (this.state.user.userSkills !== this.state.skillsCache) {
       const xhr = new XMLHttpRequest();
       xhr.open('post', '/user/post/profile/set/skills');
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -268,18 +252,20 @@ class ProfileView extends React.Component {
           // success
           this.setState({
             feedback: 'Successfully edited',
+            isContentEditable: !this.state.isContentEditable,
           });
         } else {
           // failure
           this.setState({
             feedback: xhr.response,
+            isContentEditable: !this.state.isContentEditable,
           });
         }
       });
       xhr.send(formData);
     }
 
-    if (this.state.user.userDescription !== this.state.pastUserData.description) {
+    if (this.state.user.userDescription !== this.state.descriptionCache) {
       const xhr = new XMLHttpRequest();
       xhr.open('post', '/user/post/profile/set/description');
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -289,18 +275,18 @@ class ProfileView extends React.Component {
           // success
           this.setState({
             feedback: 'Successfully edited',
+            isContentEditable: !this.state.isContentEditable,
           });
         } else {
           // failure
           this.setState({
             feedback: xhr.response,
+            isContentEditable: !this.state.isContentEditable,
           });
         }
       });
       xhr.send(formData);
     }
-
-    callback;
   }
 
   addDefaultSrc(event) {
@@ -351,14 +337,16 @@ class ProfileView extends React.Component {
               </div>
               <div>
                 <span className="info-type">Description: </span>
-                { (this.state.isContentEditable) ?
+                {
+                  (this.state.isContentEditable) ?
                   <input id="new-user-description" type="text" className="form-control" value={this.state.user.userDescription} onChange={this.changeEdit} /> :
                   <span id="user-description" className="user-info">{this.state.user.userDescription}</span>
                 }
               </div>
               <div>
                 <span className="info-type">Skills: </span>
-                { (this.state.isContentEditable) ?
+                {
+                  (this.state.isContentEditable) ?
                   <ReactTags
                     tags={this.state.user.userSkills}
                     suggestions={suggestions}
@@ -378,7 +366,8 @@ class ProfileView extends React.Component {
               </div>
               <div>
                 <span className="info-type">Links: </span>
-                { (this.state.isContentEditable) ?
+                {
+                  (this.state.isContentEditable) ?
                   <input id="new-user-links" className="form-control" type="text" value={this.state.links} onChange={this.changeEdit} /> :
                   <a id="user-links" className="user-info" href={`https://${this.state.links}`}>{this.state.links}</a>
                 }
