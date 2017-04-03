@@ -459,7 +459,6 @@ router.get('/get/oneEventExhibitors/:id', (req = {}, res, next) => {
           if (err) {
             callback(500, null);
           } else if (exhibitions && exhibitions.length > 0) {
-            console.log('test');
             callback(null, removeDuplicates(exhibitions.map(exhibition => exhibition._id)));
           } else {
             callback(204, null);
@@ -485,6 +484,8 @@ router.get('/get/oneEventExhibitors/:id', (req = {}, res, next) => {
           (err, results) => {
             if (err || !results) {
               callback(500, null);
+            } else if (results.length === 0) {
+              callback(204, null);
             } else {
               const userEmailArray =
                 removeDuplicates([].concat.apply([], results).filter(item => (item !== null)));
@@ -506,6 +507,8 @@ router.get('/get/oneEventExhibitors/:id', (req = {}, res, next) => {
           (err, users) => {
             if (err || !users) {
               callback(500, null);
+            } else if (users.length === 0) {
+              callback(204, null);
             } else {
               callback(200, users);
             }
@@ -625,7 +628,7 @@ router.post('/post/search/event/exhibitors/reasons', (req = {}, res, next) => {
           (exhibitionId, callback) => {
             Attendance.searchAttendancesByKeyAndReasons(
               exhibitionId,
-              req.params.reasons.split(','),
+              req.body.reasons.split(','),
               (err, attendances) => {
                 if (err) {
                   callback(null, null);
@@ -640,6 +643,8 @@ router.post('/post/search/event/exhibitors/reasons', (req = {}, res, next) => {
           (err, results) => {
             if (err || !results) {
               callback(500, null);
+            } else if (results.length === 0) {
+              callback(204, null);
             } else {
               const userEmailArray =
                 removeDuplicates([].concat.apply([], results).filter(item => (item !== null)));
@@ -661,6 +666,8 @@ router.post('/post/search/event/exhibitors/reasons', (req = {}, res, next) => {
           (err, users) => {
             if (err || !users) {
               callback(500, null);
+            } else if (users.length === 0) {
+              callback(204, null);
             } else {
               callback(200, users);
             }
