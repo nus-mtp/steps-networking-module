@@ -18,61 +18,6 @@ const extractEventInfo = require('../utils/utils').extractEventInfo;
 const extractExhibitionInfo = require('../utils/utils').extractExhibitionInfo;
 const extractAttendanceInfo = require('../utils/utils').extractAttendanceInfo;
 
-// Helper Methods
-// Note: All methods assume relevant objectClasses have been primed with the global db connection
-
-/**
- * Get the emails of all Users in an Event that is participating in at least one Exhibition.
- *
- * @param {mongoose.Schema.ObjectId} id: The Event id to search under.
- * @param {function} callback:
- *    A function that is executed once the operation has reached an outcome.
- */
-function getAllExhibitorsEmailsInEvent(id, callback) {
-  Event.getEventById(id, (err, event) => {
-    if (err) {
-      callback(500, null);
-    } else if (event) {
-      const eventName = event.event_name;
-      Exhibition.searchExhibitionsByEvent(eventName, (err, exhibitions) => {
-        if (err) {
-          callback(500, null);
-        } else if (exhibitions && exhibitions.length > 0) {
-          async.mapLimit(exhibitions, 5,
-            (exhibition, callback) => {
-              if (exhibition) {
-                Attendance.searchAttendancesByKey(exhibition._id, (err, attendances) => {
-                  if (err || !attendances) {
-                    callback(null, null);
-                  } else {
-                    callback(null, attendances.map(attendance => attendance.user_email));
-                  }
-                });
-              } else {
-                callback(null, null);
-              }
-            },
-            (err, results) => {
-              if (err || !results) {
-                callback(500, null);
-              } else {
-                const userEmailArray = removeDuplicates(
-                  [].concat.apply([], results).filter(item => (item !== null)));
-
-                callback(200, userEmailArray);
-              }
-            });
-        } else {
-          callback(204, null);
-        }
-      });
-    } else {
-      callback(204, null);
-    }
-  });
-}
-
-
 // Note: All Routes prefixed with 'attendance/'
 
 // Get one Attendance of a specified User and Event / Exhibition
@@ -497,41 +442,84 @@ router.get('/get/oneEventExhibitors/:id', (req = {}, res, next) => {
     Exhibition.setDBConnection(req.app.locals.db);
     Attendance.setDBConnection(req.app.locals.db);
 
-    getAllExhibitorsEmailsInEvent(req.params.id, (code, userEmailArray) => {
-      if (code !== 200) {
-        res.status(500).json('Unable to process data!');
-        next();
-      } else if (userEmailArray) {
-        async.mapLimit(userEmailArray, 5,
-          (userEmail, callback) => {
-            if (userEmail) {
-              User.getUser(userEmail, (err, user) => {
-                if (err || !user) {
+    async.waterfall([
+      (callback) => {
+        Event.getEventById(req.params.id, (err, event) => {
+          if (err) {
+            callback(500, null);
+          } else if (event) {
+            callback(null, event.event_name);
+          } else {
+            callback(204, null);
+          }
+        });
+      },
+      (eventName, callback) => {
+        Exhibition.searchExhibitionsByEvent(eventName, (err, exhibitions) => {
+          if (err) {
+            callback(500, null);
+          } else if (exhibitions && exhibitions.length > 0) {
+            console.log('test');
+            callback(null, removeDuplicates(exhibitions.map(exhibition => exhibition._id)));
+          } else {
+            callback(204, null);
+          }
+        });
+      },
+      (exhibitionIds, callback) => {
+        async.mapLimit(exhibitionIds, 5,
+          (exhibitionId, callback) => {
+            Attendance.searchAttendancesByKey(
+              exhibitionId,
+              (err, attendances) => {
+                if (err) {
                   callback(null, null);
+                } else if (attendances && attendances.length > 0) {
+                  callback(null, attendances.map(attendance => attendance.user_email));
                 } else {
-                  callback(null, extractUserInfo(user));
+                  callback(null, null);
                 }
-              });
-            } else {
-              callback(null, null);
-            }
+              },
+            );
           },
           (err, results) => {
             if (err || !results) {
-              res.status(500).json('Unable to process data!');
-              next();
+              callback(500, null);
             } else {
-              const finalizedResults = results.filter(item => (item !== null));
-              if (finalizedResults && finalizedResults.length > 0) {
-                res.status(200).json(finalizedResults);
-              } else {
-                res.status(204).json('Nothing found!');
-              }
+              const userEmailArray =
+                removeDuplicates([].concat.apply([], results).filter(item => (item !== null)));
+              callback(null, userEmailArray);
             }
+          });
+      },
+      (userEmailArray, callback) => {
+        async.mapLimit(userEmailArray, 5,
+          (userEmail, callback) => {
+            User.getUser(userEmail, (err, user) => {
+              if (err || !user) {
+                callback(null, null);
+              } else {
+                callback(null, extractUserInfo(user));
+              }
+            });
           },
-        );
-      } else {
+          (err, users) => {
+            if (err || !users) {
+              callback(500, null);
+            } else {
+              callback(200, users);
+            }
+          });
+      },
+    ], (status, users) => {
+      if (status === 200) {
+        res.status(200).json(users);
+        next();
+      } else if (status === 204) {
         res.status(204).json('Nothing found!');
+        next();
+      } else {
+        res.status(500).json('Unable to process the data!');
         next();
       }
     });
@@ -609,27 +597,87 @@ router.post('/post/search/event/exhibitors/reasons', (req = {}, res, next) => {
     Exhibition.setDBConnection(req.app.locals.db);
     Attendance.setDBConnection(req.app.locals.db);
 
-    res.status(200).json();
-    next();
-  } else {
-    res.status(400).json('Bad Request!');
-    next();
-  }
-});
-
-// Search for Users who are attending an Event as a Visitor, for given reasons
-// Note: Requires Event ID as request body parameter 'id'
-// Note: Requires reasons to be a Comma-Separated String rather than an Array
-// Use <Array>.toString() to generate a Comma-Separated String from an Array
-router.post('/post/search/event/visitors/reasons', (req = {}, res, next) => {
-  if (req.body && req.body.id && req.body.reasons) {
-    User.setDBConnection(req.app.locals.db);
-    Event.setDBConnection(req.app.locals.db);
-    Exhibition.setDBConnection(req.app.locals.db);
-    Attendance.setDBConnection(req.app.locals.db);
-
-    res.status(200).json();
-    next();
+    async.waterfall([
+      (callback) => {
+        Event.getEventById(req.body.id, (err, event) => {
+          if (err) {
+            callback(500, null);
+          } else if (event) {
+            callback(null, event.event_name);
+          } else {
+            callback(204, null);
+          }
+        });
+      },
+      (eventName, callback) => {
+        Exhibition.searchExhibitionsByEvent(eventName, (err, exhibitions) => {
+          if (err) {
+            callback(500, null);
+          } else if (exhibitions && exhibitions.length > 0) {
+            callback(null, removeDuplicates(exhibitions.map(exhibition => exhibition._id)));
+          } else {
+            callback(204, null);
+          }
+        });
+      },
+      (exhibitionIds, callback) => {
+        async.mapLimit(exhibitionIds, 5,
+          (exhibitionId, callback) => {
+            Attendance.searchAttendancesByKeyAndReasons(
+              exhibitionId,
+              req.params.reasons.split(','),
+              (err, attendances) => {
+                if (err) {
+                  callback(null, null);
+                } else if (attendances && attendances.length > 0) {
+                  callback(null, attendances.map(attendance => attendance.user_email));
+                } else {
+                  callback(null, null);
+                }
+              },
+            );
+          },
+          (err, results) => {
+            if (err || !results) {
+              callback(500, null);
+            } else {
+              const userEmailArray =
+                removeDuplicates([].concat.apply([], results).filter(item => (item !== null)));
+              callback(null, userEmailArray);
+            }
+          });
+      },
+      (userEmailArray, callback) => {
+        async.mapLimit(userEmailArray, 5,
+          (userEmail, callback) => {
+            User.getUser(userEmail, (err, user) => {
+              if (err || !user) {
+                callback(null, null);
+              } else {
+                callback(null, extractUserInfo(user));
+              }
+            });
+          },
+          (err, users) => {
+            if (err || !users) {
+              callback(500, null);
+            } else {
+              callback(200, users);
+            }
+          });
+      },
+    ], (status, users) => {
+      if (status === 200) {
+        res.status(200).json(users);
+        next();
+      } else if (status === 204) {
+        res.status(204).json('Nothing found!');
+        next();
+      } else {
+        res.status(500).json('Unable to process the data!');
+        next();
+      }
+    });
   } else {
     res.status(400).json('Bad Request!');
     next();
