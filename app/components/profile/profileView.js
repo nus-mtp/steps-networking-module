@@ -463,6 +463,13 @@ class ProfileView extends React.Component {
               </div>
               <div id="event-involved" className="collapse" role="tabpanel" aria-labelledby="headingTwo">
                 <div className="card-block">
+                  <div id="cannot-edit-reason">
+                    {
+                      (this.state.isContentEditable && this.state.events) ?
+                      <h4 id="cannot-edit-message">You can edit your attendance reason in the homepage</h4> :
+                      <div />
+                    }
+                  </div>
                   {
                     (this.state.events) ?
                     this.state.events.map(event =>

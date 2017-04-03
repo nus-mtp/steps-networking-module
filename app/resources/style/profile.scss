@@ -27,6 +27,11 @@
     @include transition(opacity, 0.4s, ease);
   }
 
+  #cannot-edit-message {
+    color: red;
+    text-align: center;
+  }
+
   #user-exhibition-container, #user-event-container {
     #user-exhibition, #user-events {
       float: right;
