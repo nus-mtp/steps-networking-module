@@ -26,6 +26,14 @@ const attendanceSchema = new mongoose.Schema({
   ],
 });
 
+attendanceSchema.pre('save', function saveHook(next) {
+  const attendance = this;
+  if (attendance.reason.length === 0) {
+    attendance.reason.push('nil');
+  }
+  return next();
+});
+
 attendanceSchema.index({ user_email: 1, attendance_key: 1 }, { unique: true });
 
 module.exports = attendanceSchema;
