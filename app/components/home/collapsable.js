@@ -190,14 +190,23 @@ class Collapsable extends React.Component {
                   <nav className="nav d-flex flex-row justify-content-between">
                     <div id="match-container">
                     {
-                      this.state.users.map((users, i) =>
-                        <Link key={i} className="nav-link matches" to="/match">
-                          <img className="img-fluid user-thumbnail" src="../../resources/images/default-profile-picture.png" alt="user-image" />
-                          <div>{users.name}</div>
-                        </Link>
-                    )}
+                      (this.state.relevantUsers.length !== 0) ?
+                        this.state.users.map((relevantUsers, i) =>
+                          <Link key={i} className="nav-link matches" to="/match">
+                            <img className="img-fluid user-thumbnail" src="../../resources/images/default-profile-picture.png" alt="user-image" />
+                            <div>{relevantUsers.name}</div>
+                          </Link>
+                        ) :
+                      <div id="no-matches-message">No potential matches. Ticking more checkboxes can widen your search for more matching potential.</div>
+                    }
                     </div>
-                    <button id="all-projects" className="btn btn-secondary"><Link to="/match">See More</Link></button>
+                    <div>
+                      {
+                        (this.state.relevantUsers.length !== 0) ?
+                          <button id="all-projects" className="btn btn-secondary"><Link to="/match">See More</Link></button> :
+                          <div/>
+                      }
+                    </div>
                   </nav>
                 </div>
               </div>
