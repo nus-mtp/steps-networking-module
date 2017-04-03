@@ -116,7 +116,7 @@
     visibility: visible;
     opacity: 1;
     @include transition(all 0.2s);
-    max-height: 400px;
+    max-height: 100vh;
   }
 
   #event-container > .collapse {
