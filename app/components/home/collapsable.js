@@ -19,7 +19,7 @@ class Collapsable extends React.Component {
       checkbox: [],
     };
 
-    this.initializeStates();
+    this.initializeCheckboxes();
 
     this.setLayout = this.setLayout.bind(this);
     this.setPresent = this.setPresent.bind(this);
@@ -28,7 +28,7 @@ class Collapsable extends React.Component {
     this.onToggle = this.onToggle.bind(this);
   }
 
-  initializeStates() {
+  initializeCheckboxes() {
     const xhr = new XMLHttpRequest();
     xhr.open('get', `attendance/get/oneUserAttendance/${this.props.email}/${this.props.event.id}`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -67,7 +67,6 @@ class Collapsable extends React.Component {
   }
 
   onToggle(e) {
-    //console.log(e.target.checked);
     if (e.target.checked) {
       const array = this.state.checkbox;
       console.log(array);
@@ -168,17 +167,20 @@ class Collapsable extends React.Component {
                 <div id="event-reasons">
                   <span className="event-reason-title">Looking for people looking for: </span>
                   <label htmlFor={"fulltime-reason-" + this.props.serial} className="custom-control custom-checkbox">
-                    <input id={"fulltime-reason-" + this.props.serial} type="checkbox" className="custom-control-input" name="full-time" onChange={this.onToggle} defaultChecked={this.state.checkbox.includes('full-time')} />
+                    <input id={"fulltime-reason-" + this.props.serial} type="checkbox" className="custom-control-input"
+                      name="full-time" onChange={this.onToggle} checked={this.state.checkbox.includes('full-time')} />
                     <span className="custom-control-indicator" />
                     <span className="custom-control-description reasons">Full-time</span>
                   </label>
                   <label htmlFor={"intern-reason-" + this.props.serial} className="custom-control custom-checkbox">
-                    <input id={"intern-reason-" + this.props.serial} type="checkbox" className="custom-control-input" name="internship" onChange={this.onToggle} defaultChecked={this.state.checkbox.includes('internship')} />
+                    <input id={"intern-reason-" + this.props.serial} type="checkbox" className="custom-control-input"
+                      name="internship" onChange={this.onToggle} checked={this.state.checkbox.includes('internship')} />
                     <span className="custom-control-indicator" />
                     <span className="custom-control-description reasons">Internship</span>
                   </label>
                   <label htmlFor={"partner-reason-" + this.props.serial} className="custom-control custom-checkbox">
-                    <input id={"partner-reason-" + this.props.serial} type="checkbox" className="custom-control-input" name="partnership" onChange={this.onToggle} defaultChecked={this.state.checkbox.includes('partnership')} />
+                    <input id={"partner-reason-" + this.props.serial} type="checkbox" className="custom-control-input"
+                      name="partnership" onChange={this.onToggle} checked={this.state.checkbox.includes('partnership')} />
                     <span className="custom-control-indicator" />
                     <span className="custom-control-description reasons">Partnership</span>
                   </label>
