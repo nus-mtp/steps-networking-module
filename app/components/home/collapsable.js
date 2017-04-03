@@ -26,6 +26,7 @@ class Collapsable extends React.Component {
     this.setAbsent = this.setAbsent.bind(this);
     this.updateLayout = this.updateLayout.bind(this);
     this.onToggle = this.onToggle.bind(this);
+    this.getRelevantUsers = this.getRelevantUsers.bind(this);
   }
 
   initializeCheckboxes() {
@@ -37,6 +38,7 @@ class Collapsable extends React.Component {
       if (xhr.status === 200) {
         console.log("Initialize Checkbox Success");
         this.setState({ checkbox: xhr.response.reasons });
+        //this.getRelevantUsers();
       } else {
         console.log("Initialize Checkbox Fail");
         this.setState({ checkbox: [] });
@@ -69,30 +71,70 @@ class Collapsable extends React.Component {
   onToggle(e) {
     if (e.target.checked) {
       const array = this.state.checkbox;
-      console.log(array);
       array.push(e.target.name);
-      console.log(array);
-      this.setState({ checkbox: array });
+      const array2 = array.filter(box => {if (box !== 'nil') return box;});
+      this.setState({ checkbox: array2 });
+
+      const userEmail = encodeURIComponent(this.props.email);
+      const id = encodeURIComponent(this.props.event.id);
+      const reasons = encodeURIComponent(array2.toString());
+      const formData = `userEmail=${userEmail}&id=${id}&reasons=${reasons}`;
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('post', 'attendance/post/set/oneAttendanceReasons');
+      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhr.responseType = 'json';
+      xhr.addEventListener('load', () => {
+        if (xhr.status === 200) {
+          console.log('Add Event Reason Success');
+        } else {
+          console.log('Add Event Reason Fail');
+        }
+      });
+      xhr.send(formData);
     } else {
       const array = this.state.checkbox.filter(box => {if (box !== e.target.name) return box;});
-      console.log(this.state.checkbox);
-      console.log(array);
+      if (array.length === 0) array.push('nil');
       this.setState({ checkbox: array });
+
+      const userEmail = encodeURIComponent(this.props.email);
+      const id = encodeURIComponent(this.props.event.id);
+      const reasons = encodeURIComponent(array.toString());
+      const formData = `userEmail=${userEmail}&id=${id}&reasons=${reasons}`;
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('post', 'attendance/post/set/oneAttendanceReasons');
+      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhr.responseType = 'json';
+      xhr.addEventListener('load', () => {
+        if (xhr.status === 200) {
+          console.log('Add Event Reason Success');
+        } else {
+          console.log('Add Event Reason Fail');
+        }
+      });
+      xhr.send(formData);
     }
-    const userEmail = encodeURIComponent(this.props.email);
+    //this.getRelevantUsers();
+  }
+
+  getRelevantUsers() {
     const id = encodeURIComponent(this.props.event.id);
     const reasons = encodeURIComponent(this.state.checkbox.toString());
-    const formData = `userEmail=${userEmail}&id=${id}&reasons=${reasons}`;
+    const formData = `id=${id}&reasons=${reasons}`;
 
     const xhr = new XMLHttpRequest();
-    xhr.open('post', 'attendance/post/set/oneAttendanceReasons');
+    xhr.open('post', 'attendance/post/search/event/exhibitors/reasons');
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        console.log('Add Event Reason Success');
+        console.log('Finding relevant users success');
+        console.log(xhr.response);
+        this.setState({ relevantUsers: xhr.response });
       } else {
-        console.log('Add Event Reason Fail');
+        console.log('Finding relevant users fail');
+        this.setState({ relevantUsers: [] });
       }
     });
     xhr.send(formData);
@@ -191,10 +233,10 @@ class Collapsable extends React.Component {
                     <div id="match-container">
                     {
                       (this.state.relevantUsers.length !== 0) ?
-                        this.state.users.map((relevantUsers, i) =>
-                          <Link key={i} className="nav-link matches" to="/match">
+                        this.state.relevantUsers.map((relevantUser, i) =>
+                          <Link to={`/profile/${relevantUser.userEmail}`} key={i}>
                             <img className="img-fluid user-thumbnail" src="../../resources/images/default-profile-picture.png" alt="user-image" />
-                            <div>{relevantUsers.name}</div>
+                            <div>{relevantUser.userName}</div>
                           </Link>
                         ) :
                       <div id="no-matches-message">No potential matches. Ticking more checkboxes can widen your search for more matching potential.</div>
