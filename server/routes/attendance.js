@@ -523,67 +523,6 @@ router.get('/get/oneEventExhibitors/:id', (req = {}, res, next) => {
   }
 });
 
-// Search for Users attending an Event with a specified Reason
-router.post('/post/search/oneEventAttendancesWithReason/', (req = {}, res, next) => {
-  if (req.body && req.body.eventName && req.body.reason) {
-    User.setDBConnection(req.app.locals.db);
-    Event.setDBConnection(req.app.locals.db);
-    Exhibition.setDBConnection(req.app.locals.db);
-    Attendance.setDBConnection(req.app.locals.db);
-
-    Event.getEvent(req.body.eventName, (err, event) => {
-      if (err) {
-        res.status(500).json('Unable to process data!');
-        next();
-      } else if (event) {
-        Attendance.searchAttendancesByKeyAndReason(event._id,
-                    req.body.reason, (err, attendances) => {
-                      if (err) {
-                        res.status(500).json('Unable to process data!');
-                        next();
-                      } else if (attendances && attendances.length > 0) {
-                        async.mapLimit(attendances, 5,
-                                (attendance, callback) => {
-                                  User.getUser(attendance.user_email, (err, user) => {
-                                    if (err || !user) {
-                                      callback(null, null);
-                                    } else {
-                                      callback(null, extractUserInfo(user));
-                                    }
-                                  });
-                                },
-                                (err, results) => {
-                                  if (err || !results) {
-                                    res.status(500).json('Unable to process data!');
-                                    next();
-                                  } else {
-                                    const finalizedResults =
-                                      results.filter(item => (item !== null));
-                                    if (finalizedResults && finalizedResults.length > 0) {
-                                      res.status(200).json(finalizedResults);
-                                      next();
-                                    } else {
-                                      res.status(204).json('Nothing found!');
-                                      next();
-                                    }
-                                  }
-                                });
-                      } else {
-                        res.status(204).json('Nothing found!');
-                        next();
-                      }
-                    });
-      } else {
-        res.status(204).json('Unable to find Event!');
-        next();
-      }
-    });
-  } else {
-    res.status(400).json('Bad Request!');
-    next();
-  }
-});
-
 // Toggle User's Attendance for an Event
 router.post('/post/oneEventAttendance/', (req = {}, res, next) => {
   if (req.body && req.body.userEmail && req.body.eventName) {
