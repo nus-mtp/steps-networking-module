@@ -586,7 +586,7 @@ router.post('/post/search/activity/reasons', (req = {}, res, next) => {
   }
 });
 
-// Search for Users who are attending an Event as an Exhibitor, for given reasons
+// Search for Users who are participating in an Event as an Exhibitor, for given reasons
 // Note: Requires Event ID as request body parameter 'id'
 // Note: Requires reasons to be a Comma-Separated String rather than an Array
 // Use <Array>.toString() to generate a Comma-Separated String from an Array
