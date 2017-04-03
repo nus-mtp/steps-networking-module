@@ -12,11 +12,11 @@ const extractUserInfo = require('../utils/utils').extractUserInfo;
 
 // Note: All Routes prefixed with 'user/'
 
-router.get('/get/profile/:email', (req = {}, res, next) => {
-  if (req.params && req.params.email) {
+router.get('/get/profile/:userEmail', (req = {}, res, next) => {
+  if (req.params && req.params.userEmail) {
     User.setDBConnection(req.app.locals.db);
 
-    User.getUser(req.params.email, (err, user) => {
+    User.getUser(req.params.userEmail, (err, user) => {
       if (err) {
         console.log(err);
         res.status(500).json('Unable to fetch data!');
@@ -27,6 +27,46 @@ router.get('/get/profile/:email', (req = {}, res, next) => {
       }
       next();
     });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
+// Note: Requires Comma-Separated String of User Emails as request parameter 'userEmails'
+router.get('/get/profiles/:userEmails', (req = {}, res, next) => {
+  if (req.params && req.params.userEmails) {
+    User.setDBConnection(req.app.locals.db);
+
+    async.mapLimit(req.params.userEmails.split(','), 5,
+      (email, callback) => {
+        if (email) {
+          User.getUser(email, (err, user) => {
+            if (err) {
+              callback(null, null);
+            } else {
+              callback(null, extractUserInfo(user));
+            }
+          });
+        } else {
+          callback(null, null);
+        }
+      },
+      (err, results) => {
+        if (err || !results) {
+          res.status(500).json('Unable to process data!');
+          next();
+        } else {
+          const finalizedResults = results.filter(item => (item !== null));
+          if (finalizedResults && finalizedResults.length > 0) {
+            res.status(200).json(finalizedResults);
+            next();
+          } else {
+            res.status(204).json('Nothing found!');
+            next();
+          }
+        }
+      });
   } else {
     res.status(400).json('Bad Request!');
     next();

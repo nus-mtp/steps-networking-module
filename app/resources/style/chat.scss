@@ -16,7 +16,7 @@
 
 /* Sidebar to hold tabs when in desktop mode */
 #chat-sidebar {
-  margin-top: 70px;
+  margin-top: 60px;
   margin-bottom: 15px;
   padding-right: 5px;
   position:relative;
@@ -45,12 +45,11 @@
 
 /* Name of person in the conversation */
 #chat-name-header {
+  display:inline-block;
   background-color: mediumslateblue;
   color: white;
   padding: 5px;
   margin-bottom: 10px;
-  max-width: 100%;
-  width: 80%;
   border-radius: .25rem;
   word-wrap: break-word;
   text-align: center;
@@ -63,15 +62,25 @@
   margin-left:0;
 }
 
+/* Message wrapper */
+.chat-bubble {
+  margin-bottom: 5px;
+  max-width: 95%;
+  width: -webkit-fit-content; // Safari/Chrome
+  word-wrap: break-word;
+}
+
+@-moz-document url-prefix() {
+  .chat-bubble {
+    width: -moz-fit-content; // Firefox
+  }
+}
+
 /* Messages sent by other user */
 #chat-other {
   background-color:lightgray;
   margin-left:0;
   margin-right:auto;
-  margin-bottom: 5px;
-  width: -webkit-fit-content;
-  word-wrap: break-word;
-  max-width: 100%;
 }
 
 /* Messages sent by user */
@@ -79,19 +88,19 @@
   background-color:palegreen;
   margin-left: auto;
   margin-right:0;
-  margin-bottom: 5px;
-  width: -webkit-fit-content;
-  word-wrap: break-word;
-  max-width: 100%;
+}
+
+/* Wrapper for fixed bodies */
+.fixed-body-wrapper {
+  margin-left:inherit;
+  padding-left: inherit;
+  margin-right: 0;
+  display:flex;
 }
 
 /* Textbox to submit messages */
 #chat-form-container {
-  margin-left:inherit;
-  padding-left: inherit;
-  margin-right: 0;
   height: 100px;
-  display:flex;
 }
 
 /* Textbox settings */

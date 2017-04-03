@@ -11,16 +11,20 @@ class EventView extends React.Component {
 
     this.state = {
       isDisplayExhibitions: false,
+      isDisplayAttendees: false,
       exhibitions: [], // This is for all exhibitions
       displayExhibitions: [], // This is for the displayed exhibitions
+      attendees: [],
       event: [],
       organizer: sampleOrganizer,
     }
 
     this.getEvent();
     this.getExhibitions();
+    this.getAttendees();
 
     this.displayAllExhibitions = this.displayAllExhibitions.bind(this);
+    this.displayAllAttendees= this.displayAllAttendees.bind(this);
     this.onClick = this.onClick.bind(this);
     this.updateDisplayedExhibitions = this.updateDisplayedExhibitions.bind(this);
   }
@@ -30,6 +34,7 @@ class EventView extends React.Component {
     window.addEventListener("hashchange", () => {
       that.getEvent();
       that.getExhibitions();
+      that.getAttendees();
     });
   }
 
@@ -38,7 +43,32 @@ class EventView extends React.Component {
     window.removeEventListener("hashchange", () => {
       that.getEvent();
       that.getExhibitions();
+      that.getAttendees();
     });
+  }
+
+  getAttendees() {
+    const pathname = this.props.location.pathname;
+    const eventName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/attendance/get/oneEventAttendees/${eventName}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.response !== null) {
+        // success
+        this.setState({
+          attendees: xhr.response,
+        });
+        console.log(xhr.response);
+      } else {
+        this.setState({
+          attendees: [],
+        });
+      }
+    });
+    xhr.send();
   }
 
   getExhibitions() {
@@ -91,7 +121,15 @@ class EventView extends React.Component {
 
   displayAllExhibitions() {
     this.setState({
-      isDisplayExhibitions: !this.state.isDisplayExhibitions
+      isDisplayExhibitions: !this.state.isDisplayExhibitions,
+      isDisplayAttendees: false,
+    });
+  }
+
+  displayAllAttendees() {
+    this.setState({
+      isDisplayAttendees: !this.state.isDisplayAttendees,
+      isDisplayExhibitions: false,
     });
   }
 
@@ -158,12 +196,12 @@ class EventView extends React.Component {
 
     return (
       <div id="event-body" className="d-f1lex flex-column justify-content-center">
-        <div className="row justify-content-center mb-4">
+        <div className="row justify-content-center mb-1">
           <div className="col-md-6 col-12 text-center">
           {
             (this.state.event.event_poster)
-              ? <embed className="img-fluid event-poster mb-2" src={`${this.state.event.event_poster}`} alt="event-poster" />
-              : <img className="img-fluid event-poster mb-2" src="../../resources/images/empty-poster-placeholder.png" alt="event-poster" />
+              ? <embed className="img-fluid event-poster mb-1" src={`${this.state.event.event_poster}`} alt="event-poster" />
+              : <img className="img-fluid event-poster mb-1" src="../../resources/images/empty-poster-placeholder.png" alt="event-poster" />
           }
           </div>
           {
@@ -180,7 +218,10 @@ class EventView extends React.Component {
                   }
                   </div>
                 </div>
-                <button className="btn btn-info" onClick={this.displayEventMap.bind(this)}>Sitemap</button>
+                <br />
+                <div className="event-info">Attendance: {this.state.attendees.length}</div>
+                <div className="event-info">Exhibitions: {this.state.exhibitions.length}</div>
+                <button className="btn btn-info mt-4" onClick={this.displayEventMap.bind(this)}>Sitemap</button>
               </div>
             : <div />
           }
@@ -196,6 +237,13 @@ class EventView extends React.Component {
               <div className="event-info mb-2">{this.state.event.description}</div>
               <hr/>
               <div className="mb-3">
+                <button className="btn btn-success mr-2" onClick={this.displayAllAttendees}>
+                  {
+                    (this.state.isDisplayAttendees)
+                    ? "Hide attendees"
+                    : "Show attendees"
+                  }
+                </button>
                 <button className="btn btn-success mr-2" onClick={this.displayAllExhibitions}>
                   {
                     (this.state.isDisplayExhibitions)
@@ -204,6 +252,22 @@ class EventView extends React.Component {
                   }
                 </button>
               </div>
+              {
+                (this.state.isDisplayAttendees)
+                ? <div>
+                    {
+                      this.state.attendees.map((attendees, i) =>
+                      <Link id="exhibition-container" to={`/profile/${attendees.userEmail}`} key={i}>
+                        <div id="attendees" className="d-flex flex-row mb-1 align-items-center">
+                          <div>
+                            <div>{attendees.userName}</div>
+                          </div>
+                        </div>
+                      </Link>
+                    )}
+                  </div>
+                : <div/>
+              }
               {
                 (this.state.isDisplayExhibitions)
                 ? <div>
@@ -222,7 +286,8 @@ class EventView extends React.Component {
                       </span>
                     </div>
                     <br/>
-                    {this.state.displayExhibitions.map((exhibition, i) =>
+                    {
+                      this.state.displayExhibitions.map((exhibition, i) =>
                       <Link id="exhibition-container" to={`/exhibition/${this.state.event.name}/${exhibition.exhibitionName}`} key={i}>
                         <div id="exhibition" className="d-flex flex-row mb-1 align-items-center">
                           {
