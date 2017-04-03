@@ -38,7 +38,7 @@ class Collapsable extends React.Component {
       if (xhr.status === 200) {
         console.log("Initialize Checkbox Success");
         this.setState({ checkbox: xhr.response.reasons });
-        //this.getRelevantUsers();
+        this.getRelevantUsers(xhr.response.reasons);
       } else {
         console.log("Initialize Checkbox Fail");
         this.setState({ checkbox: [] });
@@ -92,6 +92,7 @@ class Collapsable extends React.Component {
         }
       });
       xhr.send(formData);
+      this.getRelevantUsers(array2);
     } else {
       const array = this.state.checkbox.filter(box => {if (box !== e.target.name) return box;});
       if (array.length === 0) array.push('nil');
@@ -114,13 +115,13 @@ class Collapsable extends React.Component {
         }
       });
       xhr.send(formData);
+      this.getRelevantUsers(array);
     }
-    //this.getRelevantUsers();
   }
 
-  getRelevantUsers() {
+  getRelevantUsers(array) {
     const id = encodeURIComponent(this.props.event.id);
-    const reasons = encodeURIComponent(this.state.checkbox.toString());
+    const reasons = encodeURIComponent(array.toString());
     const formData = `id=${id}&reasons=${reasons}`;
 
     const xhr = new XMLHttpRequest();
@@ -130,7 +131,6 @@ class Collapsable extends React.Component {
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
         console.log('Finding relevant users success');
-        console.log(xhr.response);
         this.setState({ relevantUsers: xhr.response });
       } else {
         console.log('Finding relevant users fail');
