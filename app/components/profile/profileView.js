@@ -23,6 +23,8 @@ class ProfileView extends React.Component {
       events: [], // List of event user attended
       exhibitions: [], // List of exhibition user participated
       attendances: [], // For all the attendance objects
+      feedback: '',  // notification for HTTP POST
+      error: '',
     };
 
     this.getUser(userEmail);
@@ -129,7 +131,6 @@ class ProfileView extends React.Component {
     xhr.send();
   }
 
-
   handleDeleteSkill(i) {
     const user = this.state.user;
     user.userSkills = user.userSkills.filter((skill, index) => index !== i);
@@ -232,9 +233,15 @@ class ProfileView extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        console.log('save reasons success');
+        this.setState({
+          feedback: 'Reasons saved',
+          error: '',
+        });
       } else {
-        console.log('save reasons fail');
+        this.setState({
+          feedback: '',
+          error: xhr.response,
+        });
       }
     });
     xhr.send(formData);
@@ -252,12 +259,14 @@ class ProfileView extends React.Component {
           // success
           this.setState({
             feedback: 'Successfully edited',
+            error: '',
             isContentEditable: !this.state.isContentEditable,
           });
         } else {
           // failure
           this.setState({
-            feedback: xhr.response,
+            feedback: '',
+            error: xhr.response,
             isContentEditable: !this.state.isContentEditable,
           });
         }
@@ -295,38 +304,46 @@ class ProfileView extends React.Component {
 
   render() {
     const userEmail = (Auth.isUserAuthenticated()) ? Auth.getToken().email.replace(/%40/i, '@') : '';
+    const isNotify = (this.state.error || this.state.feedback) ? ((this.state.feedback) ?
+      <div className="alert alert-success" role="alert">
+        <strong>Success!</strong> {this.state.feedback}
+      </div> :
+      <div className="alert alert-danger" role="alert">
+        <strong>Error!</strong> {this.state.error}
+      </div>) : <div />;
 
     return (
       <div id="profile-body">
-      {
-        (Object.keys(this.state.user).length !== 0)
-        ? <div className="row justify-content-between justify-content-md-around">
-            <div id="profile-picture" className="col-md-6 push-md-3 col-12 text-center">
-              <img src="../../resources/images/default-profile-picture.png" alt="profile-img" />
+        {isNotify}
+        {
+          (Object.keys(this.state.user).length !== 0)
+          ? <div className="row justify-content-between justify-content-md-around">
+              <div id="profile-picture" className="col-md-6 push-md-3 col-12 text-center">
+                <img src="../../resources/images/default-profile-picture.png" alt="profile-img" />
+              </div>
+              <div className="col-md-3 pull-md-6 col-6 text-center d-flex justify-content-center">
+              {
+                (this.state.user.userEmail !== userEmail) ?
+                  <div id="chat-icon-container">
+                    <Link to={`/chat/${this.state.user.userEmail}`}>
+                      <img id="chat-icon" src="../../resources/images/chat-icon.svg" alt="chat-icon" />
+                    </Link>
+                  </div> : <div />
+              }
+              </div>
+              <div className="col-md-3 col-6 text-center d-flex justify-content-center" onClick={this.handleEdit}>
+              {
+                (this.state.user.userEmail === userEmail) ?
+                  <div id="edit-icon-container">
+                    <img id="edit-icon" src="../../resources/images/edit-icon.svg" alt="edit-icon" />
+                  </div> : <div />
+              }
+              </div>
             </div>
-            <div className="col-md-3 pull-md-6 col-6 text-center d-flex justify-content-center">
-            {
-              (this.state.user.userEmail !== userEmail) ?
-                <div id="chat-icon-container">
-                  <Link to={`/chat/${this.state.user.userEmail}`}>
-                    <img id="chat-icon" src="../../resources/images/chat-icon.svg" alt="chat-icon" />
-                  </Link>
-                </div> : <div />
-            }
+          : <div id="profile-picture" className="col-12 text-center">
+             <img src="../../resources/images/default-profile-picture.png" alt="profile-img" />
             </div>
-            <div className="col-md-3 col-6 text-center d-flex justify-content-center" onClick={this.handleEdit}>
-            {
-              (this.state.user.userEmail === userEmail) ?
-                <div id="edit-icon-container">
-                  <img id="edit-icon" src="../../resources/images/edit-icon.svg" alt="edit-icon" />
-                </div> : <div />
-            }
-            </div>
-          </div>
-        : <div id="profile-picture" className="col-12 text-center">
-           <img src="../../resources/images/default-profile-picture.png" alt="profile-img" />
-          </div>
-       }
+         }
         <div className="profile-info card">
           <div className="card-block">
             <div className="card-text">

@@ -17,6 +17,8 @@ class ExhibitionView extends React.Component {
       mediaChange: '',
       exhibition: {},
       attendance: {},
+      feedback: '',
+      error: '',
     };
 
     this.retrieveData();
@@ -141,7 +143,7 @@ class ExhibitionView extends React.Component {
         if (xhr.status === 200) {
           // success
           this.setState({
-            feedback: 'Successfully edited',
+            feedback: 'Comment added',
             currentComment: '',
           });
 
@@ -149,7 +151,7 @@ class ExhibitionView extends React.Component {
         } else {
           // failure
           this.setState({
-            feedback: xhr.response,
+            error: xhr.response,
             currentComment: '',
           });
         }
@@ -164,7 +166,7 @@ class ExhibitionView extends React.Component {
         if (xhr.status === 200) {
           // success
           this.setState({
-            feedback: 'Successfully edited',
+            feedback: 'New comment created',
             currentComment: '',
           });
 
@@ -172,7 +174,7 @@ class ExhibitionView extends React.Component {
         } else {
           // failure
           this.setState({
-            feedback: xhr.response,
+            error: xhr.response,
             currentComment: '',
           });
         }
@@ -226,6 +228,14 @@ class ExhibitionView extends React.Component {
   }
 
   render() {
+    const isNotify = (this.state.error || this.state.feedback) ? ((this.state.feedback) ?
+      <div className="alert alert-success" role="alert">
+        <strong>Success!</strong> {this.state.feedback}
+      </div> :
+      <div className="alert alert-danger" role="alert">
+        <strong>Error!</strong> {this.state.error}
+      </div>) : <div />;
+
     return (
       <div id="project-body">
         <div className="row justify-content-center">
@@ -310,11 +320,11 @@ class ExhibitionView extends React.Component {
             </li>
             <li className="exhibition-info text-center card-block list-group-item">
               <div className="info-type">Comments</div>
-              <div id="project-comments" />
               <div id="comment-input-container">
                 <textarea className="form-control" rows="2" id="comment-input" value={this.state.currentComment} onChange={this.editComment}></textarea>
                 <button id="submit-comment" type="button" className="btn btn-primary" onClick={this.submitComment}>Submit</button>
               </div>
+              {isNotify}
               <div id="comment-list">
               {
                 (this.state.comments.length > 0) ?
