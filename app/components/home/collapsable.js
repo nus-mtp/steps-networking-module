@@ -131,7 +131,8 @@ class Collapsable extends React.Component {
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
         console.log('Finding relevant users success');
-        this.setState({ relevantUsers: xhr.response });
+        const array = xhr.response.filter(user => {if (user.userEmail !== this.props.email) return user;});
+        this.setState({ relevantUsers: array });
       } else {
         console.log('Finding relevant users fail');
         this.setState({ relevantUsers: [] });
