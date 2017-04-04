@@ -54,10 +54,11 @@
       border-radius: 0;
       font-size: 16px;
       margin: 0;
-      height: 54px;
+      height: 100%;
       border-top: none;
       border-bottom: none;
       border-right: none;
+      background: none;
     }
 
     #search-filter {
@@ -78,7 +79,7 @@
       height: 54.5px;
       border-left: none;
       border-top: none;
-      border-bottom: 1px solid maroon;
+      border-bottom: none;
     }
   }
 
@@ -118,6 +119,8 @@ a {
       padding: 20px;
       color: black;
       height: 105%;
+      width: 100%;
+      text-align: center;
     }
 
     .active {
