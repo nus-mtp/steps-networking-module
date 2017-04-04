@@ -8,9 +8,44 @@ class Match extends React.Component {
   constructor(props) {
     super(props);
 
+    const pathname = this.props.location.pathname;
+    const remaining = pathname.slice(0, pathname.lastIndexOf('/'));
+    const reasons = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+    const id = remaining.slice(remaining.lastIndexOf('/') + 1, remaining.length);
+
     this.state = {
+      eventId: id,
+      reasons: reasons.split(','),
       users: sampleUsers,
+      relevantUsers: [],
     }
+
+    this.getRelevantUsers(this.state.reasons);
+  }
+
+  getRelevantUsers(array) {
+    const id = encodeURIComponent(this.state.eventId);
+    const reasons = encodeURIComponent(array.toString());
+    const formData = `id=${id}&reasons=${reasons}`;
+    console.log(this.state.users);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('post', 'attendance/post/search/event/exhibitors/reasons');
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        console.log('Finding relevant users match success');
+        //const array = xhr.response.filter(user => {if (user.userEmail !== this.props.email) return user;});
+        this.setState({ relevantUsers: xhr.response });
+        console.log(this.state.relevantUsers);
+
+      } else {
+        console.log('Finding relevant users match fail');
+        this.setState({ relevantUsers: [] });
+      }
+    });
+    xhr.send(formData);
   }
 
   next() {
@@ -23,9 +58,9 @@ class Match extends React.Component {
 
   render() {
     return(
-      <ReactSwipe ref="reactSwipe" className="carousel" swipeOptions={{continuous: false}}>
+      <ReactSwipe ref="reactSwipe" className="carousel" swipeOptions={{continuous: false}} key={this.state.relevantUsers.length}>
       {
-        this.state.users.map((user, i) =>
+        this.state.relevantUsers.map((user, i) =>
           <div key={i} className="d-flex align-items-center flex-column">
             <div className="match-button-lg-prev d-flex flex-column hidden-sm-down" onClick={::this.prev}>
               <img className="match-icons" src="../../resources/images/chevron-left.svg" />
@@ -54,11 +89,11 @@ class Match extends React.Component {
                 </div>
               </div>
               <div className="row justify-content-center">
-                <h3 className="user-name user-info">{user.name}</h3>
+                <h3 className="user-name user-info">{user.userName}</h3>
               </div>
               <div className="row justify-content-center">
                 {
-                  user.skills.map((skill, i) =>
+                  user.userSkills.map((skill, i) =>
                     <div className="badge badge-pill badge-info reason-tag" key={i}>{skill}</div>
                 )}
               </div>
@@ -75,7 +110,7 @@ class Match extends React.Component {
               </div>
               <hr className="divider" />
               <div className="more-info text-center hidden-md-up">
-                <Link to={`/profile/${user.email}`}>More Info</Link>
+                <Link to={`/profile/${user.userEmail}`}>More Info</Link>
               </div>
               <div className="hidden-sm-down">
                 <div className="profile-info card">
@@ -83,11 +118,11 @@ class Match extends React.Component {
                     <div className="card-text">
                       <div>
                         <span className="info-type">Email: </span>
-                        <span id="user-email" className="user-info">{user.email}</span>
+                        <span id="user-email" className="user-info">{user.userEmail}</span>
                       </div>
                       <div>
                         <span className="info-type">Description: </span>
-                        <span id="user-desc" className="user-info">{user.description}</span>
+                        <span id="user-desc" className="user-info">{user.userDescription}</span>
                       </div>
                       <div>
                         <span className="info-type">Links: </span>
