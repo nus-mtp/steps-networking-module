@@ -8,6 +8,8 @@ const Comment = require('../database/objectClasses/Comment');
 
 const Exhibition = require('../database/objectClasses/Exhibition');
 
+const authCheckMiddleware = require('../middleware/auth-check');
+
 router.get('/get/userComments/:eventName/:exhibitionName/:userEmail', (req = {}, res, next) => {
   Exhibition.setDBConnection(req.app.locals.db);
   Comment.setDBConnection(req.app.locals.db);

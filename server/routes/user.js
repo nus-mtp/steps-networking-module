@@ -10,6 +10,8 @@ const User = require('../database/objectClasses/User');
 // See extractUserInfo under ../utils/utils to see actual conversion
 const extractUserInfo = require('../utils/utils').extractUserInfo;
 
+const authCheckMiddleware = require('../middleware/auth-check');
+
 // Note: All Routes prefixed with 'user/'
 
 router.get('/get/profile/:userEmail', (req = {}, res, next) => {

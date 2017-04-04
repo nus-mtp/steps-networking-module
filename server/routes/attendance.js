@@ -18,6 +18,8 @@ const extractEventInfo = require('../utils/utils').extractEventInfo;
 const extractExhibitionInfo = require('../utils/utils').extractExhibitionInfo;
 const extractAttendanceInfo = require('../utils/utils').extractAttendanceInfo;
 
+const authCheckMiddleware = require('../middleware/auth-check');
+
 // Note: All Routes prefixed with 'attendance/'
 
 // Get one Attendance of a specified User and Event / Exhibition
