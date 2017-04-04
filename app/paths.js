@@ -10,7 +10,7 @@ const Paths = {
   chat_empty: '/chat',
   profile: '/profile/:email',
   profile_empty: '/profile',
-  match: '/match/:eventId/:reasons',
+  match: '/match/:email/:eventId/:reasons',
   search: '/search/:category(/:tags)',
 };
 

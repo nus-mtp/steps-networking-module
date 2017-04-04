@@ -244,7 +244,7 @@ class Collapsable extends React.Component {
                     <div>
                       {
                         (this.state.relevantUsers.length !== 0) ?
-                          <button id="all-projects" className="btn btn-secondary"><Link to={`/match/${this.props.event.id}/${this.state.checkbox.toString()}`}>See More</Link></button> :
+                          <button id="all-projects" className="btn btn-secondary"><Link to={`/match/${this.props.email}/${this.props.event.id}/${this.state.checkbox.toString()}`}>See More</Link></button> :
                           <div/>
                       }
                     </div>

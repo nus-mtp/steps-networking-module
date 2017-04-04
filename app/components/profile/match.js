@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router';
 import Paths from '../../paths';
 import ReactSwipe from 'react-swipe';
-import sampleUsers from './sampleUsers';
 
 class Match extends React.Component {
   constructor(props) {
@@ -10,14 +9,16 @@ class Match extends React.Component {
 
     const pathname = this.props.location.pathname;
     const remaining = pathname.slice(0, pathname.lastIndexOf('/'));
+    const remaining2 = remaining.slice(0, remaining.lastIndexOf('/'));
     const reasons = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
     const id = remaining.slice(remaining.lastIndexOf('/') + 1, remaining.length);
+    const email = remaining2.slice(remaining2.lastIndexOf('/') + 1, remaining2.length);
 
     this.state = {
       eventId: id,
       reasons: reasons.split(','),
-      users: sampleUsers,
       relevantUsers: [],
+      email: email,
     }
 
     this.getRelevantUsers(this.state.reasons);
@@ -27,7 +28,6 @@ class Match extends React.Component {
     const id = encodeURIComponent(this.state.eventId);
     const reasons = encodeURIComponent(array.toString());
     const formData = `id=${id}&reasons=${reasons}`;
-    console.log(this.state.users);
 
     const xhr = new XMLHttpRequest();
     xhr.open('post', 'attendance/post/search/event/exhibitors/reasons');
@@ -36,9 +36,8 @@ class Match extends React.Component {
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
         console.log('Finding relevant users match success');
-        //const array = xhr.response.filter(user => {if (user.userEmail !== this.props.email) return user;});
-        this.setState({ relevantUsers: xhr.response });
-        console.log(this.state.relevantUsers);
+        const array = xhr.response.filter(user => {if (user.userEmail !== this.state.email) return user;});
+        this.setState({ relevantUsers: array });
 
       } else {
         console.log('Finding relevant users match fail');
@@ -74,7 +73,7 @@ class Match extends React.Component {
               <div className="row justify-content-between justify-content-md-around">
                 <div className="col-md-3 text-center d-flex justify-content-center hidden-sm-down">
                   <div id="chat-icon-container">
-                    <Link to={Paths.chat}>
+                    <Link to={`/chat/${user.userEmail}`}>
                       <img id="chat-icon" src="../../resources/images/chat-icon.svg" alt="chat-icon" />
                     </Link>
                   </div>
@@ -117,15 +116,15 @@ class Match extends React.Component {
                   <div className="card-block">
                     <div className="card-text">
                       <div>
-                        <span className="info-type">Email: </span>
+                        <strong className="info-type">Email: </strong>
                         <span id="user-email" className="user-info">{user.userEmail}</span>
                       </div>
                       <div>
-                        <span className="info-type">Description: </span>
+                        <strong className="info-type">Description: </strong>
                         <span id="user-desc" className="user-info">{user.userDescription}</span>
                       </div>
                       <div>
-                        <span className="info-type">Links: </span>
+                        <strong className="info-type">Links: </strong>
                         <span id="user-links" className="user-info"></span>
                       </div>
                     </div>
