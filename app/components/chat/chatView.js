@@ -113,6 +113,7 @@ export default class ChatView extends Component {
         <div style={{textAlign: 'center'}}>
           You have no one to talk to.<br/>
           Please find someone to talk to.
+          <br/><br/>
         </div>
       );
     } else {
