@@ -7,10 +7,8 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    const userEmail = (Auth.isUserAuthenticated()) ? Auth.getToken().email : '';
-
     this.state = {
-      email: userEmail.replace(/%40/i, '@'),
+      email: '',
       profileActive: '',
       loginActive: '',
       signupActive: '',
@@ -23,6 +21,7 @@ class App extends React.Component {
     };
 
     this.filterSearch();
+    this.getUser();
 
     this.removeDropdown = this.removeDropdown.bind(this);
     this.handleLinks = this.handleLinks.bind(this);
@@ -36,6 +35,7 @@ class App extends React.Component {
     this.handleLinks();
     window.addEventListener("hashchange", () => {
       that.handleLinks();
+      that.getUser();
     });
   }
 
@@ -43,6 +43,7 @@ class App extends React.Component {
     const that = this;
     window.removeEventListener("hashchange", () => {
       that.handleLinks();
+      that.getUser();
     });
   }
 
@@ -50,6 +51,14 @@ class App extends React.Component {
     if (prevState.searchFilter !== this.state.searchFilter) {
       this.filterSearch();
     };
+  }
+
+  getUser() {
+    const userEmail = (Auth.isUserAuthenticated()) ? Auth.getToken().email : '';
+
+    this.setState({
+      email: userEmail.replace(/%40/i, '@'),
+    });
   }
 
   removeDropdown() {
