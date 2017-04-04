@@ -227,7 +227,7 @@ class Attendance {
       const refinedReasons = reasons.map(reason => reason.trim().toLowerCase());
 
       Attendance.AttendanceModel.find(
-        { attendance_key: attendanceKey, reason: { $all: refinedReasons } },
+        { attendance_key: attendanceKey, reason: { $in: refinedReasons } },
         (err, matchedAttendances) => {
           callback(err, matchedAttendances);
         });
