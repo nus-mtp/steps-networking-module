@@ -24,8 +24,47 @@ export default class ChatView extends Component {
     const pathname = this.props.location.pathname;
     this.talkToEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length).trim();
     if (this.talkToEmail===''||this.talkToEmail==='chat') {
-      this.talkToEmail = null;
+      this.talkToEmail = '';
     }
+    
+    //*// validate talkToEmail
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `user/get/profile/${this.talkToEmail}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', function(){
+      if (xhr.status === 200) {
+        // If valid, send to bUsers
+        const bookmarkedUserId = encodeURIComponent(xhr.response.id);
+        const userEmail = encodeURIComponent(this.state.email);
+        const formData = `bookmarkedUserId=${bookmarkedUserId}&userEmail=${userEmail}`;
+        //*
+        const xhrBUser = new XMLHttpRequest();
+        xhrBUser.open('post', `user/post/profile/add/bUser`);
+        xhrBUser.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhrBUser.responseType = 'json';
+        xhrBUser.addEventListener('load', function(){
+          //console.log(xhrBUser.status);
+        }.bind(this));
+        xhrBUser.send(formData);
+        //*/
+      }
+    }.bind(this));
+    xhr.send();
+    //*/
+    /* // Get matching users
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `user/get/chat/${this.props.email}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', function(){
+      if (xhr.status === 200) {
+      } else {
+      }
+      console.log('Get matched users ' + xhr.response);
+    }.bind(this));
+    xhr.send();
+    //*/
   }
   
   componentWillMount() {
@@ -49,7 +88,7 @@ export default class ChatView extends Component {
         console.log('Unable to retrieve userList');
       } else if (userList!==undefined) {
         let current = this.state.current;
-        if (this.talkToEmail!==null&&this.talkToEmail!==undefined) {
+        if (this.talkToEmail!==''&&this.talkToEmail!==undefined) {
           current = userList.indexOf(this.talkToEmail);
           if (current===-1) { // If not in the list, add it to the top of the list
             userList.splice(0, 0, this.talkToEmail); 
