@@ -349,10 +349,14 @@ export default class ChatBody extends Component {
     // if the curent email is invalid and it is the url email
     if (this.props.names[this.props.current]===null && this.props.users[this.props.current]===this.props.talkToEmail) { 
       this.textInput = null;
+      const notValidStyle = {textAlign: 'center'};
+      if (singularMode) {
+        notValidStyle.marginTop = '30px';
+      }
       return (
         <div id="chat-body" style={divStyle}>
           {this.getName(singularMode)}
-          <div style={{textAlign: 'center'}}>
+          <div style={notValidStyle}>
             This is not a valid user to talk to.
           </div>
         </div>
