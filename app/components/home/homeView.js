@@ -1,4 +1,5 @@
 import React from 'react';
+import Search from './search';
 import Tabs from './tabs';
 import Event from './event';
 import Collapsable from './collapsable';
@@ -170,6 +171,10 @@ class HomeView extends React.Component {
 
     return (
       <div id="home-body">
+        <div id="home-search-container" className="hidden-md-down">
+          <h2 id="search-title">Find An Opportunity</h2>
+          <Search />
+        </div>
         <Tabs onClick={this.changeView} />
         <div id="event-list" className="d-flex justify-content-center justify-content-md-start">
         {

@@ -30,3 +30,39 @@
     border-radius: 0;
   }
 }
+
+#home-search-container {
+  padding: 30px;
+  margin: 20px;
+  background-color: rgba(240, 240, 240, 0.8);
+
+  #search-title {
+    color: maroon;
+  }
+
+  #search-input {
+    border: none;
+    border-radius: 0px;
+  }
+
+  #search-submit {
+    border: none;
+    border-radius: 0px;
+  }
+
+  .dropdown {
+    padding: 0;
+  }
+
+  #search-filter {
+    border: none;
+    border-left: 1px solid maroon;
+    width: 100%;
+    border-radius: 0px;
+  }
+
+  #search-results {
+    position: absolute;
+    font-size: 14px;
+  }
+}
