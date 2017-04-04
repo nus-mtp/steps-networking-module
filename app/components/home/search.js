@@ -17,6 +17,12 @@ class Search extends React.Component {
     this.handleSearch = this.handleSearch.bind(this);
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.searchFilter !== this.state.searchFilter) {
+      this.filterSearch();
+    };
+  }
+
   filterSearch() {
     const xhr = new XMLHttpRequest();
     if (this.state.searchFilter === 'Event') {
