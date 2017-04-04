@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router';
-import sampleUsers from '../profile/sampleUsers';
 
 const scrollbarWidth = 15;
 const bodyMargin = 0.2 * window.innerWidth;
@@ -14,7 +13,6 @@ class Collapsable extends React.Component {
       numberOfEventPerRow: Math.floor((window.innerWidth - marginOffset) / this.props.width),
       order: this.props.serial,
       isAttended: false,
-      users: sampleUsers,
       relevantUsers: [],
       checkbox: [],
     };
