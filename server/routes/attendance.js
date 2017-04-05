@@ -134,6 +134,67 @@ router.get('/get/oneUserEventsAndExhibitions/:email', (req = {}, res, next) => {
   }
 });
 
+// Get all the Exhibitions that a User is participating in / has participated in
+router.get('/get/oneUserExhibitions/:email', (req = {}, res, next) => {
+  if (req.params && req.params.email) {
+    User.setDBConnection(req.app.locals.db);
+    Event.setDBConnection(req.app.locals.db);
+    Exhibition.setDBConnection(req.app.locals.db);
+    Attendance.setDBConnection(req.app.locals.db);
+
+    Attendance.searchAttendancesByUser(req.params.email, (err, attendances) => {
+      if (err) {
+        res.status(500).json('Unable to fetch data!');
+        next();
+      } else if (attendances && attendances.length > 0) {
+        async.mapLimit(attendances, 5,
+                    (attendance, callback) => {
+                        // Limit number of concurrent connections made by this request to 5
+                      if (attendance) {
+                        const attendanceKey = attendance.attendance_key;
+                        const attendanceType = attendance.attendance_type;
+
+                        if (attendanceType === 'exhibition') {
+                          Exhibition.getExhibitionById(attendanceKey, (err, exhibition) => {
+                            if (err || !exhibition) {
+                              callback(null, null);
+                            } else {
+                              callback(null, extractExhibitionInfo(exhibition));
+                            }
+                          });
+                        } else {
+                          callback(null, null);
+                        }
+                      } else {
+                        callback(null, null);
+                      }
+                    },
+                    (err, results) => {
+                      if (err || !results) {
+                        res.status(500).json('Unable to process data!');
+                        next();
+                      } else {
+                        const finalizedResults = results.filter(item => (item !== null));
+                        if (finalizedResults && finalizedResults.length > 0) {
+                          res.status(200).json(finalizedResults);
+                          next();
+                        } else {
+                          res.status(204).json('Nothing found!');
+                          next();
+                        }
+                      }
+                    });
+      } else {
+        res.status(204).json('Nothing found!');
+        next();
+      }
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
 // Get all Events a User is attending / has attended
 router.get('/get/oneUserEvents/:email', (req = {}, res, next) => {
   if (req.params && req.params.email) {
