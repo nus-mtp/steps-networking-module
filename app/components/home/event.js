@@ -52,8 +52,14 @@ class Event extends React.Component {
             </Link>
             {
               (this.props.event.event_poster) ?
-              <embed className="img-fluid text-center event-thumbnail card-img-top" width="250" height="auto" src={this.props.event.event_poster} alt="event-poster" /> :
-              <img className="img-fluid text-center event-thumbnail card-img-top" width="250" height="auto" src='../../resources/images/empty-poster-placeholder.png' alt="event-poster" />
+                <embed
+                  className="img-fluid text-center event-thumbnail card-img-top"
+                  width="250"
+                  height="auto"
+                  src={this.props.event.event_poster.replace(/http/i, 'https')}
+                  alt="event-poster"
+                /> :
+                <img className="img-fluid text-center event-thumbnail card-img-top" width="250" height="auto" src='../../resources/images/empty-poster-placeholder.png' alt="event-poster" />
             }
           </div>
           <div className="card-block event-info-container">
