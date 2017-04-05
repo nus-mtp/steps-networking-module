@@ -27,9 +27,10 @@ class ExhibitionView extends React.Component {
     this.submitComment = this.submitComment.bind(this);
     this.toggleTagEditable = this.toggleTagEditable.bind(this);
     this.toggleMediaEditable = this.toggleMediaEditable.bind(this);
-    this.handleDeleteSkill = this.handleDeleteSkill.bind(this);
-    this.handleAdditionSkill = this.handleAdditionSkill.bind(this);
-    this.handleDragSkill = this.handleDragSkill.bind(this);
+    this.handleDeleteTag = this.handleDeleteTag.bind(this);
+    this.handleAdditionTag = this.handleAdditionTag.bind(this);
+    this.handleDragTag = this.handleDragTag.bind(this);
+    this.saveTags = this.saveTags.bind(this);
     this.handleTagInputChange = this.handleTagInputChange.bind(this);
     this.handleMediaInputChange = this.handleMediaInputChange.bind(this);
   }
@@ -188,14 +189,14 @@ class ExhibitionView extends React.Component {
     }
   }
 
-  handleDeleteSkill(i) {
+  handleDeleteTag(i) {
     const exhibition = this.state.exhibition;
     exhibition.tags = exhibition.tags.filter((tag, index) => index !== i);
 
     this.setState({ exhibition, });
   }
 
-  handleDragSkill(tag, currPos, newPos) {
+  handleDragTag(tag, currPos, newPos) {
     const tags = [ ...this.state.exhibition.tags ];
 
     // mutate array
@@ -208,7 +209,7 @@ class ExhibitionView extends React.Component {
     this.setState({ exhibition, });
   }
 
-  handleAdditionSkill(tag) {
+  handleAdditionTag(tag) {
     const exhibition = this.state.exhibition;
     exhibition.tags = [
       ...this.state.exhibition.tags,
@@ -219,6 +220,37 @@ class ExhibitionView extends React.Component {
     ];
 
     this.setState({ exhibition, });
+  }
+
+  saveTags() {
+    const tagArray = this.state.exhibition.tags.map(tag => { return tag.text });
+
+    const eventName = encodeURIComponent(this.state.exhibition.eventName);
+    const exhibitionName = encodeURIComponent(this.state.exhibition.exhibitionName);
+    const tags = encodeURIComponent(tagArray.toString());
+    const formData = `eventName=${eventName}&exhibitionName=${exhibitionName}&tags=${tags}`;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('post', '/exhibition/post/oneExhibition/set/tags');
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        // success
+        this.setState({
+          feedback: 'Successfully edited',
+          error: '',
+          isTagEditable: !this.state.isTagEditable,
+        });
+      } else {
+        // failure
+        this.setState({
+          feedback: '',
+          error: xhr.response,
+        });
+      }
+    });
+    xhr.send(formData);
   }
 
   toggleTagEditable() {
@@ -277,17 +309,24 @@ class ExhibitionView extends React.Component {
 
             <div id="project-tags" className="project-info">
               <span className="info-type">Tags: </span>
-              <button className="btn btn-secondary" onClick={this.toggleTagEditable}>Add Tags</button>
+              <button className="btn btn-secondary" onClick={this.toggleTagEditable}>
+              {
+                (this.state.isTagEditable) ? "Cancel" : "Add Tags"
+              }
+              </button>
               {
                 (this.state.isTagEditable) ?
-                <ReactTags
-                  tags={this.state.exhibition.tags}
-                  suggestions={tagSuggestions}
-                  handleDelete={this.handleDeleteSkill}
-                  handleAddition={this.handleAdditionSkill}
-                  handleDrag={this.handleDragSkill}
-                  placeholder="Add tags"
-                /> :
+                <div>
+                  <ReactTags
+                    tags={this.state.exhibition.tags}
+                    suggestions={tagSuggestions}
+                    handleDelete={this.handleDeleteTag}
+                    handleAddition={this.handleAdditionTag}
+                    handleDrag={this.handleDragTag}
+                    placeholder="Enter to add"
+                  />
+                  <div><button className="btn btn-primary" onClick={this.saveTags}>Save</button></div>
+                </div> :
                 <div>
                 {
                   (Object.keys(this.state.exhibition).length !== 0) ?
