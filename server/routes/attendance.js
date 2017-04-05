@@ -808,7 +808,7 @@ router.post('/post/oneEventAttendance/', authCheckMiddleware, (req = {}, res, ne
 // Note: Requires Event or Exhibition ID as request body parameter 'id'
 // Note: Requires reasons to be a Comma-Separated String rather than an Array
 // Use <Array>.toString() to generate a Comma-Separated String from an Array
-router.post('/post/set/oneAttendanceReasons', (req = {}, res, next) => {
+router.post('/post/set/oneAttendanceReasons', authCheckMiddleware, (req = {}, res, next) => {
   if (req.body && req.body.userEmail && req.body.id && req.body.reasons) {
     if (req.auth_user_email && req.auth_user_email !== req.body.userEmail) {
       res.status(403).json('Unauthorized!');
