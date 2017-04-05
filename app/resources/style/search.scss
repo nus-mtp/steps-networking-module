@@ -36,6 +36,23 @@
   margin: 20px;
   background-color: rgba(240, 240, 240, 0.8);
 
+  #search-results {
+    overflow: auto;
+    max-height: 300px;
+    min-width: 180px;
+    border-radius: 0;
+    max-width: 550px;
+    background-color: rgba(255,255,255,.9);
+    text-align: center;
+
+    .list-group-item {
+      display: block;
+      padding: 10px;
+      font-size: 14px;
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
   #search-title {
     color: maroon;
   }
@@ -59,6 +76,7 @@
     border-left: 1px solid maroon;
     width: 100%;
     border-radius: 0px;
+    padding: 11px 5px;
   }
 
   #search-results {
