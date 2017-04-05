@@ -19,9 +19,13 @@ class Match extends React.Component {
       reasons: reasons.split(','),
       relevantUsers: [],
       email: email,
+      userEvents: {},
     }
 
     this.getRelevantUsers(this.state.reasons);
+
+    this.getEvents = this.getEvents.bind(this);
+    this.getRelevantEvents = this.getRelevantEvents.bind(this);
   }
 
   getRelevantUsers(array) {
@@ -38,6 +42,7 @@ class Match extends React.Component {
         console.log('Finding relevant users match success');
         const array = xhr.response.filter(user => {if (user.userEmail !== this.state.email) return user;});
         this.setState({ relevantUsers: array });
+        this.getRelevantEvents();
 
       } else {
         console.log('Finding relevant users match fail');
@@ -45,6 +50,31 @@ class Match extends React.Component {
       }
     });
     xhr.send(formData);
+  }
+
+  getRelevantEvents() {
+    for (const user of this.state.relevantUsers) {
+      this.getEvents(user.userEmail);
+    }
+  }
+
+  getEvents(email) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/attendance/get/oneUserEvents/${email}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        console.log("Get Events In Match Success");
+        const obj = this.state.userEvents;
+        obj[`${email}`] = xhr.response;
+        console.log(obj);
+        this.setState({userEvents: obj });
+      } else {
+
+      }
+    });
+    xhr.send();
   }
 
   next() {
@@ -136,7 +166,17 @@ class Match extends React.Component {
                     </li>
                     <li className="list-group-item">
                       <div className="info-type">Interested Events: </div>
-                      <div id="user-events" className="user-info"></div>
+                      <div id="user-events" className="user-info">
+                        {
+                          (this.state.userEvents) ?
+                            Object.keys(this.state.userEvents).filter(email => {if (user.userEmail === email) return email;}).map(email =>
+                              this.state.userEvents[`${email}`].map(event =>
+                                <div>{event.name}</div>
+                              )
+                            ) :
+                            <div/>
+                        }
+                      </div>
                     </li>
                     <li className="list-group-item">
                       <div className="info-type">What am I Looking For? </div>
