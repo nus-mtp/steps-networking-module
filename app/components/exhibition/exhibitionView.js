@@ -17,8 +17,10 @@ class ExhibitionView extends React.Component {
       mediaChange: '',
       exhibition: {},
       attendance: {},
-      feedback: '',
-      error: '',
+      feedbackComment: '',
+      errorComment: '',
+      feedbackTags: '',
+      errorTags: '',
     };
 
     this.retrieveData();
@@ -238,15 +240,15 @@ class ExhibitionView extends React.Component {
       if (xhr.status === 200) {
         // success
         this.setState({
-          feedback: 'Successfully edited',
-          error: '',
+          feedbackTags: 'Successfully added',
+          errorTags: '',
           isTagEditable: !this.state.isTagEditable,
         });
       } else {
         // failure
         this.setState({
-          feedback: '',
-          error: xhr.response,
+          feedbackTags: '',
+          errorTags: xhr.response,
         });
       }
     });
@@ -282,12 +284,20 @@ class ExhibitionView extends React.Component {
   }
 
   render() {
-    const isNotify = (this.state.error || this.state.feedback) ? ((this.state.feedback) ?
+    const isNotifyComment = (this.state.errorComment || this.state.feedbackComment) ? ((this.state.feedbackComment) ?
       <div className="alert alert-success" role="alert">
-        <strong>Success!</strong> {this.state.feedback}
+        <strong>Success!</strong> {this.state.feedbackComment}
       </div> :
       <div className="alert alert-danger" role="alert">
-        <strong>Error!</strong> {this.state.error}
+        <strong>Error!</strong> {this.state.errorComment}
+      </div>) : <div />;
+
+    const isNotifyTags = (this.state.errorTags || this.state.feedbackTags) ? ((this.state.feedbackTags) ?
+      <div className="alert alert-success" role="alert">
+        <strong>Success!</strong> {this.state.feedbackTags}
+      </div> :
+      <div className="alert alert-danger" role="alert">
+        <strong>Error!</strong> {this.state.errorTags}
       </div>) : <div />;
 
     return (
@@ -308,65 +318,37 @@ class ExhibitionView extends React.Component {
             <div id="project-desc" className="project-info">{this.state.exhibition.exhibitionDescription}</div>
 
             <div id="project-tags" className="project-info">
+              {isNotifyTags}
               <span className="info-type">Tags: </span>
-              <button className="btn btn-secondary" onClick={this.toggleTagEditable}>
-              {
-                (this.state.isTagEditable) ? "Cancel" : "Add Tags"
-              }
-              </button>
               {
                 (this.state.isTagEditable) ?
-                <div>
-                  <ReactTags
-                    tags={this.state.exhibition.tags}
-                    suggestions={tagSuggestions}
-                    handleDelete={this.handleDeleteTag}
-                    handleAddition={this.handleAdditionTag}
-                    handleDrag={this.handleDragTag}
-                    placeholder="Enter to add"
-                  />
-                  <div><button className="btn btn-primary" onClick={this.saveTags}>Save</button></div>
-                </div> :
-                <div>
-                {
-                  (Object.keys(this.state.exhibition).length !== 0) ?
-                    this.state.exhibition.tags.map((tag, i) =>
-                      <span key={`${tag.id}`} className="badge badge-info">{tag.text}</span>
-                    ) : <div />
-                 }
-                </div>
+                  <span>
+                    <button className="btn btn-secondary" onClick={this.toggleTagEditable}>Cancel</button>
+                    <button className="btn btn-primary" onClick={this.saveTags}>Save</button>
+                    <ReactTags
+                      tags={this.state.exhibition.tags}
+                      suggestions={tagSuggestions}
+                      handleDelete={this.handleDeleteTag}
+                      handleAddition={this.handleAdditionTag}
+                      handleDrag={this.handleDragTag}
+                      placeholder="Enter to add"
+                    />
+                  </span> :
+                  <span>
+                    <button className="btn btn-secondary" onClick={this.toggleTagEditable}>Add Tags</button>
+                    <div>
+                    {
+                      (Object.keys(this.state.exhibition).length !== 0) ?
+                        this.state.exhibition.tags.map((tag, i) =>
+                          <span key={`${tag.id}`} className="badge badge-info">{tag.text}</span>
+                        ) : <div />
+                     }
+                    </div>
+                  </span>
               }
             </div>
           </div>
           <ul className="list-group list-group-flush">
-            <li className="exhibition-info text-center list-group-item">
-              <div id="media-container">
-                <span  className="info-type">Related Media</span>
-                {
-                  (this.state.isMediaEditable) ?
-                  <span>
-                    <button className="btn btn-secondary" onClick={this.toggleMediaEditable}>Cancel</button>
-                    <input type="text" id="media-input" className="form-control" onChange={this.handleMediaInputChange} value={this.state.mediaChange} placeholder="Media" />
-                    <div className="add-icon-container" onClick={this.handleAddMedia}>
-                      <img className="add-icon" src="../../resources/images/add-icon.svg" alt="add-icon" />
-                    </div>
-                  </span> :
-                  <button className="btn btn-secondary" onClick={this.toggleMediaEditable}>Add Media</button>
-                }
-              </div>
-              <div id="project-url" />
-              <div id="project-media">
-              {
-                (Object.keys(this.state.exhibition).length !== 0) ?
-                  this.state.exhibition.videos.map(media =>
-                    <div className="embed-responsive embed-responsive-16by9" key={media}>
-                      <iframe width="560" height="315"  className="embed-responsive-item" src={`https://www.youtube.com/embed/${media.slice(media.lastIndexOf('/') + 1, media.length)}`} allowFullScreen></iframe>
-                    </div>
-                  ) :
-                  <div />
-              }
-              </div>
-            </li>
             <li className="exhibition-info d-flex flex-column align-items-start list-group-item">
               <div className="info-type">Project Members</div>
               {
@@ -389,7 +371,7 @@ class ExhibitionView extends React.Component {
                 <textarea className="form-control" rows="2" id="comment-input" value={this.state.currentComment} onChange={this.editComment}></textarea>
                 <button id="submit-comment" type="button" className="btn btn-primary" onClick={this.submitComment}>Submit</button>
               </div>
-              {isNotify}
+              {isNotifyComment}
               <div id="comment-list">
               {
                 (this.state.comments.length > 0) ?
