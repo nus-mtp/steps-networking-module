@@ -21,6 +21,7 @@ class ExhibitionView extends React.Component {
       errorComment: '',
       feedbackTags: '',
       errorTags: '',
+      isExhibitior: false,
     };
 
     this.retrieveData();
@@ -109,6 +110,14 @@ class ExhibitionView extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
+        xhr.response.map(exhibitor => {
+          if (Auth.isUserAuthenticated() && exhibitor === Auth.getToken().email.replace(/%40/i, '@')) {
+            this.setState({
+              isExhibitior: true,
+            })
+          }
+        });
+
         this.setState({
           attendance: xhr.response,
         });
@@ -335,7 +344,9 @@ class ExhibitionView extends React.Component {
                     />
                   </span> :
                   <span>
-                    <button className="btn btn-secondary" onClick={this.toggleTagEditable}>Add Tags</button>
+                    {
+                      (this.state.isExhibitior) ? <button className="btn btn-secondary" onClick={this.toggleTagEditable}>Add Tags</button> : <div />
+                    }
                     <div>
                     {
                       (Object.keys(this.state.exhibition).length !== 0) ?
