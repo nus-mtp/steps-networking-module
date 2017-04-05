@@ -135,7 +135,7 @@ router.get('/get/oneUserEventsAndExhibitions/:email', (req = {}, res, next) => {
 });
 
 // Get all the Exhibitions that a User is participating in / has participated in
-router.get('/get/UserExhibitions/:email', (req = {}, res, next) => {
+router.get('/get/oneUserExhibitions/:email', (req = {}, res, next) => {
   if (req.params && req.params.email) {
     User.setDBConnection(req.app.locals.db);
     Event.setDBConnection(req.app.locals.db);
