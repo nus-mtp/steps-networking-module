@@ -730,69 +730,74 @@ router.post('/post/search/event/exhibitors/reasons', (req = {}, res, next) => {
 });
 
 // Toggle User's Attendance for an Event
-router.post('/post/oneEventAttendance/', (req = {}, res, next) => {
+router.post('/post/oneEventAttendance/', authCheckMiddleware, (req = {}, res, next) => {
   if (req.body && req.body.userEmail && req.body.eventName) {
-    User.setDBConnection(req.app.locals.db);
-    Event.setDBConnection(req.app.locals.db);
-    Exhibition.setDBConnection(req.app.locals.db);
-    Attendance.setDBConnection(req.app.locals.db);
+    if (req.auth_user_email && req.auth_user_email !== req.body.userEmail) {
+      res.status(403).json('Unauthorized!');
+      next();
+    } else {
+      User.setDBConnection(req.app.locals.db);
+      Event.setDBConnection(req.app.locals.db);
+      Exhibition.setDBConnection(req.app.locals.db);
+      Attendance.setDBConnection(req.app.locals.db);
 
-    User.getUser(req.body.userEmail, (err, user) => {
-      if (err) {
-        if (err.name === 'ValidationError') {
-          res.status(403).json('Unauthorized!');
-        } else {
-          res.status(500).json('Unable to post data!');
-        }
-        next();
-      } else if (user) {
-        // User exists
-        Event.getEvent(req.body.eventName, (err, event) => {
-          if (err) {
-            res.status(500).json('Unable to process request!');
-            next();
-          } else if (event) {
-            // Event exists
-            // Toggle existance of Attendance
-            Attendance.searchAttendanceByUserAndKey(user.email, event._id,
-              (err, attendance) => {
-                if (err) {
-                  res.status(500).json('Unable to process request');
-                  next();
-                } else if (attendance) {
-                  // Delete this Attendance
-                  Attendance.deleteAttendance(attendance.user_email, attendance.attendance_key,
-                    (err) => {
-                      if (err) {
-                        res.status(500).json('Unable to Toggle Attendance to Delete!');
+      User.getUser(req.body.userEmail, (err, user) => {
+        if (err) {
+          if (err.name === 'ValidationError') {
+            res.status(403).json('Unauthorized!');
+          } else {
+            res.status(500).json('Unable to post data!');
+          }
+          next();
+        } else if (user) {
+          // User exists
+          Event.getEvent(req.body.eventName, (err, event) => {
+            if (err) {
+              res.status(500).json('Unable to process request!');
+              next();
+            } else if (event) {
+              // Event exists
+              // Toggle existance of Attendance
+              Attendance.searchAttendanceByUserAndKey(user.email, event._id,
+                (err, attendance) => {
+                  if (err) {
+                    res.status(500).json('Unable to process request');
+                    next();
+                  } else if (attendance) {
+                    // Delete this Attendance
+                    Attendance.deleteAttendance(attendance.user_email, attendance.attendance_key,
+                      (err) => {
+                        if (err) {
+                          res.status(500).json('Unable to Toggle Attendance to Delete!');
+                        } else {
+                          res.status(200).json('Attendance Removed!');
+                        }
+                        next();
+                      });
+                  } else {
+                    // Create the Attendance
+                    const attendanceDoc = new Attendance(user.email, event._id, 'event', []);
+                    attendanceDoc.saveAttendance((err, attendance) => {
+                      if (err || !attendance) {
+                        res.status(500).json('Unable to Toggle Attendance to Create!');
                       } else {
-                        res.status(200).json('Attendance Removed!');
+                        res.status(200).json('Attendance Added!');
                       }
                       next();
                     });
-                } else {
-                  // Create the Attendance
-                  const attendanceDoc = new Attendance(user.email, event._id, 'event', []);
-                  attendanceDoc.saveAttendance((err, attendance) => {
-                    if (err || !attendance) {
-                      res.status(500).json('Unable to Toggle Attendance to Create!');
-                    } else {
-                      res.status(200).json('Attendance Added!');
-                    }
-                    next();
-                  });
-                }
-              });
-          } else {
-            res.status(204).json('Unable to find Event!');
-            next();
-          }
-        });
-      } else {
-        res.status(204).json('Unable to find User!');
-        next();
-      }
-    });
+                  }
+                });
+            } else {
+              res.status(204).json('Unable to find Event!');
+              next();
+            }
+          });
+        } else {
+          res.status(204).json('Unable to find User!');
+          next();
+        }
+      });
+    }
   } else {
     res.status(400).json('Bad Request!');
     next();
@@ -805,21 +810,26 @@ router.post('/post/oneEventAttendance/', (req = {}, res, next) => {
 // Use <Array>.toString() to generate a Comma-Separated String from an Array
 router.post('/post/set/oneAttendanceReasons', (req = {}, res, next) => {
   if (req.body && req.body.userEmail && req.body.id && req.body.reasons) {
-    User.setDBConnection(req.app.locals.db);
-    Event.setDBConnection(req.app.locals.db);
-    Exhibition.setDBConnection(req.app.locals.db);
-    Attendance.setDBConnection(req.app.locals.db);
-
-    Attendance.updateReason(req.body.userEmail, req.body.id, req.body.reasons.split(','), (err, attendance) => {
-      if (err) {
-        res.status(500).json('Unable to process data!');
-      } else if (attendance) {
-        res.status(200).json(extractAttendanceInfo(attendance));
-      } else {
-        res.status(204).json('Nothing found!');
-      }
+    if (req.auth_user_email && req.auth_user_email !== req.body.userEmail) {
+      res.status(403).json('Unauthorized!');
       next();
-    });
+    } else {
+      User.setDBConnection(req.app.locals.db);
+      Event.setDBConnection(req.app.locals.db);
+      Exhibition.setDBConnection(req.app.locals.db);
+      Attendance.setDBConnection(req.app.locals.db);
+
+      Attendance.updateReason(req.body.userEmail, req.body.id, req.body.reasons.split(','), (err, attendance) => {
+        if (err) {
+          res.status(500).json('Unable to process data!');
+        } else if (attendance) {
+          res.status(200).json(extractAttendanceInfo(attendance));
+        } else {
+          res.status(204).json('Nothing found!');
+        }
+        next();
+      });
+    }
   } else {
     res.status(400).json('Bad Request!');
     next();
