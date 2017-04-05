@@ -41,7 +41,9 @@ export default class ChatBody extends Component {
       this.initialiseMessages();
     }
     ChatBody.scrollToBottom();
-    this.textInput.focus();
+    if (this.textInput!==null) {
+      this.textInput.focus();
+    }
   }
   
   retrieveAllMessages(senderEmail, recipientEmail) {
@@ -106,6 +108,30 @@ export default class ChatBody extends Component {
         };
       });
     }
+  }
+
+ /* Static functions used throughout */
+  static PostSelf(text, key = 0) {
+    key = 's' + key;
+    return ChatBody.createPost(text, 'chat-self', key);
+  }
+
+  static PostOther(text, key = 0) {
+    key = 'o' + key;
+    return ChatBody.createPost(text, 'chat-other', key);
+  }
+
+  static createPost(text, id, key = 0) {
+    return (
+      <div className="container-fluid form-control chat-bubble" id={id} key={key}>
+        {text}
+      </div>
+    );
+  }
+
+  static scrollToBottom() {
+    //document.body.scrollTop = document.body.scrollHeight;
+    window.scrollTo(0,document.body.scrollHeight);
   }
 
   // Expects to receive arrays made of objects containing { content, timestamp }. Sorts by timestamp
@@ -202,6 +228,16 @@ export default class ChatBody extends Component {
     );
   }
   
+  getUserName() {
+    let str = '';
+    if (this.props.names.length===this.props.users.length && this.props.names[this.props.current]!==null) {
+      str = this.props.names[this.props.current];
+    } else {
+      str = this.props.users[this.props.current];
+    }
+    return str;
+  }
+  
   getName(fixToTop) {
     const recipientEmail = this.props.users[this.props.current];
     if (recipientEmail===undefined) {
@@ -209,7 +245,7 @@ export default class ChatBody extends Component {
     } else if (!fixToTop) {
       return (
         <div className="container" id="chat-name-header">
-          {ChatBody.getUserName(recipientEmail)}
+          {this.getUserName()}
         </div>
       );
     } else {
@@ -240,21 +276,32 @@ export default class ChatBody extends Component {
           <div style={divStyle}>
             <div className="dropdown" style={{marginLeft: 'auto', marginRight: 'auto'}}>
               <button className="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                {ChatBody.getUserName(recipientEmail)}
+                {this.getUserName(recipientEmail)}
                 <span className="caret"></span>
               </button>
               <ul className="dropdown-menu" style={{padding: '0px'}}>
                 {
-                  this.props.users.map(function(user, index) {
-                    return (
-                      <li><button 
-                        className="btn btn-secondary" 
-                        style={{marginLeft: 'auto', marginRight: 'auto', width:'100%'}} 
-                        onClick={handleChange(index)}>
-                          {user}
-                        </button></li>
-                    );
-                  })
+                  this.props.names.map(function(name, index) {
+                    if (name!==null) {
+                      return (
+                        <li key={index}><button 
+                          className="btn btn-secondary"
+                          style={{marginLeft: 'auto', marginRight: 'auto', width:'100%'}} 
+                          onClick={handleChange(index)}>
+                            {name}
+                          </button></li>
+                      );
+                    } else if (this.props.users[index]===this.props.talkToEmail) {
+                      return (
+                        <li key={index}><button 
+                          className="btn btn-secondary"
+                          style={{marginLeft: 'auto', marginRight: 'auto', width:'100%'}} 
+                          onClick={handleChange(index)}>
+                            {this.props.talkToEmail}
+                          </button></li>
+                      );
+                    }
+                  }.bind(this))
                 }
               </ul>
             </div>
@@ -262,23 +309,6 @@ export default class ChatBody extends Component {
         </div>
       ); //<button className="btn btn-secondary" style={{marginLeft: 'auto', marginRight: 'auto', width:'100%'}}>
     }
-  }
-
-  checkQuery(matches) {
-    let divStyle = {};
-    let singularMode = true;
-    if (matches) {
-      divStyle = this.divStyle;
-      singularMode = false;
-    }
-    
-    return (
-      <div id="chat-body" style={divStyle}>
-        {this.getName(singularMode)}
-        {this.getCurrentConversation(singularMode)}
-        {this.getInputBox()}
-      </div>
-    );
   }
 
   handleChange() {
@@ -308,6 +338,40 @@ export default class ChatBody extends Component {
     return true;
   }
 
+  checkQuery(matches) {
+    let divStyle = {};
+    let singularMode = true;
+    if (matches) {
+      divStyle = this.divStyle;
+      singularMode = false;
+    }
+    
+    // if the curent email is invalid and it is the url email
+    if (this.props.names[this.props.current]===null && this.props.users[this.props.current]===this.props.talkToEmail) { 
+      this.textInput = null;
+      const notValidStyle = {textAlign: 'center'};
+      if (singularMode) {
+        notValidStyle.marginTop = '30px';
+      }
+      return (
+        <div id="chat-body" style={divStyle}>
+          {this.getName(singularMode)}
+          <div style={notValidStyle}>
+            This is not a valid user to talk to.
+          </div>
+        </div>
+      );
+    } else { // life as usual
+      return (
+        <div id="chat-body" style={divStyle}>
+          {this.getName(singularMode)}
+          {this.getCurrentConversation(singularMode)}
+          {this.getInputBox()}
+        </div>
+      );
+    }
+  }
+
   render() {
     return (
       <MediaQuery query={this.props.query}>
@@ -315,46 +379,15 @@ export default class ChatBody extends Component {
       </MediaQuery>
     );
   }
-
- /* Static functions used throughout */
-  static PostSelf(text, key = 0) {
-    key = 's' + key;
-    return ChatBody.createPost(text, 'chat-self', key);
-  }
-
-  static PostOther(text, key = 0) {
-    key = 'o' + key;
-    return ChatBody.createPost(text, 'chat-other', key);
-  }
-
-  static createPost(text, id, key = 0) {
-    return (
-      <div className="container-fluid form-control chat-bubble" id={id} key={key}>
-        {text}
-      </div>
-    );
-  }
-
-  static scrollToBottom() {
-    //document.body.scrollTop = document.body.scrollHeight;
-    window.scrollTo(0,document.body.scrollHeight);
-  }
-
-  static getUserName(email) {
-    let str = '';
-    if (email!==undefined) {
-      str = `Name of ${email}`;
-    }
-    return str;
-  }
-
 }
 
 ChatBody.propTypes = {
   marginLeft: React.PropTypes.string.isRequired,
   users: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
+  names: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
   current: React.PropTypes.number.isRequired,
   changeConversation: React.PropTypes.func.isRequired,
   query: React.PropTypes.string.isRequired,
   email: React.PropTypes.string.isRequired,
+  talkToEmail: React.PropTypes.string.isRequired,
 };

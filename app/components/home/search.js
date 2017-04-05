@@ -9,6 +9,7 @@ class Search extends React.Component {
       searchResults: [],    // the results from search term
       search: '',   // the selected search term
       searchFilter: 'Event',
+      error: '',
     }
 
     this.filterSearch();
@@ -78,26 +79,36 @@ class Search extends React.Component {
   handleSearch(term) {
     let searchUrl = (typeof term === 'string') ? term : this.state.search;
 
-    if (this.state.searchFilter === 'Event') {
-      this.context.router.push(`/event/${searchUrl}`);
-    } else if (this.state.searchFilter === 'Exhibition') {
-      let eventName = '';
-      this.state.searchDefaults.map(term => {
-        if (term.exhibitionName.trim().toLowerCase().search(searchUrl.trim().toLowerCase()) !== -1) {
-          eventName = term.eventName;
-        }
-      });
-      this.context.router.push(`/exhibition/${eventName}/${searchUrl}`);
-    } else if (this.state.searchFilter === 'Skills') {
-      this.context.router.push(`/search/user/${searchUrl.replace(/ /g, ",")}`);
-    } else if (this.state.searchFilter === 'Tags') {
-      this.context.router.push(`/search/exhibition/${searchUrl.replace(/ /g, ",")}`);
-    }
+    if (searchUrl) {
+      if (this.state.searchFilter === 'Event') {
+        this.context.router.push(`/event/${searchUrl}`);
+      } else if (this.state.searchFilter === 'Exhibition') {
+        let eventName = '';
+        this.state.searchDefaults.map(term => {
+          if (term.exhibitionName.trim().toLowerCase().search(searchUrl.trim().toLowerCase()) !== -1) {
+            eventName = term.eventName;
+          }
+        });
+        this.context.router.push(`/exhibition/${eventName}/${searchUrl}`);
+      } else if (this.state.searchFilter === 'Skills') {
+        this.context.router.push(`/search/user/${searchUrl.replace(/ /g, ",")}`);
+      } else if (this.state.searchFilter === 'Tags') {
+        this.context.router.push(`/search/exhibition/${searchUrl.replace(/ /g, ",")}`);
+      }
 
-    this.setState({
-      searchResults: [],
-      search: '',
-    });
+      this.setState({
+        searchResults: [],
+        search: '',
+        error: '',
+      });
+    }
+    else {
+      this.setState({
+        searchResults: [],
+        search: '',
+        error: 'Search cannot be empty',
+      })
+    }
   }
 
   changeFilterInput(filter) {

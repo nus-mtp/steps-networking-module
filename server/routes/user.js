@@ -45,8 +45,10 @@ router.get('/get/profiles/:userEmails', (req = {}, res, next) => {
           User.getUser(email, (err, user) => {
             if (err) {
               callback(null, null);
-            } else {
+            } else if (user) {
               callback(null, extractUserInfo(user));
+            } else {
+              callback(null, null);
             }
           });
         } else {

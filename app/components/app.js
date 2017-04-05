@@ -17,8 +17,6 @@ class App extends React.Component {
       isHamburgerToggled: false,
     };
 
-    this.getUser();
-
     this.removeDropdown = this.removeDropdown.bind(this);
     this.handleLinks = this.handleLinks.bind(this);
     this.shiftBody = this.shiftBody.bind(this);
@@ -27,6 +25,7 @@ class App extends React.Component {
   componentDidMount() {
     const that = this;
     this.handleLinks();
+    that.getUser();
     window.addEventListener("hashchange", () => {
       that.handleLinks();
       that.getUser();
