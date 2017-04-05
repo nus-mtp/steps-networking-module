@@ -24,8 +24,8 @@ class Match extends React.Component {
 
     this.getRelevantUsers(this.state.reasons);
 
-    this.getEvents = this.getEvents.bind(this);
-    this.getRelevantEvents = this.getRelevantEvents.bind(this);
+    this.getEventsAndExhibitons = this.getEventsAndExhibitons.bind(this);
+    this.getRelevantEventsAndExhibitions = this.getRelevantEventsAndExhibitions.bind(this);
   }
 
   getRelevantUsers(array) {
@@ -42,8 +42,7 @@ class Match extends React.Component {
         console.log('Finding relevant users match success');
         const array = xhr.response.filter(user => {if (user.userEmail !== this.state.email) return user;});
         this.setState({ relevantUsers: array });
-        this.getRelevantEvents();
-
+        this.getRelevantEventsAndExhibitions();
       } else {
         console.log('Finding relevant users match fail');
         this.setState({ relevantUsers: [] });
@@ -52,15 +51,15 @@ class Match extends React.Component {
     xhr.send(formData);
   }
 
-  getRelevantEvents() {
+  getRelevantEventsAndExhibitions() {
     for (const user of this.state.relevantUsers) {
-      this.getEvents(user.userEmail);
+      this.getEventsAndExhibitons(user.userEmail);
     }
   }
 
-  getEvents(email) {
+  getEventsAndExhibitons(email) {
     const xhr = new XMLHttpRequest();
-    xhr.open('get', `/attendance/get/oneUserEvents/${email}`);
+    xhr.open('get', `/attendance/get/oneUserEventsAndExhibitions/${email}`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
@@ -68,10 +67,9 @@ class Match extends React.Component {
         console.log("Get Events In Match Success");
         const obj = this.state.userEvents;
         obj[`${email}`] = xhr.response;
-        console.log(obj);
         this.setState({userEvents: obj });
       } else {
-
+        console.log("Get Events In Match Fail");
       }
     });
     xhr.send();
@@ -161,11 +159,21 @@ class Match extends React.Component {
                   </div>
                   <ul className="list-group list-group-flush">
                     <li className="list-group-item">
-                      <div className="info-type">Lists of Projects Involved: </div>
-                      <div id="user-projects" className="user-info"></div>
+                      <div className="info-type"><strong>Lists of Projects Involved: </strong></div>
+                      <div id="user-projects" className="user-info">
+                        {
+                          (this.state.userEvents) ?
+                            Object.keys(this.state.userEvents).filter(email => {if (user.userEmail === email) return email;}).map(email =>
+                              this.state.userEvents[`${email}`].map(exhibition =>
+                                <div>{exhibition.exhibitionName}</div>
+                              )
+                            ) :
+                            <div/>
+                        }
+                      </div>
                     </li>
                     <li className="list-group-item">
-                      <div className="info-type">Interested Events: </div>
+                      <div className="info-type"><strong>Interested Events: </strong></div>
                       <div id="user-events" className="user-info">
                         {
                           (this.state.userEvents) ?
@@ -178,10 +186,9 @@ class Match extends React.Component {
                         }
                       </div>
                     </li>
-                    <li className="list-group-item">
-                      <div className="info-type">What am I Looking For? </div>
-                      <div id="user-info" className="user-info"></div>
-                    </li>
+                    <div className="more-info text-center hidden-sm-down">
+                      <Link to={`/profile/${user.userEmail}`}><strong>More Info</strong></Link>
+                    </div>
                   </ul>
                 </div>
               </div>

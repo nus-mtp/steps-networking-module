@@ -242,4 +242,13 @@ div.ReactTags__suggestions ul li.active {
     opacity: 0.3;
     @include transition(opacity, 0.4s, ease);
   }
+
+  .info-type {
+    width: 100%;
+  }
+
+  .more-info {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
 }
