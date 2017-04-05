@@ -233,7 +233,7 @@ class Collapsable extends React.Component {
                     {
                       (this.state.relevantUsers.length !== 0) ?
                         this.state.relevantUsers.map((relevantUser, i) =>
-                          <Link to={`/profile/${relevantUser.userEmail}`} key={i}>
+                          <Link className="user-match" to={`/profile/${relevantUser.userEmail}`} key={i}>
                             <img className="img-fluid user-thumbnail" src="../../resources/images/default-profile-picture.png" alt="user-image" />
                             <div>{relevantUser.userName}</div>
                           </Link>

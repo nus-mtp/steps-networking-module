@@ -118,7 +118,7 @@
     visibility: visible;
     opacity: 1;
     @include transition(all 0.2s);
-    max-height: 100vh;
+    max-height: inherit;
   }
 
   #event-container > .collapse {
@@ -164,6 +164,10 @@
     margin: 5px;
     font-size: 16px;
     cursor: pointer;
+  }
+
+  .user-match {
+    margin-right: 20px;
   }
 }
 
