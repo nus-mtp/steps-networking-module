@@ -228,11 +228,11 @@ class Collapsable extends React.Component {
                 </div>
                 <div id="event-matches">
                   <span className="event-match-title">Matches: </span>
-                  <nav className="nav d-flex flex-row justify-content-between hidden-sm-down">
+                  <nav className="nav d-flex flex-row justify-content-between hidden-sm-down more-button">
                     <div id="match-container">
                     {
                       (this.state.relevantUsers.length !== 0) ?
-                        this.state.relevantUsers.map((relevantUser, i) =>
+                        this.state.relevantUsers.slice(0, this.state.numberOfEventPerRow).map((relevantUser, i) =>
                           <Link className="user-match" to={`/profile/${relevantUser.userEmail}`} key={i}>
                             <img className="img-fluid user-thumbnail" src="../../resources/images/default-profile-picture.png" alt="user-image" />
                             <div>{relevantUser.userName}</div>

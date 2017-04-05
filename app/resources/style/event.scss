@@ -190,12 +190,18 @@
     height: 40px;
   }
 
+  .more-button {
+    display: flex;
+    align-items: center;
+  }
+
   #match-container {
     display: flex;
     width: 100%;
     align-items: center;
     background: rgba(150, 150, 150, 0.1);
     padding: 10px 10px;
+    margin-right: 20px;
   }
 
   #match-container-mini {
