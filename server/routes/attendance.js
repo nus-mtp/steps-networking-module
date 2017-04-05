@@ -30,14 +30,12 @@ router.get('/get/oneUserAttendance/:email/:id', (req = {}, res, next) => {
     Attendance.searchAttendanceByUserAndKey(req.params.email, req.params.id, (err, attendance) => {
       if (err) {
         res.status(500).json('Unable to fetch data!');
-        next();
       } else if (attendance) {
         res.status(200).json(extractAttendanceInfo(attendance));
-        next();
       } else {
         res.status(204).json('Unable to find any Attendance!');
-        next();
       }
+      next();
     });
   } else {
     res.status(400).json('Bad Request!');
@@ -52,14 +50,12 @@ router.get('/get/oneUserAttendances/:email', (req = {}, res, next) => {
     Attendance.searchAttendancesByUser(req.params.email, (err, attendances) => {
       if (err) {
         res.status(500).json('Unable to fetch data!');
-        next();
       } else if (attendances && attendances.length > 0) {
         res.status(200).json(attendances.map(attendance => extractAttendanceInfo(attendance)));
-        next();
       } else {
         res.status(204).json('No Attendances found!');
-        next();
       }
+      next();
     });
   } else {
     res.status(400).json('Bad Request!');
@@ -113,17 +109,15 @@ router.get('/get/oneUserEventsAndExhibitions/:email', (req = {}, res, next) => {
                     (err, results) => {
                       if (err || !results) {
                         res.status(500).json('Unable to process data!');
-                        next();
                       } else {
                         const finalizedResults = results.filter(item => (item !== null));
                         if (finalizedResults && finalizedResults.length > 0) {
                           res.status(200).json(finalizedResults);
-                          next();
                         } else {
                           res.status(204).json('Nothing found!');
-                          next();
                         }
                       }
+                      next();
                     });
       } else {
         res.status(204).json('Nothing found!');
@@ -174,17 +168,15 @@ router.get('/get/oneUserExhibitions/:email', (req = {}, res, next) => {
                     (err, results) => {
                       if (err || !results) {
                         res.status(500).json('Unable to process data!');
-                        next();
                       } else {
                         const finalizedResults = results.filter(item => (item !== null));
                         if (finalizedResults && finalizedResults.length > 0) {
                           res.status(200).json(finalizedResults);
-                          next();
                         } else {
                           res.status(204).json('Nothing found!');
-                          next();
                         }
                       }
+                      next();
                     });
       } else {
         res.status(204).json('Nothing found!');
@@ -235,17 +227,15 @@ router.get('/get/oneUserEvents/:email', (req = {}, res, next) => {
                     (err, results) => {
                       if (err || !results) {
                         res.status(500).json('Unable to process data!');
-                        next();
                       } else {
                         const finalizedResults = results.filter(item => (item !== null));
                         if (finalizedResults && finalizedResults.length > 0) {
                           res.status(200).json(finalizedResults);
-                          next();
                         } else {
                           res.status(204).json('Nothing found!');
-                          next();
                         }
                       }
+                      next();
                     });
       } else {
         res.status(204).json('Nothing found!');
@@ -298,17 +288,15 @@ router.get('/get/oneUserExhibitionsInEvent/:email/:eventName', (req = {}, res, n
                     (err, results) => {
                       if (err || !results) {
                         res.status(500).json('Unable to process data!');
-                        next();
                       } else {
                         const finalizedResults = results.filter(item => (item !== null));
                         if (finalizedResults && finalizedResults.length > 0) {
                           res.status(200).json(finalizedResults);
-                          next();
                         } else {
                           res.status(204).json('Nothing found!');
-                          next();
                         }
                       }
+                      next();
                     });
       } else {
         res.status(204).json('Nothing found!');
@@ -354,17 +342,15 @@ router.get('/get/oneActivityAttendees/:id', (req = {}, res, next) => {
                     (err, results) => {
                       if (err || !results) {
                         res.status(500).json('Unable to process data!');
-                        next();
                       } else {
                         const finalizedResults = results.filter(item => (item !== null));
                         if (finalizedResults && finalizedResults.length > 0) {
                           res.status(200).json(finalizedResults);
-                          next();
                         } else {
                           res.status(204).json('Nothing found!');
-                          next();
                         }
                       }
+                      next();
                     });
       } else {
         res.status(204).json('Nothing found!');
@@ -408,17 +394,15 @@ router.get('/get/oneEventAttendees/:eventName', (req = {}, res, next) => {
                 (err, results) => {
                   if (err || !results) {
                     res.status(500).json('Unable to process data!');
-                    next();
                   } else {
                     const finalizedResults = results.filter(item => (item !== null));
                     if (finalizedResults && finalizedResults.length > 0) {
                       res.status(200).json(finalizedResults);
-                      next();
                     } else {
                       res.status(204).json('Nothing found!');
-                      next();
                     }
                   }
+                  next();
                 });
           } else {
             res.status(204).json('Nothing found!');
@@ -468,17 +452,15 @@ router.get('/get/oneExhibitionExhibitors/:eventName/:exhibitionName', (req = {},
                             (err, results) => {
                               if (err || !results) {
                                 res.status(500).json('Unable to process data!');
-                                next();
                               } else {
                                 const finalizedResults = results.filter(item => (item !== null));
                                 if (finalizedResults && finalizedResults.length > 0) {
                                   res.status(200).json(finalizedResults);
-                                  next();
                                 } else {
                                   res.status(204).json('Nothing found!');
-                                  next();
                                 }
                               }
+                              next();
                             });
           } else {
             res.status(204).json('Nothing found!');
@@ -580,14 +562,12 @@ router.get('/get/oneEventExhibitors/:id', (req = {}, res, next) => {
     ], (status, users) => {
       if (status === 200) {
         res.status(200).json(users);
-        next();
       } else if (status === 204) {
         res.status(204).json('Nothing found!');
-        next();
       } else {
         res.status(500).json('Unable to process the data!');
-        next();
       }
+      next();
     });
   } else {
     res.status(400).json('Bad Request!');
@@ -609,12 +589,11 @@ router.post('/post/search/activity/reasons', (req = {}, res, next) => {
     Attendance.searchAttendancesByKeyAndReasons(req.body.id, req.body.reasons.split(','), (err, attendances) => {
       if (err) {
         if (err.name === 'ValidationError') {
-          console.log(err);
           res.status(403).json('Unauthorized!');
         } else {
-          console.log(err);
           res.status(500).json('Unable to post data!');
         }
+        next();
       } else if (attendances && attendances.length > 0) {
         async.mapLimit(attendances, 5,
           (attendance, callback) => {
@@ -629,17 +608,15 @@ router.post('/post/search/activity/reasons', (req = {}, res, next) => {
           (err, results) => {
             if (err || !results) {
               res.status(500).json('Unable to process data!');
-              next();
             } else {
               const finalizedResults = results.filter(item => (item !== null));
               if (finalizedResults && finalizedResults.length > 0) {
                 res.status(200).json(finalizedResults);
-                next();
               } else {
                 res.status(204).json('Nothing found!');
-                next();
               }
             }
+            next();
           });
       } else {
         res.status(204).json('Nothing found!');
@@ -739,14 +716,12 @@ router.post('/post/search/event/exhibitors/reasons', (req = {}, res, next) => {
     ], (status, users) => {
       if (status === 200) {
         res.status(200).json(users);
-        next();
       } else if (status === 204) {
         res.status(204).json('Nothing found!');
-        next();
       } else {
         res.status(500).json('Unable to process the data!');
-        next();
       }
+      next();
     });
   } else {
     res.status(400).json('Bad Request!');
@@ -765,14 +740,11 @@ router.post('/post/oneEventAttendance/', (req = {}, res, next) => {
     User.getUser(req.body.userEmail, (err, user) => {
       if (err) {
         if (err.name === 'ValidationError') {
-          console.log(err);
           res.status(403).json('Unauthorized!');
-          next();
         } else {
-          console.log(err);
           res.status(500).json('Unable to post data!');
-          next();
         }
+        next();
       } else if (user) {
         // User exists
         Event.getEvent(req.body.eventName, (err, event) => {
@@ -792,13 +764,11 @@ router.post('/post/oneEventAttendance/', (req = {}, res, next) => {
                   Attendance.deleteAttendance(attendance.user_email, attendance.attendance_key,
                     (err) => {
                       if (err) {
-                        console.log(err);
                         res.status(500).json('Unable to Toggle Attendance to Delete!');
-                        next();
                       } else {
                         res.status(200).json('Attendance Removed!');
-                        next();
                       }
+                      next();
                     });
                 } else {
                   // Create the Attendance
@@ -806,11 +776,10 @@ router.post('/post/oneEventAttendance/', (req = {}, res, next) => {
                   attendanceDoc.saveAttendance((err, attendance) => {
                     if (err || !attendance) {
                       res.status(500).json('Unable to Toggle Attendance to Create!');
-                      next();
                     } else {
                       res.status(200).json('Attendance Added!');
-                      next();
                     }
+                    next();
                   });
                 }
               });
@@ -844,14 +813,12 @@ router.post('/post/set/oneAttendanceReasons', (req = {}, res, next) => {
     Attendance.updateReason(req.body.userEmail, req.body.id, req.body.reasons.split(','), (err, attendance) => {
       if (err) {
         res.status(500).json('Unable to process data!');
-        next();
       } else if (attendance) {
         res.status(200).json(extractAttendanceInfo(attendance));
-        next();
       } else {
         res.status(204).json('Nothing found!');
-        next();
       }
+      next();
     });
   } else {
     res.status(400).json('Bad Request!');
