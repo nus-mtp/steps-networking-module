@@ -86,7 +86,7 @@ export default class ChatView extends Component {
       if (err) {
         // Stuff went wrong
         console.log('Unable to retrieve userList');
-      } else if (userList!==undefined) {
+      } else if (userList!==undefined && userList!==null) {
         let current = this.state.current;
         if (this.talkToEmail!==''&&this.talkToEmail!==undefined) {
           current = userList.indexOf(this.talkToEmail);
@@ -149,7 +149,10 @@ export default class ChatView extends Component {
   }
 
   hasPeopleToTalkTo(){
-    if (this.state.users.length===0) {
+    
+    if (this.state.users!==undefined &&
+        this.state.users!==null &&
+        this.state.users.length===0) {
       return (
         <div style={{textAlign: 'center'}}>
           You have no one to talk to.<br/>
