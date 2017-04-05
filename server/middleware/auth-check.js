@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
   const token = JSON.parse(req.headers.authorization.split(' ')[1])['token'];
 
   // decode the token using a secret key-phrase
-  return jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     // the 401 code is for unauthorized status
     if (err) {
       res.status(401).end();
@@ -27,15 +27,14 @@ module.exports = (req, res, next) => {
     const User = ModelHandlerObj.getUserModel();
 
     // check if a user exists
-    return User.findById(userId, (userErr, user) => {
-      ModelHandlerObj.disconnect();
+    User.findById(userId, (userErr, user) => {
 
       if (userErr || !user) {
         res.status(401).end();
       }
 
       req.auth_user_email = user.get('email');
-
+      
       next();
     });
   });
