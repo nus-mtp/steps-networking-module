@@ -10,9 +10,12 @@ module.exports = (req, res, next) => {
     res.status(401).end();
   }
 
-  // get the last part from a authorization header string like "bearer token-value"
-  const token = JSON.parse(req.headers.authorization.split(' ')[1]).token;
-
+  try {
+    // get the last part from a authorization header string like "bearer token-value"
+    const token = JSON.parse(req.headers.authorization.split(' ')[1]).token;
+  } catch (err) {
+    res.status(401).end();
+  }
   // decode the token using a secret key-phrase
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     // the 401 code is for unauthorized status
