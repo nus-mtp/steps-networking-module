@@ -31,7 +31,8 @@ class ChatTabs extends Component {
 
   inititaliseTabs(selected = 0) {
     const tabList = [];
-    if (this.props.names.length===this.props.users.length) {
+    if (this.props.names && this.props.users &&
+      this.props.names.length===this.props.users.length) {
       for (let i = 0; i < this.props.users.length; i += 1) {
         if (this.props.names[i]!==null) {
           tabList.push(this.createTab.bind(this)(this.props.names[i], i, selected));
@@ -39,7 +40,7 @@ class ChatTabs extends Component {
           tabList.splice(0, 0, this.createTab.bind(this)(this.props.users[i], i, selected));
         }
       }
-    } else {
+    } else if (this.props.users) {
       for (let i = 0; i < this.props.users.length; i += 1) {
         tabList.push(this.createTab.bind(this)(this.props.users[i], i, selected));
       }
