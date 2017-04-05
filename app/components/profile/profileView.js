@@ -1,7 +1,7 @@
 import React from 'react';
 import Paths from '../../paths';
 import Auth from '../../database/auth';
-import suggestions from './skillSuggestions';
+import { skillSuggestions } from '../../database/suggestions';
 import { Link } from 'react-router';
 import { WithContext as ReactTags } from 'react-tag-input';
 
@@ -77,7 +77,7 @@ class ProfileView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-        const user = xhr.response;
+      const user = xhr.response;
         if (user) {
           user.userSkills = (xhr.response && xhr.response.userSkills.length > 0) ? xhr.response.userSkills.map((skill, i) => {
           return {
@@ -366,7 +366,7 @@ class ProfileView extends React.Component {
                   (this.state.isContentEditable) ?
                   <ReactTags
                     tags={this.state.user.userSkills}
-                    suggestions={suggestions}
+                    suggestions={skillSuggestions}
                     handleDelete={this.handleDeleteSkill}
                     handleAddition={this.handleAdditionSkill}
                     handleDrag={this.handleDragSkill}
@@ -391,18 +391,6 @@ class ProfileView extends React.Component {
               </div>
             </div>
           </div>
-          <ul className="list-group list-group-flush">
-            <li className="list-group-item">
-              <div className="info-type">What am I Looking For? </div>
-              { (this.state.isContentEditable) ?
-                <select className="form-control" id="new-user-interest">
-                  <option>{this.state.interestedOpportunities}</option>
-                  <option>2</option>
-                </select> :
-                <div id="user-info" className="user-info">{this.state.interestedOpportunities}</div>
-              }
-            </li>
-          </ul>
           <div id="accordion" role="tablist" aria-multiselectable="true">
             <div className="card">
               <div className="card-header" role="tab" id="headingOne">

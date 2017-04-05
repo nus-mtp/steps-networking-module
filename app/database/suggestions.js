@@ -102,4 +102,19 @@ const skillSuggestions = [
   "Koa",
 ];
 
-export default skillSuggestions;
+const tagSuggestions = [
+  "networking",
+  "parallel programming",
+  "artificial intelligence",
+  "software engineering",
+  "algortihms",
+  "game development",
+  "web application",
+  "android",
+  "iOS",
+  "progressive web application",
+  "service worker",
+  "information retrival",
+];
+
+export { skillSuggestions, tagSuggestions };
