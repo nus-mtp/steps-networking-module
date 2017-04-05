@@ -228,7 +228,7 @@ class Collapsable extends React.Component {
                 </div>
                 <div id="event-matches">
                   <span className="event-match-title">Matches: </span>
-                  <nav className="nav d-flex flex-row justify-content-between">
+                  <nav className="nav d-flex flex-row justify-content-between hidden-sm-down">
                     <div id="match-container">
                     {
                       (this.state.relevantUsers.length !== 0) ?
@@ -249,6 +249,19 @@ class Collapsable extends React.Component {
                       }
                     </div>
                   </nav>
+
+                  <nav className="nav d-flex flex-row hidden-md-up">
+                    <div id="match-container-mini" className="justify-content-center">
+                      {
+                        (this.state.relevantUsers.length !== 0) ?
+                          (this.state.relevantUsers.length === 1) ?
+                            <button id="all-projects" className="btn btn-secondary"><Link to={`/match/${this.props.email}/${this.props.event.id}/${this.state.checkbox.toString()}`}>{"You have " + this.state.relevantUsers.length + " match!"}</Link></button> :
+                              <button id="all-projects" className="btn btn-secondary"><Link to={`/match/${this.props.email}/${this.props.event.id}/${this.state.checkbox.toString()}`}>{"You have " + this.state.relevantUsers.length + " matches!"}</Link></button> :
+                          <div id="no-matches-message">No potential matches.</div>
+                      }
+                    </div>
+                  </nav>
+
                 </div>
               </div>
               : <div />
