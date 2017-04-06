@@ -21,7 +21,7 @@ class Tabs extends React.Component {
     }
 
     return (
-      <div className="event-tabs">
+      <div id="event-tabs">
         <ul className="nav nav-tabs" role="tablist">
           <li className="nav-item">
             <a id="ongoing" className={`nav-link ${ongoing}`} data-toggle="tab" href="#ongoing" role="tab" onClick={this.props.onClick}>Ongoing</a>
