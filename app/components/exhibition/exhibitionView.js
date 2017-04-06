@@ -387,13 +387,13 @@ class ExhibitionView extends React.Component {
               {
                 (this.state.comments.length > 0) ?
                 this.state.comments.map(commentObject =>
-                  <div key={commentObject.userEmail} id="exhibition-comment-list">
+                  <div key={commentObject.userEmail} id="user-comment-list">
                     <Link to={`/profile/${commentObject.userEmail}`}><h5 id="comment-sender">{commentObject.userEmail}</h5></Link>
                     <ul className="list-group">
                       {
                         commentObject.comments.map((comment, i) =>
                           (commentObject.userEmail === Auth.getToken().email.replace(/%40/i, '@')) ?
-                            <li key={`${comment.content}${commentObject.userEmail}${i}`} className="exhibition-comment-container list-group-item">
+                            <li key={`${comment.content}${commentObject.userEmail}${i}`} className="user-comment-container list-group-item">
                               <div id="comment-timestamp">{new Date(comment.timestamp).toDateString()}</div>
                               <div id="comment">{comment.content}</div>
                             </li> :
