@@ -66,12 +66,13 @@ class HomeView extends React.Component {
       if (xhr.status === 200) {
         console.log('get attendance success');
         this.setState({ attendance: xhr.response });
-        if (this.state.displayedEvents.length === 0) {
-          this.setDefaultView();
-        }
       } else {
         console.log('get attendance fail');
         this.setState({ attendance: [] });
+      }
+
+      if (this.state.displayedEvents.length === 0) {
+        this.setDefaultView();
       }
     });
     xhr.send();
