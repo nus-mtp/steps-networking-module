@@ -1,5 +1,10 @@
 @import "mixin";
 
+// For skills suggestion overlay
+.ReactTags__suggestions {
+  z-index: 20;
+}
+
 /** profile view stylings **/
 #profile-body {
   width: 90%;
