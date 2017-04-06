@@ -461,7 +461,7 @@ class ProfileView extends React.Component {
                     handleDelete={this.handleDeleteLink}
                     handleAddition={this.handleAdditionLink}
                     handleDrag={this.handleDragLink}
-                    placeholder="Enter to add links"
+                    placeholder="Include http://"
                   /> :
                   <div>
                     {
