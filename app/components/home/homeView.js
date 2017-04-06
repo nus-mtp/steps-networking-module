@@ -208,6 +208,7 @@ class HomeView extends React.Component {
                   openCollapsable={this.openCollapsable}
                   event={event}
                   attendance={this.state.attendance}
+                  email={this.state.email}
                 />
                 <Collapsable
                   serial={i}
