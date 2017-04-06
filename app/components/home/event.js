@@ -89,12 +89,17 @@ class Event extends React.Component {
             {
               (this.isEventAttended())
               ? <div className="badge badge-danger event-badge"><img id="attendance-badge-image" src="../../resources/images/check-icon.svg" alt="check-icon" />Attending</div>
-              : <div className="offset-badge" />
+              : <div />
             }
             {
               (this.state.participating)
               ? <div className="badge badge-warning exhib-badge"><img id="participating-badge-image" src="../../resources/images/check-icon.svg" alt="check-icon" />Participating</div>
               : <div />
+            }
+            {
+              (this.isEventAttended() || this.state.participating)
+              ? <div />
+              : <div className="offset-badge" />
             }
             <div className="event-info">{eventDate.toDateString()}</div>
             <div className="event-info">{this.props.event.venue}</div>
