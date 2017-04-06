@@ -23,7 +23,6 @@ class HomeView extends React.Component {
     };
 
     this.initializeStates();
-    this.getAttendances(userEmail.replace(/%40/i, '@'));
 
     this.openCollapsable = this.openCollapsable.bind(this);
     this.changeAttendance = this.changeAttendance.bind(this);
@@ -31,6 +30,7 @@ class HomeView extends React.Component {
     this.formatMilli = this.formatMilli.bind(this);
     this.createFalseArray = this.createFalseArray.bind(this);
     this.getAttendances = this.getAttendances.bind(this);
+    this.setDefaultView = this.setDefaultView.bind(this);
   }
 
   initializeStates() {
@@ -42,6 +42,7 @@ class HomeView extends React.Component {
       console.log('initialize state success');
       if (xhr.status === 200) {
         const nowTime = this.state.todayDate.getTime();
+
         const copy = xhr.response;
         const remainder = copy.filter((event) => {
           if (nowTime > this.formatMilli(event.start_date) && nowTime < this.formatMilli(event.end_date))
@@ -52,6 +53,8 @@ class HomeView extends React.Component {
           displayedEvents: remainder,
           open: this.createFalseArray(remainder.length),
         });
+
+        this.getAttendances();
       } else {
         console.log('initialize state fail');
         this.setState({
@@ -64,15 +67,16 @@ class HomeView extends React.Component {
     xhr.send();
   }
 
-  getAttendances(email) {
+  getAttendances() {
     const xhr = new XMLHttpRequest();
-    xhr.open('get', `/attendance/get/oneUserAttendances/${email}`);
+    xhr.open('get', `/attendance/get/oneUserAttendances/${this.state.email}`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
         console.log('get attendance success');
         this.setState({ attendance: xhr.response });
+        this.setDefaultView();
       } else {
         console.log('get attendance fail');
         this.setState({ attendance: [] });
@@ -118,6 +122,43 @@ class HomeView extends React.Component {
   formatMilli(dateString) {
     const date = new Date(dateString);
     return date.getTime();
+  }
+
+  /**
+    * Sets priority of event view
+    */
+  setDefaultView() {
+    const copy = this.state.events.slice();
+
+    const nowTime = this.state.todayDate.getTime();
+    const ongoing = copy.filter((event) => {
+      if (nowTime > this.formatMilli(event.start_date) && nowTime < this.formatMilli(event.end_date))
+        return event;
+    });
+    const upcoming = copy.filter((event) => {
+      if (nowTime < this.formatMilli(event.start_date))
+        return event;
+    });
+    const past = copy.filter((event) => {
+      if (nowTime > this.formatMilli(event.end_date))
+        return event;
+    });
+
+    let defaultTab = 'ongoing';
+    let display = ongoing;
+    if (ongoing.length === 0 && upcoming.length !== 0) {
+      defaultTab = 'upcoming';
+      display = upcoming;
+    } else if (ongoing.length === 0 && upcoming.length === 0 && past.length !== 0) {
+      defaultTab = 'past';
+      display = past;
+    }
+
+    this.setState({
+      currentTab: defaultTab,
+      displayedEvents: display,
+      open: this.createFalseArray(display.length),
+    });
   }
 
   changeView(e) {
