@@ -34,6 +34,14 @@ const userSchema = new mongoose.Schema({
     default: '',
   },
 
+  links: [
+    {
+      type: String,
+      lowercase: true,
+      trim: true,
+    },
+  ],
+
   skills: [
     {
       type: String,
