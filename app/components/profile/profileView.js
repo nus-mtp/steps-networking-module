@@ -371,6 +371,9 @@ class ProfileView extends React.Component {
                     handleAddition={this.handleAdditionSkill}
                     handleDrag={this.handleDragSkill}
                     placeholder="Add skills"
+                    allowDeleteFromEmptyInput={false}
+                    handleInputBlur={this.handleInputBlur}
+                    autofocus={false}
                   /> :
                   <div>
                     {

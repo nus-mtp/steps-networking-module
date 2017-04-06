@@ -1,5 +1,9 @@
 @import "mixin";
 
+.ReactTags__suggestions {
+  z-index: 20;
+}
+
 #profile-body {
   width: 90%;
   margin-top: 30px;
