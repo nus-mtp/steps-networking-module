@@ -312,9 +312,7 @@ class ProfileView extends React.Component {
         {
           (Object.keys(this.state.user).length !== 0)
           ? <div className="row justify-content-between justify-content-md-around">
-              <div id="profile-picture" className="col-md-6 push-md-3 col-12 text-center">
-                <img src="../../resources/images/default-profile-picture.png" alt="profile-img" />
-              </div>
+              <h4 id="user-name" className="col-md-6 push-md-3 col-12 text-center align-self-center">{this.state.user.userName}</h4>
               <div className="col-md-3 pull-md-6 col-6 text-center d-flex justify-content-center">
               {
                 (this.state.user.userEmail !== userEmail) ?
@@ -334,14 +332,11 @@ class ProfileView extends React.Component {
               }
               </div>
             </div>
-          : <div id="profile-picture" className="col-12 text-center">
-             <img src="../../resources/images/default-profile-picture.png" alt="profile-img" />
-            </div>
+          : <div />
          }
         <div className="profile-info card">
           <div className="card-block">
             <div className="card-text">
-              <h4 id="user-name" className="card-title">{this.state.user.userName}</h4>
               <div>
                 <span className="info-type">Email: </span>
                 <span id="user-email" className="user-info">{this.state.user.userEmail}</span>
