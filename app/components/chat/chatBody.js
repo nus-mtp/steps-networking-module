@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import MediaQuery from 'react-responsive';
+import Auth from '../../database/auth';
 
 export default class ChatBody extends Component {
   constructor(props) {
@@ -47,8 +48,8 @@ export default class ChatBody extends Component {
   }
   
   retrieveAllMessages(senderEmail, recipientEmail) {
-    //*
-    this.props.sockets.emit('get message', { senderEmail, recipientEmail }, function(err, conversation) {
+    
+    this.props.sockets.emit('get message', { senderEmail, recipientEmail }, Auth.getToken(), function(err, conversation) {
       if (err||conversation===null||conversation.messages===undefined) {
         this.setState({[`${senderEmail}`]: [] });
       } else {
@@ -87,7 +88,7 @@ export default class ChatBody extends Component {
   }
 
   sendMessage(senderEmail, recipientEmail, content) {
-    this.props.sockets.emit('add message', { senderEmail, recipientEmail, content }, function(successful) {
+    this.props.sockets.emit('add message', { senderEmail, recipientEmail, content }, Auth.getToken(), function(successful) {
       if (!successful) {
         console.log("The message failed to send.");
       } else {

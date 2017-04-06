@@ -12,9 +12,7 @@ class ExhibitionView extends React.Component {
       currentComment: '',
       comments: [],
       isTagEditable: false,
-      isMediaEditable: false,
       tagChange: '',
-      mediaChange: '',
       exhibition: {},
       attendance: {},
       feedbackComment: '',
@@ -29,13 +27,11 @@ class ExhibitionView extends React.Component {
     this.editComment = this.editComment.bind(this);
     this.submitComment = this.submitComment.bind(this);
     this.toggleTagEditable = this.toggleTagEditable.bind(this);
-    this.toggleMediaEditable = this.toggleMediaEditable.bind(this);
     this.handleDeleteTag = this.handleDeleteTag.bind(this);
     this.handleAdditionTag = this.handleAdditionTag.bind(this);
     this.handleDragTag = this.handleDragTag.bind(this);
     this.saveTags = this.saveTags.bind(this);
     this.handleTagInputChange = this.handleTagInputChange.bind(this);
-    this.handleMediaInputChange = this.handleMediaInputChange.bind(this);
   }
 
   componentDidMount() {
@@ -155,6 +151,7 @@ class ExhibitionView extends React.Component {
       const xhr = new XMLHttpRequest();
       xhr.open('post', '/comment/post/addComment');
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
       xhr.responseType = 'json';
       xhr.addEventListener('load', () => {
         if (xhr.status === 200) {
@@ -178,6 +175,7 @@ class ExhibitionView extends React.Component {
       const xhr = new XMLHttpRequest();
       xhr.open('post', '/comment/post/newComment');
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
       xhr.responseType = 'json';
       xhr.addEventListener('load', () => {
         if (xhr.status === 200) {
@@ -270,21 +268,9 @@ class ExhibitionView extends React.Component {
     });
   }
 
-  toggleMediaEditable() {
-    this.setState({
-      isMediaEditable: !this.state.isMediaEditable,
-    });
-  }
-
   handleTagInputChange(event) {
     this.setState({
       tagChange: event.target.value,
-    });
-  }
-
-  handleMediaInputChange(event) {
-    this.setState({
-      mediaChange: event.target.value,
     });
   }
 
@@ -387,13 +373,13 @@ class ExhibitionView extends React.Component {
               {
                 (this.state.comments.length > 0) ?
                 this.state.comments.map(commentObject =>
-                  <div key={commentObject.userEmail} id="exhibition-comment-list">
+                  <div key={commentObject.userEmail} id="user-comment-list">
                     <Link to={`/profile/${commentObject.userEmail}`}><h5 id="comment-sender">{commentObject.userEmail}</h5></Link>
                     <ul className="list-group">
                       {
                         commentObject.comments.map((comment, i) =>
                           (commentObject.userEmail === Auth.getToken().email.replace(/%40/i, '@')) ?
-                            <li key={`${comment.content}${commentObject.userEmail}${i}`} className="exhibition-comment-container list-group-item">
+                            <li key={`${comment.content}${commentObject.userEmail}${i}`} className="user-comment-container list-group-item">
                               <div id="comment-timestamp">{new Date(comment.timestamp).toDateString()}</div>
                               <div id="comment">{comment.content}</div>
                             </li> :

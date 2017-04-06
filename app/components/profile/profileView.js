@@ -13,7 +13,6 @@ class ProfileView extends React.Component {
     const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
 
     this.state = {
-      links: '-', // Link to user profile of another website
       interestedOpportunities: '-', // What am I looking for
       isContentEditable: false, //  Edit mode
       descriptionCache: '',
@@ -172,10 +171,6 @@ class ProfileView extends React.Component {
       this.setState({
         user,
       });
-    } else if (targetId === 'new-user-links') {
-      this.setState({
-        links: event.target.value,
-      });
     }
   }
 
@@ -194,7 +189,6 @@ class ProfileView extends React.Component {
 
     this.setState({
       user,
-      links: this.state.pastUserData.links,
       interestedOpportunities: this.state.pastUserData.interestedOpportunities,
       isContentEditable: false,
     });
@@ -230,6 +224,7 @@ class ProfileView extends React.Component {
     const xhr = new XMLHttpRequest();
     xhr.open('post', `attendance/post/set/oneAttendanceReasons`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
@@ -253,6 +248,7 @@ class ProfileView extends React.Component {
       const xhr = new XMLHttpRequest();
       xhr.open('post', '/user/post/profile/set/skills');
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
       xhr.responseType = 'json';
       xhr.addEventListener('load', () => {
         if (xhr.status === 200) {
@@ -278,6 +274,7 @@ class ProfileView extends React.Component {
       const xhr = new XMLHttpRequest();
       xhr.open('post', '/user/post/profile/set/description');
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
       xhr.responseType = 'json';
       xhr.addEventListener('load', () => {
         if (xhr.status === 200) {
@@ -318,9 +315,7 @@ class ProfileView extends React.Component {
         {
           (Object.keys(this.state.user).length !== 0)
           ? <div className="row justify-content-between justify-content-md-around">
-              <div id="profile-picture" className="col-md-6 push-md-3 col-12 text-center">
-                <img src="../../resources/images/default-profile-picture.png" alt="profile-img" />
-              </div>
+              <h4 id="user-name" className="col-md-6 push-md-3 col-12 text-center align-self-center">{this.state.user.userName}</h4>
               <div className="col-md-3 pull-md-6 col-6 text-center d-flex justify-content-center">
               {
                 (this.state.user.userEmail !== userEmail) ?
@@ -340,14 +335,11 @@ class ProfileView extends React.Component {
               }
               </div>
             </div>
-          : <div id="profile-picture" className="col-12 text-center">
-             <img src="../../resources/images/default-profile-picture.png" alt="profile-img" />
-            </div>
+          : <div />
          }
         <div className="profile-info card">
           <div className="card-block">
             <div className="card-text">
-              <h4 id="user-name" className="card-title">{this.state.user.userName}</h4>
               <div>
                 <span className="info-type">Email: </span>
                 <span id="user-email" className="user-info">{this.state.user.userEmail}</span>
@@ -382,14 +374,6 @@ class ProfileView extends React.Component {
                         : <div />
                     }
                   </div>
-                }
-              </div>
-              <div>
-                <span className="info-type">Links: </span>
-                {
-                  (this.state.isContentEditable) ?
-                  <input id="new-user-links" className="form-control" type="text" value={this.state.links} onChange={this.changeEdit} /> :
-                  <a id="user-links" className="user-info" href={`https://${this.state.links}`}>{this.state.links}</a>
                 }
               </div>
             </div>

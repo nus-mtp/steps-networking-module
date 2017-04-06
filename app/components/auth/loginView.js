@@ -52,7 +52,6 @@ class LoginView extends React.Component {
           email,
         });
 
-
         // change the current URL to /
         this.context.router.replace(Paths.home);
       } else {

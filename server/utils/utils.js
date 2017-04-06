@@ -23,6 +23,7 @@ function extractUserInfo(user) {
     userProfilePicture: user.profile_picture,
     userName: user.name,
     userDescription: user.description,
+    userLinks: user.links,
     userSkills: user.skills,
     bookmarkedUsers: user.bookmarked_users,
     userNotification: user.will_notify,

@@ -8,6 +8,8 @@ const Comment = require('../database/objectClasses/Comment');
 
 const Exhibition = require('../database/objectClasses/Exhibition');
 
+const authCheckMiddleware = require('../middleware/auth-check');
+
 router.get('/get/userComments/:eventName/:exhibitionName/:userEmail', (req = {}, res, next) => {
   Exhibition.setDBConnection(req.app.locals.db);
   Comment.setDBConnection(req.app.locals.db);
@@ -54,47 +56,56 @@ router.get('/get/:eventName/:exhibitionName', (req = {}, res, next) => {
   });
 });
 
-router.post('/post/newComment', (req = {}, res, next) => {
+router.post('/post/newComment', authCheckMiddleware, (req = {}, res, next) => {
   if (req.body && req.body.eventName &&
       req.body.exhibitionName && req.body.userEmail && req.body.comment) {
-    Exhibition.setDBConnection(req.app.locals.db);
-    Comment.setDBConnection(req.app.locals.db);
+    if (req.auth_user_email && req.auth_user_email !== req.body.userEmail) {
+      res.status(403).json('Unauthorized!');
+      next();
+    } else {
+      Exhibition.setDBConnection(req.app.locals.db);
+      Comment.setDBConnection(req.app.locals.db);
 
-    Exhibition.getExhibition(req.body.eventName, req.body.exhibitionName, (err, results) => {
-      if (err) {
-        res.status(500).json('Unable to fetch the exhibition id');
-      } else if (results) {
-        const newComment = new Comment(
-          req.body.userEmail, results._id, req.body.comment, Date.now());
-        newComment.saveComment((err) => {
-          if (err) {
-            res.status(500).json('Unable to save data!');
-            next();
-          } else {
-            res.status(200).json('Added');
-            next();
-          }
-        });
-      } else {
-        res.status(404).json(`Unable to find ${req.body.exhibitionName} object`);
-      }
-    });
+      Exhibition.getExhibition(req.body.eventName, req.body.exhibitionName, (err, results) => {
+        if (err) {
+          res.status(500).json('Unable to fetch the exhibition id');
+        } else if (results) {
+          const newComment = new Comment(
+            req.body.userEmail, results._id, req.body.comment, Date.now());
+          newComment.saveComment((err) => {
+            if (err) {
+              res.status(500).json('Unable to save data!');
+              next();
+            } else {
+              res.status(200).json('Added');
+              next();
+            }
+          });
+        } else {
+          res.status(404).json(`Unable to find ${req.body.exhibitionName} object`);
+        }
+      });
+    }
   } else {
     res.status(400).json('Bad request! Expecting "exhibitionName", "eventName", "userEmail" and "comment"');
   }
 });
 
-router.post('/post/addComment', (req = {}, res, next) => {
+router.post('/post/addComment', authCheckMiddleware, (req = {}, res, next) => {
   if (req.body && req.body.exhibitionName &&
       req.body.eventName && req.body.userEmail && req.body.comment) {
-    Exhibition.setDBConnection(req.app.locals.db);
-    Comment.setDBConnection(req.app.locals.db);
+    if (req.auth_user_email && req.auth_user_email !== req.body.userEmail) {
+      res.status(403).json('Unauthorized!');
+      next();
+    } else {
+      Exhibition.setDBConnection(req.app.locals.db);
+      Comment.setDBConnection(req.app.locals.db);
 
-    Exhibition.getExhibition(req.body.eventName, req.body.exhibitionName, (err, results) => {
-      if (err) {
-        res.status(500).json('Unable to fetch the exhibition id');
-      } else if (results) {
-        Comment.addCommentForExhibition(
+      Exhibition.getExhibition(req.body.eventName, req.body.exhibitionName, (err, results) => {
+        if (err) {
+          res.status(500).json('Unable to fetch the exhibition id');
+        } else if (results) {
+          Comment.addCommentForExhibition(
             req.body.userEmail,
             results._id,
             req.body.comment,
@@ -111,10 +122,11 @@ router.post('/post/addComment', (req = {}, res, next) => {
                 next();
               }
             });
-      } else {
-        res.status(404).json(`Unable to find ${req.body.exhibitionName} object`);
-      }
-    });
+        } else {
+          res.status(404).json(`Unable to find ${req.body.exhibitionName} object`);
+        }
+      });
+    }
   } else {
     res.status(400).json('Bad request! Expecting "exhibitionName", "eventName", "userEmail" and "comment"');
   }
