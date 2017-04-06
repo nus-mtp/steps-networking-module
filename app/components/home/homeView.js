@@ -38,7 +38,6 @@ class HomeView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      console.log('initialize state success');
       if (xhr.status === 200) {
         this.setState({
           events: xhr.response,
@@ -46,7 +45,6 @@ class HomeView extends React.Component {
 
         this.getAttendances();
       } else {
-        console.log('initialize state fail');
         this.setState({
           events: [],
           displayedEvents: [],
@@ -64,14 +62,13 @@ class HomeView extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        console.log('get attendance success');
         this.setState({ attendance: xhr.response });
-        if (this.state.displayedEvents.length === 0) {
-          this.setDefaultView();
-        }
       } else {
-        console.log('get attendance fail');
         this.setState({ attendance: [] });
+      }
+
+      if (this.state.displayedEvents.length === 0) {
+        this.setDefaultView();
       }
     });
     xhr.send();
@@ -103,10 +100,8 @@ class HomeView extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        console.log('change attendance success');
         this.getAttendances();
       } else {
-        console.log('change attendance fail');
       }
     });
     xhr.send(formData);

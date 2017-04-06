@@ -14,7 +14,6 @@ class SignupView extends React.Component {
         email: '',
         password: '',
         confirmPassword: '',
-        description: '',
       },
     };
 
@@ -23,7 +22,6 @@ class SignupView extends React.Component {
     this.handleUserEmail = this.handleUserEmail.bind(this);
     this.handleUserPassword = this.handleUserPassword.bind(this);
     this.handleConfirmPassword = this.handleConfirmPassword.bind(this);
-    this.handleUserDescription = this.handleUserDescription.bind(this);
   }
 
   /**
@@ -38,9 +36,8 @@ class SignupView extends React.Component {
     const name = encodeURIComponent(this.state.user.name);
     const email = encodeURIComponent(this.state.user.email);
     const password = encodeURIComponent(this.state.user.password);
-    const description = encodeURIComponent(this.state.user.description);
     const confirmPassword = encodeURIComponent(this.state.user.confirmPassword);
-    const formData = `name=${name}&email=${email}&password=${password}&description=${description}&confirmPassword=${confirmPassword}`;
+    const formData = `name=${name}&email=${email}&password=${password}&confirmPassword=${confirmPassword}`;
 
     const xhr = new XMLHttpRequest();
     xhr.open('post', '/auth/signup');
@@ -110,14 +107,6 @@ class SignupView extends React.Component {
     });
   }
 
-  handleUserDescription(e) {
-    const user = this.state.user;
-    user.description = e.target.value;
-    this.setState({
-      user,
-    });
-  }
-
   render() {
     return (
       <Signup
@@ -126,7 +115,6 @@ class SignupView extends React.Component {
         onChangePassword={this.handleUserPassword}
         onConfirmPassword={this.handleConfirmPassword}
         onChangeEmail={this.handleUserEmail}
-        onChangeDescription={this.handleUserDescription}
         errors={this.state.errors}
         user={this.state.user}
       />

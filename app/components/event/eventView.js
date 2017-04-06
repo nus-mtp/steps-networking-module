@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { sampleProjects } from '../exhibition/sampleData';
 import sampleOrganizer from './sampleOrganizer';
 import EventMap from './eventMap';
 
@@ -61,7 +60,6 @@ class EventView extends React.Component {
         this.setState({
           attendees: xhr.response,
         });
-        console.log(xhr.response);
       } else {
         this.setState({
           attendees: [],

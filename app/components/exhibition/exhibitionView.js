@@ -12,9 +12,7 @@ class ExhibitionView extends React.Component {
       currentComment: '',
       comments: [],
       isTagEditable: false,
-      isMediaEditable: false,
       tagChange: '',
-      mediaChange: '',
       exhibition: {},
       attendance: {},
       feedbackComment: '',
@@ -29,13 +27,11 @@ class ExhibitionView extends React.Component {
     this.editComment = this.editComment.bind(this);
     this.submitComment = this.submitComment.bind(this);
     this.toggleTagEditable = this.toggleTagEditable.bind(this);
-    this.toggleMediaEditable = this.toggleMediaEditable.bind(this);
     this.handleDeleteTag = this.handleDeleteTag.bind(this);
     this.handleAdditionTag = this.handleAdditionTag.bind(this);
     this.handleDragTag = this.handleDragTag.bind(this);
     this.saveTags = this.saveTags.bind(this);
     this.handleTagInputChange = this.handleTagInputChange.bind(this);
-    this.handleMediaInputChange = this.handleMediaInputChange.bind(this);
   }
 
   componentDidMount() {
@@ -272,21 +268,9 @@ class ExhibitionView extends React.Component {
     });
   }
 
-  toggleMediaEditable() {
-    this.setState({
-      isMediaEditable: !this.state.isMediaEditable,
-    });
-  }
-
   handleTagInputChange(event) {
     this.setState({
       tagChange: event.target.value,
-    });
-  }
-
-  handleMediaInputChange(event) {
-    this.setState({
-      mediaChange: event.target.value,
     });
   }
 

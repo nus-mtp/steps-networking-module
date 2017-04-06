@@ -35,11 +35,9 @@ class Collapsable extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        console.log("Initialize Checkbox Success");
         this.setState({ checkbox: xhr.response.reasons });
         this.getRelevantUsers(xhr.response.reasons);
       } else {
-        console.log("Initialize Checkbox Fail");
         this.setState({ checkbox: [] });
       }
     });
@@ -84,13 +82,6 @@ class Collapsable extends React.Component {
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
       xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
       xhr.responseType = 'json';
-      xhr.addEventListener('load', () => {
-        if (xhr.status === 200) {
-          console.log('Add Event Reason Success');
-        } else {
-          console.log('Add Event Reason Fail');
-        }
-      });
       xhr.send(formData);
       this.getRelevantUsers(array2);
     } else {
@@ -108,13 +99,6 @@ class Collapsable extends React.Component {
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
       xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
       xhr.responseType = 'json';
-      xhr.addEventListener('load', () => {
-        if (xhr.status === 200) {
-          console.log('Add Event Reason Success');
-        } else {
-          console.log('Add Event Reason Fail');
-        }
-      });
       xhr.send(formData);
       this.getRelevantUsers(array);
     }
@@ -131,11 +115,9 @@ class Collapsable extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        console.log('Finding relevant users success');
         const array = xhr.response.filter(user => {if (user.userEmail !== this.props.email) return user;});
         this.setState({ relevantUsers: array });
       } else {
-        console.log('Finding relevant users fail');
         this.setState({ relevantUsers: [] });
       }
     });
