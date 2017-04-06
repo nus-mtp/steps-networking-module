@@ -30,7 +30,6 @@ class HomeView extends React.Component {
     this.formatMilli = this.formatMilli.bind(this);
     this.createFalseArray = this.createFalseArray.bind(this);
     this.getAttendances = this.getAttendances.bind(this);
-    this.setDefaultView = this.setDefaultView.bind(this);
   }
 
   initializeStates() {
@@ -41,17 +40,8 @@ class HomeView extends React.Component {
     xhr.addEventListener('load', () => {
       console.log('initialize state success');
       if (xhr.status === 200) {
-        const nowTime = this.state.todayDate.getTime();
-
-        const copy = xhr.response;
-        const remainder = copy.filter((event) => {
-          if (nowTime > this.formatMilli(event.start_date) && nowTime < this.formatMilli(event.end_date))
-            return event;
-        });
         this.setState({
           events: xhr.response,
-          displayedEvents: remainder,
-          open: this.createFalseArray(remainder.length),
         });
 
         this.getAttendances();
@@ -76,7 +66,9 @@ class HomeView extends React.Component {
       if (xhr.status === 200) {
         console.log('get attendance success');
         this.setState({ attendance: xhr.response });
-        this.setDefaultView();
+        if (this.state.displayedEvents.length === 0) {
+          this.setDefaultView();
+        }
       } else {
         console.log('get attendance fail');
         this.setState({ attendance: [] });
@@ -111,7 +103,7 @@ class HomeView extends React.Component {
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
         console.log('change attendance success');
-        this.getAttendances(this.state.email);
+        this.getAttendances();
       } else {
         console.log('change attendance fail');
       }

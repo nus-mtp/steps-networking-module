@@ -66,8 +66,8 @@ class Event extends React.Component {
             <div className="card-title event-title">{this.props.event.name}</div>
             {
               (this.isEventAttended())
-              ? <div className="attendance-badge"><img id="attendance-badge-image" src="../../resources/images/check-icon.svg" alt="check-icon" />Attending</div>
-              : <div className="attendance-badge" />
+              ? <div className="badge badge-danger"><img id="attendance-badge-image" src="../../resources/images/check-icon.svg" alt="check-icon" />Attending</div>
+              : <div className="offset-badge" />
             }
             <div className="event-info">{eventDate.toDateString()}</div>
             <div className="event-info">{this.props.event.venue}</div>
