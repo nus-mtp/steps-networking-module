@@ -204,7 +204,7 @@ class HomeView extends React.Component {
           <h2 id="search-title">Find An Opportunity</h2>
           <Search />
         </div>
-        <Tabs onClick={this.changeView} />
+        <Tabs onClick={this.changeView} tab={this.state.currentTab} />
         <div id="event-list" className="d-flex justify-content-center justify-content-md-start">
         {
           (this.state.displayedEvents.length !== 0) ?
@@ -229,7 +229,6 @@ class HomeView extends React.Component {
                 />
               </div>
             ) : <div className="no-events justify-content-center">
-                  <img src="../resources/images/sad-face.png" alt="Sorry-no-events" />
                   <p>Sorry! There are no {this.state.currentTab} events. Please check again in the future!</p>
                 </div>
           }
