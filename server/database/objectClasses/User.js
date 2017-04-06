@@ -40,13 +40,14 @@ class User {
    *    A boolean value to indicate if the User is to be notified on anything.
    * @param {Boolean} isDeleted: A boolean to indicate if the User is marked as deleted or not.
    * @param {String} profilePic: URL String representing an externally hosted depiction of the User.
+   * @param {Array} links: A list of Strings to external self-promotion sites of the User.
    * @param {Array} skillSets: A list of Strings representing subject matters the
    *    User has some mastery in.
    * @param {Array} bookmarkedUsers: A list of Strings representing other
    *    userEmails that the User has bookmarked.
    */
   constructor(userEmail = '', userName = '', userDescription = '', userPassword = '',
-    willNotify = true, isDeleted = false, profilePic = '', skillSets = [], bookmarkedUsers = []) {
+    willNotify = true, isDeleted = false, profilePic = '', links = [], skillSets = [], bookmarkedUsers = []) {
     this.userJSON = {
       email: userEmail.trim(),
       name: userName.trim(),
@@ -55,6 +56,7 @@ class User {
       will_notify: willNotify,
       is_deleted: isDeleted,
       profile_picture: profilePic,
+      links: removeDuplicates(links.map(link => link.trim())),
       skills: removeDuplicates(skillSets.map(skill => skill.trim().toLowerCase())),
       bookmarked_users: removeDuplicates(bookmarkedUsers),
     };
@@ -287,6 +289,78 @@ class User {
   }
 
   /**
+   * Adds a link for the User.
+   *
+   * @param {String} userEmail: The email of the User to add the link for.
+   * @param {String} link: The String representing an external URL to be added to the User.
+   * @param {function} callback: A function that executes once the operation is complete.
+   */
+  static addLinkToUserLinks(userEmail, link, callback) {
+    if (User.checkConnection()) {
+      User.UserModel.findOne({ email: userEmail }, (err, user) => {
+        if (user) {
+          user.set('links', removeDuplicates(user.get('links').concat(link.trim())));
+          user.save((err, updatedUser) => {
+            callback(err, updatedUser);
+          });
+        } else {
+          callback(err, user);
+        }
+      });
+    } else {
+      callback('Not Connected!', null);
+    }
+  }
+
+  /**
+   * Removes a specified link from the User.
+   *
+   * @param {String} userEmail: The email of the User to remove the link from.
+   * @param {String} link: The String representing an external URL to be removed form the User.
+   * @param {function} callback: A function that executes once the operation is complete.
+   */
+  static removeLinkFromUserLinks(userEmail, link, callback) {
+    if (User.checkConnection()) {
+      User.UserModel.findOne({ email: userEmail }, (err, user) => {
+        if (user) {
+          user.set('links', removeDuplicates(user.get('links').filter(currLink => currLink !== link)));
+          user.save((err, updatedUser) => {
+            callback(err, updatedUser);
+          });
+        } else {
+          callback(err, user);
+        }
+      });
+    } else {
+      callback('Not Connected!', null);
+    }
+  }
+
+  /**
+   * Sets the array of links for the User.
+   *
+   * @param {String} userEmail: The email of the User to remove the link from.
+   * @param {Array} links: The list of Strings representing external URLs to save to the User.
+   * @param {function} callback: A function that executes once the operation is complete.
+   */
+  static setLinksForUser(userEmail, links, callback) {
+    if (User.checkConnection()) {
+      User.UserModel.findOne({ email: userEmail }, (err, user) => {
+        if (user) {
+          user.set('links', removeDuplicates(links.map(link => link.trim())));
+          user.save((err, updatedUser) => {
+            callback(err, updatedUser);
+          });
+        } else {
+          callback(err, user);
+        }
+      });
+    } else {
+      callback('Not Connected!', null);
+    }
+  }
+
+  /**
    * Adds a skill for the User.
    *
    * @param {String} userEmail: The email of the User to add the skill for.
@@ -443,13 +517,14 @@ class User {
    *    A boolean value to indicate if the User is to be notified on anything.
    * @param {Boolean} isDeleted: A boolean to indicate if the User is marked as deleted or not.
    * @param {String} profilePic: URL String representing an externally hosted depiction of the User.
+   * @param {Array} links: A list of Strings to external self-promotion sites of the User.
    * @param {Array} skillSets: A list of Strings representing subject matters the
    *    User has some mastery in.
    * @param {Array} bookmarkedUserIds: A list of ObjectIds referencing other Users the User has bookmarked.
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static updateUser(email = '', name = '', description = '', password = '',
-    willNotify = true, isDeleted = false, profilePic = '', skillSets = [], bookmarkedUserIds = [], callback) {
+    willNotify = true, isDeleted = false, profilePic = '', links = [], skillSets = [], bookmarkedUserIds = [], callback) {
     const update = {
       email: email.trim(),
       name: name.trim(),
@@ -458,6 +533,7 @@ class User {
       will_notify: willNotify,
       is_deleted: isDeleted,
       profile_picture: profilePic,
+      links: removeDuplicates(links.map(link => link.trim())),
       skills: removeDuplicates(skillSets.map(skill => skill.trim().toLowerCase())),
       bookmarked_users: removeDuplicates(bookmarkedUserIds),
     };
