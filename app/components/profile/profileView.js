@@ -13,7 +13,6 @@ class ProfileView extends React.Component {
     const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
 
     this.state = {
-      links: '-', // Link to user profile of another website
       interestedOpportunities: '-', // What am I looking for
       isContentEditable: false, //  Edit mode
       descriptionCache: '',
@@ -172,10 +171,6 @@ class ProfileView extends React.Component {
       this.setState({
         user,
       });
-    } else if (targetId === 'new-user-links') {
-      this.setState({
-        links: event.target.value,
-      });
     }
   }
 
@@ -194,7 +189,6 @@ class ProfileView extends React.Component {
 
     this.setState({
       user,
-      links: this.state.pastUserData.links,
       interestedOpportunities: this.state.pastUserData.interestedOpportunities,
       isContentEditable: false,
     });
@@ -379,14 +373,6 @@ class ProfileView extends React.Component {
                         : <div />
                     }
                   </div>
-                }
-              </div>
-              <div>
-                <span className="info-type">Links: </span>
-                {
-                  (this.state.isContentEditable) ?
-                  <input id="new-user-links" className="form-control" type="text" value={this.state.links} onChange={this.changeEdit} /> :
-                  <a id="user-links" className="user-info" href={`https://${this.state.links}`}>{this.state.links}</a>
                 }
               </div>
             </div>
