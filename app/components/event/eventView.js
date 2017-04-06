@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { sampleProjects } from '../exhibition/sampleData';
 import sampleOrganizer from './sampleOrganizer';
 import EventMap from './eventMap';
 
