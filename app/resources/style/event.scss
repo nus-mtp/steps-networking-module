@@ -9,8 +9,11 @@
 }
 
 #home-body {
-  margin: 10px 10%;
   width: 100vw;
+
+  #home-content-container {
+    margin: 30px 10%;
+  }
 
   .user-thumbnail {
     max-width: 30px;
@@ -221,6 +224,7 @@
 
 #event-body {
   width: 90%;
+  margin-top: 30px;
 
   .thumbnail-container {
     min-width: 100px;

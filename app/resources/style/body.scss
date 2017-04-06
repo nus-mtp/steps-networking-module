@@ -6,19 +6,19 @@ $font-file: '../fonts/Quicksand-Regular';
 #app-body {
   @include font-face($font-family, $font-file, normal, normal);
   position: relative;
-  margin-top: 10px;
+  margin: 0;
   display: flex;
   justify-content: center;
 }
 
 .collapse-show {
-  top: 220px;
+  top: 190px;
   margin: 10px;
   @include transition(all 0.3s);
 }
 
 .collapse-hide {
-  top: 65px;
+  top: 35px;
   margin: 10px;
   @include transition(all 0.3s);
 }
