@@ -112,10 +112,16 @@
     font-size: 16px;
   }
 
-  .attendance-indicator-container > .active {
+  .attendance-indicator-container > .active-yes {
     font-weight: 700;
-    background-color: lightgrey;
-    color: grey;
+    background-color: #347C17;
+    color: white;
+  }
+
+  .attendance-indicator-container > .active-no {
+    font-weight: 700;
+    background-color: #990012;
+    color: white;
   }
 
   #event-container > .collapse.show {
