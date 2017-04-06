@@ -143,17 +143,23 @@ class Collapsable extends React.Component {
   }
 
   setAbsent() {
-    this.setState({
-      isAttended: false,
-    });
-    this.props.changeAttendance(this.props.event, false);
+    const currentState = this.state.isAttended;
+    if (currentState) {
+      this.setState({
+        isAttended: false,
+      });
+      this.props.changeAttendance(this.props.event);
+    }
   }
 
   setPresent() {
-    this.setState({
-      isAttended: true,
-    });
-    this.props.changeAttendance(this.props.event, true);
+    const currentState = this.state.isAttended;
+    if (!currentState) {
+      this.setState({
+        isAttended: true,
+      });
+      this.props.changeAttendance(this.props.event);
+    }
   }
 
   checkAttendance() {
@@ -182,9 +188,9 @@ class Collapsable extends React.Component {
         <div className="card card-block event-info-container">
           <div>
             <div id="event-description">{this.props.event.description}</div>
-            <div className="btn-group attendance-indicator-container" >
+            <div className="btn-group attendance-indicator-container">
               <span className="event-attendance-title">Attendance: </span>
-              <label className={`btn btn-success attendance-indicator ${attending}`}>
+              <label className={`btn btn-secondary attendance-indicator ${attending}-yes`}>
                 <input
                 type="radio"
                 name="option"
@@ -194,7 +200,7 @@ class Collapsable extends React.Component {
                 onChange={this.setPresent} />
                 Yes
               </label>
-              <label className={`btn btn-secondary attendance-indicator ${notAttending}`}>
+              <label className={`btn btn-secondary attendance-indicator ${notAttending}-no`}>
                 <input
                 type="radio"
                 name="option"
