@@ -185,6 +185,35 @@ router.post('/post/profile/set/notification', authCheckMiddleware, (req = {}, re
   }
 });
 
+router.post('/post/profile/add/link', authCheckMiddleware, (req = {}, res, next) => {
+  if (req.body && req.body.userEmail && req.body.userLink) {
+    if (req.auth_user_email && req.auth_user_email !== req.body.userEmail) {
+      res.status(403).json('Unauthorized!');
+      next();
+    } else {
+      User.setDBConnection(req.app.locals.db);
+
+      User.addLinkToUserLinks(req.body.userEmail, req.body.userLink, (err, user) => {
+        if (err) {
+          if (err.name === 'ValidationError') {
+            res.status(403).json('Unauthorized!');
+          } else {
+            res.status(500).json('Unable to post data!');
+          }
+        } else if (user) {
+          res.status(200).json(extractUserInfo(user));
+        } else {
+          res.status(204).json('Nothing found!');
+        }
+        next();
+      });
+    }
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
 router.post('/post/profile/add/skill', authCheckMiddleware, (req = {}, res, next) => {
   if (req.body && req.body.userEmail && req.body.userSkill) {
     if (req.auth_user_email && req.auth_user_email !== req.body.userEmail) {
@@ -255,6 +284,35 @@ router.post('/post/profile/add/bUser', authCheckMiddleware, (req = {}, res, next
           res.status(204).json('Unable to find specified bUser!');
           next();
         }
+      });
+    }
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
+router.post('/post/profile/remove/link', authCheckMiddleware, (req = {}, res, next) => {
+  if (req.body && req.body.userEmail && req.body.userLink) {
+    if (req.auth_user_email && req.auth_user_email !== req.body.userEmail) {
+      res.status(403).json('Unauthorized!');
+      next();
+    } else {
+      User.setDBConnection(req.app.locals.db);
+
+      User.removeLinkFromUserLinks(req.body.userEmail, req.body.userLink, (err, user) => {
+        if (err) {
+          if (err.name === 'ValidationError') {
+            res.status(403).json('Unauthorized!');
+          } else {
+            res.status(500).json('Unable to post data!');
+          }
+        } else if (user) {
+          res.status(200).json(extractUserInfo(user));
+        } else {
+          res.status(204).json('Nothing found!');
+        }
+        next();
       });
     }
   } else {
@@ -362,6 +420,35 @@ router.post('/post/search/skills', (req = {}, res, next) => {
       }
       next();
     });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
+router.post('/post/profile/set/links', authCheckMiddleware, (req = {}, res, next) => {
+  if (req.body && req.body.userEmail && req.body.userLinks) {
+    if (req.auth_user_email && req.auth_user_email !== req.body.userEmail) {
+      res.status(403).json('Unauthorized!');
+      next();
+    } else {
+      User.setDBConnection(req.app.locals.db);
+
+      User.setLinksForUser(req.body.userEmail, req.body.userLinks.split(','), (err, user) => {
+        if (err) {
+          if (err.name === 'ValidationError') {
+            res.status(403).json('Unauthorized!');
+          } else {
+            res.status(500).json('Unable to post data!');
+          }
+        } else if (user) {
+          res.status(200).json(extractUserInfo(user));
+        } else {
+          res.status(204).json('Nothing found!');
+        }
+        next();
+      });
+    }
   } else {
     res.status(400).json('Bad Request!');
     next();
