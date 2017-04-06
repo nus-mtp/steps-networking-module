@@ -30,6 +30,7 @@ class HomeView extends React.Component {
     this.changeView = this.changeView.bind(this);
     this.formatMilli = this.formatMilli.bind(this);
     this.createFalseArray = this.createFalseArray.bind(this);
+    this.getAttendances = this.getAttendances.bind(this);
   }
 
   initializeStates() {
@@ -106,25 +107,12 @@ class HomeView extends React.Component {
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
         console.log('change attendance success');
+        this.getAttendances(this.state.email);
       } else {
         console.log('change attendance fail');
       }
     });
     xhr.send(formData);
-
-    if (attendance) {
-      const attendanceObj = { attendanceKey: event.id  };
-      const allAttendance = this.state.attendance;
-      allAttendance.push(attendanceObj);
-      this.setState({
-        attendance: allAttendance,
-      });
-    } else {
-      const newAttendance = this.state.attendance.filter(attend => attend.attendanceKey !== event.id);
-      this.setState({
-        attendance: newAttendance,
-      });
-    }
   }
 
   formatMilli(dateString) {
@@ -196,6 +184,7 @@ class HomeView extends React.Component {
                   event={event}
                   attendance={this.state.attendance}
                   changeAttendance={this.changeAttendance}
+                  email={this.state.email}
                 />
               </div>
             ) : <div className="no-events justify-content-center">

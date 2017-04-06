@@ -2,15 +2,77 @@ import React from 'react';
 import { Link } from 'react-router';
 import Paths from '../../paths';
 import ReactSwipe from 'react-swipe';
-import sampleUsers from './sampleUsers';
 
 class Match extends React.Component {
   constructor(props) {
     super(props);
 
+    const pathname = this.props.location.pathname;
+    const remaining = pathname.slice(0, pathname.lastIndexOf('/'));
+    const remaining2 = remaining.slice(0, remaining.lastIndexOf('/'));
+    const reasons = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+    const id = remaining.slice(remaining.lastIndexOf('/') + 1, remaining.length);
+    const email = remaining2.slice(remaining2.lastIndexOf('/') + 1, remaining2.length);
+
     this.state = {
-      users: sampleUsers,
+      eventId: id,
+      reasons: reasons.split(','),
+      relevantUsers: [],
+      email: email,
+      userEvents: {},
     }
+
+    this.getRelevantUsers(this.state.reasons);
+
+    this.getEventsAndExhibitons = this.getEventsAndExhibitons.bind(this);
+    this.getRelevantEventsAndExhibitions = this.getRelevantEventsAndExhibitions.bind(this);
+  }
+
+  getRelevantUsers(array) {
+    const id = encodeURIComponent(this.state.eventId);
+    const reasons = encodeURIComponent(array.toString());
+    const formData = `id=${id}&reasons=${reasons}`;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('post', 'attendance/post/search/event/exhibitors/reasons');
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        console.log('Finding relevant users match success');
+        const array = xhr.response.filter(user => {if (user.userEmail !== this.state.email) return user;});
+        this.setState({ relevantUsers: array });
+        this.getRelevantEventsAndExhibitions();
+      } else {
+        console.log('Finding relevant users match fail');
+        this.setState({ relevantUsers: [] });
+      }
+    });
+    xhr.send(formData);
+  }
+
+  getRelevantEventsAndExhibitions() {
+    for (const user of this.state.relevantUsers) {
+      this.getEventsAndExhibitons(user.userEmail);
+    }
+  }
+
+  getEventsAndExhibitons(email) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/attendance/get/oneUserEventsAndExhibitions/${email}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        console.log("Get Events In Match Success");
+        const obj = this.state.userEvents;
+        obj[`${email}`] = xhr.response;
+        this.setState({userEvents: obj });
+      } else {
+        console.log("Get Events In Match Fail");
+      }
+    });
+    xhr.send();
   }
 
   next() {
@@ -23,9 +85,9 @@ class Match extends React.Component {
 
   render() {
     return(
-      <ReactSwipe ref="reactSwipe" className="carousel" swipeOptions={{continuous: false}}>
+      <ReactSwipe ref="reactSwipe" className="carousel" swipeOptions={{continuous: false}} key={this.state.relevantUsers.length}>
       {
-        this.state.users.map((user, i) =>
+        this.state.relevantUsers.map((user, i) =>
           <div key={i} className="d-flex align-items-center flex-column">
             <div className="match-button-lg-prev d-flex flex-column hidden-sm-down" onClick={::this.prev}>
               <img className="match-icons" src="../../resources/images/chevron-left.svg" />
@@ -39,7 +101,7 @@ class Match extends React.Component {
               <div className="row justify-content-between justify-content-md-around">
                 <div className="col-md-3 text-center d-flex justify-content-center hidden-sm-down">
                   <div id="chat-icon-container">
-                    <Link to={Paths.chat}>
+                    <Link to={`/chat/${user.userEmail}`}>
                       <img id="chat-icon" src="../../resources/images/chat-icon.svg" alt="chat-icon" />
                     </Link>
                   </div>
@@ -54,11 +116,11 @@ class Match extends React.Component {
                 </div>
               </div>
               <div className="row justify-content-center">
-                <h3 className="user-name user-info">{user.name}</h3>
+                <h3 className="user-name user-info">{user.userName}</h3>
               </div>
               <div className="row justify-content-center">
                 {
-                  user.skills.map((skill, i) =>
+                  user.userSkills.map((skill, i) =>
                     <div className="badge badge-pill badge-info reason-tag" key={i}>{skill}</div>
                 )}
               </div>
@@ -75,39 +137,58 @@ class Match extends React.Component {
               </div>
               <hr className="divider" />
               <div className="more-info text-center hidden-md-up">
-                <Link to={`/profile/${user.email}`}>More Info</Link>
+                <Link to={`/profile/${user.userEmail}`}>More Info</Link>
               </div>
               <div className="hidden-sm-down">
                 <div className="profile-info card">
                   <div className="card-block">
                     <div className="card-text">
                       <div>
-                        <span className="info-type">Email: </span>
-                        <span id="user-email" className="user-info">{user.email}</span>
+                        <strong className="info-type">Email: </strong>
+                        <span id="user-email" className="user-info">{user.userEmail}</span>
                       </div>
                       <div>
-                        <span className="info-type">Description: </span>
-                        <span id="user-desc" className="user-info">{user.description}</span>
+                        <strong className="info-type">Description: </strong>
+                        <span id="user-desc" className="user-info">{user.userDescription}</span>
                       </div>
                       <div>
-                        <span className="info-type">Links: </span>
+                        <strong className="info-type">Links: </strong>
                         <span id="user-links" className="user-info"></span>
                       </div>
                     </div>
                   </div>
                   <ul className="list-group list-group-flush">
                     <li className="list-group-item">
-                      <div className="info-type">Lists of Projects Involved: </div>
-                      <div id="user-projects" className="user-info"></div>
+                      <div className="info-type"><strong>Lists of Projects Involved: </strong></div>
+                      <div id="user-projects" className="user-info">
+                        {
+                          (this.state.userEvents) ?
+                            Object.keys(this.state.userEvents).filter(email => {if (user.userEmail === email) return email;}).map(email =>
+                              this.state.userEvents[`${email}`].map(exhibition =>
+                                <div>{exhibition.exhibitionName}</div>
+                              )
+                            ) :
+                            <div/>
+                        }
+                      </div>
                     </li>
                     <li className="list-group-item">
-                      <div className="info-type">Interested Events: </div>
-                      <div id="user-events" className="user-info"></div>
+                      <div className="info-type"><strong>Interested Events: </strong></div>
+                      <div id="user-events" className="user-info">
+                        {
+                          (this.state.userEvents) ?
+                            Object.keys(this.state.userEvents).filter(email => {if (user.userEmail === email) return email;}).map(email =>
+                              this.state.userEvents[`${email}`].map(event =>
+                                <div>{event.name}</div>
+                              )
+                            ) :
+                            <div/>
+                        }
+                      </div>
                     </li>
-                    <li className="list-group-item">
-                      <div className="info-type">What am I Looking For? </div>
-                      <div id="user-info" className="user-info"></div>
-                    </li>
+                    <div className="more-info text-center hidden-sm-down">
+                      <Link to={`/profile/${user.userEmail}`}><strong>More Info</strong></Link>
+                    </div>
                   </ul>
                 </div>
               </div>

@@ -14,6 +14,8 @@
 
   .user-thumbnail {
     max-width: 30px;
+    display: block;
+    margin: auto;
   }
 
   .no-events {
@@ -116,7 +118,7 @@
     visibility: visible;
     opacity: 1;
     @include transition(all 0.2s);
-    max-height: 400px;
+    max-height: inherit;
   }
 
   #event-container > .collapse {
@@ -163,6 +165,10 @@
     font-size: 16px;
     cursor: pointer;
   }
+
+  .user-match {
+    margin-right: 20px;
+  }
 }
 
 #event-matches {
@@ -184,12 +190,32 @@
     height: 40px;
   }
 
+  .more-button {
+    display: flex;
+    align-items: center;
+  }
+
   #match-container {
     display: flex;
     width: 100%;
     align-items: center;
     background: rgba(150, 150, 150, 0.1);
-    padding: 0 10px;
+    padding: 10px 10px;
+    margin-right: 20px;
+  }
+
+  #match-container-mini {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    background: white;
+    padding: 10px 10px;
+  }
+
+  #no-matches-message {
+    width: 100%;
+    text-align: center;
+    color: red;
   }
 }
 
