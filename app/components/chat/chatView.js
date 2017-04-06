@@ -28,31 +28,33 @@ export default class ChatView extends Component {
     }
 
     //*// validate talkToEmail
-    const xhr = new XMLHttpRequest();
-    xhr.open('get', `user/get/profile/${this.talkToEmail}`);
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.responseType = 'json';
-    xhr.addEventListener('load', function(){
-      if (xhr.status === 200) {
-        // If valid, send to bUsers
-        const bookmarkedUserId = encodeURIComponent(xhr.response.id);
-        const userEmail = encodeURIComponent(this.state.email);
-        const formData = `bookmarkedUserId=${bookmarkedUserId}&userEmail=${userEmail}`;
-        //*
-        const xhrBUser = new XMLHttpRequest();
-        xhrBUser.open('post', 'user/post/profile/add/bUser');
+    if (this.talkToEmail!=='') {
+      const xhr = new XMLHttpRequest();
+      xhr.open('get', `user/get/profile/${this.talkToEmail}`);
+      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhr.responseType = 'json';
+      xhr.addEventListener('load', function(){
+        if (xhr.status === 200) {
+          // If valid, send to bUsers
+          const bookmarkedUserId = encodeURIComponent(xhr.response.id);
+          const userEmail = encodeURIComponent(this.state.email);
+          const formData = `bookmarkedUserId=${bookmarkedUserId}&userEmail=${userEmail}`;
+          //*
+          const xhrBUser = new XMLHttpRequest();
+          xhrBUser.open('post', 'user/post/profile/add/bUser');
 
-        xhrBUser.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
-        xhrBUser.responseType = 'json';
-        xhrBUser.addEventListener('load', function(){
-          //console.log(xhrBUser.status);
-        }.bind(this));
-        xhrBUser.send(formData);
-        //*/
-      }
-    }.bind(this));
-    xhr.send();
+          xhrBUser.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+          xhrBUser.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
+          xhrBUser.responseType = 'json';
+          xhrBUser.addEventListener('load', function(){
+            //console.log(xhrBUser.status);
+          }.bind(this));
+          xhrBUser.send(formData);
+          //*/
+        }
+      }.bind(this));
+      xhr.send();
+    }
     //*/
     /* // Get matching users
     const xhr = new XMLHttpRequest();
@@ -135,62 +137,62 @@ export default class ChatView extends Component {
     if (matches) {
       markup = (
         <div id="chat-sidebar-wrapper">
-          <ChatTabs
-            width={this.widthOfChatTabs}
-            users={this.state.users}
-            names={this.state.names}
-            current={this.state.current}
-            changeConversation={this.changeConversation.bind(this)}
-            email={this.state.email}
-            talkToEmail={this.talkToEmail}
-          />
-        </div>
-      );
-    }
-    return markup;
-  }
-
-  hasPeopleToTalkTo(){
-
-    if (this.state.users!==undefined &&
-        this.state.users!==null &&
-        this.state.users.length===0) {
-      return (
-        <div style={{textAlign: 'center'}}>
-          You have no one to talk to.<br/>
-          Please find someone to talk to.
-          <br/><br/>
-        </div>
-      );
-    } else {
-      return (
-        <div id="chat">
-          <MediaQuery query={this.query}>
-            {this.showChatTabs.bind(this)}
-          </MediaQuery>
-          <ChatBody
-            query={this.query}
-            marginLeft={this.widthOfChatTabs}
-            users={this.state.users}
-            names={this.state.names}
-            current={this.state.current}
-            changeConversation={this.changeConversation.bind(this)}
-            email={this.state.email}
-            talkToEmail={this.talkToEmail}
-            sockets={sockets}
-          />
-        </div>
-      );
-    } //end-else
-  }
-
-  render() {
-    return (
-      <div id="chat">
-        {this.hasPeopleToTalkTo()}
-      </div>
+        <ChatTabs
+        width={this.widthOfChatTabs}
+        users={this.state.users}
+        names={this.state.names}
+        current={this.state.current}
+        changeConversation={this.changeConversation.bind(this)}
+    email={this.state.email}
+    talkToEmail={this.talkToEmail}
+    />
+    </div>
     );
   }
+  return markup;
+}
+
+hasPeopleToTalkTo(){
+
+  if (this.state.users!==undefined &&
+      this.state.users!==null &&
+      this.state.users.length===0) {
+    return (
+      <div style={{textAlign: 'center'}}>
+      You have no one to talk to.<br/>
+      Please find someone to talk to.
+      <br/><br/>
+      </div>
+    );
+  } else {
+    return (
+      <div id="chat">
+      <MediaQuery query={this.query}>
+      {this.showChatTabs.bind(this)}
+  </MediaQuery>
+  <ChatBody
+  query={this.query}
+  marginLeft={this.widthOfChatTabs}
+  users={this.state.users}
+  names={this.state.names}
+  current={this.state.current}
+  changeConversation={this.changeConversation.bind(this)}
+  email={this.state.email}
+  talkToEmail={this.talkToEmail}
+  sockets={sockets}
+  />
+  </div>
+  );
+} //end-else
+}
+
+render() {
+  return (
+    <div id="chat">
+    {this.hasPeopleToTalkTo()}
+</div>
+);
+}
 }
 
 ChatView.propTypes = {
