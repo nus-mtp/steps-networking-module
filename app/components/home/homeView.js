@@ -193,39 +193,44 @@ class HomeView extends React.Component {
 
     return (
       <div id="home-body">
-        <div id="home-search-container" className="hidden-md-down">
-          <h2 id="search-title">Find An Opportunity</h2>
-          <Search />
+        <div id="home-background" className="hidden-md-down">
+          <div id="home-search-container">
+            <h2 id="search-title">Find An Opportunity</h2>
+            <Search />
+          </div>
         </div>
-        <Tabs onClick={this.changeView} tab={this.state.currentTab} />
-        <div id="event-list" className="d-flex justify-content-center justify-content-md-start">
-        {
-          (this.state.displayedEvents.length !== 0) ?
-            this.state.displayedEvents.map((event, i) =>
-              <div id="event-container" key={i}>
-                <Event
-                  serial={i}
-                  open={this.state.open}
-                  openCollapsable={this.openCollapsable}
-                  event={event}
-                  attendance={this.state.attendance}
-                  email={this.state.email}
-                />
-                <Collapsable
-                  serial={i}
-                  open={this.state.open}
-                  openCollapsable={this.openCollapsable}
-                  width={containerWidth}
-                  event={event}
-                  attendance={this.state.attendance}
-                  changeAttendance={this.changeAttendance}
-                  email={this.state.email}
-                />
-              </div>
+
+        <div id="home-content-container">
+          <Tabs onClick={this.changeView} tab={this.state.currentTab} />
+          <div id="event-list" className="d-flex justify-content-center justify-content-md-start">
+            {
+              (this.state.displayedEvents.length !== 0) ?
+                this.state.displayedEvents.map((event, i) =>
+                  <div id="event-container" key={i}>
+                    <Event
+                      serial={i}
+                      open={this.state.open}
+                      openCollapsable={this.openCollapsable}
+                      event={event}
+                      attendance={this.state.attendance}
+                      email={this.state.email}
+                    />
+                    <Collapsable
+                      serial={i}
+                      open={this.state.open}
+                     openCollapsable={this.openCollapsable}
+                     width={containerWidth}
+                     event={event}
+                      attendance={this.state.attendance}
+                      changeAttendance={this.changeAttendance}
+                      email={this.state.email}
+                     />
+                  </div>
             ) : <div className="no-events justify-content-center">
                   <p>Sorry! There are no {this.state.currentTab} events. Please check again in the future!</p>
                 </div>
-          }
+            }
+          </div>
         </div>
       </div>
     );
