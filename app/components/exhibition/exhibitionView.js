@@ -1,6 +1,8 @@
 import React from 'react';
 import Auth from '../../database/auth';
+import { tagSuggestions } from '../../database/suggestions';
 import { Link } from 'react-router';
+import { WithContext as ReactTags } from 'react-tag-input';
 
 class ExhibitionView extends React.Component {
   constructor(props) {
@@ -11,14 +13,15 @@ class ExhibitionView extends React.Component {
       comments: [],
       isTagEditable: false,
       isMediaEditable: false,
-      tags: [],
-      media: [],
       tagChange: '',
       mediaChange: '',
       exhibition: {},
       attendance: {},
-      feedback: '',
-      error: '',
+      feedbackComment: '',
+      errorComment: '',
+      feedbackTags: '',
+      errorTags: '',
+      isExhibitior: false,
     };
 
     this.retrieveData();
@@ -27,8 +30,10 @@ class ExhibitionView extends React.Component {
     this.submitComment = this.submitComment.bind(this);
     this.toggleTagEditable = this.toggleTagEditable.bind(this);
     this.toggleMediaEditable = this.toggleMediaEditable.bind(this);
-    this.handleAddTags = this.handleAddTags.bind(this);
-    this.handleAddMedia = this.handleAddMedia.bind(this);
+    this.handleDeleteTag = this.handleDeleteTag.bind(this);
+    this.handleAdditionTag = this.handleAdditionTag.bind(this);
+    this.handleDragTag = this.handleDragTag.bind(this);
+    this.saveTags = this.saveTags.bind(this);
     this.handleTagInputChange = this.handleTagInputChange.bind(this);
     this.handleMediaInputChange = this.handleMediaInputChange.bind(this);
   }
@@ -68,14 +73,18 @@ class ExhibitionView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      if (xhr.status === 200) {
-        this.setState({
-          exhibition: xhr.response,
-        });
+      const user = xhr.response;
+      if (user) {
+        user.tags = (xhr.response && xhr.response.tags.length > 0) ? xhr.response.tags.map((skill, i) => {
+          return {
+            id: i,
+            text: skill,
+          };
+        }) : [];
+
+        this.setState({ exhibition: user, });
       } else {
-        this.setState({
-          exhibition: {},
-        });
+        this.setState({ exhibition: {}, })
       }
     });
     xhr.send();
@@ -101,6 +110,14 @@ class ExhibitionView extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
+        xhr.response.map(exhibitor => {
+          if (Auth.isUserAuthenticated() && exhibitor === Auth.getToken().email.replace(/%40/i, '@')) {
+            this.setState({
+              isExhibitior: true,
+            })
+          }
+        });
+
         this.setState({
           attendance: xhr.response,
         });
@@ -183,6 +200,70 @@ class ExhibitionView extends React.Component {
     }
   }
 
+  handleDeleteTag(i) {
+    const exhibition = this.state.exhibition;
+    exhibition.tags = exhibition.tags.filter((tag, index) => index !== i);
+
+    this.setState({ exhibition, });
+  }
+
+  handleDragTag(tag, currPos, newPos) {
+    const tags = [ ...this.state.exhibition.tags ];
+
+    // mutate array
+    tags.splice(currPos, 1);
+    tags.splice(newPos, 0, tag);
+
+    // re-render
+    const exhibition = this.state.exhibition;
+    exhibition.tags = tags;
+    this.setState({ exhibition, });
+  }
+
+  handleAdditionTag(tag) {
+    const exhibition = this.state.exhibition;
+    exhibition.tags = [
+      ...this.state.exhibition.tags,
+      {
+        id: this.state.exhibition.tags.length + 1,
+        text: tag,
+      }
+    ];
+
+    this.setState({ exhibition, });
+  }
+
+  saveTags() {
+    const tagArray = this.state.exhibition.tags.map(tag => { return tag.text });
+
+    const eventName = encodeURIComponent(this.state.exhibition.eventName);
+    const exhibitionName = encodeURIComponent(this.state.exhibition.exhibitionName);
+    const tags = encodeURIComponent(tagArray.toString());
+    const formData = `eventName=${eventName}&exhibitionName=${exhibitionName}&tags=${tags}`;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('post', '/exhibition/post/oneExhibition/set/tags');
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        // success
+        this.setState({
+          feedbackTags: 'Successfully added',
+          errorTags: '',
+          isTagEditable: !this.state.isTagEditable,
+        });
+      } else {
+        // failure
+        this.setState({
+          feedbackTags: '',
+          errorTags: xhr.response,
+        });
+      }
+    });
+    xhr.send(formData);
+  }
+
   toggleTagEditable() {
     this.setState({
       isTagEditable: !this.state.isTagEditable,
@@ -192,22 +273,6 @@ class ExhibitionView extends React.Component {
   toggleMediaEditable() {
     this.setState({
       isMediaEditable: !this.state.isMediaEditable,
-    });
-  }
-
-  handleAddTags() {
-    const newTags = this.state.tags;
-    newTags.push(this.state.tagChange);
-    this.setState({
-      tags: newTags,
-    });
-  }
-
-  handleAddMedia() {
-    const newMedia = this.state.media;
-    newMedia.push(this.state.mediaChange);
-    this.setState({
-      media: newMedia,
     });
   }
 
@@ -228,12 +293,20 @@ class ExhibitionView extends React.Component {
   }
 
   render() {
-    const isNotify = (this.state.error || this.state.feedback) ? ((this.state.feedback) ?
+    const isNotifyComment = (this.state.errorComment || this.state.feedbackComment) ? ((this.state.feedbackComment) ?
       <div className="alert alert-success" role="alert">
-        <strong>Success!</strong> {this.state.feedback}
+        <strong>Success!</strong> {this.state.feedbackComment}
       </div> :
       <div className="alert alert-danger" role="alert">
-        <strong>Error!</strong> {this.state.error}
+        <strong>Error!</strong> {this.state.errorComment}
+      </div>) : <div />;
+
+    const isNotifyTags = (this.state.errorTags || this.state.feedbackTags) ? ((this.state.feedbackTags) ?
+      <div className="alert alert-success" role="alert">
+        <strong>Success!</strong> {this.state.feedbackTags}
+      </div> :
+      <div className="alert alert-danger" role="alert">
+        <strong>Error!</strong> {this.state.errorTags}
       </div>) : <div />;
 
     return (
@@ -252,56 +325,41 @@ class ExhibitionView extends React.Component {
             <h4 className="info-type">{this.state.exhibition.exhibitionName}</h4>
             <div className="project-name project-info" />
             <div id="project-desc" className="project-info">{this.state.exhibition.exhibitionDescription}</div>
-            <div id="tag-container">
-              <span  className="info-type">Tags </span>
+
+            <div id="project-tags" className="project-info">
+              {isNotifyTags}
+              <span className="info-type">Tags: </span>
               {
                 (this.state.isTagEditable) ?
                   <span>
                     <button className="btn btn-secondary" onClick={this.toggleTagEditable}>Cancel</button>
-                    <input type="text" id="tag-input" className="form-control" onChange={this.handleTagInputChange} value={this.state.tagChange} />
-                    <div className="add-icon-container" onClick={this.handleAddTags}>
-                      <img className="add-icon" src="../../resources/images/add-icon.svg" alt="add-icon" />
-                    </div>
+                    <button className="btn btn-primary" onClick={this.saveTags}>Save</button>
+                    <ReactTags
+                      tags={this.state.exhibition.tags}
+                      suggestions={tagSuggestions}
+                      handleDelete={this.handleDeleteTag}
+                      handleAddition={this.handleAdditionTag}
+                      handleDrag={this.handleDragTag}
+                      placeholder="Enter to add"
+                    />
                   </span> :
-                  <button className="btn btn-secondary" onClick={this.toggleTagEditable}>Add Tags</button>
+                  <span>
+                    {
+                      (this.state.isExhibitior) ? <button className="btn btn-secondary" onClick={this.toggleTagEditable}>Add Tags</button> : <div />
+                    }
+                    <div>
+                    {
+                      (Object.keys(this.state.exhibition).length !== 0) ?
+                        this.state.exhibition.tags.map((tag, i) =>
+                          <span key={`${tag.id}`} className="badge badge-info">{tag.text}</span>
+                        ) : <div />
+                     }
+                    </div>
+                  </span>
               }
-            </div>
-            <div id="project-tags" className="project-info">
-            {
-              this.state.tags.map((tag, i) =>
-                <span key={`${i}${tag}`} className="badge badge-info">{tag}</span>
-            )}
             </div>
           </div>
           <ul className="list-group list-group-flush">
-            <li className="exhibition-info text-center list-group-item">
-              <div id="media-container">
-                <span  className="info-type">Related Media</span>
-                {
-                  (this.state.isMediaEditable) ?
-                  <span>
-                    <button className="btn btn-secondary" onClick={this.toggleMediaEditable}>Cancel</button>
-                    <input type="text" id="media-input" className="form-control" onChange={this.handleMediaInputChange} value={this.state.mediaChange} placeholder="Media" />
-                    <div className="add-icon-container" onClick={this.handleAddMedia}>
-                      <img className="add-icon" src="../../resources/images/add-icon.svg" alt="add-icon" />
-                    </div>
-                  </span> :
-                  <button className="btn btn-secondary" onClick={this.toggleMediaEditable}>Add Media</button>
-                }
-              </div>
-              <div id="project-url" />
-              <div id="project-media">
-              {
-                (Object.keys(this.state.exhibition).length !== 0) ?
-                  this.state.exhibition.videos.map(media =>
-                    <div className="embed-responsive embed-responsive-16by9" key={media}>
-                      <iframe width="560" height="315"  className="embed-responsive-item" src={`https://www.youtube.com/embed/${media.slice(media.lastIndexOf('/') + 1, media.length)}`} allowFullScreen></iframe>
-                    </div>
-                  ) :
-                  <div />
-              }
-              </div>
-            </li>
             <li className="exhibition-info d-flex flex-column align-items-start list-group-item">
               <div className="info-type">Project Members</div>
               {
@@ -324,18 +382,18 @@ class ExhibitionView extends React.Component {
                 <textarea className="form-control" rows="2" id="comment-input" value={this.state.currentComment} onChange={this.editComment}></textarea>
                 <button id="submit-comment" type="button" className="btn btn-primary" onClick={this.submitComment}>Submit</button>
               </div>
-              {isNotify}
+              {isNotifyComment}
               <div id="comment-list">
               {
                 (this.state.comments.length > 0) ?
                 this.state.comments.map(commentObject =>
-                  <div key={commentObject.userEmail} id="user-comment-list">
+                  <div key={commentObject.userEmail} id="exhibition-comment-list">
                     <Link to={`/profile/${commentObject.userEmail}`}><h5 id="comment-sender">{commentObject.userEmail}</h5></Link>
                     <ul className="list-group">
                       {
                         commentObject.comments.map((comment, i) =>
                           (commentObject.userEmail === Auth.getToken().email.replace(/%40/i, '@')) ?
-                            <li key={`${comment.content}${commentObject.userEmail}${i}`} className="user-comment-container list-group-item">
+                            <li key={`${comment.content}${commentObject.userEmail}${i}`} className="exhibition-comment-container list-group-item">
                               <div id="comment-timestamp">{new Date(comment.timestamp).toDateString()}</div>
                               <div id="comment">{comment.content}</div>
                             </li> :
