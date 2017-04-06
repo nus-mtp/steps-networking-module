@@ -21,23 +21,18 @@
   .no-events {
     margin-left: auto;
     margin-right: auto;
-
-    img {
-      max-width: 50vw;
-      display: block;
-      margin: auto;
-    }
-
-    p {
-      margin-top: 10px;
-      text-align: center;
-      color: #3CB371;
-      font-size: 20px;
-      font-weight: 500;
-    }
+    margin-top: 20px;
+    text-align: center;
+    color: maroon;
+    font-size: 20px;
+    font-weight: 500;
   }
 
-  .event-tabs {
+  #event-tabs {
+    .nav-tabs {
+      border: none;
+    }
+
     .nav-tabs .nav-link {
       border: none;
       font-size: 18px;
@@ -81,19 +76,28 @@
     min-height: 106px;
   }
 
-  .attendance-badge {
-    height: 20px;
-    font-size: 16px;
-    color: lightgreen;
-    margin-bottom: 5px;
-    display: flex;
+  .offset-badge {
+    height: 27px;
   }
 
   #attendance-badge-image {
     margin-right: 5px;
-    border: 2px solid lightgreen;
     border-radius: 20px;
     width: 20px;
+  }
+
+  #participating-badge-image {
+    margin-right: 5px;
+    border-radius: 20px;
+    width: 20px;
+  }
+
+  .event-badge {
+    margin-right: 12px;
+  }
+
+  .badge {
+    font-size: 14px;
   }
 
   .event-picture {
@@ -108,9 +112,16 @@
     font-size: 16px;
   }
 
-  .attendance-indicator-container > .active {
+  .attendance-indicator-container > .active-yes {
     font-weight: 700;
-    border: 3px solid green;
+    background-color: #347C17;
+    color: white;
+  }
+
+  .attendance-indicator-container > .active-no {
+    font-weight: 700;
+    background-color: #990012;
+    color: white;
   }
 
   #event-container > .collapse.show {

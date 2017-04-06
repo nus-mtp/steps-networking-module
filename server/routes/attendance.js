@@ -800,7 +800,7 @@ router.post('/post/oneEventAttendance/', (req = {}, res, next) => {
                     });
                 } else {
                   // Create the Attendance
-                  const attendanceDoc = new Attendance(user.email, event._id, 'event', []);
+                  const attendanceDoc = new Attendance(user.email, event._id, 'event', ['nil']);
                   attendanceDoc.saveAttendance((err, attendance) => {
                     if (err || !attendance) {
                       res.status(500).json('Unable to Toggle Attendance to Create!');
