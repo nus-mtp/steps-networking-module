@@ -91,7 +91,7 @@ class HomeView extends React.Component {
     this.setState({ open: newStatus });
   }
 
-  changeAttendance(event, attendance) {
+  changeAttendance(event) {
     // modify attendance data here
     const userEmail = encodeURIComponent(this.state.email);
     const eventName = encodeURIComponent(event.name);

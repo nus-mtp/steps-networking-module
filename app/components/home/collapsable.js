@@ -140,17 +140,23 @@ class Collapsable extends React.Component {
   }
 
   setAbsent() {
-    this.setState({
-      isAttended: false,
-    });
-    this.props.changeAttendance(this.props.event, false);
+    const currentState = this.state.isAttended;
+    if (currentState) {
+      this.setState({
+        isAttended: false,
+      });
+      this.props.changeAttendance(this.props.event);
+    }
   }
 
   setPresent() {
-    this.setState({
-      isAttended: true,
-    });
-    this.props.changeAttendance(this.props.event, true);
+    const currentState = this.state.isAttended;
+    if (!currentState) {
+      this.setState({
+        isAttended: true,
+      });
+      this.props.changeAttendance(this.props.event);
+    }
   }
 
   checkAttendance() {
