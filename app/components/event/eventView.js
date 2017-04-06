@@ -60,7 +60,6 @@ class EventView extends React.Component {
         this.setState({
           attendees: xhr.response,
         });
-        console.log(xhr.response);
       } else {
         this.setState({
           attendees: [],
