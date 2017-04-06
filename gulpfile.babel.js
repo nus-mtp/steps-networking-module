@@ -91,6 +91,7 @@ gulp.task('watch', () => {
 
 gulp.task('buildServer', () => {
   process.env.MONGODB_URI = 'mongodb://localhost:27017/dev';
+  process.env.JWT_SECRET = 'temp';
   gulp.src('./server/server.js')
       .pipe(webpack(webpackServerConfig))
       .pipe(gulp.dest('./server/'));

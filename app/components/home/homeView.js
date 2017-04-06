@@ -99,6 +99,7 @@ class HomeView extends React.Component {
     const xhr = new XMLHttpRequest();
     xhr.open('post', `attendance/post/oneEventAttendance/`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {

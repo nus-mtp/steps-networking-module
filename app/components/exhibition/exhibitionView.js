@@ -155,6 +155,7 @@ class ExhibitionView extends React.Component {
       const xhr = new XMLHttpRequest();
       xhr.open('post', '/comment/post/addComment');
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
       xhr.responseType = 'json';
       xhr.addEventListener('load', () => {
         if (xhr.status === 200) {
@@ -178,6 +179,7 @@ class ExhibitionView extends React.Component {
       const xhr = new XMLHttpRequest();
       xhr.open('post', '/comment/post/newComment');
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
       xhr.responseType = 'json';
       xhr.addEventListener('load', () => {
         if (xhr.status === 200) {

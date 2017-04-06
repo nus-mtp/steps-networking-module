@@ -4,6 +4,8 @@ const router = new express.Router();
 
 const Message = require('../database/objectClasses/Message');
 
+const authCheckMiddleware = require('../middleware/auth-check');
+
 router.get('/get/getMessages/:senderEmail/:recipientEmail', (req = {}, res, next) => {
   if (req.params && req.params.senderEmail && req.params.recipientEmail) {
     Message.setDBConnection(req.app.locals.db);
