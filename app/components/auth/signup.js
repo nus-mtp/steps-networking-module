@@ -5,7 +5,6 @@ const Signup = ({
   onChangeUsername,
   onChangeEmail,
   onChangePassword,
-  onChangeDescription,
   onConfirmPassword,
   errors,
 }) => (
@@ -34,10 +33,6 @@ const Signup = ({
           <input type="password" className="form-control" id="inputConfirmPassword" placeholder="Confirm Password" onChange={onConfirmPassword} />
           <div className="form-control-feedback">{errors.confirmPassword}</div>
         </div>
-        <div className="form-group">
-          <label htmlFor="inputDescription">Description</label>
-          <textarea type="text" className="form-control" id="inputDescription" rows="3" onChange={onChangeDescription} />
-        </div>
         <button type="submit" className="btn btn-primary" onClick={onSubmit}>Submit</button>
       </form>
     </div>
@@ -48,7 +43,6 @@ Signup.propTypes = {
   onSubmit: React.PropTypes.func.isRequired,
   onChangeUsername: React.PropTypes.func.isRequired,
   onChangeEmail: React.PropTypes.func.isRequired,
-  onChangeDescription: React.PropTypes.func.isRequired,
   onChangePassword: React.PropTypes.func.isRequired,
   onConfirmPassword: React.PropTypes.func.isRequired,
   errors: React.PropTypes.objectOf(React.PropTypes.string).isRequired,
