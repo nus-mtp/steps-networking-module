@@ -427,7 +427,7 @@ class ProfileView extends React.Component {
                           {
                             (this.state.isContentEditable) ?
                               <div id="event-reasons">
-                                <span className="event-reason-title">Reason: </span>
+                                <span className="event-reason-title">Looking for: </span>
                                 <label htmlFor={"fulltime-"+i} className="custom-control custom-checkbox">
                                   <input id={"fulltime-"+i} type="checkbox" className={"custom-control-input tag-selection-row-"+i} name="Full-Time" defaultChecked={this.state.attendances.filter(
                                       attendance => {if (attendance.attendanceKey === exhibition.id)
@@ -471,6 +471,13 @@ class ProfileView extends React.Component {
               </div>
               <div id="event-involved" className="collapse" role="tabpanel" aria-labelledby="headingTwo">
                 <div className="card-block">
+                  <div id="cannot-edit-reason">
+                    {
+                      (this.state.isContentEditable && this.state.events) ?
+                      <h4 id="cannot-edit-message">You can edit your attendance reason in the homepage</h4> :
+                      <div />
+                    }
+                  </div>
                   {
                     (this.state.events) ?
                     this.state.events.map(event =>
