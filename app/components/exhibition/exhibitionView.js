@@ -111,7 +111,7 @@ class ExhibitionView extends React.Component {
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
         xhr.response.map(exhibitor => {
-          if (Auth.isUserAuthenticated() && exhibitor === Auth.getToken().email.replace(/%40/i, '@')) {
+          if (Auth.isUserAuthenticated() && exhibitor.userEmail === Auth.getToken().email.replace(/%40/i, '@')) {
             this.setState({
               isExhibitior: true,
             })
