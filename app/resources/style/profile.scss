@@ -1,33 +1,23 @@
 @import "mixin";
 
+/** profile view stylings **/
 #profile-body {
   width: 90%;
+  margin-top: 30px;
 
   .profile-info {
     margin: 15px;
-  }
 
-  .match-button-lg-prev {
-    position: absolute;
-    left: 5%;
-    top: 60px;
-    font-size: 30px;
-  }
-
-  .match-button-lg-next {
-    position: absolute;
-    right: 5%;
-    top: 60px;
-    font-size: 30px;
-  }
-
-  .match-button-lg-next:hover, .match-button-lg-prev:hover {
-    cursor: pointer;
-    opacity: 0.3;
-    @include transition(opacity, 0.4s, ease);
+    #event-involved {
+      .card-block {
+        padding: 10px;
+      }
+    }
   }
 
   #user-exhibition-container, #user-event-container {
+    padding: 5px;
+
     #user-exhibition, #user-events {
       float: right;
     }
@@ -54,6 +44,31 @@
   #user-exhibition-container:hover, #user-event-container:hover {
     background: lightseagreen;
     color: white;
+  }
+
+  .match-button-lg-prev {
+    position: absolute;
+    left: 5%;
+    top: 60px;
+    font-size: 30px;
+  }
+
+  .match-button-lg-next {
+    position: absolute;
+    right: 5%;
+    top: 60px;
+    font-size: 30px;
+  }
+
+  .match-button-lg-next:hover, .match-button-lg-prev:hover {
+    cursor: pointer;
+    opacity: 0.3;
+    @include transition(opacity, 0.4s, ease);
+  }
+
+  #cannot-edit-message {
+    color: red;
+    text-align: center;
   }
 
   #match-body {
@@ -176,6 +191,7 @@ div.ReactTags__selected a.ReactTags__remove {
 /* Styles for suggestions */
 div.ReactTags__suggestions {
   position: absolute;
+  z-index: 2;
 }
 
 div.ReactTags__suggestions ul {
@@ -203,4 +219,47 @@ div.ReactTags__suggestions li mark {
 div.ReactTags__suggestions ul li.active {
   background: #b7cfe0;
   cursor: pointer;
+}
+
+.react-swipe-container {
+  #match-body {
+    width: 70vw;
+  }
+
+  .profile-info {
+    margin: 15px;
+  }
+
+  .user-name {
+    margin-top: 20px;
+  }
+
+  .match-button-lg-prev {
+    position: absolute;
+    left: 5%;
+    top: 60px;
+    font-size: 30px;
+  }
+
+  .match-button-lg-next {
+    position: absolute;
+    right: 5%;
+    top: 60px;
+    font-size: 30px;
+  }
+
+  .match-button-lg-next:hover, .match-button-lg-prev:hover {
+    cursor: pointer;
+    opacity: 0.3;
+    @include transition(opacity, 0.4s, ease);
+  }
+
+  .info-type {
+    width: 100%;
+  }
+
+  .more-info {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
 }

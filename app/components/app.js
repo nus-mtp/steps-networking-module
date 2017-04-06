@@ -1,4 +1,5 @@
 import React from 'react';
+import Search from './home/search';
 import { Link } from 'react-router';
 import Auth from '../database/auth';
 import Paths from '../paths';
@@ -7,35 +8,27 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    const userEmail = (Auth.isUserAuthenticated()) ? Auth.getToken().email : '';
-
     this.state = {
-      email: userEmail.replace(/%40/i, '@'),
+      email: '',
       profileActive: '',
       loginActive: '',
       signupActive: '',
       chatActive: '',
       isHamburgerToggled: false,
-      searchDefaults: [],   // the field we are searching
-      searchResults: [],    // the results from search term
-      search: '',   // the selected search term
-      searchFilter: 'Event',
     };
-
-    this.filterSearch();
 
     this.removeDropdown = this.removeDropdown.bind(this);
     this.handleLinks = this.handleLinks.bind(this);
     this.shiftBody = this.shiftBody.bind(this);
-    this.getSearchAsync = this.getSearchAsync.bind(this);
-    this.handleSearch = this.handleSearch.bind(this);
   }
 
   componentDidMount() {
     const that = this;
     this.handleLinks();
+    that.getUser();
     window.addEventListener("hashchange", () => {
       that.handleLinks();
+      that.getUser();
     });
   }
 
@@ -43,13 +36,16 @@ class App extends React.Component {
     const that = this;
     window.removeEventListener("hashchange", () => {
       that.handleLinks();
+      that.getUser();
     });
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.searchFilter !== this.state.searchFilter) {
-      this.filterSearch();
-    };
+  getUser() {
+    const userEmail = (Auth.isUserAuthenticated()) ? Auth.getToken().email : '';
+
+    this.setState({
+      email: userEmail.replace(/%40/i, '@'),
+    });
   }
 
   removeDropdown() {
@@ -97,91 +93,6 @@ class App extends React.Component {
     this.setState(baseState);
   }
 
-  filterSearch() {
-    const xhr = new XMLHttpRequest();
-    if (this.state.searchFilter === 'Event') {
-      xhr.open('get', `/event/get/allEvents`);
-      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-      xhr.responseType = 'json';
-      xhr.addEventListener('load', () => {
-        this.setState({
-          searchDefaults: xhr.response,
-        });
-      });
-      xhr.send();
-    } else if (this.state.searchFilter === 'Exhibition') {
-      xhr.open('get', `/exhibition/get/allExhibitions`);
-      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-      xhr.responseType = 'json';
-      xhr.addEventListener('load', () => {
-        this.setState({
-          searchDefaults: xhr.response,
-        });
-      });
-      xhr.send();
-    }
-  }
-
-  getSearchAsync(event) {
-    const searchArray = [];
-    if (event.target.value && event.target.value.length > 1) {
-      this.state.searchDefaults.map(term => {
-        if (term.name && term.name.trim().toLowerCase().search(event.target.value.trim().toLowerCase()) !== -1) {
-          searchArray.push(term.name);
-        }
-
-        if (term.exhibitionName && term.exhibitionName.trim().toLowerCase().search(event.target.value.trim().toLowerCase()) !== -1) {
-          searchArray.push(term.exhibitionName);
-        }
-      });
-
-      this.setState({
-        searchResults: searchArray,
-      });
-    } else {
-      this.setState({
-        searchResults: [],
-      });
-    }
-
-    this.setState({
-      search: event.target.value,
-    });
-  }
-
-  handleSearch(term) {
-    let searchUrl = (typeof term === 'string') ? term : this.state.search;
-
-    if (this.state.searchFilter === 'Event') {
-      this.context.router.push(`/event/${searchUrl}`);
-    } else if (this.state.searchFilter === 'Exhibition') {
-      let eventName = '';
-      this.state.searchDefaults.map(term => {
-        if (term.exhibitionName.trim().toLowerCase().search(searchUrl.trim().toLowerCase()) !== -1) {
-          eventName = term.eventName;
-        }
-      });
-      this.context.router.push(`/exhibition/${eventName}/${searchUrl}`);
-    } else if (this.state.searchFilter === 'Skills') {
-      this.context.router.push(`/search/user/${searchUrl.replace(/ /g, ",")}`);
-    } else if (this.state.searchFilter === 'Tags') {
-      this.context.router.push(`/search/exhibition/${searchUrl.replace(/ /g, ",")}`);
-    }
-
-    this.setState({
-      searchResults: [],
-      search: '',
-    });
-  }
-
-  changeFilterInput(filter) {
-    this.setState({
-      searchFilter: filter,
-      searchResults: [],
-      search: '',
-    });
-  }
-
   render() {
     return (
       <div>
@@ -191,32 +102,12 @@ class App extends React.Component {
           </button>
           <Link onClick={this.removeDropdown} to={Paths.home}><img id="brand-logo" src="../resources/images/home-icon.svg" alt="Home" /></Link>
           <div className="collapse navbar-collapse flex-column flex-lg-row justify-content-between" id="navbar-supported-content">
-            <form className="form-inline mt-1 mt-lg-0 row" id="search-container" onSubmit={this.handleSearch}>
-              <input id="search-input" className="form-control col-7 col-md-9" type="text" placeholder="Search" onChange={this.getSearchAsync} value={this.state.search} />
-              <button id="search-submit" className="btn btn-secondary col-2 col-md-1" type="submit">
-                <img id="search-icon" src="../resources/images/search-icon.svg" alt="chat-icon" />
-              </button>
-              <div className="dropdown col-md-2 col-3">
-                <button className="btn btn-secondary dropdown-toggle" type="button" id="search-filter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  {this.state.searchFilter}
-                </button>
-                <ul className="dropdown-menu" aria-labelledby="search-filter">
-                  <li className="dropdown-item" onClick={this.changeFilterInput.bind(this, "Event")}>Event</li>
-                  <li className="dropdown-item" onClick={this.changeFilterInput.bind(this, "Exhibition")}>Exhibition</li>
-                  <li className="dropdown-item" onClick={this.changeFilterInput.bind(this, "Skills")}>User Skills</li>
-                  <li className="dropdown-item" onClick={this.changeFilterInput.bind(this, "Tags")}>Exhibition Tags</li>
-                </ul>
-              </div>
-            </form>
-            <ul id="search-results" className="list-group hidden-md-down">
-              {
-                (this.state.searchResults) ?
-                  this.state.searchResults.map(term =>
-                    <li key={term.toString()} className="list-group-item" onClick={this.handleSearch.bind(this, term)}>{term}</li>
-                  ) :
-                  <div />
-              }
-            </ul>
+            <div className="hidden-lg-up responsive-container"><Search /></div>
+            <div className="hidden-md-down responsive-container">
+            {
+              (this.props.location.pathname === '/') ? <div /> : <Search />
+            }
+            </div>
             <ul id="navbar-links" className="navbar-nav">
               {
                 Auth.isUserAuthenticated() ?
@@ -251,10 +142,6 @@ class App extends React.Component {
 App.propTypes = {
   children: React.PropTypes.element.isRequired,
   location: React.PropTypes.object.isRequired,
-};
-
-App.contextTypes = {
-  router: React.PropTypes.object.isRequired,
 };
 
 export default App;

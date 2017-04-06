@@ -18,6 +18,6 @@ const commentSchema = new mongoose.Schema({
   ],
 });
 
-commentSchema.index({ user_email: 1, exhibition: 1 }, { unique: true });
+commentSchema.index({ user_email: 1, exhibition_key: 1 }, { unique: true });
 
 module.exports = commentSchema;

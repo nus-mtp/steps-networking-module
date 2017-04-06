@@ -18,6 +18,8 @@ const extractEventInfo = require('../utils/utils').extractEventInfo;
 const extractExhibitionInfo = require('../utils/utils').extractExhibitionInfo;
 const extractAttendanceInfo = require('../utils/utils').extractAttendanceInfo;
 
+const authCheckMiddleware = require('../middleware/auth-check');
+
 // Note: All Routes prefixed with 'attendance/'
 
 // Get one Attendance of a specified User and Event / Exhibition
@@ -28,14 +30,12 @@ router.get('/get/oneUserAttendance/:email/:id', (req = {}, res, next) => {
     Attendance.searchAttendanceByUserAndKey(req.params.email, req.params.id, (err, attendance) => {
       if (err) {
         res.status(500).json('Unable to fetch data!');
-        next();
       } else if (attendance) {
         res.status(200).json(extractAttendanceInfo(attendance));
-        next();
       } else {
         res.status(204).json('Unable to find any Attendance!');
-        next();
       }
+      next();
     });
   } else {
     res.status(400).json('Bad Request!');
@@ -50,14 +50,12 @@ router.get('/get/oneUserAttendances/:email', (req = {}, res, next) => {
     Attendance.searchAttendancesByUser(req.params.email, (err, attendances) => {
       if (err) {
         res.status(500).json('Unable to fetch data!');
-        next();
       } else if (attendances && attendances.length > 0) {
         res.status(200).json(attendances.map(attendance => extractAttendanceInfo(attendance)));
-        next();
       } else {
         res.status(204).json('No Attendances found!');
-        next();
       }
+      next();
     });
   } else {
     res.status(400).json('Bad Request!');
@@ -111,17 +109,74 @@ router.get('/get/oneUserEventsAndExhibitions/:email', (req = {}, res, next) => {
                     (err, results) => {
                       if (err || !results) {
                         res.status(500).json('Unable to process data!');
-                        next();
                       } else {
                         const finalizedResults = results.filter(item => (item !== null));
                         if (finalizedResults && finalizedResults.length > 0) {
                           res.status(200).json(finalizedResults);
-                          next();
                         } else {
                           res.status(204).json('Nothing found!');
-                          next();
                         }
                       }
+                      next();
+                    });
+      } else {
+        res.status(204).json('Nothing found!');
+        next();
+      }
+    });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
+// Get all the Exhibitions that a User is participating in / has participated in
+router.get('/get/oneUserExhibitions/:email', (req = {}, res, next) => {
+  if (req.params && req.params.email) {
+    User.setDBConnection(req.app.locals.db);
+    Event.setDBConnection(req.app.locals.db);
+    Exhibition.setDBConnection(req.app.locals.db);
+    Attendance.setDBConnection(req.app.locals.db);
+
+    Attendance.searchAttendancesByUser(req.params.email, (err, attendances) => {
+      if (err) {
+        res.status(500).json('Unable to fetch data!');
+        next();
+      } else if (attendances && attendances.length > 0) {
+        async.mapLimit(attendances, 5,
+                    (attendance, callback) => {
+                        // Limit number of concurrent connections made by this request to 5
+                      if (attendance) {
+                        const attendanceKey = attendance.attendance_key;
+                        const attendanceType = attendance.attendance_type;
+
+                        if (attendanceType === 'exhibition') {
+                          Exhibition.getExhibitionById(attendanceKey, (err, exhibition) => {
+                            if (err || !exhibition) {
+                              callback(null, null);
+                            } else {
+                              callback(null, extractExhibitionInfo(exhibition));
+                            }
+                          });
+                        } else {
+                          callback(null, null);
+                        }
+                      } else {
+                        callback(null, null);
+                      }
+                    },
+                    (err, results) => {
+                      if (err || !results) {
+                        res.status(500).json('Unable to process data!');
+                      } else {
+                        const finalizedResults = results.filter(item => (item !== null));
+                        if (finalizedResults && finalizedResults.length > 0) {
+                          res.status(200).json(finalizedResults);
+                        } else {
+                          res.status(204).json('Nothing found!');
+                        }
+                      }
+                      next();
                     });
       } else {
         res.status(204).json('Nothing found!');
@@ -172,17 +227,15 @@ router.get('/get/oneUserEvents/:email', (req = {}, res, next) => {
                     (err, results) => {
                       if (err || !results) {
                         res.status(500).json('Unable to process data!');
-                        next();
                       } else {
                         const finalizedResults = results.filter(item => (item !== null));
                         if (finalizedResults && finalizedResults.length > 0) {
                           res.status(200).json(finalizedResults);
-                          next();
                         } else {
                           res.status(204).json('Nothing found!');
-                          next();
                         }
                       }
+                      next();
                     });
       } else {
         res.status(204).json('Nothing found!');
@@ -235,17 +288,15 @@ router.get('/get/oneUserExhibitionsInEvent/:email/:eventName', (req = {}, res, n
                     (err, results) => {
                       if (err || !results) {
                         res.status(500).json('Unable to process data!');
-                        next();
                       } else {
                         const finalizedResults = results.filter(item => (item !== null));
                         if (finalizedResults && finalizedResults.length > 0) {
                           res.status(200).json(finalizedResults);
-                          next();
                         } else {
                           res.status(204).json('Nothing found!');
-                          next();
                         }
                       }
+                      next();
                     });
       } else {
         res.status(204).json('Nothing found!');
@@ -291,17 +342,15 @@ router.get('/get/oneActivityAttendees/:id', (req = {}, res, next) => {
                     (err, results) => {
                       if (err || !results) {
                         res.status(500).json('Unable to process data!');
-                        next();
                       } else {
                         const finalizedResults = results.filter(item => (item !== null));
                         if (finalizedResults && finalizedResults.length > 0) {
                           res.status(200).json(finalizedResults);
-                          next();
                         } else {
                           res.status(204).json('Nothing found!');
-                          next();
                         }
                       }
+                      next();
                     });
       } else {
         res.status(204).json('Nothing found!');
@@ -345,17 +394,15 @@ router.get('/get/oneEventAttendees/:eventName', (req = {}, res, next) => {
                 (err, results) => {
                   if (err || !results) {
                     res.status(500).json('Unable to process data!');
-                    next();
                   } else {
                     const finalizedResults = results.filter(item => (item !== null));
                     if (finalizedResults && finalizedResults.length > 0) {
                       res.status(200).json(finalizedResults);
-                      next();
                     } else {
                       res.status(204).json('Nothing found!');
-                      next();
                     }
                   }
+                  next();
                 });
           } else {
             res.status(204).json('Nothing found!');
@@ -405,17 +452,15 @@ router.get('/get/oneExhibitionExhibitors/:eventName/:exhibitionName', (req = {},
                             (err, results) => {
                               if (err || !results) {
                                 res.status(500).json('Unable to process data!');
-                                next();
                               } else {
                                 const finalizedResults = results.filter(item => (item !== null));
                                 if (finalizedResults && finalizedResults.length > 0) {
                                   res.status(200).json(finalizedResults);
-                                  next();
                                 } else {
                                   res.status(204).json('Nothing found!');
-                                  next();
                                 }
                               }
+                              next();
                             });
           } else {
             res.status(204).json('Nothing found!');
@@ -442,217 +487,87 @@ router.get('/get/oneEventExhibitors/:id', (req = {}, res, next) => {
     Exhibition.setDBConnection(req.app.locals.db);
     Attendance.setDBConnection(req.app.locals.db);
 
-    Event.getEventById(req.params.id, (err, event) => {
-      if (err) {
-        res.status(500).json('Unable to fetch data!');
-        next();
-      } else if (event) {
-        const eventName = event.event_name;
+    async.waterfall([
+      (callback) => {
+        Event.getEventById(req.params.id, (err, event) => {
+          if (err) {
+            callback(500, null);
+          } else if (event) {
+            callback(null, event.event_name);
+          } else {
+            callback(204, null);
+          }
+        });
+      },
+      (eventName, callback) => {
         Exhibition.searchExhibitionsByEvent(eventName, (err, exhibitions) => {
           if (err) {
-            res.status(500).json('Unable to fetch data!');
-            next();
+            callback(500, null);
           } else if (exhibitions && exhibitions.length > 0) {
-            async.mapLimit(exhibitions, 5,
-                  (exhibition, callback) => {
-                    if (exhibition) {
-                      Attendance.searchAttendancesByKey(exhibition._id, (err, attendances) => {
-                        if (err || !attendances) {
-                          callback(null, null);
-                        } else {
-                          callback(null, attendances.map(attendance => attendance.user_email));
-                        }
-                      });
-                    } else {
-                      callback(null, null);
-                    }
-                  },
-                  (err, results) => {
-                    if (err || !results) {
-                      res.status(500).json('Unable to process data!');
-                      next();
-                    } else {
-                      const userEmailArray = removeDuplicates(
-                          [].concat.apply([], results).filter(item => (item !== null)));
-
-                      async.mapLimit(userEmailArray, 5,
-                          (userEmail, callback) => {
-                            if (userEmail) {
-                              User.getUser(userEmail, (err, user) => {
-                                if (err || !user) {
-                                  callback(null, null);
-                                } else {
-                                  callback(null, extractUserInfo(user));
-                                }
-                              });
-                            } else {
-                              callback(null, null);
-                            }
-                          },
-                          (err, results) => {
-                            if (err || !results) {
-                              res.status(500).json('Unable to process data!');
-                              next();
-                            } else {
-                              const finalizedResults = results.filter(item => (item !== null));
-                              if (finalizedResults && finalizedResults.length > 0) {
-                                res.status(200).json(finalizedResults);
-                                next();
-                              } else {
-                                res.status(204).json('Nothing found!');
-                                next();
-                              }
-                            }
-                          },
-                      );
-                    }
-                  });
+            callback(null, removeDuplicates(exhibitions.map(exhibition => exhibition._id)));
           } else {
-            res.status(204).json('Nothing found!');
-            next();
+            callback(204, null);
           }
         });
-      } else {
-        res.status(204).json('Nothing found!');
-        next();
-      }
-    });
-  } else {
-    res.status(400).json('Bad Request!');
-    next();
-  }
-});
-
-// Search for Users attending an Event with a specified Reason
-router.post('/post/search/oneEventAttendancesWithReason/', (req = {}, res, next) => {
-  if (req.body && req.body.eventName && req.body.reason) {
-    User.setDBConnection(req.app.locals.db);
-    Event.setDBConnection(req.app.locals.db);
-    Exhibition.setDBConnection(req.app.locals.db);
-    Attendance.setDBConnection(req.app.locals.db);
-
-    Event.getEvent(req.body.eventName, (err, event) => {
-      if (err) {
-        res.status(500).json('Unable to process data!');
-        next();
-      } else if (event) {
-        Attendance.searchAttendancesByKeyAndReason(event._id,
-                    req.body.reason, (err, attendances) => {
-                      if (err) {
-                        res.status(500).json('Unable to process data!');
-                        next();
-                      } else if (attendances && attendances.length > 0) {
-                        async.mapLimit(attendances, 5,
-                                (attendance, callback) => {
-                                  User.getUser(attendance.user_email, (err, user) => {
-                                    if (err || !user) {
-                                      callback(null, null);
-                                    } else {
-                                      callback(null, extractUserInfo(user));
-                                    }
-                                  });
-                                },
-                                (err, results) => {
-                                  if (err || !results) {
-                                    res.status(500).json('Unable to process data!');
-                                    next();
-                                  } else {
-                                    const finalizedResults =
-                                      results.filter(item => (item !== null));
-                                    if (finalizedResults && finalizedResults.length > 0) {
-                                      res.status(200).json(finalizedResults);
-                                      next();
-                                    } else {
-                                      res.status(204).json('Nothing found!');
-                                      next();
-                                    }
-                                  }
-                                });
-                      } else {
-                        res.status(204).json('Nothing found!');
-                        next();
-                      }
-                    });
-      } else {
-        res.status(204).json('Unable to find Event!');
-        next();
-      }
-    });
-  } else {
-    res.status(400).json('Bad Request!');
-    next();
-  }
-});
-
-// Toggle User's Attendance for an Event
-router.post('/post/oneEventAttendance/', (req = {}, res, next) => {
-  if (req.body && req.body.userEmail && req.body.eventName) {
-    User.setDBConnection(req.app.locals.db);
-    Event.setDBConnection(req.app.locals.db);
-    Exhibition.setDBConnection(req.app.locals.db);
-    Attendance.setDBConnection(req.app.locals.db);
-
-    User.getUser(req.body.userEmail, (err, user) => {
-      if (err) {
-        if (err.name === 'ValidationError') {
-          console.log(err);
-          res.status(403).json('Unauthorized!');
-          next();
-        } else {
-          console.log(err);
-          res.status(500).json('Unable to post data!');
-          next();
-        }
-      } else if (user) {
-        // User exists
-        Event.getEvent(req.body.eventName, (err, event) => {
-          if (err) {
-            res.status(500).json('Unable to process request!');
-            next();
-          } else if (event) {
-            // Event exists
-            // Toggle existance of Attendance
-            Attendance.searchAttendanceByUserAndKey(user.email, event._id,
-              (err, attendance) => {
+      },
+      (exhibitionIds, callback) => {
+        async.mapLimit(exhibitionIds, 5,
+          (exhibitionId, callback) => {
+            Attendance.searchAttendancesByKey(
+              exhibitionId,
+              (err, attendances) => {
                 if (err) {
-                  res.status(500).json('Unable to process request');
-                  next();
-                } else if (attendance) {
-                  // Delete this Attendance
-                  Attendance.deleteAttendance(attendance.user_email, attendance.attendance_key,
-                    (err) => {
-                      if (err) {
-                        console.log(err);
-                        res.status(500).json('Unable to Toggle Attendance to Delete!');
-                        next();
-                      } else {
-                        res.status(200).json('Attendance Removed!');
-                        next();
-                      }
-                    });
+                  callback(null, null);
+                } else if (attendances && attendances.length > 0) {
+                  callback(null, attendances.map(attendance => attendance.user_email));
                 } else {
-                  // Create the Attendance
-                  const attendanceDoc = new Attendance(user.email, event._id, 'event', []);
-                  attendanceDoc.saveAttendance((err, attendance) => {
-                    if (err || !attendance) {
-                      res.status(500).json('Unable to Toggle Attendance to Create!');
-                      next();
-                    } else {
-                      res.status(200).json('Attendance Added!');
-                      next();
-                    }
-                  });
+                  callback(null, null);
                 }
-              });
-          } else {
-            res.status(204).json('Unable to find Event!');
-            next();
-          }
-        });
+              },
+            );
+          },
+          (err, results) => {
+            if (err || !results) {
+              callback(500, null);
+            } else if (results.length === 0) {
+              callback(204, null);
+            } else {
+              const userEmailArray =
+                removeDuplicates([].concat.apply([], results).filter(item => (item !== null)));
+              callback(null, userEmailArray);
+            }
+          });
+      },
+      (userEmailArray, callback) => {
+        async.mapLimit(userEmailArray, 5,
+          (userEmail, callback) => {
+            User.getUser(userEmail, (err, user) => {
+              if (err || !user) {
+                callback(null, null);
+              } else {
+                callback(null, extractUserInfo(user));
+              }
+            });
+          },
+          (err, users) => {
+            if (err || !users) {
+              callback(500, null);
+            } else if (users.length === 0) {
+              callback(204, null);
+            } else {
+              callback(200, users);
+            }
+          });
+      },
+    ], (status, users) => {
+      if (status === 200) {
+        res.status(200).json(users);
+      } else if (status === 204) {
+        res.status(204).json('Nothing found!');
       } else {
-        res.status(204).json('Unable to find User!');
-        next();
+        res.status(500).json('Unable to process the data!');
       }
+      next();
     });
   } else {
     res.status(400).json('Bad Request!');
@@ -674,12 +589,11 @@ router.post('/post/search/activity/reasons', (req = {}, res, next) => {
     Attendance.searchAttendancesByKeyAndReasons(req.body.id, req.body.reasons.split(','), (err, attendances) => {
       if (err) {
         if (err.name === 'ValidationError') {
-          console.log(err);
           res.status(403).json('Unauthorized!');
         } else {
-          console.log(err);
           res.status(500).json('Unable to post data!');
         }
+        next();
       } else if (attendances && attendances.length > 0) {
         async.mapLimit(attendances, 5,
           (attendance, callback) => {
@@ -694,17 +608,15 @@ router.post('/post/search/activity/reasons', (req = {}, res, next) => {
           (err, results) => {
             if (err || !results) {
               res.status(500).json('Unable to process data!');
-              next();
             } else {
               const finalizedResults = results.filter(item => (item !== null));
               if (finalizedResults && finalizedResults.length > 0) {
                 res.status(200).json(finalizedResults);
-                next();
               } else {
                 res.status(204).json('Nothing found!');
-                next();
               }
             }
+            next();
           });
       } else {
         res.status(204).json('Nothing found!');
@@ -717,29 +629,207 @@ router.post('/post/search/activity/reasons', (req = {}, res, next) => {
   }
 });
 
-// Set Reasons for a Attendance of a User
-// Note: Requires Event or Exhibition ID as request body parameter 'id'
+// Search for Users who are participating in an Event as an Exhibitor, for given reasons
+// Note: Requires Event ID as request body parameter 'id'
 // Note: Requires reasons to be a Comma-Separated String rather than an Array
 // Use <Array>.toString() to generate a Comma-Separated String from an Array
-router.post('/post/set/oneAttendanceReasons', (req = {}, res, next) => {
-  if (req.body && req.body.userEmail && req.body.id && req.body.reasons) {
+router.post('/post/search/event/exhibitors/reasons', (req = {}, res, next) => {
+  if (req.body && req.body.id && req.body.reasons) {
     User.setDBConnection(req.app.locals.db);
     Event.setDBConnection(req.app.locals.db);
     Exhibition.setDBConnection(req.app.locals.db);
     Attendance.setDBConnection(req.app.locals.db);
 
-    Attendance.updateReason(req.body.userEmail, req.body.id, req.body.reasons.split(','), (err, attendance) => {
-      if (err) {
-        res.status(500).json('Unable to process data!');
-        next();
-      } else if (attendance) {
-        res.status(200).json(extractAttendanceInfo(attendance));
-        next();
-      } else {
+    async.waterfall([
+      (callback) => {
+        Event.getEventById(req.body.id, (err, event) => {
+          if (err) {
+            callback(500, null);
+          } else if (event) {
+            callback(null, event.event_name);
+          } else {
+            callback(204, null);
+          }
+        });
+      },
+      (eventName, callback) => {
+        Exhibition.searchExhibitionsByEvent(eventName, (err, exhibitions) => {
+          if (err) {
+            callback(500, null);
+          } else if (exhibitions && exhibitions.length > 0) {
+            callback(null, removeDuplicates(exhibitions.map(exhibition => exhibition._id)));
+          } else {
+            callback(204, null);
+          }
+        });
+      },
+      (exhibitionIds, callback) => {
+        async.mapLimit(exhibitionIds, 5,
+          (exhibitionId, callback) => {
+            Attendance.searchAttendancesByKeyAndReasons(
+              exhibitionId,
+              req.body.reasons.split(','),
+              (err, attendances) => {
+                if (err) {
+                  callback(null, null);
+                } else if (attendances && attendances.length > 0) {
+                  callback(null, attendances.map(attendance => attendance.user_email));
+                } else {
+                  callback(null, null);
+                }
+              },
+            );
+          },
+          (err, results) => {
+            if (err || !results) {
+              callback(500, null);
+            } else if (results.length === 0) {
+              callback(204, null);
+            } else {
+              const userEmailArray =
+                removeDuplicates([].concat.apply([], results).filter(item => (item !== null)));
+              callback(null, userEmailArray);
+            }
+          });
+      },
+      (userEmailArray, callback) => {
+        async.mapLimit(userEmailArray, 5,
+          (userEmail, callback) => {
+            User.getUser(userEmail, (err, user) => {
+              if (err || !user) {
+                callback(null, null);
+              } else {
+                callback(null, extractUserInfo(user));
+              }
+            });
+          },
+          (err, users) => {
+            if (err || !users) {
+              callback(500, null);
+            } else if (users.length === 0) {
+              callback(204, null);
+            } else {
+              callback(200, users);
+            }
+          });
+      },
+    ], (status, users) => {
+      if (status === 200) {
+        res.status(200).json(users);
+      } else if (status === 204) {
         res.status(204).json('Nothing found!');
-        next();
+      } else {
+        res.status(500).json('Unable to process the data!');
       }
+      next();
     });
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
+// Toggle User's Attendance for an Event
+router.post('/post/oneEventAttendance/', authCheckMiddleware, (req = {}, res, next) => {
+  if (req.body && req.body.userEmail && req.body.eventName) {
+    if (req.auth_user_email && req.auth_user_email !== req.body.userEmail) {
+      res.status(403).json('Unauthorized!');
+      next();
+    } else {
+      User.setDBConnection(req.app.locals.db);
+      Event.setDBConnection(req.app.locals.db);
+      Exhibition.setDBConnection(req.app.locals.db);
+      Attendance.setDBConnection(req.app.locals.db);
+
+      User.getUser(req.body.userEmail, (err, user) => {
+        if (err) {
+          if (err.name === 'ValidationError') {
+            res.status(403).json('Unauthorized!');
+          } else {
+            res.status(500).json('Unable to post data!');
+          }
+          next();
+        } else if (user) {
+          // User exists
+          Event.getEvent(req.body.eventName, (err, event) => {
+            if (err) {
+              res.status(500).json('Unable to process request!');
+              next();
+            } else if (event) {
+              // Event exists
+              // Toggle existance of Attendance
+              Attendance.searchAttendanceByUserAndKey(user.email, event._id,
+                (err, attendance) => {
+                  if (err) {
+                    res.status(500).json('Unable to process request');
+                    next();
+                  } else if (attendance) {
+                    // Delete this Attendance
+                    Attendance.deleteAttendance(attendance.user_email, attendance.attendance_key,
+                      (err) => {
+                        if (err) {
+                          res.status(500).json('Unable to Toggle Attendance to Delete!');
+                        } else {
+                          res.status(200).json('Attendance Removed!');
+                        }
+                        next();
+                      });
+                  } else {
+                    // Create the Attendance
+                    const attendanceDoc = new Attendance(user.email, event._id, 'event', ['nil']);
+                    attendanceDoc.saveAttendance((err, attendance) => {
+                      if (err || !attendance) {
+                        res.status(500).json('Unable to Toggle Attendance to Create!');
+                      } else {
+                        res.status(200).json('Attendance Added!');
+                      }
+                      next();
+                    });
+                  }
+                });
+            } else {
+              res.status(204).json('Unable to find Event!');
+              next();
+            }
+          });
+        } else {
+          res.status(204).json('Unable to find User!');
+          next();
+        }
+      });
+    }
+  } else {
+    res.status(400).json('Bad Request!');
+    next();
+  }
+});
+
+// Set Reasons for a Attendance of a User
+// Note: Requires Event or Exhibition ID as request body parameter 'id'
+// Note: Requires reasons to be a Comma-Separated String rather than an Array
+// Use <Array>.toString() to generate a Comma-Separated String from an Array
+router.post('/post/set/oneAttendanceReasons', authCheckMiddleware, (req = {}, res, next) => {
+  if (req.body && req.body.userEmail && req.body.id && req.body.reasons) {
+    if (req.auth_user_email && req.auth_user_email !== req.body.userEmail) {
+      res.status(403).json('Unauthorized!');
+      next();
+    } else {
+      User.setDBConnection(req.app.locals.db);
+      Event.setDBConnection(req.app.locals.db);
+      Exhibition.setDBConnection(req.app.locals.db);
+      Attendance.setDBConnection(req.app.locals.db);
+
+      Attendance.updateReason(req.body.userEmail, req.body.id, req.body.reasons.split(','), (err, attendance) => {
+        if (err) {
+          res.status(500).json('Unable to process data!');
+        } else if (attendance) {
+          res.status(200).json(extractAttendanceInfo(attendance));
+        } else {
+          res.status(204).json('Nothing found!');
+        }
+        next();
+      });
+    }
   } else {
     res.status(400).json('Bad Request!');
     next();

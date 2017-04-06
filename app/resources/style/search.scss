@@ -1,5 +1,5 @@
 #search-body {
-  margin: 20px;
+  margin: 30px 20px;
 
   #search-result {
     width: 180px;
@@ -28,5 +28,72 @@
     max-height: 250px;
     min-height: 250px;
     border-radius: 0;
+  }
+}
+
+#home-background {
+  background: url(../images/home_background.jpg);
+  background-repeat: no-repeat;
+  background-position: top;
+  display: flex;
+  justify-content: center;
+  background-size: cover;
+  height: 350px;
+  align-items: center;
+}
+
+#home-search-container {
+  padding: 30px;
+  margin: 20px;
+  width: 60%;
+  background-color: rgba(240, 240, 240, 0.9);
+
+  #search-results {
+    overflow: auto;
+    max-height: 300px;
+    min-width: 180px;
+    border-radius: 0;
+    max-width: 550px;
+    background-color: rgba(255,255,255,.9);
+    text-align: center;
+    z-index: 20;
+
+    .list-group-item {
+      display: block;
+      padding: 10px;
+      font-size: 14px;
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  #search-title {
+    color: maroon;
+  }
+
+  #search-input {
+    border: none;
+    border-radius: 0px;
+  }
+
+  #search-submit {
+    border: none;
+    border-radius: 0px;
+  }
+
+  .dropdown {
+    padding: 0;
+  }
+
+  #search-filter {
+    border: none;
+    border-left: 1px solid maroon;
+    width: 100%;
+    border-radius: 0px;
+    padding: 11px 5px;
+  }
+
+  #search-results {
+    position: absolute;
+    font-size: 14px;
   }
 }

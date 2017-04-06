@@ -1,4 +1,5 @@
 import React from 'react';
+import Search from './search';
 import Tabs from './tabs';
 import Event from './event';
 import Collapsable from './collapsable';
@@ -22,13 +23,13 @@ class HomeView extends React.Component {
     };
 
     this.initializeStates();
-    this.getAttendances(userEmail.replace(/%40/i, '@'));
 
     this.openCollapsable = this.openCollapsable.bind(this);
     this.changeAttendance = this.changeAttendance.bind(this);
     this.changeView = this.changeView.bind(this);
     this.formatMilli = this.formatMilli.bind(this);
     this.createFalseArray = this.createFalseArray.bind(this);
+    this.getAttendances = this.getAttendances.bind(this);
   }
 
   initializeStates() {
@@ -37,21 +38,13 @@ class HomeView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      console.log('initialize state success');
       if (xhr.status === 200) {
-        const nowTime = this.state.todayDate.getTime();
-        const copy = xhr.response;
-        const remainder = copy.filter((event) => {
-          if (nowTime > this.formatMilli(event.start_date) && nowTime < this.formatMilli(event.end_date))
-            return event;
-        });
         this.setState({
           events: xhr.response,
-          displayedEvents: remainder,
-          open: this.createFalseArray(remainder.length),
         });
+
+        this.getAttendances();
       } else {
-        console.log('initialize state fail');
         this.setState({
           events: [],
           displayedEvents: [],
@@ -62,18 +55,20 @@ class HomeView extends React.Component {
     xhr.send();
   }
 
-  getAttendances(email) {
+  getAttendances() {
     const xhr = new XMLHttpRequest();
-    xhr.open('get', `/attendance/get/oneUserAttendances/${email}`);
+    xhr.open('get', `/attendance/get/oneUserAttendances/${this.state.email}`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        console.log('get attendance success');
         this.setState({ attendance: xhr.response });
       } else {
-        console.log('get attendance fail');
         this.setState({ attendance: [] });
+      }
+
+      if (this.state.displayedEvents.length === 0) {
+        this.setDefaultView();
       }
     });
     xhr.send();
@@ -93,7 +88,7 @@ class HomeView extends React.Component {
     this.setState({ open: newStatus });
   }
 
-  changeAttendance(event, attendance) {
+  changeAttendance(event) {
     // modify attendance data here
     const userEmail = encodeURIComponent(this.state.email);
     const eventName = encodeURIComponent(event.name);
@@ -101,34 +96,57 @@ class HomeView extends React.Component {
     const xhr = new XMLHttpRequest();
     xhr.open('post', `attendance/post/oneEventAttendance/`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        console.log('change attendance success');
+        this.getAttendances();
       } else {
-        console.log('change attendance fail');
       }
     });
     xhr.send(formData);
-
-    if (attendance) {
-      const attendanceObj = { attendanceKey: event.id  };
-      const allAttendance = this.state.attendance;
-      allAttendance.push(attendanceObj);
-      this.setState({
-        attendance: allAttendance,
-      });
-    } else {
-      const newAttendance = this.state.attendance.filter(attend => attend.attendanceKey !== event.id);
-      this.setState({
-        attendance: newAttendance,
-      });
-    }
   }
 
   formatMilli(dateString) {
     const date = new Date(dateString);
     return date.getTime();
+  }
+
+  /**
+    * Sets priority of event view
+    */
+  setDefaultView() {
+    const copy = this.state.events.slice();
+
+    const nowTime = this.state.todayDate.getTime();
+    const ongoing = copy.filter((event) => {
+      if (nowTime > this.formatMilli(event.start_date) && nowTime < this.formatMilli(event.end_date))
+        return event;
+    });
+    const upcoming = copy.filter((event) => {
+      if (nowTime < this.formatMilli(event.start_date))
+        return event;
+    });
+    const past = copy.filter((event) => {
+      if (nowTime > this.formatMilli(event.end_date))
+        return event;
+    });
+
+    let defaultTab = 'ongoing';
+    let display = ongoing;
+    if (ongoing.length === 0 && upcoming.length !== 0) {
+      defaultTab = 'upcoming';
+      display = upcoming;
+    } else if (ongoing.length === 0 && upcoming.length === 0 && past.length !== 0) {
+      defaultTab = 'past';
+      display = past;
+    }
+
+    this.setState({
+      currentTab: defaultTab,
+      displayedEvents: display,
+      open: this.createFalseArray(display.length),
+    });
   }
 
   changeView(e) {
@@ -170,34 +188,44 @@ class HomeView extends React.Component {
 
     return (
       <div id="home-body">
-        <Tabs onClick={this.changeView} />
-        <div id="event-list" className="d-flex justify-content-center justify-content-md-start">
-        {
-          (this.state.displayedEvents.length !== 0) ?
-            this.state.displayedEvents.map((event, i) =>
-              <div id="event-container" key={i}>
-                <Event
-                  serial={i}
-                  open={this.state.open}
-                  openCollapsable={this.openCollapsable}
-                  event={event}
-                  attendance={this.state.attendance}
-                />
-                <Collapsable
-                  serial={i}
-                  open={this.state.open}
-                  openCollapsable={this.openCollapsable}
-                  width={containerWidth}
-                  event={event}
-                  attendance={this.state.attendance}
-                  changeAttendance={this.changeAttendance}
-                />
-              </div>
+        <div id="home-background" className="hidden-md-down">
+          <div id="home-search-container">
+            <h2 id="search-title">Find An Opportunity</h2>
+            <Search />
+          </div>
+        </div>
+
+        <div id="home-content-container">
+          <Tabs onClick={this.changeView} tab={this.state.currentTab} />
+          <div id="event-list" className="d-flex justify-content-center justify-content-md-start">
+            {
+              (this.state.displayedEvents.length !== 0) ?
+                this.state.displayedEvents.map((event, i) =>
+                  <div id="event-container" key={i}>
+                    <Event
+                      serial={i}
+                      open={this.state.open}
+                      openCollapsable={this.openCollapsable}
+                      event={event}
+                      attendance={this.state.attendance}
+                      email={this.state.email}
+                    />
+                    <Collapsable
+                      serial={i}
+                      open={this.state.open}
+                     openCollapsable={this.openCollapsable}
+                     width={containerWidth}
+                     event={event}
+                      attendance={this.state.attendance}
+                      changeAttendance={this.changeAttendance}
+                      email={this.state.email}
+                     />
+                  </div>
             ) : <div className="no-events justify-content-center">
-                  <img src="../resources/images/sad-face.png" alt="Sorry-no-events" />
                   <p>Sorry! There are no {this.state.currentTab} events. Please check again in the future!</p>
                 </div>
-          }
+            }
+          </div>
         </div>
       </div>
     );

@@ -22,7 +22,7 @@ class EventMap extends React.Component {
     return (
       <div>
         {(this.props.showEventMap) ?
-          <div id="event-map" style={{backgroundImage: 'url(../resources/images/dummy-floorplan.jpg)'}}>
+          <div id="event-map" style={{backgroundImage: 'url(http://www.comp.nus.edu.sg/images/resources/content/mapsvenues/COM1_L1.jpg)'}}>
             {/*
             {EventMap.addNode('#0', 'SearchParty VR', '75%', '29%')} 
             {EventMap.addNode('#1', <div>Reality<br/>Escape<br/>Room</div>, '13%', '68%',

@@ -1,7 +1,7 @@
 import React from 'react';
 import Paths from '../../paths';
 import Auth from '../../database/auth';
-import suggestions from './skillSuggestions';
+import { skillSuggestions } from '../../database/suggestions';
 import { Link } from 'react-router';
 import { WithContext as ReactTags } from 'react-tag-input';
 
@@ -13,7 +13,6 @@ class ProfileView extends React.Component {
     const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
 
     this.state = {
-      links: '-', // Link to user profile of another website
       interestedOpportunities: '-', // What am I looking for
       isContentEditable: false, //  Edit mode
       descriptionCache: '',
@@ -23,6 +22,8 @@ class ProfileView extends React.Component {
       events: [], // List of event user attended
       exhibitions: [], // List of exhibition user participated
       attendances: [], // For all the attendance objects
+      feedback: '',  // notification for HTTP POST
+      error: '',
     };
 
     this.getUser(userEmail);
@@ -75,7 +76,7 @@ class ProfileView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-        const user = xhr.response;
+      const user = xhr.response;
         if (user) {
           user.userSkills = (xhr.response && xhr.response.userSkills.length > 0) ? xhr.response.userSkills.map((skill, i) => {
           return {
@@ -129,7 +130,6 @@ class ProfileView extends React.Component {
     xhr.send();
   }
 
-
   handleDeleteSkill(i) {
     const user = this.state.user;
     user.userSkills = user.userSkills.filter((skill, index) => index !== i);
@@ -171,10 +171,6 @@ class ProfileView extends React.Component {
       this.setState({
         user,
       });
-    } else if (targetId === 'new-user-links') {
-      this.setState({
-        links: event.target.value,
-      });
     }
   }
 
@@ -193,7 +189,6 @@ class ProfileView extends React.Component {
 
     this.setState({
       user,
-      links: this.state.pastUserData.links,
       interestedOpportunities: this.state.pastUserData.interestedOpportunities,
       isContentEditable: false,
     });
@@ -229,12 +224,19 @@ class ProfileView extends React.Component {
     const xhr = new XMLHttpRequest();
     xhr.open('post', `attendance/post/set/oneAttendanceReasons`);
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        console.log('save reasons success');
+        this.setState({
+          feedback: 'Reasons saved',
+          error: '',
+        });
       } else {
-        console.log('save reasons fail');
+        this.setState({
+          feedback: '',
+          error: xhr.response,
+        });
       }
     });
     xhr.send(formData);
@@ -246,18 +248,21 @@ class ProfileView extends React.Component {
       const xhr = new XMLHttpRequest();
       xhr.open('post', '/user/post/profile/set/skills');
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
       xhr.responseType = 'json';
       xhr.addEventListener('load', () => {
         if (xhr.status === 200) {
           // success
           this.setState({
             feedback: 'Successfully edited',
+            error: '',
             isContentEditable: !this.state.isContentEditable,
           });
         } else {
           // failure
           this.setState({
-            feedback: xhr.response,
+            feedback: '',
+            error: xhr.response,
             isContentEditable: !this.state.isContentEditable,
           });
         }
@@ -269,6 +274,7 @@ class ProfileView extends React.Component {
       const xhr = new XMLHttpRequest();
       xhr.open('post', '/user/post/profile/set/description');
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
       xhr.responseType = 'json';
       xhr.addEventListener('load', () => {
         if (xhr.status === 200) {
@@ -295,42 +301,45 @@ class ProfileView extends React.Component {
 
   render() {
     const userEmail = (Auth.isUserAuthenticated()) ? Auth.getToken().email.replace(/%40/i, '@') : '';
+    const isNotify = (this.state.error || this.state.feedback) ? ((this.state.feedback) ?
+      <div className="alert alert-success" role="alert">
+        <strong>Success!</strong> {this.state.feedback}
+      </div> :
+      <div className="alert alert-danger" role="alert">
+        <strong>Error!</strong> {this.state.error}
+      </div>) : <div />;
 
     return (
       <div id="profile-body">
-      {
-        (Object.keys(this.state.user).length !== 0)
-        ? <div className="row justify-content-between justify-content-md-around">
-            <div id="profile-picture" className="col-md-6 push-md-3 col-12 text-center">
-              <img src="../../resources/images/default-profile-picture.png" alt="profile-img" />
+        {isNotify}
+        {
+          (Object.keys(this.state.user).length !== 0)
+          ? <div className="row justify-content-between justify-content-md-around">
+              <h4 id="user-name" className="col-md-6 push-md-3 col-12 text-center align-self-center">{this.state.user.userName}</h4>
+              <div className="col-md-3 pull-md-6 col-6 text-center d-flex justify-content-center">
+              {
+                (this.state.user.userEmail !== userEmail) ?
+                  <div id="chat-icon-container">
+                    <Link to={`/chat/${this.state.user.userEmail}`}>
+                      <img id="chat-icon" src="../../resources/images/chat-icon.svg" alt="chat-icon" />
+                    </Link>
+                  </div> : <div />
+              }
+              </div>
+              <div className="col-md-3 col-6 text-center d-flex justify-content-center" onClick={this.handleEdit}>
+              {
+                (this.state.user.userEmail === userEmail) ?
+                  <div id="edit-icon-container">
+                    <img id="edit-icon" src="../../resources/images/edit-icon.svg" alt="edit-icon" />
+                  </div> : <div />
+              }
+              </div>
             </div>
-            <div className="col-md-3 pull-md-6 col-6 text-center d-flex justify-content-center">
-            {
-              (this.state.user.userEmail !== userEmail) ?
-                <div id="chat-icon-container">
-                  <Link to={`/chat/${this.state.user.userEmail}`}>
-                    <img id="chat-icon" src="../../resources/images/chat-icon.svg" alt="chat-icon" />
-                  </Link>
-                </div> : <div />
-            }
-            </div>
-            <div className="col-md-3 col-6 text-center d-flex justify-content-center" onClick={this.handleEdit}>
-            {
-              (this.state.user.userEmail === userEmail) ?
-                <div id="edit-icon-container">
-                  <img id="edit-icon" src="../../resources/images/edit-icon.svg" alt="edit-icon" />
-                </div> : <div />
-            }
-            </div>
-          </div>
-        : <div id="profile-picture" className="col-12 text-center">
-           <img src="../../resources/images/default-profile-picture.png" alt="profile-img" />
-          </div>
-       }
+          : <div />
+         }
         <div className="profile-info card">
           <div className="card-block">
             <div className="card-text">
-              <h4 id="user-name" className="card-title">{this.state.user.userName}</h4>
               <div>
                 <span className="info-type">Email: </span>
                 <span id="user-email" className="user-info">{this.state.user.userEmail}</span>
@@ -349,7 +358,7 @@ class ProfileView extends React.Component {
                   (this.state.isContentEditable) ?
                   <ReactTags
                     tags={this.state.user.userSkills}
-                    suggestions={suggestions}
+                    suggestions={skillSuggestions}
                     handleDelete={this.handleDeleteSkill}
                     handleAddition={this.handleAdditionSkill}
                     handleDrag={this.handleDragSkill}
@@ -364,28 +373,8 @@ class ProfileView extends React.Component {
                   </div>
                 }
               </div>
-              <div>
-                <span className="info-type">Links: </span>
-                {
-                  (this.state.isContentEditable) ?
-                  <input id="new-user-links" className="form-control" type="text" value={this.state.links} onChange={this.changeEdit} /> :
-                  <a id="user-links" className="user-info" href={`https://${this.state.links}`}>{this.state.links}</a>
-                }
-              </div>
             </div>
           </div>
-          <ul className="list-group list-group-flush">
-            <li className="list-group-item">
-              <div className="info-type">What am I Looking For? </div>
-              { (this.state.isContentEditable) ?
-                <select className="form-control" id="new-user-interest">
-                  <option>{this.state.interestedOpportunities}</option>
-                  <option>2</option>
-                </select> :
-                <div id="user-info" className="user-info">{this.state.interestedOpportunities}</div>
-              }
-            </li>
-          </ul>
           <div id="accordion" role="tablist" aria-multiselectable="true">
             <div className="card">
               <div className="card-header" role="tab" id="headingOne">
@@ -419,7 +408,7 @@ class ProfileView extends React.Component {
                           {
                             (this.state.isContentEditable) ?
                               <div id="event-reasons">
-                                <span className="event-reason-title">Reason: </span>
+                                <span className="event-reason-title">Looking for: </span>
                                 <label htmlFor={"fulltime-"+i} className="custom-control custom-checkbox">
                                   <input id={"fulltime-"+i} type="checkbox" className={"custom-control-input tag-selection-row-"+i} name="Full-Time" defaultChecked={this.state.attendances.filter(
                                       attendance => {if (attendance.attendanceKey === exhibition.id)
@@ -463,6 +452,13 @@ class ProfileView extends React.Component {
               </div>
               <div id="event-involved" className="collapse" role="tabpanel" aria-labelledby="headingTwo">
                 <div className="card-block">
+                  <div id="cannot-edit-reason">
+                    {
+                      (this.state.isContentEditable && this.state.events) ?
+                      <h4 id="cannot-edit-message">You can edit your attendance reason in the homepage</h4> :
+                      <div />
+                    }
+                  </div>
                   {
                     (this.state.events) ?
                     this.state.events.map(event =>

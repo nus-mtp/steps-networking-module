@@ -5,8 +5,15 @@ class Event extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      participating: false,
+    }
+
+    this.isParticipatingEvent(this.props.event.name);
+
     this.handleClick = this.handleClick.bind(this);
     this.isEventAttended = this.isEventAttended.bind(this);
+    this.isParticipatingEvent = this.isParticipatingEvent.bind(this);
   }
 
   isEventAttended() {
@@ -16,6 +23,21 @@ class Event extends React.Component {
       }
     }
     return false;
+  }
+
+  isParticipatingEvent(eventName) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/attendance/get/oneUserExhibitionsInEvent/${this.props.email}/${eventName}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        this.setState({ participating: true});
+      } else {
+        this.setState({ participating: false});
+      }
+    });
+    xhr.send();
   }
 
   handleClick() {
@@ -52,16 +74,32 @@ class Event extends React.Component {
             </Link>
             {
               (this.props.event.event_poster) ?
-              <embed className="img-fluid text-center event-thumbnail card-img-top" width="250" height="auto" src={this.props.event.event_poster} alt="event-poster" /> :
-              <img className="img-fluid text-center event-thumbnail card-img-top" width="250" height="auto" src='../../resources/images/empty-poster-placeholder.png' alt="event-poster" />
+                <embed
+                  className="img-fluid text-center event-thumbnail card-img-top"
+                  width="250"
+                  height="auto"
+                  src={this.props.event.event_poster.replace(/http/i, 'https')}
+                  alt="event-poster"
+                /> :
+                <img className="img-fluid text-center event-thumbnail card-img-top" width="250" height="auto" src='../../resources/images/empty-poster-placeholder.png' alt="event-poster" />
             }
           </div>
           <div className="card-block event-info-container">
             <div className="card-title event-title">{this.props.event.name}</div>
             {
               (this.isEventAttended())
-              ? <div className="attendance-badge"><img id="attendance-badge-image" src="../../resources/images/check-icon.svg" alt="check-icon" />Attending</div>
-              : <div className="attendance-badge" />
+              ? <div className="badge badge-danger event-badge"><img id="attendance-badge-image" src="../../resources/images/check-icon.svg" alt="check-icon" />Attending</div>
+              : <div />
+            }
+            {
+              (this.state.participating)
+              ? <div className="badge badge-warning exhib-badge"><img id="participating-badge-image" src="../../resources/images/check-icon.svg" alt="check-icon" />Participating</div>
+              : <div />
+            }
+            {
+              (this.isEventAttended() || this.state.participating)
+              ? <div />
+              : <div className="offset-badge" />
             }
             <div className="event-info">{eventDate.toDateString()}</div>
             <div className="event-info">{this.props.event.venue}</div>

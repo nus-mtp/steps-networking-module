@@ -5,6 +5,7 @@
 #project-body {
   width: 80%;
   margin-bottom: 30px;
+  margin-top: 30px;
 
   #project-desc {
     margin: 20px 0;
@@ -22,6 +23,13 @@
   }
 
   #project-tags {
+    button {
+      font-size: 14px;
+      padding: 10px;
+      margin-right: 10px;
+      margin-bottom: 5px;
+    }
+
     .badge {
       margin-right: 5px;
     }
@@ -67,6 +75,11 @@
     }
   }
 
+  .alert {
+    width: 100%;
+    align-items: center;
+  }
+
   #comment-input {
     margin: 0;
   }
@@ -105,11 +118,11 @@
     }
 
     .user-comment-container {
-      background-color: aliceblue;
+      background-color: whitesmoke;
     }
 
     .others-comment-container {
-      background-color: powderblue;
+      background-color: lavenderblush;
     }
   }
 }

@@ -16,6 +16,7 @@ describe('User Create', () => {
             'I am the second test user.',
             'password456', false, false,
             'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png',
+            [],
             ['Producing skills', 'Photoshop', 'Illustrator', 'AutoCAD', 'Microsoft Office'],
             [],
         );
@@ -48,6 +49,7 @@ describe('User Create', () => {
             true,
             false,
             'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png',
+            [],
             ['Project Management', 'Programming skills', 'Objective C', 'C++', 'C#'],
             [],
         );
@@ -77,6 +79,7 @@ describe('User Create', () => {
             false,
             false,
             'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png',
+            [],
             ['Project Management', 'Programming skills', 'Objective C', 'C++', 'C#'],
             [],
         );
@@ -113,6 +116,7 @@ describe('User Read', () => {
             true, // will_notify
             false, // is_deleted
             'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', // profile_pic
+            [],
             ['Programming skills', 'C++', 'Java', 'HTML'], // skills
             [], // bookmarked users
         );
@@ -178,6 +182,7 @@ describe('User Update', () => {
       true, // will_notify
       false, // is_deleted
       'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', // profile_pic
+      ['https://www.google.com', 'https://www.facebook.com'],
       ['Programming skills', 'C++', 'Java', 'HTML'], // skills
       [], //bookmarked users
     );
@@ -190,6 +195,7 @@ describe('User Update', () => {
         true, // will_notify
         false, // is_deleted
         'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png', // profile_pic
+        [],
         ['Programming skills', 'C++', 'Java', 'HTML'], // skills
         [], //bookmarked users
     );
@@ -258,6 +264,33 @@ describe('User Update', () => {
       assert.equal(err, null, err);
       assert.notEqual(result, null);
       assert.equal(result.will_notify, false);
+      done();
+    });
+  });
+
+  it('Should be able to push a specified link to the user', (done) => {
+    User.addLinkToUserLinks('usertesting_1@user.com', 'https://www.wikipedia.com', (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.links.length, 3, result.links.length);
+      done();
+    });
+  });
+
+  it('Should be able to remove a specified link from the user', (done) => {
+    User.removeLinkFromUserLinks('usertesting_1@user.com', 'https://www.facebook.com', (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.links.length, 2, result.links.length);
+      done();
+    });
+  });
+
+  it('Should be able to set specified links for the user', (done) => {
+    User.setLinksForUser('usertesting_1@user.com', ['https://www.comp.nus.edu.sg'], (err, result) => {
+      assert.equal(err, null, err);
+      assert.notEqual(result, null);
+      assert.equal(result.links.length, 1, result.links.length);
       done();
     });
   });
@@ -355,6 +388,7 @@ describe('User Update', () => {
             false,
             false,
             'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
+            [],
             ['c++', 'C#', 'java'],
             [],
             (err, results) => {
@@ -377,6 +411,7 @@ describe('User Update', () => {
             true,
             false,
             'https://images.duckduckgo.com/iu/?u=http%3A%2F%2Fi.imgur.com%2Fp7HfgdZ.png&f=1',
+            [],
             ['c++', 'C#', 'java'],
             [],
             (err, results) => {
@@ -403,6 +438,7 @@ describe('User Delete', () => {
             'I am the second test user.',
             'password456', false, false,
             'https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png',
+            [],
             ['Producing skills', 'Photoshop', 'Illustrator', 'AutoCAD', 'Microsoft Office'],
             []);
     userTest2.saveUser((err) => {

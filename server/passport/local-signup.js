@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const PassportLocalStrategy = require('passport-local');
 const ModelHandler = require('../database/models/ourModels');
 
@@ -16,10 +17,6 @@ module.exports = db => new PassportLocalStrategy({
       .trim(),
     email: email.trim(),
     password: password.trim(),
-    description: req
-      .body
-      .description
-      .trim(),
   };
 
   const newUser = new User(userData);
@@ -28,6 +25,16 @@ module.exports = db => new PassportLocalStrategy({
       return done(err);
     }
 
-    return done(null);
+    const payload = {
+      sub: newUser.get('_id'),
+    };
+
+    // create a token string
+    const token = jwt.sign(payload, process.env.JWT_SECRET);
+    const data = {
+      name: newUser.name,
+    };
+
+    return done(null, token, data);
   });
 });
