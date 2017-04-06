@@ -1,5 +1,5 @@
 #search-body {
-  margin: 20px;
+  margin: 30px 20px;
 
   #search-result {
     width: 180px;
@@ -31,10 +31,22 @@
   }
 }
 
+#home-background {
+  background: url(../images/home_background.jpg);
+  background-repeat: no-repeat;
+  background-position: top;
+  display: flex;
+  justify-content: center;
+  background-size: cover;
+  height: 350px;
+  align-items: center;
+}
+
 #home-search-container {
   padding: 30px;
   margin: 20px;
-  background-color: rgba(240, 240, 240, 0.8);
+  width: 60%;
+  background-color: rgba(240, 240, 240, 0.9);
 
   #search-results {
     overflow: auto;
