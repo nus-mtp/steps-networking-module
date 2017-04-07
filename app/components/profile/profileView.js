@@ -17,6 +17,7 @@ class ProfileView extends React.Component {
       isContentEditable: false, //  Edit mode
       descriptionCache: '',
       skillsCache: '',
+      linksCache: '',
       user: {},
       email: userEmail,
       events: [], // List of event user attended
@@ -37,6 +38,9 @@ class ProfileView extends React.Component {
     this.handleDeleteSkill = this.handleDeleteSkill.bind(this);
     this.handleAdditionSkill = this.handleAdditionSkill.bind(this);
     this.handleDragSkill = this.handleDragSkill.bind(this);
+    this.handleDeleteLink = this.handleDeleteLink.bind(this);
+    this.handleAdditionLink = this.handleAdditionLink.bind(this);
+    this.handleDragLink = this.handleDragLink.bind(this);
     this.saveReasons = this.saveReasons.bind(this);
     this.getAttendances = this.getAttendances.bind(this);
   }
@@ -77,14 +81,21 @@ class ProfileView extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       const user = xhr.response;
-        if (user) {
-          user.userSkills = (xhr.response && xhr.response.userSkills.length > 0) ? xhr.response.userSkills.map((skill, i) => {
+      if (user) {
+        user.userSkills = (xhr.response && xhr.response.userSkills.length > 0) ? xhr.response.userSkills.map((skill, i) => {
           return {
             id: i,
             text: skill,
           };
         }) : [];
+        user.userLinks = (xhr.response && xhr.response.userLinks.length > 0) ? xhr.response.userLinks.map((link, i) => {
+          return {
+            id: i,
+            text: link,
+          };
+        }) : [];
         this.setState({ user, });
+        console.log(this.state.user);
       }
     });
     xhr.send();
@@ -130,6 +141,10 @@ class ProfileView extends React.Component {
     xhr.send();
   }
 
+  /**
+    * functions to manipulate skills
+    * tied to ReactTags
+    */
   handleDeleteSkill(i) {
     const user = this.state.user;
     user.userSkills = user.userSkills.filter((skill, index) => index !== i);
@@ -163,15 +178,49 @@ class ProfileView extends React.Component {
     this.setState({ user, });
   }
 
+  /**
+    * functions to manipulate links
+    * tied to ReactTags
+    */
+  handleDeleteLink(i) {
+    const user = this.state.user;
+    user.userLinks = user.userLinks.filter((link, index) => index !== i);
+
+    this.setState({ user, });
+  }
+
+  handleDragLink(link, currPos, newPos) {
+    const links = [ ...this.state.user.userLinks ];
+
+    // mutate array
+    links.splice(currPos, 1);
+    links.splice(newPos, 0, link);
+
+    // re-render
+    const user = this.state.user;
+    user.userLinks = links;
+    this.setState({ user, });
+  }
+
+  handleAdditionLink(link) {
+    const user = this.state.user;
+    user.userLinks = [
+      ...this.state.user.userLinks,
+      {
+        id: this.state.user.userLinks.length + 1,
+        text: link,
+      }
+    ];
+
+    this.setState({ user, });
+  }
+
   changeEdit(event) {
-    const targetId = event.target.id;
-    if (targetId === 'new-user-description') {
-      const user = this.state.user;
-      user.userDescription = event.target.value;
-      this.setState({
-        user,
-      });
-    }
+    const user = this.state.user;
+    user.userDescription = event.target.value;
+    this.setState({
+      user,
+    });
   }
 
   handleEdit() {
@@ -179,28 +228,31 @@ class ProfileView extends React.Component {
       isContentEditable: !this.state.isContentEditable,
       descriptionCache: this.state.user.userDescription,
       skillsCache: this.state.user.userSkills,
+      linksCache: this.state.user.userLinks,
     });
   }
 
   handleCancel() {
     const user = this.state.user;
     user.userDescription = this.state.pastUserData.userDescription;
-    user.skills = this.state.pastUserData.userSkills;
+    user.userSkills = this.state.pastUserData.userSkills;
+    user.userLinks = this.state.pastUserData.userLinks;
 
     this.setState({
       user,
-      interestedOpportunities: this.state.pastUserData.interestedOpportunities,
       isContentEditable: false,
     });
   }
 
   submitForm() {
     const skillArray = this.state.user.userSkills.map(skill => { return skill.text });
+    const linkArray = this.state.user.userLinks.map(link => { return link.text });
 
     const userSkills = encodeURIComponent(skillArray);
+    const userLinks = encodeURIComponent(linkArray);
     const userDescription = encodeURIComponent(this.state.user.userDescription);
     const userEmail = encodeURIComponent(this.state.user.userEmail);
-    const formData = `userEmail=${userEmail}&userSkills=${userSkills}&userDescription=${userDescription}`;
+    const formData = `userEmail=${userEmail}&userSkills=${userSkills}&userLinks=${userLinks}&userDescription=${userDescription}`;
 
     this.setUserInfo(formData);
   }
@@ -247,6 +299,32 @@ class ProfileView extends React.Component {
     if (this.state.user.userSkills !== this.state.skillsCache) {
       const xhr = new XMLHttpRequest();
       xhr.open('post', '/user/post/profile/set/skills');
+      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
+      xhr.responseType = 'json';
+      xhr.addEventListener('load', () => {
+        if (xhr.status === 200) {
+          // success
+          this.setState({
+            feedback: 'Successfully edited',
+            error: '',
+            isContentEditable: !this.state.isContentEditable,
+          });
+        } else {
+          // failure
+          this.setState({
+            feedback: '',
+            error: xhr.response,
+            isContentEditable: !this.state.isContentEditable,
+          });
+        }
+      });
+      xhr.send(formData);
+    }
+
+    if (this.state.user.userLinks !== this.state.linksCache) {
+      const xhr = new XMLHttpRequest();
+      xhr.open('post', '/user/post/profile/set/links');
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
       xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
       xhr.responseType = 'json';
@@ -363,12 +441,37 @@ class ProfileView extends React.Component {
                     handleAddition={this.handleAdditionSkill}
                     handleDrag={this.handleDragSkill}
                     placeholder="Add skills"
+                    allowDeleteFromEmptyInput={false}
+                    handleInputBlur={this.handleInputBlur}
+                    autofocus={false}
                   /> :
                   <div>
                     {
                       (Object.keys(this.state.user).length !== 0) ?
-                        this.state.user.userSkills.map(skill => <span id="user-skills" className="user-info" key={`${skill.text}${skill.id}`}>{skill.text}</span>)
-                        : <div />
+                        this.state.user.userSkills.map(skill =>
+                          <span id="user-skills" className="user-info" key={`${skill.text}${skill.id}`}>{skill.text}</span>
+                        ) : <div />
+                    }
+                  </div>
+                }
+              </div>
+              <div>
+                <span className="info-type">Links: </span>
+                {
+                  (this.state.isContentEditable) ?
+                  <ReactTags
+                    tags={this.state.user.userLinks}
+                    handleDelete={this.handleDeleteLink}
+                    handleAddition={this.handleAdditionLink}
+                    handleDrag={this.handleDragLink}
+                    placeholder="Include http://"
+                  /> :
+                  <div>
+                    {
+                      (Object.keys(this.state.user).length !== 0) ?
+                        this.state.user.userLinks.map(link =>
+                          <a id="user-links" href={link.text} className="user-info" key={`${link.text}${link.id}`}>{link.text}</a>
+                        ) : <div />
                     }
                   </div>
                 }
