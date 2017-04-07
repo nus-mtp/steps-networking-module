@@ -273,20 +273,7 @@ class EventView extends React.Component {
               {
                 (this.state.isDisplayExhibitions)
                 ? <div>
-                    <div className="row">
-                      <span className="input-group-addon">
-                        <input id="all" type="checkbox" onClick={this.onClick} defaultChecked/>All
-                      </span>
-                      <span className="input-group-addon">
-                        <input id="internship" type="checkbox" onClick={this.onClick}/>Internship
-                      </span>
-                      <span className="input-group-addon">
-                        <input id="partnership" type="checkbox" onClick={this.onClick}/>Partnership
-                      </span>
-                      <span className="input-group-addon">
-                        <input id="full-time" type="checkbox" onClick={this.onClick}/>Full time
-                      </span>
-                    </div>
+                    
                     <br/>
                     {
                       this.state.displayExhibitions.map((exhibition, i) =>
