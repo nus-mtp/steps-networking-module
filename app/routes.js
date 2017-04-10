@@ -8,6 +8,7 @@ import Login from './components/auth/loginView';
 import Signup from './components/auth/signupView';
 import Match from './components/profile/match';
 import Search from './components/home/searchView';
+import NotFound from './components/home/notFound';
 import Auth from './database/auth';
 import Paths from './paths';
 
@@ -63,6 +64,16 @@ const routes = {
     {
       path: Paths.search,
       component: Search,
+    },
+    {
+      path: Paths.all,
+      getComponent: (nextState, callback) => {
+        if (Auth.isUserAuthenticated()) {
+          callback(null, NotFound);
+        } else {
+          callback(null, Login);
+        }
+      },
     },
   ],
 };
