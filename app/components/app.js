@@ -15,7 +15,6 @@ class App extends React.Component {
       signupActive: '',
       chatActive: '',
       isHamburgerToggled: false,
-      isRenderSeach: true,
     };
 
     this.removeDropdown = this.removeDropdown.bind(this);
@@ -43,7 +42,7 @@ class App extends React.Component {
 
   getUser() {
     const userEmail = (Auth.isUserAuthenticated()) ? Auth.getToken().email : '';
-
+    console.log(userEmail);
     this.setState({
       email: userEmail.replace(/%40/i, '@'),
     });
@@ -94,22 +93,7 @@ class App extends React.Component {
     this.setState(baseState);
   }
 
-  checkRenderSearch() {
-    if(this.props.location.pathname === Paths.home || this.props.location.pathname === Paths.login ||
-      this.props.location.pathname === Paths.signup || this.props.location.pathname === Paths.logout) {
-        this.setState({
-          isRenderSeach: false,
-        });
-      } else {
-        this.setState({
-          isRenderSeach: true,
-        });
-      }
-  }
-
   render() {
-    this.checkRenderSearch();
-
     return (
       <div>
         <nav id="header" className="navbar fixed-top navbar-toggleable-md navbar-light bg-faded">
@@ -121,8 +105,9 @@ class App extends React.Component {
             <div className="hidden-lg-up responsive-container"><Search /></div>
             <div className="hidden-md-down responsive-container">
             {
-              (this.state.isRenderSeach)
-                ? <Search /> : <div />
+              (this.props.location.pathname === Paths.home || this.props.location.pathname === Paths.login ||
+                this.props.location.pathname === Paths.signup || this.props.location.pathname === Paths.logout)
+                ? <div /> : <Search />
             }
             </div>
             <ul id="navbar-links" className="navbar-nav">
