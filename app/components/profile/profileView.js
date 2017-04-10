@@ -48,7 +48,7 @@ class ProfileView extends React.Component {
   componentDidMount() {
     const that = this;
     window.addEventListener("hashchange", () => {
-      that.getUser();
+      that.getUser(this.state.email);
     });
   }
 
@@ -57,6 +57,36 @@ class ProfileView extends React.Component {
     window.removeEventListener("hashchange", () => {
       that.getUser();
     });
+  }
+
+  getUser(email) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/user/get/profile/${email}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      console.log(xhr.status);
+      if (xhr.status === 200) {
+        xhr.response.userSkills = (xhr.response && xhr.response.userSkills.length > 0) ? xhr.response.userSkills.map((skill, i) => {
+          return {
+            id: i,
+            text: skill,
+          };
+        }) : [];
+        xhr.response.userLinks = (xhr.response && xhr.response.userLinks.length > 0) ? xhr.response.userLinks.map((link, i) => {
+          return {
+            id: i,
+            text: link,
+          };
+        }) : [];
+        this.setState({
+          user: xhr.response,
+        });
+      } else {
+        this.context.router.replace('/404');
+      }
+    });
+    xhr.send();
   }
 
   getAttendances(email) {
@@ -69,33 +99,6 @@ class ProfileView extends React.Component {
         this.setState({ attendances: xhr.response, });
       } else {
         this.setState({ attendances: [], });
-      }
-    });
-    xhr.send();
-  }
-
-  getUser(email) {
-    const xhr = new XMLHttpRequest();
-    xhr.open('get', `/user/get/profile/${email}`);
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.responseType = 'json';
-    xhr.addEventListener('load', () => {
-      const user = xhr.response;
-      if (user) {
-        user.userSkills = (xhr.response && xhr.response.userSkills.length > 0) ? xhr.response.userSkills.map((skill, i) => {
-          return {
-            id: i,
-            text: skill,
-          };
-        }) : [];
-        user.userLinks = (xhr.response && xhr.response.userLinks.length > 0) ? xhr.response.userLinks.map((link, i) => {
-          return {
-            id: i,
-            text: link,
-          };
-        }) : [];
-        this.setState({ user, });
-        console.log(this.state.user);
       }
     });
     xhr.send();
@@ -597,5 +600,9 @@ class ProfileView extends React.Component {
     );
   }
 }
+
+ProfileView.contextTypes = {
+  router: React.PropTypes.object.isRequired,
+};
 
 export default ProfileView;
