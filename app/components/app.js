@@ -1,5 +1,5 @@
 import React from 'react';
-import Search from './home/search';
+import Search from './search/search';
 import { Link } from 'react-router';
 import Auth from '../database/auth';
 import Paths from '../paths';

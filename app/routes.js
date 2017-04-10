@@ -7,7 +7,7 @@ import Profile from './components/profile/profileView';
 import Login from './components/auth/loginView';
 import Signup from './components/auth/signupView';
 import Match from './components/profile/match';
-import Search from './components/home/searchView';
+import Search from './components/search/searchView';
 import NotFound from './components/home/notFound';
 import Auth from './database/auth';
 import Paths from './paths';

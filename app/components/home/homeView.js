@@ -1,5 +1,5 @@
 import React from 'react';
-import Search from './search';
+import Search from '../search/search';
 import Tabs from './tabs';
 import Event from './event';
 import Collapsable from './collapsable';
