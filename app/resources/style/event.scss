@@ -31,6 +31,16 @@
     font-weight: 500;
   }
 
+  .no-change-allow-message-sm {
+    margin-top: 10px;
+    color: red;
+  }
+
+  .no-change-allow-message {
+    margin-left: 20px;
+    color: red;
+  }
+
   #event-tabs {
     .nav-tabs {
       border: none;
