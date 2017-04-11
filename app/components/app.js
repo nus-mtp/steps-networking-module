@@ -1,5 +1,5 @@
 import React from 'react';
-import Search from './home/search';
+import Search from './search/search';
 import { Link } from 'react-router';
 import Auth from '../database/auth';
 import Paths from '../paths';
@@ -42,7 +42,6 @@ class App extends React.Component {
 
   getUser() {
     const userEmail = (Auth.isUserAuthenticated()) ? Auth.getToken().email : '';
-
     this.setState({
       email: userEmail.replace(/%40/i, '@'),
     });
@@ -100,12 +99,14 @@ class App extends React.Component {
           <button id="hamburger-toggle" onClick={this.shiftBody} className="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbar-supported-content" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon" />
           </button>
-          <Link onClick={this.removeDropdown} to={Paths.home}><img id="brand-logo" src="../resources/images/home-icon.svg" alt="Home" /></Link>
+          <Link onClick={this.removeDropdown} to={Paths.home} id="home-icon"><img id="brand-logo" src="../resources/images/home-icon.svg" alt="Home" /></Link>
           <div className="collapse navbar-collapse flex-column flex-lg-row justify-content-between" id="navbar-supported-content">
             <div className="hidden-lg-up responsive-container"><Search /></div>
             <div className="hidden-md-down responsive-container">
             {
-              (this.props.location.pathname === '/') ? <div /> : <Search />
+              (this.props.location.pathname === Paths.home || this.props.location.pathname === Paths.login ||
+                this.props.location.pathname === Paths.signup || this.props.location.pathname === Paths.logout)
+                ? <div /> : <Search />
             }
             </div>
             <ul id="navbar-links" className="navbar-nav">
