@@ -586,7 +586,7 @@ class ProfileView extends React.Component {
                             <div>{event.name}</div>
                             <div className="tag-container">{(this.state.attendances) ? this.state.attendances.filter(
                               attendance => {if (attendance.attendanceKey === event.id) return attendance;}).map(
-                                attendance => attendance.reasons.map(
+                                attendance => attendance.reasons.filter(tag => {if (tag !== 'nil') return tag;}).map(
                                   reason => <span className="tag badge badge-pill badge-success">{reason}</span>)) :
                                   <div/>
                             }</div>
