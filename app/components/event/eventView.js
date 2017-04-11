@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router';
 import sampleOrganizer from './sampleOrganizer';
 import EventMap from './eventMap';
+import NotFound from '../home/notFound';
 
 
 class EventView extends React.Component {
@@ -11,6 +12,7 @@ class EventView extends React.Component {
     this.state = {
       isDisplayExhibitions: false,
       isDisplayAttendees: false,
+      is404: false,
       exhibitions: [], // This is for all exhibitions
       displayExhibitions: [], // This is for the displayed exhibitions
       attendees: [],
@@ -184,6 +186,7 @@ class EventView extends React.Component {
     const endDate = (this.state.event) ? new Date(this.state.event.end_date).toDateString() : '';
 
     return (
+      (this.state.is404) ? <NotFound /> :
       <div id="event-body" className="d-f1lex flex-column justify-content-center">
         <div className="row justify-content-center mb-1">
           <div className="col-md-6 col-12 text-center">
@@ -322,5 +325,10 @@ class EventView extends React.Component {
     );
   }
 }
+
+EventView.contextTypes = {
+  router: React.PropTypes.object.isRequired,
+};
+
 
 export default EventView;
