@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router';
 import sampleOrganizer from './sampleOrganizer';
 import EventMap from './eventMap';
+import NotFound from '../home/notFound';
 
 
 class EventView extends React.Component {
@@ -11,6 +12,7 @@ class EventView extends React.Component {
     this.state = {
       isDisplayExhibitions: false,
       isDisplayAttendees: false,
+      is404: false,
       exhibitions: [], // This is for all exhibitions
       displayExhibitions: [], // This is for the displayed exhibitions
       attendees: [],
@@ -44,6 +46,30 @@ class EventView extends React.Component {
       that.getExhibitions();
       that.getAttendees();
     });
+  }
+
+  getEvent() {
+    const pathname = this.props.location.pathname;
+    const eventName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/event/get/oneEvent/${eventName}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        // success
+        this.setState({
+          is404: false,
+          event: xhr.response,
+        });
+      } else {
+        this.setState({
+          is404: true,
+        });
+      }
+    });
+    xhr.send();
   }
 
   getAttendees() {
@@ -88,29 +114,6 @@ class EventView extends React.Component {
         this.setState({
           exhibitions: [],
           displayExhibitions: [],
-        });
-      }
-    });
-    xhr.send();
-  }
-
-  getEvent() {
-    const pathname = this.props.location.pathname;
-    const eventName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
-
-    const xhr = new XMLHttpRequest();
-    xhr.open('get', `/event/get/oneEvent/${eventName}`);
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.responseType = 'json';
-    xhr.addEventListener('load', () => {
-      if (xhr.response !== null) {
-        // success
-        this.setState({
-          event: xhr.response,
-        });
-      } else {
-        this.setState({
-          event: [],
         });
       }
     });
@@ -193,6 +196,7 @@ class EventView extends React.Component {
     const endDate = (this.state.event) ? new Date(this.state.event.end_date).toDateString() : '';
 
     return (
+      (this.state.is404) ? <NotFound /> :
       <div id="event-body" className="d-f1lex flex-column justify-content-center">
         <div className="row justify-content-center mb-1">
           <div className="col-md-6 col-12 text-center">
@@ -273,7 +277,7 @@ class EventView extends React.Component {
               {
                 (this.state.isDisplayExhibitions)
                 ? <div>
-                    
+
                     <br/>
                     {
                       this.state.displayExhibitions.map((exhibition, i) =>
@@ -315,5 +319,10 @@ class EventView extends React.Component {
     );
   }
 }
+
+EventView.contextTypes = {
+  router: React.PropTypes.object.isRequired,
+};
+
 
 export default EventView;

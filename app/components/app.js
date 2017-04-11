@@ -1,5 +1,5 @@
 import React from 'react';
-import Search from './home/search';
+import Search from './search/search';
 import { Link } from 'react-router';
 import Auth from '../database/auth';
 import Paths from '../paths';
@@ -42,7 +42,6 @@ class App extends React.Component {
 
   getUser() {
     const userEmail = (Auth.isUserAuthenticated()) ? Auth.getToken().email : '';
-
     this.setState({
       email: userEmail.replace(/%40/i, '@'),
     });

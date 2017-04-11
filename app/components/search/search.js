@@ -83,7 +83,7 @@ class Search extends React.Component {
       if (this.state.searchFilter === 'Event') {
         this.context.router.push(`/event/${searchUrl}`);
       } else if (this.state.searchFilter === 'Exhibition') {
-        let eventName = '';
+        let eventName = 'null';
         this.state.searchDefaults.map(term => {
           if (term.exhibitionName.trim().toLowerCase().search(searchUrl.trim().toLowerCase()) !== -1) {
             eventName = term.eventName;
