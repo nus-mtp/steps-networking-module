@@ -8,6 +8,10 @@
   height: 400px;
 }
 
+#dropdown-button {
+  display: inline;
+}
+
 #home-body {
   width: 100vw;
 
@@ -260,9 +264,19 @@
   #exhibition-container {
     color: black;
 
+    #exhibition {
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+
     #exhibition:hover {
-      background: lightseagreen;
+      background: rgba(128, 0, 0, 0.6);
       color: white;
+      border-radius: 25px;
+    }
+
+    .event-tag {
+      margin-right: 10px;
     }
   }
 }
