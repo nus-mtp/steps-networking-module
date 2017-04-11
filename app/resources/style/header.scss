@@ -5,6 +5,28 @@
   height: 55px;
   padding: 0;
 
+  .application-nav {
+    height: 100%;
+    width: 100%;
+
+    .register-btn {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      padding: 10px 15px 10px 5px;
+      color: black;
+    }
+  }
+
+  #application-title {
+    color: maroon;
+    font-weight: 800;
+    padding: 10px 20px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+  }
+
   #hamburger-toggle {
     top: 0;
     height: 55px;
