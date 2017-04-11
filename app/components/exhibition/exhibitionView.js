@@ -1,5 +1,6 @@
 import React from 'react';
 import Auth from '../../database/auth';
+import NotFound from '../home/notFound';
 import { tagSuggestions } from '../../database/suggestions';
 import { Link } from 'react-router';
 import { WithContext as ReactTags } from 'react-tag-input';
@@ -11,7 +12,6 @@ class ExhibitionView extends React.Component {
     this.state = {
       currentComment: '',
       comments: [],
-      isTagEditable: false,
       tagChange: '',
       exhibition: {},
       attendance: {},
@@ -20,6 +20,8 @@ class ExhibitionView extends React.Component {
       feedbackTags: '',
       errorTags: '',
       isExhibitior: false,
+      isTagEditable: false,
+      is404: false,
     };
 
     this.retrieveData();
@@ -69,18 +71,22 @@ class ExhibitionView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      const user = xhr.response;
-      if (user) {
-        user.tags = (xhr.response && xhr.response.tags.length > 0) ? xhr.response.tags.map((skill, i) => {
+      if (xhr.status === 200) {
+        const exhibition = xhr.response;
+        exhibition.tags = (xhr.response && xhr.response.tags.length > 0) ? xhr.response.tags.map((skill, i) => {
           return {
             id: i,
             text: skill,
           };
         }) : [];
-
-        this.setState({ exhibition: user, });
+        this.setState({
+          exhibition,
+          is404: false,
+        });
       } else {
-        this.setState({ exhibition: {}, })
+        this.setState({
+          is404: true,
+        });
       }
     });
     xhr.send();
@@ -118,9 +124,7 @@ class ExhibitionView extends React.Component {
           attendance: xhr.response,
         });
       } else {
-        this.setState({
-          attendance: {},
-        });
+
       }
     });
     xhr.send();
@@ -296,6 +300,7 @@ class ExhibitionView extends React.Component {
       </div>) : <div />;
 
     return (
+      (this.state.is404) ? <NotFound /> :
       <div id="project-body">
         <div className="row justify-content-center">
           <div>
@@ -401,5 +406,9 @@ class ExhibitionView extends React.Component {
     );
   }
 }
+
+ExhibitionView.contextTypes = {
+  router: React.PropTypes.object.isRequired,
+};
 
 export default ExhibitionView;
