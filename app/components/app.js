@@ -99,7 +99,7 @@ class App extends React.Component {
         <nav id="header" className="navbar fixed-top navbar-toggleable-md navbar-light bg-faded">
         {
           (Auth.isUserAuthenticated()) ?
-          <div className="application-nav">
+          <div className="application-nav d-md-flex">
             <button id="hamburger-toggle" onClick={this.shiftBody} className="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbar-supported-content" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
               <span className="navbar-toggler-icon" />
             </button>
