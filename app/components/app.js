@@ -42,7 +42,6 @@ class App extends React.Component {
 
   getUser() {
     const userEmail = (Auth.isUserAuthenticated()) ? Auth.getToken().email : '';
-    console.log(userEmail);
     this.setState({
       email: userEmail.replace(/%40/i, '@'),
     });
