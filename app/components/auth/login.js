@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 
 const Login = ({ onSubmit, onChangeEmail, onChangePassword, errors }) => (
   <div id="login-form" className="card">
+    <img className="card-img-top" src="../../resources/images/logo.png" alt="Logo" />
     <h3 className="card-header">Login</h3>
     <div className="card-block">
       { errors.summary && <div className="alert alert-danger error-message"><strong>Unable to login! </strong>{errors.summary}</div> }
