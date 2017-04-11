@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router';
 
 const Signup = ({
   onSubmit,
@@ -35,6 +36,9 @@ const Signup = ({
         </div>
         <button type="submit" className="btn btn-primary" onClick={onSubmit}>Submit</button>
       </form>
+    </div>
+    <div className="card-block">
+      Already have an account? <Link to="/login">Login!</Link>
     </div>
   </div>
 );
