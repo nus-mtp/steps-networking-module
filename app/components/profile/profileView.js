@@ -1,6 +1,7 @@
 import React from 'react';
 import Paths from '../../paths';
 import Auth from '../../database/auth';
+import NotFound from '../home/notFound';
 import { skillSuggestions } from '../../database/suggestions';
 import { Link } from 'react-router';
 import { WithContext as ReactTags } from 'react-tag-input';
@@ -13,8 +14,8 @@ class ProfileView extends React.Component {
     const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
 
     this.state = {
-      interestedOpportunities: '-', // What am I looking for
       isContentEditable: false, //  Edit mode
+      is404: false,
       descriptionCache: '',
       skillsCache: '',
       linksCache: '',
@@ -48,7 +49,14 @@ class ProfileView extends React.Component {
   componentDidMount() {
     const that = this;
     window.addEventListener("hashchange", () => {
-      that.getUser(this.state.email);
+      const pathname = this.props.location.pathname;
+      const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
+      this.setState({
+        email: userEmail
+      });
+
+      that.getUser(userEmail);
     });
   }
 
@@ -65,7 +73,6 @@ class ProfileView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      console.log(xhr.status);
       if (xhr.status === 200) {
         xhr.response.userSkills = (xhr.response && xhr.response.userSkills.length > 0) ? xhr.response.userSkills.map((skill, i) => {
           return {
@@ -80,10 +87,13 @@ class ProfileView extends React.Component {
           };
         }) : [];
         this.setState({
+          is404: false,
           user: xhr.response,
         });
       } else {
-        this.context.router.replace('/404');
+        this.setState({
+          is404: true,
+        });
       }
     });
     xhr.send();
@@ -391,6 +401,7 @@ class ProfileView extends React.Component {
       </div>) : <div />;
 
     return (
+      (this.state.is404) ? <NotFound /> :
       <div id="profile-body">
         {isNotify}
         {
