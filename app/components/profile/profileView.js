@@ -73,14 +73,15 @@ class ProfileView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      if (xhr.status === 200) {
-        xhr.response.userSkills = (xhr.response && xhr.response.userSkills.length > 0) ? xhr.response.userSkills.map((skill, i) => {
+      const user = xhr.response;
+      if (user) {
+        user.userSkills = (xhr.response && xhr.response.userSkills.length > 0) ? xhr.response.userSkills.map((skill, i) => {
           return {
             id: i,
             text: skill,
           };
         }) : [];
-        xhr.response.userLinks = (xhr.response && xhr.response.userLinks.length > 0) ? xhr.response.userLinks.map((link, i) => {
+        user.userLinks = (xhr.response && xhr.response.userLinks.length > 0) ? xhr.response.userLinks.map((link, i) => {
           return {
             id: i,
             text: link,
@@ -88,7 +89,7 @@ class ProfileView extends React.Component {
         }) : [];
         this.setState({
           is404: false,
-          user: xhr.response,
+          user,
         });
       } else {
         this.setState({
