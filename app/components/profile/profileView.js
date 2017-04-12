@@ -1,6 +1,7 @@
 import React from 'react';
 import Paths from '../../paths';
 import Auth from '../../database/auth';
+import NotFound from '../home/notFound';
 import { skillSuggestions } from '../../database/suggestions';
 import { Link } from 'react-router';
 import { WithContext as ReactTags } from 'react-tag-input';
@@ -13,8 +14,8 @@ class ProfileView extends React.Component {
     const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
 
     this.state = {
-      interestedOpportunities: '-', // What am I looking for
       isContentEditable: false, //  Edit mode
+      is404: false,
       descriptionCache: '',
       skillsCache: '',
       linksCache: '',
@@ -48,7 +49,14 @@ class ProfileView extends React.Component {
   componentDidMount() {
     const that = this;
     window.addEventListener("hashchange", () => {
-      that.getUser();
+      const pathname = this.props.location.pathname;
+      const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
+      this.setState({
+        email: userEmail
+      });
+
+      that.getUser(userEmail);
     });
   }
 
@@ -57,6 +65,38 @@ class ProfileView extends React.Component {
     window.removeEventListener("hashchange", () => {
       that.getUser();
     });
+  }
+
+  getUser(email) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/user/get/profile/${email}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        xhr.response.userSkills = (xhr.response && xhr.response.userSkills.length > 0) ? xhr.response.userSkills.map((skill, i) => {
+          return {
+            id: i,
+            text: skill,
+          };
+        }) : [];
+        xhr.response.userLinks = (xhr.response && xhr.response.userLinks.length > 0) ? xhr.response.userLinks.map((link, i) => {
+          return {
+            id: i,
+            text: link,
+          };
+        }) : [];
+        this.setState({
+          is404: false,
+          user: xhr.response,
+        });
+      } else {
+        this.setState({
+          is404: true,
+        });
+      }
+    });
+    xhr.send();
   }
 
   getAttendances(email) {
@@ -69,33 +109,6 @@ class ProfileView extends React.Component {
         this.setState({ attendances: xhr.response, });
       } else {
         this.setState({ attendances: [], });
-      }
-    });
-    xhr.send();
-  }
-
-  getUser(email) {
-    const xhr = new XMLHttpRequest();
-    xhr.open('get', `/user/get/profile/${email}`);
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.responseType = 'json';
-    xhr.addEventListener('load', () => {
-      const user = xhr.response;
-      if (user) {
-        user.userSkills = (xhr.response && xhr.response.userSkills.length > 0) ? xhr.response.userSkills.map((skill, i) => {
-          return {
-            id: i,
-            text: skill,
-          };
-        }) : [];
-        user.userLinks = (xhr.response && xhr.response.userLinks.length > 0) ? xhr.response.userLinks.map((link, i) => {
-          return {
-            id: i,
-            text: link,
-          };
-        }) : [];
-        this.setState({ user, });
-        console.log(this.state.user);
       }
     });
     xhr.send();
@@ -388,6 +401,7 @@ class ProfileView extends React.Component {
       </div>) : <div />;
 
     return (
+      (this.state.is404) ? <NotFound /> :
       <div id="profile-body">
         {isNotify}
         {
@@ -572,7 +586,7 @@ class ProfileView extends React.Component {
                             <div>{event.name}</div>
                             <div className="tag-container">{(this.state.attendances) ? this.state.attendances.filter(
                               attendance => {if (attendance.attendanceKey === event.id) return attendance;}).map(
-                                attendance => attendance.reasons.map(
+                                attendance => attendance.reasons.filter(tag => {if (tag !== 'nil') return tag;}).map(
                                   reason => <span className="tag badge badge-pill badge-success">{reason}</span>)) :
                                   <div/>
                             }</div>
@@ -597,5 +611,9 @@ class ProfileView extends React.Component {
     );
   }
 }
+
+ProfileView.contextTypes = {
+  router: React.PropTypes.object.isRequired,
+};
 
 export default ProfileView;

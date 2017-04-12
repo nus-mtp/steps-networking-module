@@ -1,5 +1,5 @@
 import React from 'react';
-import Search from './home/search';
+import Search from './search/search';
 import { Link } from 'react-router';
 import Auth from '../database/auth';
 import Paths from '../paths';
@@ -42,7 +42,6 @@ class App extends React.Component {
 
   getUser() {
     const userEmail = (Auth.isUserAuthenticated()) ? Auth.getToken().email : '';
-
     this.setState({
       email: userEmail.replace(/%40/i, '@'),
     });
@@ -97,39 +96,52 @@ class App extends React.Component {
     return (
       <div>
         <nav id="header" className="navbar fixed-top navbar-toggleable-md navbar-light bg-faded">
-          <button id="hamburger-toggle" onClick={this.shiftBody} className="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbar-supported-content" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon" />
-          </button>
-          <Link onClick={this.removeDropdown} to={Paths.home}><img id="brand-logo" src="../resources/images/home-icon.svg" alt="Home" /></Link>
-          <div className="collapse navbar-collapse flex-column flex-lg-row justify-content-between" id="navbar-supported-content">
-            <div className="hidden-lg-up responsive-container"><Search /></div>
-            <div className="hidden-md-down responsive-container">
-            {
-              (this.props.location.pathname === '/') ? <div /> : <Search />
-            }
-            </div>
-            <ul id="navbar-links" className="navbar-nav">
+        {
+          (Auth.isUserAuthenticated()) ?
+          <div className="application-nav d-md-flex">
+            <button id="hamburger-toggle" onClick={this.shiftBody} className="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbar-supported-content" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span className="navbar-toggler-icon" />
+            </button>
+            <Link onClick={this.removeDropdown} to={Paths.home}><img id="brand-logo" src="../resources/images/logo.png" alt="Home" /></Link>
+            <div className="collapse navbar-collapse flex-column flex-lg-row justify-content-between" id="navbar-supported-content">
+              <div className="hidden-lg-up responsive-container"><Search /></div>
+              <div className="hidden-md-down responsive-container">
               {
-                Auth.isUserAuthenticated() ?
-                <li className="nav-item">
-                  <Link onClick={this.removeDropdown} className={`navbar-buttons ${this.state.profileActive}`} to={`/profile/${this.state.email}`}>Profile</Link>
-                </li> : <div />
+                (this.props.location.pathname === '/') ? <div /> : <Search />
               }
-              <li className="nav-item">
-                { Auth.isUserAuthenticated() ?
-                  <Link onClick={this.removeDropdown.bind(this)} className={`navbar-buttons ${this.state.chatActive}`} to={Paths.chat_empty}>Chat</Link> :
-                  <Link onClick={this.removeDropdown} to={Paths.signup} id="signup" className={`navbar-buttons ${this.state.signupActive}`}>Signup</Link>
+              </div>
+              <ul id="navbar-links" className="navbar-nav">
+                {
+                  Auth.isUserAuthenticated() ?
+                  <li className="nav-item">
+                    <Link onClick={this.removeDropdown} className={`navbar-buttons ${this.state.profileActive}`} to={`/profile/${this.state.email}`}>Profile</Link>
+                  </li> : <div />
+                }
+                <li className="nav-item">
+                  { Auth.isUserAuthenticated() ?
+                    <Link onClick={this.removeDropdown.bind(this)} className={`navbar-buttons ${this.state.chatActive}`} to={Paths.chat_empty}>Chat</Link> :
+                    <Link onClick={this.removeDropdown} to={Paths.signup} className={`navbar-buttons ${this.state.signupActive}`}>Signup</Link>
 
-                }
-              </li>
-              <li className="nav-item">
-                { Auth.isUserAuthenticated() ?
-                  <Link onClick={this.removeDropdown} id="logout" className="navbar-buttons" to={Paths.logout}>Logout</Link> :
-                  <Link onClick={this.removeDropdown} id="login" className={`navbar-buttons ${this.state.loginActive}`} to={Paths.login}>Login</Link>
-                }
-              </li>
-            </ul>
+                  }
+                </li>
+                <li className="nav-item">
+                  { Auth.isUserAuthenticated() ?
+                    <Link onClick={this.removeDropdown} className="navbar-buttons" to={Paths.logout}>Logout</Link> :
+                    <Link onClick={this.removeDropdown} className={`navbar-buttons ${this.state.loginActive}`} to={Paths.login}>Login</Link>
+                  }
+                </li>
+              </ul>
+            </div>
+          </div> :
+          <div className="application-nav d-flex justify-content-between">
+            <span id="application-title">STePS Networking Module</span>
+            {
+              (this.state.loginActive || this.props.location.pathname === Paths.logout) ?
+                <Link className="navbar-buttons register-btn" to={Paths.signup} >Signup</Link> :
+                <Link className="navbar-buttons register-btn" to={Paths.login}>Login</Link>
+            }
           </div>
+        }
         </nav>
         <div id="app-body" className="collapse-hide">
           {this.props.children}

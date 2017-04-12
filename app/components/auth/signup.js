@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router';
 
 const Signup = ({
   onSubmit,
@@ -9,6 +10,7 @@ const Signup = ({
   errors,
 }) => (
   <div id="login-form" className="card">
+    <img className="card-img-top" src="../../resources/images/logo.png" alt="Logo" />
     <h3 className="card-header">Sign Up</h3>
     <div className="card-block">
       {errors.summary && <div className="alert alert-danger error-message"><strong>Unable to register! </strong>{errors.summary}</div>}
@@ -35,6 +37,9 @@ const Signup = ({
         </div>
         <button type="submit" className="btn btn-primary" onClick={onSubmit}>Submit</button>
       </form>
+    </div>
+    <div className="card-block">
+      Already have an account? <Link to="/login">Login!</Link>
     </div>
   </div>
 );

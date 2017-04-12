@@ -12,6 +12,7 @@ const Paths = {
   profile_empty: '/profile',
   match: '/match/:email/:eventId/:reasons',
   search: '/search/:category(/:tags)',
+  all: '*',
 };
 
 export default Paths;
