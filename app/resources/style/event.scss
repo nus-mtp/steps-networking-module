@@ -8,6 +8,10 @@
   height: 400px;
 }
 
+#dropdown-button {
+  display: inline;
+}
+
 #home-body {
   width: 100vw;
 
@@ -29,6 +33,16 @@
     color: maroon;
     font-size: 20px;
     font-weight: 500;
+  }
+
+  .no-change-allow-message-sm {
+    margin-top: 10px;
+    color: red;
+  }
+
+  .no-change-allow-message {
+    margin-left: 20px;
+    color: red;
   }
 
   #event-tabs {
@@ -260,9 +274,19 @@
   #exhibition-container {
     color: black;
 
+    #exhibition {
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+
     #exhibition:hover {
-      background: lightseagreen;
+      background: rgba(128, 0, 0, 0.6);
       color: white;
+      border-radius: 25px;
+    }
+
+    .event-tag {
+      margin-right: 10px;
     }
   }
 }

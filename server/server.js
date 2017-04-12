@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const favicon = require('serve-favicon');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 
@@ -7,6 +8,7 @@ const app = express();
 const port = process.env.PORT || '3000';
 const dbConfig = process.env.MONGODB_URI;
 
+app.use(favicon(path.join(__dirname, '../dist/resources/images', 'favicon.ico')))
 app.use(express.static(path.join(__dirname, '/../dist')));
 app.use('/css', express.static(path.join(`${__dirname}/../node_modules/bootstrap/dist/css`)));  // redirect CSS bootstrap
 app.use('/js', express.static(path.join(`${__dirname}/../node_modules/bootstrap/dist/js`)));  // redirect js bootstrap

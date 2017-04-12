@@ -16,9 +16,11 @@ class Collapsable extends React.Component {
       isAttended: false,
       relevantUsers: [],
       checkbox: [],
+      participating: false,
     };
 
     this.initializeCheckboxes();
+    this.isParticipatingEvent(this.props.event.name);
 
     this.setLayout = this.setLayout.bind(this);
     this.setPresent = this.setPresent.bind(this);
@@ -160,6 +162,21 @@ class Collapsable extends React.Component {
     });
   }
 
+  isParticipatingEvent(eventName) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/attendance/get/oneUserExhibitionsInEvent/${this.props.email}/${eventName}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        this.setState({ participating: true});
+      } else {
+        this.setState({ participating: false});
+      }
+    });
+    xhr.send();
+  }
+
   render() {
     const displayCollapse = (this.props.open[this.props.serial]) ? 'collapse show' : 'collapse hide';
     const attending = (this.state.isAttended) ? 'active' : '';
@@ -179,7 +196,8 @@ class Collapsable extends React.Component {
                 id="attend-yes"
                 value="Yes"
                 className="custom-control-input"
-                onChange={this.setPresent} />
+                onChange={this.setPresent}
+                />
                 Yes
               </label>
               <label className={`btn btn-secondary attendance-indicator ${notAttending}-no`}>
@@ -189,10 +207,26 @@ class Collapsable extends React.Component {
                 id="attend-no"
                 value="No"
                 className="custom-control-input"
-                onChange={this.setAbsent} />
+                onChange={this.setAbsent}
+                disabled={this.state.participating}
+                />
                 No
               </label>
+              {
+                (this.state.participating) ?
+                  <div className="no-change-allow-message hidden-md-down">
+                    Participants are not allowed to change this option.
+                  </div> :
+                  <div/>
+              }
             </div>
+            {
+              (this.state.participating) ?
+                <div className="no-change-allow-message-sm hidden-lg-up">
+                  Participants are not allowed to change this option.
+                </div> :
+                <div/>
+            }
             { (this.state.isAttended) ?
               <div>
                 <hr />

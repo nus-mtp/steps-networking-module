@@ -1,5 +1,5 @@
 import React from 'react';
-import Search from './search';
+import Search from '../search/search';
 import Tabs from './tabs';
 import Event from './event';
 import Collapsable from './collapsable';
@@ -213,9 +213,9 @@ class HomeView extends React.Component {
                     <Collapsable
                       serial={i}
                       open={this.state.open}
-                     openCollapsable={this.openCollapsable}
-                     width={containerWidth}
-                     event={event}
+                      openCollapsable={this.openCollapsable}
+                      width={containerWidth}
+                      event={event}
                       attendance={this.state.attendance}
                       changeAttendance={this.changeAttendance}
                       email={this.state.email}

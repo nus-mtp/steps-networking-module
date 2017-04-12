@@ -7,7 +7,8 @@ import Profile from './components/profile/profileView';
 import Login from './components/auth/loginView';
 import Signup from './components/auth/signupView';
 import Match from './components/profile/match';
-import Search from './components/home/searchView';
+import Search from './components/search/searchView';
+import NotFound from './components/home/notFound';
 import Auth from './database/auth';
 import Paths from './paths';
 
@@ -42,27 +43,73 @@ const routes = {
     },
     {
       path: Paths.exhibition,
-      component: Exhibition,
+      getComponent: (nextState, callback) => {
+        if (Auth.isUserAuthenticated()) {
+          callback(null, Exhibition);
+        } else {
+          callback(null, Login);
+        }
+      },
     },
     {
       path: Paths.chat,
-      component: Chat,
+      getComponent: (nextState, callback) => {
+        if (Auth.isUserAuthenticated()) {
+          callback(null, Chat);
+        } else {
+          callback(null, Login);
+        }
+      },
     },
     {
       path: Paths.event,
-      component: Event,
+      getComponent: (nextState, callback) => {
+        if (Auth.isUserAuthenticated()) {
+          callback(null, Event);
+        } else {
+          callback(null, Login);
+        }
+      },
     },
     {
       path: Paths.profile,
-      component: Profile,
+      getComponent: (nextState, callback) => {
+        if (Auth.isUserAuthenticated()) {
+          callback(null, Profile);
+        } else {
+          callback(null, Login);
+        }
+      },
     },
     {
       path: Paths.match,
-      component: Match,
+      getComponent: (nextState, callback) => {
+        if (Auth.isUserAuthenticated()) {
+          callback(null, Match);
+        } else {
+          callback(null, Login);
+        }
+      },
     },
     {
       path: Paths.search,
-      component: Search,
+      getComponent: (nextState, callback) => {
+        if (Auth.isUserAuthenticated()) {
+          callback(null, Search);
+        } else {
+          callback(null, Login);
+        }
+      },
+    },
+    {
+      path: Paths.all,
+      getComponent: (nextState, callback) => {
+        if (Auth.isUserAuthenticated()) {
+          callback(null, NotFound);
+        } else {
+          callback(null, Login);
+        }
+      },
     },
   ],
 };
