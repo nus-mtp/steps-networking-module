@@ -18,6 +18,8 @@ class EventView extends React.Component {
       attendees: [],
       event: [],
       organizer: sampleOrganizer,
+      eventTags: [],
+      selectedTag: 'All',
     }
 
     this.getEvent();
@@ -28,6 +30,8 @@ class EventView extends React.Component {
     this.displayAllAttendees= this.displayAllAttendees.bind(this);
     this.onClick = this.onClick.bind(this);
     this.updateDisplayedExhibitions = this.updateDisplayedExhibitions.bind(this);
+    this.removeDuplicates = this.removeDuplicates.bind(this);
+    this.toTitleCase = this.toTitleCase.bind(this);
   }
 
   componentDidMount() {
@@ -46,30 +50,6 @@ class EventView extends React.Component {
       that.getExhibitions();
       that.getAttendees();
     });
-  }
-
-  getEvent() {
-    const pathname = this.props.location.pathname;
-    const eventName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
-
-    const xhr = new XMLHttpRequest();
-    xhr.open('get', `/event/get/oneEvent/${eventName}`);
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.responseType = 'json';
-    xhr.addEventListener('load', () => {
-      if (xhr.status === 200) {
-        // success
-        this.setState({
-          is404: false,
-          event: xhr.response,
-        });
-      } else {
-        this.setState({
-          is404: true,
-        });
-      }
-    });
-    xhr.send();
   }
 
   getAttendees() {
@@ -95,6 +75,10 @@ class EventView extends React.Component {
     xhr.send();
   }
 
+  removeDuplicates(arr) {
+    return Array.from(new Set(arr));
+  }
+
   getExhibitions() {
     const pathname = this.props.location.pathname;
     const eventName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
@@ -106,14 +90,41 @@ class EventView extends React.Component {
     xhr.addEventListener('load', () => {
       if (xhr.response !== null) {
         // success
+        const tags = xhr.response.map(exhibition => exhibition.tags[1]);
+        const tagsNoDuplicates = this.removeDuplicates(tags);
         this.setState({
           exhibitions: xhr.response,
           displayExhibitions: xhr.response,
+          eventTags: tagsNoDuplicates,
         });
       } else {
         this.setState({
           exhibitions: [],
           displayExhibitions: [],
+          eventTags: [],
+        });
+      }
+    });
+    xhr.send();
+  }
+
+  getEvent() {
+    const pathname = this.props.location.pathname;
+    const eventName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/event/get/oneEvent/${eventName}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.response !== null) {
+        // success
+        this.setState({
+          event: xhr.response,
+        });
+      } else {
+        this.setState({
+          event: [],
         });
       }
     });
@@ -147,48 +158,27 @@ class EventView extends React.Component {
   }
 
   updateDisplayedExhibitions(id) {
-    if (id === "all") {
-      this.setState({displayExhibitions: this.state.exhibitions});
-    } else {
-      const remainder = this.state.exhibitions.slice();
-      const result = remainder.filter((exhibition) => {
-        if (exhibition.tags.includes(id))
-            return exhibition;
-      });
-    this.setState({displayExhibitions: result});
-    }
+    const newDisplay = this.state.exhibitions.filter(exhibition => {if (exhibition.tags[1] === id) return exhibition});
+    this.setState({
+      displayExhibitions: newDisplay,
+      selectedTag: id
+    });
   }
 
   onClick(e) {
-    switch (e.target.id) {
-      case "all":
-        document.getElementById("internship").checked = false;
-        document.getElementById("partnership").checked = false;
-        document.getElementById("full-time").checked = false;
-        break;
-      case "internship":
-        document.getElementById("all").checked = false;
-        document.getElementById("partnership").checked = false;
-        document.getElementById("full-time").checked = false;
-        break;
-      case "partnership":
-        document.getElementById("all").checked = false;
-        document.getElementById("internship").checked = false;
-        document.getElementById("full-time").checked = false;
-        break;
-      case "full-time":
-        document.getElementById("all").checked = false;
-        document.getElementById("internship").checked = false;
-        document.getElementById("partnership").checked = false;
-        break;
-      default:
-        alert("Unknown");
-    }
     this.updateDisplayedExhibitions(e.target.id);
   }
 
   addDefaultSrc(event) {
     event.target.src = "../../resources/images/empty-poster-placeholder.png";
+  }
+
+  toTitleCase(str) {
+    return str.replace(/\w\S*/g,
+      function(txt){
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      }
+    );
   }
 
   render() {
@@ -227,7 +217,7 @@ class EventView extends React.Component {
                 <br />
                 <div className="event-info">Attendance: {this.state.attendees.length}</div>
                 <div className="event-info">Exhibitions: {this.state.exhibitions.length}</div>
-                <button className="btn btn-info mt-4" onClick={this.displayEventMap.bind(this)}>Sitemap</button>
+                <button className="btn btn-primary mt-4" onClick={this.displayEventMap.bind(this)}>Sitemap</button>
               </div>
             : <div />
           }
@@ -250,13 +240,29 @@ class EventView extends React.Component {
                     : "Show attendees"
                   }
                 </button>
-                <button className="btn btn-success mr-2" onClick={this.displayAllExhibitions}>
+                <button className="btn btn-info mr-2" onClick={this.displayAllExhibitions}>
                   {
                     (this.state.isDisplayExhibitions)
                     ? "Hide exhibitions"
                     : "Show exhibitions"
                   }
                 </button>
+                {
+                  (this.state.isDisplayExhibitions) ?
+                  <div id="dropdown-button" className="dropdown">
+                    <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      {this.state.selectedTag.toUpperCase()}
+                    </button>
+                    <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      {
+                        this.state.eventTags.map((tag, i) =>
+                        <a key={i} id={tag} className="dropdown-item" onClick={this.onClick}>{tag.toUpperCase()}</a>
+                        )
+                      }
+                    </div>
+                  </div> :
+                <div />
+                }
               </div>
               {
                 (this.state.isDisplayAttendees)
@@ -266,7 +272,7 @@ class EventView extends React.Component {
                       <Link id="exhibition-container" to={`/profile/${attendees.userEmail}`} key={i}>
                         <div id="attendees" className="d-flex flex-row mb-1 align-items-center">
                           <div>
-                            <div>{attendees.userName}</div>
+                            <div>{this.toTitleCase(attendees.userName)}</div>
                           </div>
                         </div>
                       </Link>
@@ -295,7 +301,7 @@ class EventView extends React.Component {
                           <div>
                             <div>{exhibition.exhibitionName}</div>
                             <div>
-                              {exhibition.tags.map((tag, i) => <div key={i} className="badge badge-pill badge-info">{tag}</div>)}
+                              {exhibition.tags.map((tag, i) => <div key={i} className="badge badge-pill badge-warning event-tag">{tag}</div>)}
                             </div>
                           </div>
                         </div>
