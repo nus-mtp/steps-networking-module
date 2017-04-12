@@ -67,6 +67,9 @@ class LoginView extends React.Component {
       }
     });
     xhr.send(formData);
+    // Hacks to overcome the unwanted 404 error in profile view
+    window.location.href += '.';
+    window.location.href.slice(0, -1);
   }
 
   handleUserPassword(e) {
