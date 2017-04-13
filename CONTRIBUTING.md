@@ -107,18 +107,32 @@ To be added later
     
 ### Javascript Styleguide
 
-All JavaScript must adhere to [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript).  
-We will follow ECMAScript 6+. An example is below:
-```javascript
-    // bad
-    [1, 2, 3].map(function (x) {
-      const y = x + 1;
-      return x * y;
-    });
+All JavaScript must adhere to [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript). We will follow ECMAScript 6+ styles.
 
-    // good
-    [1, 2, 3].map((x) => {
-      const y = x + 1;
-      return x * y;
-    });
+#### Examples
+```javascript
+// Old way
+[1, 2, 3].map(function (x) {
+   const y = x + 1;
+   return x * y;
+});
+
+// New way (arrow function)
+[1, 2, 3].map((x) => {
+   const y = x + 1;
+   return x * y;
+});
+```
+```javascript
+// Bad
+var count = 1;
+if (true) {
+  count += 1;
+}
+
+// Good, use the let.
+let count = 1;
+if (true) {
+  count += 1;
+}
 ```
