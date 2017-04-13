@@ -297,6 +297,7 @@ class ExhibitionView extends React.Component {
   }
 
   render() {
+    // render feedback/error when user submits a comment
     const isNotifyComment = (this.state.errorComment || this.state.feedbackComment) ? ((this.state.feedbackComment) ?
       <div className="alert alert-success" role="alert">
         <strong>Success!</strong> {this.state.feedbackComment}
@@ -305,6 +306,7 @@ class ExhibitionView extends React.Component {
         <strong>Error!</strong> {this.state.errorComment}
       </div>) : <div />;
 
+    // render feedback/error when user saves the tags.
     const isNotifyTags = (this.state.errorTags || this.state.feedbackTags) ? ((this.state.feedbackTags) ?
       <div className="alert alert-success" role="alert">
         <strong>Success!</strong> {this.state.feedbackTags}
@@ -397,15 +399,12 @@ class ExhibitionView extends React.Component {
                     <ul className="list-group">
                       {
                         commentObject.comments.map((comment, i) =>
-                          (commentObject.userEmail === Auth.getToken().email.replace(/%40/i, '@')) ?
-                            <li key={`${comment.content}${commentObject.userEmail}${i}`} className="user-comment-container list-group-item">
+                          <li
+                            key={`${comment.content}${commentObject.userEmail}${i}`}
+                            className={`${(commentObject.userEmail === Auth.getToken().email.replace(/%40/i, '@')) ? "user-comment-container" : "others-comment-container"} list-group-item`}>
                               <div id="comment-timestamp">{new Date(comment.timestamp).toDateString()}</div>
                               <div id="comment">{comment.content}</div>
-                            </li> :
-                            <li key={`${comment.content}${commentObject.userEmail}${i}`} className="others-comment-container list-group-item">
-                              <div id="comment-timestamp">{new Date(comment.timestamp).toDateString()}</div>
-                              <div id="comment">{comment.content}</div>
-                            </li>
+                          </li>
                         )
                       }
                     </ul>
