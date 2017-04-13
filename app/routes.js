@@ -7,7 +7,7 @@ import Profile from './components/profile/profileView';
 import Login from './components/auth/loginView';
 import Signup from './components/auth/signupView';
 import Match from './components/profile/match';
-import Search from './components/search/searchView';
+import SearchResult from './components/search/searchResultView';
 import NotFound from './components/home/notFound';
 import Auth from './database/auth';
 import Paths from './paths';
@@ -95,7 +95,7 @@ const routes = {
       path: Paths.search,
       getComponent: (nextState, callback) => {
         if (Auth.isUserAuthenticated()) {
-          callback(null, Search);
+          callback(null, SearchResult);
         } else {
           callback(null, Login);
         }

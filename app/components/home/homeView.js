@@ -1,5 +1,5 @@
 import React from 'react';
-import Search from '../search/search';
+import SearchInput from '../search/searchInputView';
 import Tabs from './tabs';
 import Event from './event';
 import Collapsable from './collapsable';
@@ -191,7 +191,7 @@ class HomeView extends React.Component {
         <div id="home-background" className="hidden-md-down">
           <div id="home-search-container">
             <h2 id="search-title">Find An Opportunity</h2>
-            <Search />
+            <SearchInput />
           </div>
         </div>
 

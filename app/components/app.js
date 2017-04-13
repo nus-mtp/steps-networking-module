@@ -1,5 +1,5 @@
 import React from 'react';
-import Search from './search/search';
+import SearchInput from './search/searchInputView';
 import { Link } from 'react-router';
 import Auth from '../database/auth';
 import Paths from '../paths';
@@ -104,10 +104,10 @@ class App extends React.Component {
             </button>
             <Link onClick={this.removeDropdown} to={Paths.home}><img id="brand-logo" src="../resources/images/logo.png" alt="Home" /></Link>
             <div className="collapse navbar-collapse flex-column flex-lg-row justify-content-between" id="navbar-supported-content">
-              <div className="hidden-lg-up responsive-container"><Search /></div>
+              <div className="hidden-lg-up responsive-container"><SearchInput /></div>
               <div className="hidden-md-down responsive-container">
               {
-                (this.props.location.pathname === '/') ? <div /> : <Search />
+                (this.props.location.pathname === '/') ? <div /> : <SearchInput />
               }
               </div>
               <ul id="navbar-links" className="navbar-nav">
