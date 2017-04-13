@@ -84,7 +84,11 @@ Both issue lists are sorted by total number of comments. While not perfect, numb
 
 ### Pull Requests
 
-To be added later
+* Include screenshots and animated GIFs in your pull request whenever possible.
+* Follow the [JavaScript](#javascript-styleguide) styleguides.
+* End files with a newline.
+* Reference the issue that you are fixing.
+* Make sure that you resolve all the conflict (if any) before the maintainers will take a look at your request.
 
 ## Styleguides
 
