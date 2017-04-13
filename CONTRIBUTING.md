@@ -16,6 +16,10 @@ These are just guidelines, not rules. Use your best judgment, and feel free to p
   * [Suggesting Enhancements](#suggesting-enhancements)
   * [Your First Code Contribution](#your-first-code-contribution)
   * [Pull Requests](#pull-requests)
+  
+[Styleguides](#styleguides)
+  * [Git Commit Messages](#git-commit-messages)
+  * [JavaScript Styleguide](#javascript-styleguide)
 
 ## What should I know before I get started?
 
