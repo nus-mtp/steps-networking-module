@@ -10,9 +10,6 @@ class ProfileView extends React.Component {
   constructor(props) {
     super(props);
 
-    const pathname = this.props.location.pathname;
-    const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
-
     this.state = {
       isContentEditable: false, //  Edit mode
       is404: false,
@@ -20,7 +17,7 @@ class ProfileView extends React.Component {
       skillsCache: '',
       linksCache: '',
       user: {},
-      email: userEmail,
+      email: '',
       events: [], // List of event user attended
       exhibitions: [], // List of exhibition user participated
       attendances: [], // For all the attendance objects
@@ -28,9 +25,7 @@ class ProfileView extends React.Component {
       error: '',
     };
 
-    this.getUser(userEmail);
-    this.getEvent(userEmail);
-    this.getAttendances(userEmail);
+    this.retrieveData();
 
     this.handleEdit = this.handleEdit.bind(this);
     this.changeEdit = this.changeEdit.bind(this);
@@ -67,6 +62,23 @@ class ProfileView extends React.Component {
     });
   }
 
+  /**
+    * Populates the state with data from the database
+    * Information retrieved are user, event and attendance for each exhibition and event
+    */
+  retrieveData() {
+    const pathname = this.props.location.pathname;
+    const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
+    this.setState({
+      email: userEmail,
+    });
+
+    this.getUser(userEmail);
+    this.getEvent(userEmail);
+    this.getAttendances(userEmail);
+  }
+
   getUser(email) {
     const xhr = new XMLHttpRequest();
     xhr.open('get', `/user/get/profile/${email}`);
@@ -75,6 +87,8 @@ class ProfileView extends React.Component {
     xhr.addEventListener('load', () => {
       const user = xhr.response;
       if (user) {
+
+        // change database format of skills and links to object array to accomodate ReactTags
         user.userSkills = (xhr.response && xhr.response.userSkills.length > 0) ? xhr.response.userSkills.map((skill, i) => {
           return {
             id: i,
@@ -87,13 +101,14 @@ class ProfileView extends React.Component {
             text: link,
           };
         }) : [];
+
         this.setState({
-          is404: false,
+          is404: false, // valid profile
           user,
         });
       } else {
         this.setState({
-          is404: true,
+          is404: true,  // invalid profile
         });
       }
     });
@@ -237,6 +252,9 @@ class ProfileView extends React.Component {
     });
   }
 
+  /**
+    * Set editable content to be editable and cache current data before any changes
+    */
   handleEdit() {
     this.setState({
       isContentEditable: !this.state.isContentEditable,
@@ -258,7 +276,11 @@ class ProfileView extends React.Component {
     });
   }
 
+  /**
+    * Create request to be submitted to database
+    */
   submitForm() {
+    // reverts skills and links to string array to accomodate database format
     const skillArray = this.state.user.userSkills.map(skill => { return skill.text });
     const linkArray = this.state.user.userLinks.map(link => { return link.text });
 
@@ -309,6 +331,10 @@ class ProfileView extends React.Component {
     this.getAttendances(userEmail);
   }
 
+  /**
+    * Make HTTP POST to database and save data
+    * @param request
+    */
   setUserInfo(formData) {
     if (this.state.user.userSkills !== this.state.skillsCache) {
       const xhr = new XMLHttpRequest();
