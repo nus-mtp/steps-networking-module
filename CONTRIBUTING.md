@@ -51,7 +51,7 @@ If there is no issue documented pertaining to the bug you experienced, you can f
 
 Of course it may sometimes be impossible to provide all the details as it would take very long. So try your best to keep it short and sweet. TL;DR style is appreciated.
 
-### Suggesting Enhancement
+### Suggesting Enhancements
 
 This section guides you through submitting an enhancement suggestion for SNM, including completely new features and minor improvements to existing functionality. Following these guidelines helps maintainers and the community understand your suggestion :pencil: and find related suggestions :mag_right:. Please check out [this guide](#how-do-i-submit-an-enhancement-suggestion) to know how to submit an enhancement suggestion.
 
@@ -68,3 +68,57 @@ If there is no issue documented pertaining to the bug you experienced, you can f
 * **Include screenshots and animated GIFs** which help you demonstrate the steps or point out the part of SNM which the suggestion is related to. You can use [this tool](http://www.cockos.com/licecap/) to record GIFs on macOS and Windows, and [this tool](https://github.com/colinkeenan/silentcast) or [this tool](https://github.com/GNOME/byzanz) on Linux.
 * **Explain why this enhancement would be beneficial** to most if not all of the users. Enhancement would only be called that if it benefits the community.
 * **List some other text editors or applications where this enhancement exists.**
+
+### Your First Code Contribution
+
+Unsure where to begin contributing to Atom? You can start by looking through these `beginner` and `help-wanted` issues:
+
+* Beginner issues - issues which should only require a few lines of code, and a test or two.
+* Help wanted issues - issues which should be a bit more involved than `beginner` issues.
+
+Both issue lists are sorted by total number of comments. While not perfect, number of comments is a reasonable proxy for impact a given change will have.
+
+### Pull Requests
+
+To be added later
+
+## Styleguides
+
+### Git Commit Messages
+
+* Use the present tense ("Add feature" not "Added feature")
+* Use the imperative mood ("Move cursor to..." not "Moves cursor to...")
+* Limit the first line to 72 characters or less
+* Reference issues and pull requests liberally
+* Consider starting the commit message with an applicable emoji:
+    * :art: `:art:` when improving the format/structure of the code
+    * :racehorse: `:racehorse:` when improving performance
+    * :non-potable_water: `:non-potable_water:` when plugging memory leaks
+    * :penguin: `:penguin:` when fixing something on Linux
+    * :apple: `:apple:` when fixing something on macOS
+    * :checkered_flag: `:checkered_flag:` when fixing something on Windows
+    * :bug: `:bug:` when fixing a bug
+    * :fire: `:fire:` when removing code or files
+    * :white_check_mark: `:white_check_mark:` when adding tests
+    * :lock: `:lock:` when dealing with security
+    * :arrow_up: `:arrow_up:` when upgrading dependencies
+    * :arrow_down: `:arrow_down:` when downgrading dependencies
+    * :shirt: `:shirt:` when removing linter warnings
+    
+### Javascript Styleguide
+
+All JavaScript must adhere to [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript).  
+We will follow ECMAScript 6+. An example is below:
+```javascript
+    // bad
+    [1, 2, 3].map(function (x) {
+      const y = x + 1;
+      return x * y;
+    });
+
+    // good
+    [1, 2, 3].map((x) => {
+      const y = x + 1;
+      return x * y;
+    });
+```
