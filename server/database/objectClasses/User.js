@@ -26,7 +26,7 @@ class User {
    */
   static checkConnection() {
     return (User.db && User.UserModel &&
-      (User.db.readyState === 1 || User.db.readyState === 2));
+            (User.db.readyState === 1 || User.db.readyState === 2));
   }
 
   /**
@@ -43,11 +43,10 @@ class User {
    * @param {Array} links: A list of Strings to external self-promotion sites of the User.
    * @param {Array} skillSets: A list of Strings representing subject matters the
    *    User has some mastery in.
-   * @param {Array} bookmarkedUsers: A list of Strings representing other
-   *    userEmails that the User has bookmarked.
+   * @param {Array} bookmarkedUserIds: A list of ObjectIds referencing other Users the User has bookmarked.
    */
   constructor(userEmail = '', userName = '', userDescription = '', userPassword = '',
-    willNotify = true, isDeleted = false, profilePic = '', links = [], skillSets = [], bookmarkedUsers = []) {
+               willNotify = true, isDeleted = false, profilePic = '', links = [], skillSets = [], bookmarkedUsers = []) {
     this.userJSON = {
       email: userEmail.trim(),
       name: userName.trim(),
@@ -130,15 +129,15 @@ class User {
   static getBookmarksForUser(userEmail, callback) {
     if (User.checkConnection()) {
       User.UserModel
-            .findOne({ email: userEmail })
-            .populate('bookmarked_users', 'email name profile_picture will_notify is_deleted')
-            .exec((err, user) => {
-              if (user) {
-                callback(err, user.bookmarked_users);
-              } else {
-                callback(err, user);
-              }
-            });
+        .findOne({ email: userEmail })
+        .populate('bookmarked_users', 'email name profile_picture will_notify is_deleted')
+        .exec((err, user) => {
+        if (user) {
+          callback(err, user.bookmarked_users);
+        } else {
+          callback(err, user);
+        }
+      });
     } else {
       callback('Not Connected!', null);
     }
@@ -339,7 +338,7 @@ class User {
   /**
    * Sets the array of links for the User.
    *
-   * @param {String} userEmail: The email of the User to remove the link from.
+   * @param {String} userEmail: The email of the User to remove set the link on.
    * @param {Array} links: The list of Strings representing external URLs to save to the User.
    * @param {function} callback: A function that executes once the operation is complete.
    */
@@ -524,7 +523,7 @@ class User {
    * @param {function} callback: A function that is executed once the operation is done.
    */
   static updateUser(email = '', name = '', description = '', password = '',
-    willNotify = true, isDeleted = false, profilePic = '', links = [], skillSets = [], bookmarkedUserIds = [], callback) {
+                     willNotify = true, isDeleted = false, profilePic = '', links = [], skillSets = [], bookmarkedUserIds = [], callback) {
     const update = {
       email: email.trim(),
       name: name.trim(),
@@ -559,12 +558,12 @@ class User {
       const update = { is_deleted: isDeleted };
       const options = { new: true };
       User.UserModel.findOneAndUpdate(
-            { email: userEmail },
-            { $set: update },
-            options,
-            (err, results) => {
-              callback(err, results);
-            });
+        { email: userEmail },
+        { $set: update },
+        options,
+        (err, results) => {
+          callback(err, results);
+        });
     } else {
       callback('Not Connected!', null);
     }
