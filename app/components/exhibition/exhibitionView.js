@@ -27,7 +27,7 @@ class ExhibitionView extends React.Component {
     this.retrieveData();
 
     this.editComment = this.editComment.bind(this);
-    this.submitComment = this.submitComment.bind(this);
+    this.saveComment = this.saveComment.bind(this);
     this.toggleTagEditable = this.toggleTagEditable.bind(this);
     this.handleDeleteTag = this.handleDeleteTag.bind(this);
     this.handleAdditionTag = this.handleAdditionTag.bind(this);
@@ -140,7 +140,7 @@ class ExhibitionView extends React.Component {
     * Function to post a save a comment into the database
     * HTTP POST body requires eventName, exhibitionName, userEmail and comment
     */
-  submitComment() {
+  saveComment() {
     const comment = encodeURIComponent(this.state.currentComment);
     const eventName = encodeURIComponent(this.state.exhibition.eventName);
     const exhibitionName = encodeURIComponent(this.state.exhibition.exhibitionName);
@@ -165,6 +165,7 @@ class ExhibitionView extends React.Component {
             currentComment: '',
           });
 
+          // reload comments
           this.retrieveData();
         } else {
           // failure
@@ -387,7 +388,7 @@ class ExhibitionView extends React.Component {
               <div className="info-type">Comments</div>
               <div id="comment-input-container">
                 <textarea className="form-control" rows="2" id="comment-input" value={this.state.currentComment} onChange={this.editComment}></textarea>
-                <button id="submit-comment" type="button" className="btn btn-primary" onClick={this.submitComment}>Submit</button>
+                <button id="submit-comment" type="button" className="btn btn-primary" onClick={this.saveComment}>Submit</button>
               </div>
               {isNotifyComment}
               <div id="comment-list">
