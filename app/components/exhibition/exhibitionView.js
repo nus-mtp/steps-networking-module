@@ -10,20 +10,20 @@ class ExhibitionView extends React.Component {
     super(props);
 
     this.state = {
-      currentComment: '',
-      comments: [],
-      tagChange: '',
+      currentComment: '',  // current comment that has not been saved to database
+      comments: [],  // comment cache
       exhibition: {},
       attendance: {},
       feedbackComment: '',
       errorComment: '',
-      feedbackTags: '',
+      feedbackTags: '', // any feedback that are not errors
       errorTags: '',
-      isExhibitior: false,
-      isTagEditable: false,
-      is404: false,
+      isExhibitior: false,  // whether current user is an exhibitor of this exhibition
+      isTagEditable: false, // whether tag can be edited and save
+      is404: false, // whether this exhibition is valid
     };
 
+    // populate cache with data from server
     this.retrieveData();
 
     this.editComment = this.editComment.bind(this);
@@ -33,7 +33,6 @@ class ExhibitionView extends React.Component {
     this.handleAdditionTag = this.handleAdditionTag.bind(this);
     this.handleDragTag = this.handleDragTag.bind(this);
     this.saveTags = this.saveTags.bind(this);
-    this.handleTagInputChange = this.handleTagInputChange.bind(this);
   }
 
   componentDidMount() {
@@ -51,7 +50,8 @@ class ExhibitionView extends React.Component {
   }
 
   /**
-    * Function that contains all HTTP GET interactions with database
+    * Contains all HTTP GET interactions with database
+    * Interactions are exhibition, comments and attendance
     */
   retrieveData() {
     let pathname = this.props.location.pathname;
@@ -202,6 +202,11 @@ class ExhibitionView extends React.Component {
     }
   }
 
+  /**
+    * Remove tags for exhibition
+    * Function is bound to ReactTags
+    * @param index of tag to be deleted
+    */
   handleDeleteTag(i) {
     const exhibition = this.state.exhibition;
     exhibition.tags = exhibition.tags.filter((tag, index) => index !== i);
@@ -209,6 +214,13 @@ class ExhibitionView extends React.Component {
     this.setState({ exhibition, });
   }
 
+  /**
+    * Enable re-ordering of tags
+    * Function is bound to ReactTags
+    * @param selected tag,
+    *        current position of selected tag,
+    *        new position of selected tag
+    */
   handleDragTag(tag, currPos, newPos) {
     const tags = [ ...this.state.exhibition.tags ];
 
@@ -222,6 +234,11 @@ class ExhibitionView extends React.Component {
     this.setState({ exhibition, });
   }
 
+  /**
+    * Add and cache new tag
+    * Function is bound to ReactTags
+    * @param new tag
+    */
   handleAdditionTag(tag) {
     const exhibition = this.state.exhibition;
     exhibition.tags = [
@@ -235,6 +252,9 @@ class ExhibitionView extends React.Component {
     this.setState({ exhibition, });
   }
 
+  /**
+    * Save tags to database with HTTP POST
+    */
   saveTags() {
     const tagArray = this.state.exhibition.tags.map(tag => { return tag.text });
 
@@ -269,12 +289,6 @@ class ExhibitionView extends React.Component {
   toggleTagEditable() {
     this.setState({
       isTagEditable: !this.state.isTagEditable,
-    });
-  }
-
-  handleTagInputChange(event) {
-    this.setState({
-      tagChange: event.target.value,
     });
   }
 
