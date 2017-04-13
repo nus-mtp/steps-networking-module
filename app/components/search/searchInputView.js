@@ -8,8 +8,8 @@ class Search extends React.Component {
       searchDefaults: [],   // the field we are searching
       searchResults: [],    // the results from search term
       search: '',   // the selected search term
-      searchFilter: 'Event',
-      error: '',
+      searchFilter: 'Event',  // default filter
+      error: '',  // error message
     }
 
     this.filterSearch();
@@ -24,8 +24,14 @@ class Search extends React.Component {
     };
   }
 
+  /**
+    * Retrives data from database and
+    * cache all event or exhibition depending on the filter
+    */
   filterSearch() {
     const xhr = new XMLHttpRequest();
+
+    // call event route
     if (this.state.searchFilter === 'Event') {
       xhr.open('get', `/event/get/allEvents`);
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -36,6 +42,8 @@ class Search extends React.Component {
         });
       });
       xhr.send();
+
+    // call exhibition route
     } else if (this.state.searchFilter === 'Exhibition') {
       xhr.open('get', `/exhibition/get/allExhibitions`);
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -49,6 +57,12 @@ class Search extends React.Component {
     }
   }
 
+  /**
+    * Filters the cached exhibition/event/user depending on the user input
+    * This is achieved by searching the cache for the if it contains the user search query
+    * and renders the result as suggestions for the user
+    * @param input event
+    */
   getSearchAsync(event) {
     const searchArray = [];
     if (event.target.value && event.target.value.length > 1) {
@@ -76,6 +90,12 @@ class Search extends React.Component {
     });
   }
 
+  /**
+    * Handles the search by
+    * redirecting to the relevant page depending on
+    * the search query
+    * @param search term
+    */
   handleSearch(term) {
     let searchUrl = (typeof term === 'string') ? term : this.state.search;
 
@@ -84,6 +104,8 @@ class Search extends React.Component {
         this.context.router.push(`/event/${searchUrl}`);
       } else if (this.state.searchFilter === 'Exhibition') {
         let eventName = 'null';
+
+        // get the eventName from the exhibition object to be used as url
         this.state.searchDefaults.map(term => {
           if (term.exhibitionName.trim().toLowerCase().search(searchUrl.trim().toLowerCase()) !== -1) {
             eventName = term.eventName;
@@ -111,6 +133,10 @@ class Search extends React.Component {
     }
   }
 
+  /**
+    * Change the filter state
+    * @param filter name
+    */
   changeFilterInput(filter) {
     this.setState({
       searchFilter: filter,
