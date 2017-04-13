@@ -11,6 +11,9 @@ These are just guidelines, not rules. Use your best judgment, and feel free to p
   * [Code of Conduct](#code-of-conduct)
   * [SNM](#SNM)
 
+[How Can I Contribute?](#how-can-i-contribute)
+  * [Reporting Bugs](#reporting-bugs)
+
 ## What should I know before I get started?
 
 ### Code of Conduct
@@ -22,3 +25,25 @@ Please report unacceptable behavior to [adam@u.nus.edu](mailto:adam@u.nus.edu).
 ### SNM
 
 SoC term Project Showcase (STePS) System has event workflow management, registration, check-in and voting modules. As the event is getting bigger, a system with a networking module to enable attendees to network meaningfully and effectively before, during and after events is necessary. The module classifies/groups users based on their interest and purpose of attending STePS, allow users to post/comment in forums of each STePS run, have personal chat with other attendees.
+
+## How Can I Contribute?
+
+### Reporting Bugs
+
+We agree that our project is not tip top perfect. As such, you may experience some unwanted result. This is how the guide will come in handy to tackle the problem. In the event that you have experienced any sort of bug while using the website, please check out [this list](#how-do-i-submit-a-bug-report).
+
+### How Do I Submit A Bug Report
+
+Bugs are tracked as [GitHub issues](https://guides.github.com/features/issues/). After you are sure that the bug is reproducable, please check our [current issues](https://github.com/nus-mtp/steps-networking-module/issues) here to see if someone else had noticed the bug before you. If the bug you experience had already been documented by someone else, please do not create another issue. What you can do is to include a comment in that issue. Be sure to read the [code of conduct](CODE_OF_CONDUCT.md) before posting.
+
+If there is no issue documented pertaining to the bug you experienced, you can follow the set of guidelines below to help maintainers reproduce the problem:
+
+* **Use a clear and descriptive title** for the issue to identify the problem.
+* **Describe the exact steps which reproduce the problem** in as many details as possible. For example, start by explaining how you open SNM website with which browser. When listing steps, **don't just say what you did, but explain how you did it**.
+* **Provide specific examples to demonstrate the steps**. Include links to files or GitHub projects, or copy/pasteable snippets, which you use in those examples. If you're providing snippets in the issue, use [Markdown code blocks](https://help.github.com/articles/markdown-basics/#multiple-lines).
+* **Describe the behavior you observed after following the steps** and point out what exactly is the problem with that behavior.
+* **Explain which behavior you expected to see instead and why.**
+* **Include screenshots and animated GIFs** which show you following the described steps and clearly demonstrate the problem. You can use [this tool](http://www.cockos.com/licecap/) to record GIFs on macOS and Windows, and [this tool](https://github.com/colinkeenan/silentcast) or [this tool](https://github.com/GNOME/byzanz) on Linux.
+* **If the problem wasn't triggered by a specific action**, describe what you were doing before the problem happened and share more information using the guidelines below.
+
+Of course it may sometimes be impossible to provide all the details as it would take very long. So try your best to keep it short and sweet. TL;DR style is appreciated.
