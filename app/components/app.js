@@ -56,6 +56,9 @@ class App extends React.Component {
     });
   }
 
+  /**
+    * Shifts the application body when the dropdown is clicked on in mobile platforms
+    */
   shiftBody() {
     if (!this.state.isHamburgerToggled) {
       document.getElementById('app-body').classList.remove('collapse-hide');
@@ -69,6 +72,9 @@ class App extends React.Component {
     });
   }
 
+  /**
+    * Highlights the current page the user is at
+    */
   handleLinks() {
     const baseState = {
       profileActive: '',

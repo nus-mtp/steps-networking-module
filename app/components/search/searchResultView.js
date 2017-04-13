@@ -29,6 +29,10 @@ class SearchView extends React.Component {
     });
   }
 
+  /**
+    * Determine what filter has the user used via url and
+    * retrieves the information accordingly
+    */
   checkPath() {
     let pathname = this.props.location.pathname;
     const tags = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);

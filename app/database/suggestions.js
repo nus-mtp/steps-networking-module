@@ -1,3 +1,4 @@
+// skill suggestions for user input in profileView
 const skillSuggestions = [
   "Dojo Toolkit",
   "jQuery",

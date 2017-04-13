@@ -22,7 +22,7 @@ class HomeView extends React.Component {
       email: userEmail.replace(/%40/i, '@'),
     };
 
-    this.initializeStates();
+    this.retrieveData();
 
     this.openCollapsable = this.openCollapsable.bind(this);
     this.changeAttendance = this.changeAttendance.bind(this);
@@ -32,7 +32,7 @@ class HomeView extends React.Component {
     this.getAttendances = this.getAttendances.bind(this);
   }
 
-  initializeStates() {
+  retrieveData() {
     const xhr = new XMLHttpRequest();
     xhr.open('get', '/event/get/allEvents');
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
