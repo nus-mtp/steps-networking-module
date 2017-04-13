@@ -37,7 +37,6 @@ const userSchema = new mongoose.Schema({
   links: [
     {
       type: String,
-      lowercase: true,
       trim: true,
     },
   ],
@@ -46,14 +45,12 @@ const userSchema = new mongoose.Schema({
       type: String,
       lowercase: true,
       trim: true,
-      // unique: true,
     },
   ],
   bookmarked_users: [
     {
       type: mongoose.Schema.ObjectId,
       ref: 'user',
-      // unique: true,
     },
   ],
 });
