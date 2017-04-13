@@ -64,7 +64,7 @@ class ProfileView extends React.Component {
 
   /**
     * Populates the state with data from the database
-    * Information retrieved are user, event and attendance for each exhibition and event
+    * Information retrieved are user, event, exhibition and attendance for each exhibition and event
     */
   retrieveData() {
     const pathname = this.props.location.pathname;
@@ -75,7 +75,7 @@ class ProfileView extends React.Component {
     });
 
     this.getUser(userEmail);
-    this.getEvent(userEmail);
+    this.getEvent(userEmail); // gets exhibition after event is retrieved
     this.getAttendances(userEmail);
   }
 
