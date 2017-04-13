@@ -44,6 +44,7 @@ class ProfileView extends React.Component {
     this.handleDragLink = this.handleDragLink.bind(this);
     this.saveReasons = this.saveReasons.bind(this);
     this.getAttendances = this.getAttendances.bind(this);
+    this.toTitleCase = this.toTitleCase.bind(this);
   }
 
   componentDidMount() {
@@ -391,6 +392,14 @@ class ProfileView extends React.Component {
     event.target.src = "../../resources/images/empty-poster-placeholder.png";
   }
 
+  toTitleCase(str) {
+    return str.replace(/\w\S*/g,
+      function(txt){
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      }
+    );
+  }
+
   render() {
     const userEmail = (Auth.isUserAuthenticated()) ? Auth.getToken().email.replace(/%40/i, '@') : '';
     const isNotify = (this.state.error || this.state.feedback) ? ((this.state.feedback) ?
@@ -408,7 +417,7 @@ class ProfileView extends React.Component {
         {
           (Object.keys(this.state.user).length !== 0)
           ? <div className="row justify-content-between justify-content-md-around">
-              <h4 id="user-name" className="col-md-6 push-md-3 col-12 text-center align-self-center">{this.state.user.userName}</h4>
+              <h4 id="user-name" className="col-md-6 push-md-3 col-12 text-center align-self-center">{this.toTitleCase(this.state.user.userName)}</h4>
               <div className="col-md-3 pull-md-6 col-6 text-center d-flex justify-content-center">
               {
                 (this.state.user.userEmail !== userEmail) ?

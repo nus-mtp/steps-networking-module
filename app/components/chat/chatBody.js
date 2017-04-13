@@ -5,12 +5,13 @@ import Auth from '../../database/auth';
 export default class ChatBody extends Component {
   constructor(props) {
     super(props);
-    
-    // Map functions to the class for easier handling    
+
+    // Map functions to the class for easier handling
     this.catchSubmit = this.catchSubmit.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.checkQuery = this.checkQuery.bind(this);
-    
+    this.toTitleCase = this.toTitleCase.bind(this);
+
     // Get all messages for both sender and receiver
     this.initialiseMessages();
 
@@ -29,9 +30,9 @@ export default class ChatBody extends Component {
       paddingLeft: '15px',
       marginLeft: this.props.marginLeft,
     };
-    
+
     this.current = this.props.current;
-    
+
     this.props.sockets.on('refresh message', function(results){
       this.initialiseMessages();
     }.bind(this));
@@ -46,9 +47,9 @@ export default class ChatBody extends Component {
       this.textInput.focus();
     }
   }
-  
+
   retrieveAllMessages(senderEmail, recipientEmail) {
-    
+
     this.props.sockets.emit('get message', { senderEmail, recipientEmail }, Auth.getToken(), function(err, conversation) {
       if (err||conversation===null||conversation.messages===undefined) {
         this.setState({[`${senderEmail}`]: [] });
@@ -57,11 +58,11 @@ export default class ChatBody extends Component {
       }
     }.bind(this));
   }
-  
+
   initialiseMessages() {
     const senderEmail = this.props.email;
     const recipientEmail = this.props.users[this.props.current];
-    
+
     if (!senderEmail||!recipientEmail) {
       if (!this.update) {
         //console.log("Failed to get messages");
@@ -74,13 +75,13 @@ export default class ChatBody extends Component {
       this.current = this.props.current;
     }
   }
-  
+
   getReceivedMessages() {
     const senderEmail = this.props.email;
     const recipientEmail = this.props.users[this.props.current];
     this.retrieveAllMessages(recipientEmail, senderEmail);
   }
-  
+
   getSentMessages() {
     const senderEmail = this.props.email;
     const recipientEmail = this.props.users[this.props.current];
@@ -96,14 +97,14 @@ export default class ChatBody extends Component {
       }
     }.bind(this));
   }
-  
+
   createPostList(array = [], postFunc = ChatBody.PostSelf) {
     if (array.length==0) {
       return [];
     } else {
       return array.map(function(object, index) {
         // return an object that has been made into a post and keep time stamp
-        return { 
+        return {
           content: postFunc(object.content, index),
           timestamp: object.timestamp,
         };
@@ -149,29 +150,29 @@ export default class ChatBody extends Component {
         j++;
       }
     }
-    
+
     while(i < list1.length) {
       mergedList.push(list1[i].content);
       i++;
     }
-    
+
     while(j < list2.length) {
       mergedList.push(list2[j].content);
       j++;
     }
-    
+
     return mergedList;
   }
-  
+
   getMessages() {
     const userEmail = this.props.email;
     const recipientEmail = this.props.users[this.props.current];
-    
-    if (this.state[userEmail]!=null && 
+
+    if (this.state[userEmail]!=null &&
       this.state[recipientEmail]!=null && // if not null and
       (this.state[userEmail].length!=0 ||
       this.state[recipientEmail].length!=0)) { // if not empty
-      
+
       return this.mergeSortLists(
         this.createPostList(this.state[userEmail], ChatBody.PostSelf),
         this.createPostList(this.state[recipientEmail], ChatBody.PostOther)
@@ -221,14 +222,14 @@ export default class ChatBody extends Component {
     const divStyle = {
       marginTop: '30px',
     };
-    
+
     return (
       <div id="chat-content-container" style={divStyle}>
         {this.getMessages.bind(this)()}
       </div>
     );
   }
-  
+
   getUserName() {
     let str = '';
     if (this.props.names.length===this.props.users.length && this.props.names[this.props.current]!==null) {
@@ -236,9 +237,17 @@ export default class ChatBody extends Component {
     } else {
       str = this.props.users[this.props.current];
     }
-    return str;
+    return this.toTitleCase(str);
   }
-  
+
+  toTitleCase(str) {
+    return str.replace(/\w\S*/g,
+      function(txt){
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      }
+    );
+  }
+
   getName(fixToTop) {
     const recipientEmail = this.props.users[this.props.current];
     if (recipientEmail===undefined) {
@@ -263,7 +272,7 @@ export default class ChatBody extends Component {
         backgroundColor: 'white',
         width: '100%',
       };
-      
+
       const handleChange = function(index) {
         return function(event) {
           event.preventDefault();
@@ -271,7 +280,7 @@ export default class ChatBody extends Component {
           this.update = true;
         }.bind(this);
       }.bind(this);
-      
+
       return (
         <div className={_classname} style={backgroundStyle}>
           <div style={divStyle}>
@@ -285,18 +294,18 @@ export default class ChatBody extends Component {
                   this.props.names.map(function(name, index) {
                     if (name!==null) {
                       return (
-                        <li key={index}><button 
+                        <li key={index}><button
                           className="btn btn-secondary"
-                          style={{marginLeft: 'auto', marginRight: 'auto', width:'100%'}} 
+                          style={{marginLeft: 'auto', marginRight: 'auto', width:'100%'}}
                           onClick={handleChange(index)}>
                             {name}
                           </button></li>
                       );
                     } else if (this.props.users[index]===this.props.talkToEmail) {
                       return (
-                        <li key={index}><button 
+                        <li key={index}><button
                           className="btn btn-secondary"
-                          style={{marginLeft: 'auto', marginRight: 'auto', width:'100%'}} 
+                          style={{marginLeft: 'auto', marginRight: 'auto', width:'100%'}}
                           onClick={handleChange(index)}>
                             {this.props.talkToEmail}
                           </button></li>
@@ -346,9 +355,9 @@ export default class ChatBody extends Component {
       divStyle = this.divStyle;
       singularMode = false;
     }
-    
+
     // if the curent email is invalid and it is the url email
-    if (this.props.names[this.props.current]===null && this.props.users[this.props.current]===this.props.talkToEmail) { 
+    if (this.props.names[this.props.current]===null && this.props.users[this.props.current]===this.props.talkToEmail) {
       this.textInput = null;
       const notValidStyle = {textAlign: 'center'};
       if (singularMode) {
