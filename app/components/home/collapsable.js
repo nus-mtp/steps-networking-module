@@ -1,3 +1,13 @@
+/*
+   eslint-disable array-callback-return,
+   jsx-a11y/no-static-element-interactions,
+   react/jsx-no-bind,
+   class-methods-use-this,
+   consistent-return,
+   no-param-reassign,
+   react/forbid-prop-types,
+*/
+
 import React from 'react';
 import Auth from '../../database/auth';
 import { Link } from 'react-router';
@@ -31,6 +41,9 @@ class Collapsable extends React.Component {
     this.toTitleCase = this.toTitleCase.bind(this);
   }
 
+  /**
+    * Get thE state of the checkboxes from the database
+    */
   initializeCheckboxes() {
     const xhr = new XMLHttpRequest();
     xhr.open('get', `attendance/get/oneUserAttendance/${this.props.email}/${this.props.event.id}`);
@@ -56,6 +69,10 @@ class Collapsable extends React.Component {
     window.removeEventListener('resize', this.updateLayout);
   }
 
+  /**
+    * WARNING: Very math!!
+    * This will make this component to have full width depending on the number of events per row
+    */
   setLayout() {
     const marginToDisplay = Math.abs(this.state.order % this.state.numberOfEventPerRow);
 
@@ -68,16 +85,19 @@ class Collapsable extends React.Component {
     };
   }
 
+  /**
+    * Toggle the checkbox, send the whole array to database
+    */
   onToggle(e) {
     if (e.target.checked) {
-      const array = this.state.checkbox;
-      array.push(e.target.name);
-      const array2 = array.filter(box => {if (box !== 'nil') return box;});
-      this.setState({ checkbox: array2 });
+      const currentArray = this.state.checkbox;
+      currentArray.push(e.target.name);
+      const newArray = currentArray.filter(box => {if (box !== 'nil') return box;});
+      this.setState({ checkbox: newArray });
 
       const userEmail = encodeURIComponent(this.props.email);
       const id = encodeURIComponent(this.props.event.id);
-      const reasons = encodeURIComponent(array2.toString());
+      const reasons = encodeURIComponent(newArray.toString());
       const formData = `userEmail=${userEmail}&id=${id}&reasons=${reasons}`;
 
       const xhr = new XMLHttpRequest();
@@ -86,15 +106,15 @@ class Collapsable extends React.Component {
       xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
       xhr.responseType = 'json';
       xhr.send(formData);
-      this.getRelevantUsers(array2);
+      this.getRelevantUsers(newArray); // Refreshes the user list
     } else {
-      const array = this.state.checkbox.filter(box => {if (box !== e.target.name) return box;});
-      if (array.length === 0) array.push('nil');
-      this.setState({ checkbox: array });
+      const newArray = this.state.checkbox.filter(box => {if (box !== e.target.name) return box;});
+      if (newArray.length === 0) newArray.push('nil');
+      this.setState({ checkbox: newArray });
 
       const userEmail = encodeURIComponent(this.props.email);
       const id = encodeURIComponent(this.props.event.id);
-      const reasons = encodeURIComponent(array.toString());
+      const reasons = encodeURIComponent(newArray.toString());
       const formData = `userEmail=${userEmail}&id=${id}&reasons=${reasons}`;
 
       const xhr = new XMLHttpRequest();
@@ -103,10 +123,15 @@ class Collapsable extends React.Component {
       xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
       xhr.responseType = 'json';
       xhr.send(formData);
-      this.getRelevantUsers(array);
+      this.getRelevantUsers(newArray); // Refreshes the user list
     }
   }
 
+
+  /**
+    * Get the relevant users based on the checkboxes ticked
+    * @param array of elements consisting of the reasons
+    */
   getRelevantUsers(array) {
     const id = encodeURIComponent(this.props.event.id);
     const reasons = encodeURIComponent(array.toString());

@@ -1,3 +1,13 @@
+/*
+   eslint-disable array-callback-return,
+   jsx-a11y/no-static-element-interactions,
+   react/jsx-no-bind,
+   class-methods-use-this,
+   consistent-return,
+   no-param-reassign,
+   react/forbid-prop-types,
+*/
+
 import React, { Component } from 'react';
 
 class ChatTabs extends Component {
@@ -33,7 +43,7 @@ class ChatTabs extends Component {
   inititaliseTabs(selected = 0) {
     const tabList = [];
     if (this.props.names && this.props.users &&
-      this.props.names.length===this.props.users.length) {
+      this.props.names.length === this.props.users.length) {
       for (let i = 0; i < this.props.users.length; i += 1) {
         if (this.props.names[i]!==null) {
           tabList.push(this.createTab.bind(this)(this.toTitleCase(this.props.names[i]), i, selected));
@@ -89,7 +99,6 @@ ChatTabs.propTypes = {
   current: React.PropTypes.number.isRequired,
   width: React.PropTypes.string.isRequired,
   changeConversation: React.PropTypes.func.isRequired,
-  email: React.PropTypes.string.isRequired,
   talkToEmail: React.PropTypes.string.isRequired,
 };
 
