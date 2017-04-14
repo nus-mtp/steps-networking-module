@@ -75,14 +75,18 @@ export default class ChatView extends Component {
     if(Auth.isUserAuthenticated) {
       let email = Auth.getToken().email;
       email = email.replace(/%40/gi, '@');
-
+      
       sockets.emit('new user', {userEmail: email}, function(socketId) {
         this.socketId = socketId; // save the socket id
       }.bind(this));
-
+      
       this.setState({ email });
       this.getAllUsers(email);
     }
+  }
+  
+  componentWillUnmount(){
+    sockets.emit('remove user');
   }
 
   getAllUsers(email) {
