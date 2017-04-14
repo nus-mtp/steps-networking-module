@@ -6,6 +6,7 @@
    consistent-return,
    no-param-reassign,
    react/forbid-prop-types,
+   arrow-body-style
 */
 
 import React, { Component } from 'react';
@@ -45,9 +46,13 @@ class ChatTabs extends Component {
     if (this.props.names && this.props.users &&
       this.props.names.length === this.props.users.length) {
       for (let i = 0; i < this.props.users.length; i += 1) {
-        if (this.props.names[i]!==null) {
-          tabList.push(this.createTab.bind(this)(this.toTitleCase(this.props.names[i]), i, selected));
-        } else if (this.props.users[i]===this.props.talkToEmail) { // that means name is null
+        if (this.props.names[i] !== null) {
+          tabList.push(this.createTab.bind(this)(
+            this.toTitleCase(this.props.names[i]),
+            i,
+            selected,
+          ));
+        } else if (this.props.users[i] === this.props.talkToEmail) { // that means name is null
           tabList.splice(0, 0, this.createTab.bind(this)(this.props.users[i], i, selected));
         }
       }
@@ -67,11 +72,9 @@ class ChatTabs extends Component {
   }
 
   toTitleCase(str) {
-    return str.replace(/\w\S*/g,
-      function(txt){
-        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-      }
-    );
+    return str.replace(/\w\S*/g, (txt) => {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
   }
 
   render() {
