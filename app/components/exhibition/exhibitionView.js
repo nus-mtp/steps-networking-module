@@ -1,9 +1,20 @@
+/*
+   eslint-disable array-callback-return,
+   jsx-a11y/no-static-element-interactions,
+   react/jsx-no-bind,
+   class-methods-use-this,
+   consistent-return,
+   no-param-reassign,
+   react/forbid-prop-types,
+   no-nested-ternary,
+*/
+
 import React from 'react';
+import { Link } from 'react-router';
+import { WithContext as ReactTags } from 'react-tag-input';
 import Auth from '../../database/auth';
 import NotFound from '../home/notFound';
 import { tagSuggestions } from '../../database/suggestions';
-import { Link } from 'react-router';
-import { WithContext as ReactTags } from 'react-tag-input';
 
 class ExhibitionView extends React.Component {
   constructor(props) {
@@ -37,32 +48,39 @@ class ExhibitionView extends React.Component {
 
   componentDidMount() {
     const that = this;
-    window.addEventListener("hashchange", () => {
+    window.addEventListener('hashchange', () => {
       that.retrieveData();
     });
   }
 
   componentWillUnmount() {
     const that = this;
-    window.removeEventListener("hashchange", () => {
+    window.removeEventListener('hashchange', () => {
       that.retrieveData();
     });
   }
 
-  /**
-    * Contains all HTTP GET interactions with database
-    * Interactions are exhibition, comments and attendance
-    */
-  retrieveData() {
-    let pathname = this.props.location.pathname;
-    const exhibitionName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+  getAttendance(event, exhibition) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/attendance/get/oneExhibitionExhibitors/${event}/${exhibition}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        xhr.response.map((exhibitor) => {
+          if (Auth.isUserAuthenticated() && exhibitor.userEmail === Auth.getToken().email.replace(/%40/i, '@')) {
+            this.setState({
+              isExhibitior: true,
+            });
+          }
+        });
 
-    pathname = pathname.slice(0, pathname.lastIndexOf('/'));
-    const eventName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
-
-    this.getExhibition(eventName, exhibitionName);
-    this.getComments(eventName, exhibitionName);
-    this.getAttendance(eventName, exhibitionName);
+        this.setState({
+          attendance: xhr.response,
+        });
+      }
+    });
+    xhr.send();
   }
 
   getExhibition(event, exhibition) {
@@ -72,13 +90,14 @@ class ExhibitionView extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        const exhibition = xhr.response;
-        exhibition.tags = (xhr.response && xhr.response.tags.length > 0) ? xhr.response.tags.map((skill, i) => {
-          return {
+        const exhibitions = xhr.response;
+        exhibitions.tags = (xhr.response && xhr.response.tags.length > 0) ?
+          xhr.response.tags.map((skill, i) =>
+          ({
             id: i,
             text: skill,
-          };
-        }) : [];
+          }),
+        ) : [];
         this.setState({
           exhibition,
           is404: false,
@@ -105,29 +124,20 @@ class ExhibitionView extends React.Component {
     xhr.send();
   }
 
-  getAttendance(event, exhibition) {
-    const xhr = new XMLHttpRequest();
-    xhr.open('get', `/attendance/get/oneExhibitionExhibitors/${event}/${exhibition}`);
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.responseType = 'json';
-    xhr.addEventListener('load', () => {
-      if (xhr.status === 200) {
-        xhr.response.map(exhibitor => {
-          if (Auth.isUserAuthenticated() && exhibitor.userEmail === Auth.getToken().email.replace(/%40/i, '@')) {
-            this.setState({
-              isExhibitior: true,
-            })
-          }
-        });
+  /**
+    * Contains all HTTP GET interactions with database
+    * Interactions are exhibition, comments and attendance
+    */
+  retrieveData() {
+    let pathname = this.props.location.pathname;
+    const exhibitionName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
 
-        this.setState({
-          attendance: xhr.response,
-        });
-      } else {
+    pathname = pathname.slice(0, pathname.lastIndexOf('/'));
+    const eventName = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
 
-      }
-    });
-    xhr.send();
+    this.getExhibition(eventName, exhibitionName);
+    this.getComments(eventName, exhibitionName);
+    this.getAttendance(eventName, exhibitionName);
   }
 
   editComment(event) {
@@ -147,9 +157,9 @@ class ExhibitionView extends React.Component {
     const userEmail = (Auth.isUserAuthenticated()) ? encodeURIComponent(Auth.getToken().email.replace(/%40/i, '@')) : '';
     const formData = `userEmail=${userEmail}&eventName=${eventName}&exhibitionName=${exhibitionName}&comment=${comment}`;
 
-    const isNewComment = this.state.comments.filter(commentObject => {
-        return commentObject.userEmail === Auth.getToken().email.replace(/%40/i, '@');
-    });
+    const isNewComment = this.state.comments.filter(commentObject =>
+        commentObject.userEmail === Auth.getToken().email.replace(/%40/i, '@'),
+    );
 
     if (isNewComment.length > 0) {
       const xhr = new XMLHttpRequest();
@@ -212,7 +222,7 @@ class ExhibitionView extends React.Component {
     const exhibition = this.state.exhibition;
     exhibition.tags = exhibition.tags.filter((tag, index) => index !== i);
 
-    this.setState({ exhibition, });
+    this.setState({ exhibition });
   }
 
   /**
@@ -223,7 +233,7 @@ class ExhibitionView extends React.Component {
     *        new position of selected tag
     */
   handleDragTag(tag, currPos, newPos) {
-    const tags = [ ...this.state.exhibition.tags ];
+    const tags = [...this.state.exhibition.tags];
 
     // mutate array
     tags.splice(currPos, 1);
@@ -232,7 +242,7 @@ class ExhibitionView extends React.Component {
     // re-render
     const exhibition = this.state.exhibition;
     exhibition.tags = tags;
-    this.setState({ exhibition, });
+    this.setState({ exhibition });
   }
 
   /**
@@ -247,17 +257,17 @@ class ExhibitionView extends React.Component {
       {
         id: this.state.exhibition.tags.length + 1,
         text: tag,
-      }
+      },
     ];
 
-    this.setState({ exhibition, });
+    this.setState({ exhibition });
   }
 
   /**
     * Save tags to database with HTTP POST
     */
   saveTags() {
-    const tagArray = this.state.exhibition.tags.map(tag => { return tag.text });
+    const tagArray = this.state.exhibition.tags.map(tag => tag.text);
 
     const eventName = encodeURIComponent(this.state.exhibition.eventName);
     const exhibitionName = encodeURIComponent(this.state.exhibition.exhibitionName);
@@ -294,27 +304,29 @@ class ExhibitionView extends React.Component {
   }
 
   addDefaultSrc(event) {
-    event.target.src = "../../resources/images/empty-poster-placeholder.png";
+    event.target.src = '../../resources/images/empty-poster-placeholder.png';
   }
 
   render() {
     // render feedback/error when user submits a comment
-    const isNotifyComment = (this.state.errorComment || this.state.feedbackComment) ? ((this.state.feedbackComment) ?
-      <div className="alert alert-success" role="alert">
-        <strong>Success!</strong> {this.state.feedbackComment}
-      </div> :
-      <div className="alert alert-danger" role="alert">
-        <strong>Error!</strong> {this.state.errorComment}
-      </div>) : <div />;
+    const isNotifyComment = (this.state.errorComment || this.state.feedbackComment) ?
+      ((this.state.feedbackComment) ?
+        <div className="alert alert-success" role="alert">
+          <strong>Success!</strong> {this.state.feedbackComment}
+        </div> :
+        <div className="alert alert-danger" role="alert">
+          <strong>Error!</strong> {this.state.errorComment}
+        </div>) : <div />;
 
     // render feedback/error when user saves the tags.
-    const isNotifyTags = (this.state.errorTags || this.state.feedbackTags) ? ((this.state.feedbackTags) ?
-      <div className="alert alert-success" role="alert">
-        <strong>Success!</strong> {this.state.feedbackTags}
-      </div> :
-      <div className="alert alert-danger" role="alert">
-        <strong>Error!</strong> {this.state.errorTags}
-      </div>) : <div />;
+    const isNotifyTags = (this.state.errorTags || this.state.feedbackTags) ?
+      ((this.state.feedbackTags) ?
+        <div className="alert alert-success" role="alert">
+          <strong>Success!</strong> {this.state.feedbackTags}
+        </div> :
+        <div className="alert alert-danger" role="alert">
+          <strong>Error!</strong> {this.state.errorTags}
+        </div>) : <div />;
 
     return (
       (this.state.is404) ? <NotFound /> :
@@ -323,8 +335,8 @@ class ExhibitionView extends React.Component {
           <div>
             {
               (Object.keys(this.state.exhibition).length !== 0) ?
-              <img className="img-fluid project-poster" src={`${this.state.exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" /> :
-              <img className="img-fluid project-poster" src="../../resources/images/empty-poster-placeholder.png" alt="project-poster" />
+                <img className="img-fluid project-poster" src={`${this.state.exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" /> :
+                <img className="img-fluid project-poster" src="../../resources/images/empty-poster-placeholder.png" alt="project-poster" />
             }
           </div>
         </div>
@@ -356,12 +368,12 @@ class ExhibitionView extends React.Component {
                       (this.state.isExhibitior) ? <button className="btn btn-secondary" onClick={this.toggleTagEditable}>Add Tags</button> : <div />
                     }
                     <div>
-                    {
-                      (Object.keys(this.state.exhibition).length !== 0) ?
-                        this.state.exhibition.tags.map((tag, i) =>
-                          <span key={`${tag.id}`} className="badge badge-info">{tag.text}</span>
-                        ) : <div />
-                     }
+                      {
+                        (Object.keys(this.state.exhibition).length !== 0) ?
+                          this.state.exhibition.tags.map(tag =>
+                            <span key={`${tag.id}`} className="badge badge-info">{tag.text}</span>,
+                          ) : <div />
+                       }
                     </div>
                   </span>
               }
@@ -377,41 +389,43 @@ class ExhibitionView extends React.Component {
                       <div className="project-members">{attend.userName}</div>
                       {
                         (attend.reasons) ?
-                          attend.reasons.map((reason, i) => <span className="badge badge-pill badge-primary" key={`${reason}${i}`}>{reason}</span>) :
+                          attend.reasons.map(reason => <span className="badge badge-pill badge-primary" key={`${reason}`}>{reason}</span>) :
                           <span />
                       }
-                    </Link>
+                    </Link>,
                   ) : <div />
               }
             </li>
             <li className="exhibition-info text-center card-block list-group-item">
               <div className="info-type">Comments</div>
               <div id="comment-input-container">
-                <textarea className="form-control" rows="2" id="comment-input" value={this.state.currentComment} onChange={this.editComment}></textarea>
+                <textarea className="form-control" rows="2" id="comment-input" value={this.state.currentComment} onChange={this.editComment} />
                 <button id="submit-comment" type="button" className="btn btn-primary" onClick={this.saveComment}>Submit</button>
               </div>
               {isNotifyComment}
               <div id="comment-list">
-              {
-                (this.state.comments.length > 0) ?
-                this.state.comments.map(commentObject =>
-                  <div key={commentObject.userEmail} id="user-comment-list">
-                    <Link to={`/profile/${commentObject.userEmail}`}><h5 id="comment-sender">{commentObject.userEmail}</h5></Link>
-                    <ul className="list-group">
-                      {
-                        commentObject.comments.map((comment, i) =>
-                          <li
-                            key={`${comment.content}${commentObject.userEmail}${i}`}
-                            className={`${(commentObject.userEmail === Auth.getToken().email.replace(/%40/i, '@')) ? "user-comment-container" : "others-comment-container"} list-group-item`}>
+                {
+                  (this.state.comments.length > 0) ?
+                  this.state.comments.map(commentObject =>
+                    <div key={commentObject.userEmail} id="user-comment-list">
+                      <Link to={`/profile/${commentObject.userEmail}`}><h5 id="comment-sender">{commentObject.userEmail}</h5></Link>
+                      <ul className="list-group">
+                        {
+                          commentObject.comments.map(comment =>
+                            <li
+                              key={`${comment.id}${commentObject.userEmail}`}
+                              className={`${(commentObject.userEmail === Auth.getToken().email.replace(/%40/i, '@')) ?
+                                'user-comment-container' : 'others-comment-container'} list-group-item`}
+                            >
                               <div id="comment-timestamp">{new Date(comment.timestamp).toDateString()}</div>
                               <div id="comment">{comment.content}</div>
-                          </li>
-                        )
-                      }
-                    </ul>
-                  </div>
-                ) : <div />
-              }
+                            </li>,
+                          )
+                        }
+                      </ul>
+                    </div>,
+                  ) : <div />
+                }
               </div>
             </li>
           </ul>
@@ -423,6 +437,10 @@ class ExhibitionView extends React.Component {
 
 ExhibitionView.contextTypes = {
   router: React.PropTypes.object.isRequired,
+};
+
+ExhibitionView.propTypes = {
+  location: React.PropTypes.object.isRequired,
 };
 
 export default ExhibitionView;

@@ -1,3 +1,13 @@
+/*
+   eslint-disable array-callback-return,
+   jsx-a11y/no-static-element-interactions,
+   react/jsx-no-bind,
+   class-methods-use-this,
+   consistent-return,
+   no-param-reassign,
+   react/forbid-prop-types,
+*/
+
 import React from 'react';
 import SearchInput from '../search/searchInputView';
 import Tabs from './tabs';
@@ -32,26 +42,46 @@ class HomeView extends React.Component {
     this.getAttendances = this.getAttendances.bind(this);
   }
 
-  retrieveData() {
-    const xhr = new XMLHttpRequest();
-    xhr.open('get', '/event/get/allEvents');
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.responseType = 'json';
-    xhr.addEventListener('load', () => {
-      if (xhr.status === 200) {
-        this.setState({
-          events: xhr.response,
-        });
-        this.getAttendances();
-      } else {
-        this.setState({
-          events: [],
-          displayedEvents: [],
-          open: [],
-        });
+  /**
+    * Sets priority of event view
+    */
+  setDefaultView() {
+    const copy = this.state.events.slice();
+
+    const nowTime = this.state.todayDate.getTime();
+    const ongoing = copy.filter((event) => {
+      if (nowTime > this.formatMilli(event.start_date) &&
+        nowTime < this.formatMilli(event.end_date)) {
+        return event;
       }
     });
-    xhr.send();
+    const upcoming = copy.filter((event) => {
+      if (nowTime < this.formatMilli(event.start_date)) {
+        return event;
+      }
+    });
+    const past = copy.filter((event) => {
+      if (nowTime > this.formatMilli(event.end_date)) {
+        return event;
+      }
+    });
+
+    let defaultTab = 'ongoing';
+    let display = ongoing;
+    if (ongoing.length === 0 && upcoming.length !== 0) {
+      defaultTab = 'upcoming';
+      display = upcoming;
+    } else if (ongoing.length === 0 && upcoming.length === 0 && past.length !== 0) {
+      defaultTab = 'past';
+      display = past;
+    }
+
+    this.setState({
+      currentTab: defaultTab,
+      displayedEvents: display,
+      open: this.createFalseArray(display.length),
+      error: '',
+    });
   }
 
   getAttendances() {
@@ -73,8 +103,31 @@ class HomeView extends React.Component {
     xhr.send();
   }
 
+  retrieveData() {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', '/event/get/allEvents');
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        this.setState({
+          events: xhr.response,
+        });
+
+        this.getAttendances();
+      } else {
+        this.setState({
+          events: [],
+          displayedEvents: [],
+          open: [],
+        });
+      }
+    });
+    xhr.send();
+  }
+
   createFalseArray(n) {
-    let array = [];
+    const array = [];
     for (let i = 0; i < n; i += 1) {
       array.push(false);
     }
@@ -86,7 +139,8 @@ class HomeView extends React.Component {
     * Toggle boolean at the index serial.
     */
   openCollapsable(serial) {
-    const newStatus = this.createFalseArray(this.state.open.length); // ignore previous state and change all to false
+    // ignore previous state and change all to false
+    const newStatus = this.createFalseArray(this.state.open.length);
     newStatus[serial] = !this.state.open[serial];
     this.setState({ open: newStatus });
   }
@@ -101,14 +155,13 @@ class HomeView extends React.Component {
     const eventName = encodeURIComponent(event.name);
     const formData = `userEmail=${userEmail}&eventName=${eventName}`;
     const xhr = new XMLHttpRequest();
-    xhr.open('post', `attendance/post/oneEventAttendance/`);
+    xhr.open('post', 'attendance/post/oneEventAttendance/');
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        this.getAttendances(); // Refreshes the attendance list
-      } else {
+        this.getAttendances();
       }
     });
     xhr.send(formData);
@@ -119,42 +172,6 @@ class HomeView extends React.Component {
     return date.getTime();
   }
 
-  /**
-    * Sets priority of event view
-    */
-  setDefaultView() {
-    const copy = this.state.events.slice();
-
-    const nowTime = this.state.todayDate.getTime();
-    const ongoing = copy.filter((event) => {
-      if (nowTime > this.formatMilli(event.start_date) && nowTime < this.formatMilli(event.end_date))
-        return event;
-    });
-    const upcoming = copy.filter((event) => {
-      if (nowTime < this.formatMilli(event.start_date))
-        return event;
-    });
-    const past = copy.filter((event) => {
-      if (nowTime > this.formatMilli(event.end_date))
-        return event;
-    });
-
-    let defaultTab = 'ongoing';
-    let display = ongoing;
-    if (ongoing.length === 0 && upcoming.length !== 0) {
-      defaultTab = 'upcoming';
-      display = upcoming;
-    } else if (ongoing.length === 0 && upcoming.length === 0 && past.length !== 0) {
-      defaultTab = 'past';
-      display = past;
-    }
-
-    this.setState({
-      currentTab: defaultTab,
-      displayedEvents: display,
-      open: this.createFalseArray(display.length),
-    });
-  }
 
   /**
     * Invoked when user changes tab
@@ -167,24 +184,30 @@ class HomeView extends React.Component {
     switch (id) {
       case 'ongoing':
         remainder = copy.filter((event) => {
-          if (nowTime > this.formatMilli(event.start_date) && nowTime < this.formatMilli(event.end_date))
+          if (nowTime > this.formatMilli(event.start_date) &&
+            nowTime < this.formatMilli(event.end_date)) {
             return event;
+          }
         });
         break;
       case 'upcoming':
         remainder = copy.filter((event) => {
-          if (nowTime < this.formatMilli(event.start_date))
+          if (nowTime < this.formatMilli(event.start_date)) {
             return event;
+          }
         });
         break;
       case 'past':
         remainder = copy.filter((event) => {
-          if (nowTime > this.formatMilli(event.end_date))
+          if (nowTime > this.formatMilli(event.end_date)) {
             return event;
+          }
         });
         break;
       default:
-        alert('no such id!');
+        this.setState({
+          error: 'No such id',
+        });
     }
     this.setState({
       displayedEvents: remainder,
@@ -211,7 +234,7 @@ class HomeView extends React.Component {
             {
               (this.state.displayedEvents.length !== 0) ?
                 this.state.displayedEvents.map((event, i) =>
-                  <div id="event-container" key={i}>
+                  <div id="event-container" key={event.id}>
                     <Event
                       serial={i}
                       open={this.state.open}
@@ -229,10 +252,13 @@ class HomeView extends React.Component {
                       attendance={this.state.attendance}
                       changeAttendance={this.changeAttendance}
                       email={this.state.email}
-                     />
-                  </div>
-            ) : <div className="no-events justify-content-center">
-                  <p>Sorry! There are no {this.state.currentTab} events. Please check again in the future!</p>
+                    />
+                  </div>,
+                ) : <div className="no-events justify-content-center">
+                  <p>
+                    Sorry! There are no {this.state.currentTab} events.
+                    Please check again in the future!
+                  </p>
                 </div>
             }
           </div>
