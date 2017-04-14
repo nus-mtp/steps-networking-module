@@ -29,7 +29,7 @@ function Tabs(props) {
           <a id="upcoming" className={`nav-link ${upcoming}`} data-toggle="tab" href="#upcoming" role="tab" onClick={props.onClick}>Upcoming</a>
         </li>
         <li className="nav-item">
-          <a id="past" className={`nav-link ${past}`} data-toggle="tab" href="#past" role="tab" onClick={this.props.onClick}>Past</a>
+          <a id="past" className={`nav-link ${past}`} data-toggle="tab" href="#past" role="tab" onClick={props.onClick}>Past</a>
         </li>
       </ul>
     </div>
