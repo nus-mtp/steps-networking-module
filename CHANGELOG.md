@@ -1,4 +1,22 @@
-## Changelog as of 7 April 2017
+## Changelog as of 15 April 2017
+
+### v8.0
+* Enable development on Vagrant
+* Added INSTALL.md
+* Added CONTRIBUTING.md
+* Update README.md
+* Lint all files
+* Fix lint bugs
+* Comment class methods
+
+### v7.0
+* Create logo
+* Restyle login and sign up page
+* Add 404 pages
+* Add filter to exhibitions in events
+* Remove 'nil' reasons for attendance to events
+* Create CHANGLOG.md
+* Disable exhibitors toggling of attendance
 
 ### v6.1
 * Fix z-index suggestion bug
