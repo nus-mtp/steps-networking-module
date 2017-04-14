@@ -2,6 +2,8 @@
 SoC term Project Showcase (STePS) System has event workflow management, registration, check-in and voting modules. As the event is getting bigger, a system with a networking module to enable attendees to network meaningfully and effectively before, during and after events is necessary. The module classifies/groups users based on their interest and purpose of attending STePS, allow users to post/comment in forums of each STePS run, have personal chat with other attendees.
 
 Live application: https://steps-networking-module.herokuapp.com/#/
+Marketing Video: https://youtu.be/VcYoUWKSM5Q
+Feature Demo: https://youtu.be/dJWbNUfT8FA
 
 ## Setup
 View [Installation Guidelines](./INSTALL.md) for more information.
