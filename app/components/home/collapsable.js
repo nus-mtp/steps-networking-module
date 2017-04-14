@@ -38,6 +38,7 @@ class Collapsable extends React.Component {
     this.updateLayout = this.updateLayout.bind(this);
     this.onToggle = this.onToggle.bind(this);
     this.getRelevantUsers = this.getRelevantUsers.bind(this);
+    this.toTitleCase = this.toTitleCase.bind(this);
   }
 
   /**
@@ -202,6 +203,14 @@ class Collapsable extends React.Component {
     xhr.send();
   }
 
+  toTitleCase(str) {
+    return str.replace(/\w\S*/g,
+      function(txt){
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      }
+    );
+  }
+
   render() {
     const displayCollapse = (this.props.open[this.props.serial]) ? 'collapse show' : 'collapse hide';
     const attending = (this.state.isAttended) ? 'active' : '';
@@ -285,7 +294,7 @@ class Collapsable extends React.Component {
                         this.state.relevantUsers.slice(0, this.state.numberOfEventPerRow).map((relevantUser, i) =>
                           <Link className="user-match" to={`/profile/${relevantUser.userEmail}`} key={i}>
                             <img className="img-fluid user-thumbnail" src="../../resources/images/default-profile-picture.png" alt="user-image" />
-                            <div>{relevantUser.userName}</div>
+                            <div>{this.toTitleCase(relevantUser.userName)}</div>
                           </Link>
                         ) :
                       <div id="no-matches-message">No potential matches. Ticking more checkboxes can widen your search for more matching potential.</div>

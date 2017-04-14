@@ -16,3 +16,6 @@ lint.txt
 
 # Webstorm files
 .idea/
+
+# Vagrant files
+.vagrant/

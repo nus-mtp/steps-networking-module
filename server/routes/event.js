@@ -107,10 +107,8 @@ router.post('/post/search/tags', (req = {}, res, next) => {
     Event.searchEventsByTags(req.body.tags.split(','), (err, events) => {
       if (err) {
         if (err.name === 'ValidationError') {
-          console.log(err);
           res.status(403).json('Unauthorized!');
         } else {
-          console.log(err);
           res.status(500).json('Unable to post data!');
         }
       } else if (events && events[0]) {

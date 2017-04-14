@@ -20,6 +20,7 @@ export default class ChatBody extends Component {
     this.catchSubmit = this.catchSubmit.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.checkQuery = this.checkQuery.bind(this);
+    this.toTitleCase = this.toTitleCase.bind(this);
 
     // Get all messages for both sender and receiver
     this.initialiseMessages();
@@ -246,7 +247,15 @@ export default class ChatBody extends Component {
     } else {
       str = this.props.users[this.props.current];
     }
-    return str;
+    return this.toTitleCase(str);
+  }
+
+  toTitleCase(str) {
+    return str.replace(/\w\S*/g,
+      function(txt){
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      }
+    );
   }
 
   getName(fixToTop) {

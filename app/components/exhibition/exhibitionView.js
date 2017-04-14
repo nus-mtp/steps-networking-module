@@ -44,6 +44,8 @@ class ExhibitionView extends React.Component {
     this.handleAdditionTag = this.handleAdditionTag.bind(this);
     this.handleDragTag = this.handleDragTag.bind(this);
     this.saveTags = this.saveTags.bind(this);
+    this.handleTagInputChange = this.handleTagInputChange.bind(this);
+    this.toTitleCase = this.toTitleCase.bind(this);
   }
 
   componentDidMount() {
@@ -307,6 +309,14 @@ class ExhibitionView extends React.Component {
     event.target.src = '../../resources/images/empty-poster-placeholder.png';
   }
 
+  toTitleCase(str) {
+    return str.replace(/\w\S*/g,
+      function(txt){
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      }
+    );
+  }
+
   render() {
     // render feedback/error when user submits a comment
     const isNotifyComment = (this.state.errorComment || this.state.feedbackComment) ?
@@ -386,7 +396,7 @@ class ExhibitionView extends React.Component {
                 (Object.keys(this.state.attendance).length !== 0) ?
                   this.state.attendance.map(attend =>
                     <Link to={`/profile/${attend.userEmail}`} key={attend.id}>
-                      <div className="project-members">{attend.userName}</div>
+                      <div className="project-members">{this.toTitleCase(attend.userName)}</div>
                       {
                         (attend.reasons) ?
                           attend.reasons.map(reason => <span className="badge badge-pill badge-primary" key={`${reason}`}>{reason}</span>) :

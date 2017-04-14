@@ -7,7 +7,9 @@ const eventSchema = new mongoose.Schema({
     unique: true,
     required: 'The Event Name is a Primary Key, and is therefore Required.',
   },
-  event_description: String,
+  event_description: {
+    type: String,
+  },
   start_date: {
     type: Date,
     default: Date.now,
@@ -16,16 +18,20 @@ const eventSchema = new mongoose.Schema({
     type: Date,
     default: () => Date.now() + (24 * 60 * 60 * 1000),
   },
-  event_location: String,
-  event_map: String,
-  event_picture: String,
-
+  event_location: {
+    type: String,
+  },
+  event_map: {
+    type: String,
+  },
+  event_picture: {
+    type: String,
+  },
   tags: [
     {
       type: String,
       lowercase: true,
       trim: true,
-      // unique: true,
     },
   ],
 });
