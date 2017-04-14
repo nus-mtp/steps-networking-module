@@ -1,6 +1,15 @@
+/*
+   eslint-disable array-callback-return,
+   jsx-a11y/no-static-element-interactions,
+   react/jsx-no-bind,
+   class-methods-use-this,
+   consistent-return,
+   no-param-reassign,
+   react/forbid-prop-types,
+*/
+
 import React from 'react';
 import { Link } from 'react-router';
-import Paths from '../../paths';
 import ReactSwipe from 'react-swipe';
 
 class Match extends React.Component {
@@ -18,7 +27,7 @@ class Match extends React.Component {
       eventId: id,
       reasons: reasons.split(','),
       relevantUsers: [],
-      email: email,
+      email,
       userEvents: {},
     }
 
@@ -202,7 +211,7 @@ class Match extends React.Component {
 }
 
 Match.propTypes = {
-  tags: React.PropTypes.array,
-}
+  location: React.PropTypes.object.isRequired,
+};
 
 export default Match;
