@@ -18,6 +18,9 @@ class ProfileView extends React.Component {
   constructor(props) {
     super(props);
 
+    const pathname = this.props.location.pathname;
+    const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+
     this.state = {
       isContentEditable: false, //  Edit mode
       is404: false,
@@ -25,7 +28,7 @@ class ProfileView extends React.Component {
       skillsCache: '',
       linksCache: '',
       user: {},
-      email: '',
+      email: userEmail,
       events: [], // List of event user attended
       exhibitions: [], // List of exhibition user participated
       attendances: [], // For all the attendance objects
@@ -33,7 +36,7 @@ class ProfileView extends React.Component {
       error: '',
     };
 
-    this.retrieveData();
+    this.retrieveData(userEmail);
 
     this.handleEdit = this.handleEdit.bind(this);
     this.changeEdit = this.changeEdit.bind(this);
@@ -373,14 +376,7 @@ class ProfileView extends React.Component {
     * Populates the state with data from the database
     * Information retrieved are user, event, exhibition and attendance for each exhibition and event
     */
-  retrieveData() {
-    const pathname = this.props.location.pathname;
-    const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
-
-    this.setState({
-      email: userEmail,
-    });
-
+  retrieveData(userEmail) {
     this.getUser(userEmail);
     this.getEvent(userEmail); // gets exhibition after event is retrieved
     this.getAttendances(userEmail);
@@ -550,7 +546,7 @@ class ProfileView extends React.Component {
                 <div className="card-block">
                   {
                     (this.state.exhibitions) ?
-                    this.state.exhibitions.map(exhibition =>
+                    this.state.exhibitions.map((exhibition, i) =>
                       <div key={exhibition.id}>
                         <Link to={`/exhibition/${exhibition.eventName}/${exhibition.exhibitionName}`} key={exhibition.id}>
                           <div id="user-exhibition-container">

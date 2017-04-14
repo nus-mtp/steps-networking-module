@@ -21,6 +21,7 @@ class EventView extends React.Component {
     this.state = {
       isDisplayExhibitions: false,
       isDisplayAttendees: false,
+      showEventMap: false,
       is404: false,
       exhibitions: [], // This is for all exhibitions
       displayExhibitions: [], // This is for the displayed exhibitions
