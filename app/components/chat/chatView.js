@@ -6,6 +6,8 @@
    consistent-return,
    no-param-reassign,
    react/forbid-prop-types,
+   no-undef,
+   prefer-arrow-callback
 */
 
 import React, { Component } from 'react';
@@ -102,7 +104,6 @@ export default class ChatView extends Component {
     sockets.emit('get all emails involving user', { userEmail: email }, function getUsers(err, userList) {
       if (err) {
         // Stuff went wrong
-        console.log('Unable to retrieve userList');
       } else if (userList !== undefined && userList !== null) {
         let current = this.state.current;
         if (this.talkToEmail !== '' &&
@@ -207,3 +208,7 @@ export default class ChatView extends Component {
     );
   }
 }
+
+ChatView.propTypes = {
+  location: React.PropTypes.object.isRequired,
+};

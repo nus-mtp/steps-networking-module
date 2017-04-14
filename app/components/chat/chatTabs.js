@@ -6,6 +6,7 @@
    consistent-return,
    no-param-reassign,
    react/forbid-prop-types,
+   arrow-body-style
 */
 
 import React, { Component } from 'react';

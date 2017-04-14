@@ -6,6 +6,8 @@
    consistent-return,
    no-param-reassign,
    react/forbid-prop-types,
+   prefer-arrow-callback,
+   arrow-body-style,
 */
 
 import React, { Component } from 'react';
@@ -13,6 +15,29 @@ import MediaQuery from 'react-responsive';
 import Auth from '../../database/auth';
 
 export default class ChatBody extends Component {
+ /* Static functions used throughout */
+  static PostSelf(text, key = 0) {
+    key = `s${key}`;
+    return ChatBody.createPost(text, 'chat-self', key);
+  }
+
+  static PostOther(text, key = 0) {
+    key = `o${key}`;
+    return ChatBody.createPost(text, 'chat-other', key);
+  }
+
+  static createPost(text, id, key = 0) {
+    return (
+      <div className="container-fluid form-control chat-bubble" id={id} key={key}>
+        {text}
+      </div>
+    );
+  }
+
+  static scrollToBottom() {
+    window.scrollTo(0, document.body.scrollHeight);
+  }
+
   constructor(props) {
     super(props);
 
@@ -56,118 +81,6 @@ export default class ChatBody extends Component {
     if (this.textInput !== null) {
       this.textInput.focus();
     }
-  }
-
-  retrieveAllMessages(senderEmail, recipientEmail) {
-    this.props.sockets.emit('get message', { senderEmail, recipientEmail }, Auth.getToken(), function retrieve(err, conversation) {
-      if (err || conversation === null || conversation.messages === undefined) {
-        this.setState({ [`${senderEmail}`]: [] });
-      } else {
-        this.setState({ [`${senderEmail}`]: conversation.messages });
-      }
-    }.bind(this));
-  }
-
-  initialiseMessages() {
-    const senderEmail = this.props.email;
-    const recipientEmail = this.props.users[this.props.current];
-
-    if (!senderEmail || !recipientEmail) {
-      if (!this.update) {
-        this.update = true;
-      }
-    } else {
-      this.getReceivedMessages();
-      this.getSentMessages();
-      this.update = false;
-      this.current = this.props.current;
-    }
-  }
-
-  getReceivedMessages() {
-    const senderEmail = this.props.email;
-    const recipientEmail = this.props.users[this.props.current];
-    this.retrieveAllMessages(recipientEmail, senderEmail);
-  }
-
-  getSentMessages() {
-    const senderEmail = this.props.email;
-    const recipientEmail = this.props.users[this.props.current];
-    this.retrieveAllMessages(senderEmail, recipientEmail);
-  }
-
-  sendMessage(senderEmail, recipientEmail, content) {
-    this.props.sockets.emit('add message', { senderEmail, recipientEmail, content }, Auth.getToken(), function send(successful) {
-      if (!successful) {
-        console.log('The message failed to send.');
-      } else {
-        this.initialiseMessages();
-      }
-    }.bind(this));
-  }
-
-  createPostList(array = [], postFunc = ChatBody.PostSelf) {
-    if (array.length !== 0) {
-      return array.map(function createPost(object, index) {
-        // return an object that has been made into a post and keep time stamp
-        return {
-          content: postFunc(object.content, index),
-          timestamp: object.timestamp,
-        };
-      });
-    }
-    return [];
-  }
-
- /* Static functions used throughout */
-  static PostSelf(text, key = 0) {
-    key = `s${key}`;
-    return ChatBody.createPost(text, 'chat-self', key);
-  }
-
-  static PostOther(text, key = 0) {
-    key = `o${key}`;
-    return ChatBody.createPost(text, 'chat-other', key);
-  }
-
-  static createPost(text, id, key = 0) {
-    return (
-      <div className="container-fluid form-control chat-bubble" id={id} key={key}>
-        {text}
-      </div>
-    );
-  }
-
-  static scrollToBottom() {
-    window.scrollTo(0, document.body.scrollHeight);
-  }
-
-  // Expects to receive arrays made of objects containing { content, timestamp }. Sorts by timestamp
-  mergeSortLists(list1 = [], list2 = []) {
-    const mergedList = [];
-    let i = 0;
-    let j = 0;
-    while (i < list1.length && j < list2.length) {
-      if (list1[i].timestamp < list2[j].timestamp) {
-        mergedList.push(list1[i].content);
-        i += 1;
-      } else {
-        mergedList.push(list2[j].content);
-        j += 1;
-      }
-    }
-
-    while (i < list1.length) {
-      mergedList.push(list1[i].content);
-      i += 1;
-    }
-
-    while (j < list2.length) {
-      mergedList.push(list2[j].content);
-      j += 1;
-    }
-
-    return mergedList;
   }
 
   getMessages() {
@@ -231,12 +144,6 @@ export default class ChatBody extends Component {
         {this.getMessages.bind(this)()}
       </div>
     );
-  }
-
-  toTitleCase(str) {
-    return str.replace(/\w\S*/g, (txt) => {
-      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
   }
 
   getUserName() {
@@ -326,6 +233,102 @@ export default class ChatBody extends Component {
     );
   }
 
+  getSentMessages() {
+    const senderEmail = this.props.email;
+    const recipientEmail = this.props.users[this.props.current];
+    this.retrieveAllMessages(senderEmail, recipientEmail);
+  }
+
+  getReceivedMessages() {
+    const senderEmail = this.props.email;
+    const recipientEmail = this.props.users[this.props.current];
+    this.retrieveAllMessages(recipientEmail, senderEmail);
+  }
+
+  retrieveAllMessages(senderEmail, recipientEmail) {
+    this.props.sockets.emit('get message', { senderEmail, recipientEmail }, Auth.getToken(), function retrieve(err, conversation) {
+      if (err || conversation === null || conversation.messages === undefined) {
+        this.setState({ [`${senderEmail}`]: [] });
+      } else {
+        this.setState({ [`${senderEmail}`]: conversation.messages });
+      }
+    }.bind(this));
+  }
+
+  initialiseMessages() {
+    const senderEmail = this.props.email;
+    const recipientEmail = this.props.users[this.props.current];
+
+    if (!senderEmail || !recipientEmail) {
+      if (!this.update) {
+        this.update = true;
+      }
+    } else {
+      this.getReceivedMessages();
+      this.getSentMessages();
+      this.update = false;
+      this.current = this.props.current;
+    }
+  }
+
+  toTitleCase(str) {
+    return str.replace(/\w\S*/g, (txt) => {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+  }
+
+  // Expects to receive arrays made of objects containing { content, timestamp }. Sorts by timestamp
+  mergeSortLists(list1 = [], list2 = []) {
+    const mergedList = [];
+    let i = 0;
+    let j = 0;
+    while (i < list1.length && j < list2.length) {
+      if (list1[i].timestamp < list2[j].timestamp) {
+        mergedList.push(list1[i].content);
+        i += 1;
+      } else {
+        mergedList.push(list2[j].content);
+        j += 1;
+      }
+    }
+
+    while (i < list1.length) {
+      mergedList.push(list1[i].content);
+      i += 1;
+    }
+
+    while (j < list2.length) {
+      mergedList.push(list2[j].content);
+      j += 1;
+    }
+
+    return mergedList;
+  }
+
+  sendMessage(senderEmail, recipientEmail, content) {
+    this.props.sockets.emit('add message', { senderEmail, recipientEmail, content }, Auth.getToken(), function send(successful) {
+      if (!successful) {
+        // console.log('The message failed to send.');
+      } else {
+        this.initialiseMessages();
+      }
+    }.bind(this));
+  }
+
+  createPostList(array = [], postFunc = ChatBody.PostSelf) {
+    if (array.length !== 0) {
+      return array.map(function createPost(object, index) {
+        // return an object that has been made into a post and keep time stamp
+        return {
+          content: postFunc(object.content, index),
+          timestamp: object.timestamp,
+        };
+      });
+    }
+    return [];
+  }
+
+
   handleChange() {
     if (this.textInput.value === '\n') {
       this.textInput.value = '';
@@ -405,4 +408,5 @@ ChatBody.propTypes = {
   query: React.PropTypes.string.isRequired,
   email: React.PropTypes.string.isRequired,
   talkToEmail: React.PropTypes.string.isRequired,
+  sockets: React.PropTypes.any.isRequired,
 };
