@@ -1,10 +1,18 @@
+/*
+   eslint-disable array-callback-return,
+   jsx-a11y/no-static-element-interactions,
+   react/jsx-no-bind,
+   class-methods-use-this,
+   no-nested-ternary,
+   consistent-return
+*/
+
 import React from 'react';
-import Paths from '../../paths';
+import { Link } from 'react-router';
+import { WithContext as ReactTags } from 'react-tag-input';
 import Auth from '../../database/auth';
 import NotFound from '../home/notFound';
 import { skillSuggestions } from '../../database/suggestions';
-import { Link } from 'react-router';
-import { WithContext as ReactTags } from 'react-tag-input';
 
 class ProfileView extends React.Component {
   constructor(props) {
@@ -28,9 +36,7 @@ class ProfileView extends React.Component {
       error: '',
     };
 
-    this.getUser(userEmail);
-    this.getEvent(userEmail);
-    this.getAttendances(userEmail);
+    this.retrieveData(userEmail);
 
     this.handleEdit = this.handleEdit.bind(this);
     this.changeEdit = this.changeEdit.bind(this);
@@ -44,16 +50,17 @@ class ProfileView extends React.Component {
     this.handleDragLink = this.handleDragLink.bind(this);
     this.saveReasons = this.saveReasons.bind(this);
     this.getAttendances = this.getAttendances.bind(this);
+    this.toTitleCase = this.toTitleCase.bind(this);
   }
 
   componentDidMount() {
     const that = this;
-    window.addEventListener("hashchange", () => {
+    window.addEventListener('hashchange', () => {
       const pathname = this.props.location.pathname;
       const userEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
 
       this.setState({
-        email: userEmail
+        email: userEmail,
       });
 
       that.getUser(userEmail);
@@ -62,7 +69,7 @@ class ProfileView extends React.Component {
 
   componentWillUnmount() {
     const that = this;
-    window.removeEventListener("hashchange", () => {
+    window.removeEventListener('hashchange', () => {
       that.getUser();
     });
   }
@@ -73,26 +80,31 @@ class ProfileView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      if (xhr.status === 200) {
-        xhr.response.userSkills = (xhr.response && xhr.response.userSkills.length > 0) ? xhr.response.userSkills.map((skill, i) => {
-          return {
-            id: i,
-            text: skill,
-          };
-        }) : [];
-        xhr.response.userLinks = (xhr.response && xhr.response.userLinks.length > 0) ? xhr.response.userLinks.map((link, i) => {
-          return {
-            id: i,
-            text: link,
-          };
-        }) : [];
+      const user = xhr.response;
+      if (user) {
+        // change database format of skills and links to object array to accomodate ReactTags
+        user.userSkills = (xhr.response && xhr.response.userSkills.length > 0) ?
+          xhr.response.userSkills.map((skill, i) =>
+            ({
+              id: i,
+              text: skill,
+            }),
+          ) : [];
+        user.userLinks = (xhr.response && xhr.response.userLinks.length > 0) ?
+          xhr.response.userLinks.map((link, i) =>
+            ({
+              id: i,
+              text: link,
+            }),
+          ) : [];
+
         this.setState({
-          is404: false,
-          user: xhr.response,
+          is404: false, // valid profile
+          user,
         });
       } else {
         this.setState({
-          is404: true,
+          is404: true,  // invalid profile
         });
       }
     });
@@ -106,9 +118,9 @@ class ProfileView extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        this.setState({ attendances: xhr.response, });
+        this.setState({ attendances: xhr.response });
       } else {
-        this.setState({ attendances: [], });
+        this.setState({ attendances: [] });
       }
     });
     xhr.send();
@@ -125,7 +137,7 @@ class ProfileView extends React.Component {
       });
 
       if (this.state.events) {
-        this.state.events.map(event => {
+        this.state.events.map((event) => {
           this.getExhibition(email, event.name);
         });
       }
@@ -139,11 +151,11 @@ class ProfileView extends React.Component {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
-      let exhibitionArray = this.state.exhibitions;
+      const exhibitionArray = this.state.exhibitions;
 
       if (xhr.response) {
-        xhr.response.map(event => {
-          exhibitionArray.push(event);
+        xhr.response.map((eventObject) => {
+          exhibitionArray.push(eventObject);
         });
       }
 
@@ -155,159 +167,9 @@ class ProfileView extends React.Component {
   }
 
   /**
-    * functions to manipulate skills
-    * tied to ReactTags
+    * Make HTTP POST to database and save data
+    * @param request
     */
-  handleDeleteSkill(i) {
-    const user = this.state.user;
-    user.userSkills = user.userSkills.filter((skill, index) => index !== i);
-
-    this.setState({ user, });
-  }
-
-  handleDragSkill(skill, currPos, newPos) {
-    const skills = [ ...this.state.user.userSkills ];
-
-    // mutate array
-    skills.splice(currPos, 1);
-    skills.splice(newPos, 0, skill);
-
-    // re-render
-    const user = this.state.user;
-    user.userSkills = skills;
-    this.setState({ user, });
-  }
-
-  handleAdditionSkill(skill) {
-    const user = this.state.user;
-    user.userSkills = [
-      ...this.state.user.userSkills,
-      {
-        id: this.state.user.userSkills.length + 1,
-        text: skill,
-      }
-    ];
-
-    this.setState({ user, });
-  }
-
-  /**
-    * functions to manipulate links
-    * tied to ReactTags
-    */
-  handleDeleteLink(i) {
-    const user = this.state.user;
-    user.userLinks = user.userLinks.filter((link, index) => index !== i);
-
-    this.setState({ user, });
-  }
-
-  handleDragLink(link, currPos, newPos) {
-    const links = [ ...this.state.user.userLinks ];
-
-    // mutate array
-    links.splice(currPos, 1);
-    links.splice(newPos, 0, link);
-
-    // re-render
-    const user = this.state.user;
-    user.userLinks = links;
-    this.setState({ user, });
-  }
-
-  handleAdditionLink(link) {
-    const user = this.state.user;
-    user.userLinks = [
-      ...this.state.user.userLinks,
-      {
-        id: this.state.user.userLinks.length + 1,
-        text: link,
-      }
-    ];
-
-    this.setState({ user, });
-  }
-
-  changeEdit(event) {
-    const user = this.state.user;
-    user.userDescription = event.target.value;
-    this.setState({
-      user,
-    });
-  }
-
-  handleEdit() {
-    this.setState({
-      isContentEditable: !this.state.isContentEditable,
-      descriptionCache: this.state.user.userDescription,
-      skillsCache: this.state.user.userSkills,
-      linksCache: this.state.user.userLinks,
-    });
-  }
-
-  handleCancel() {
-    const user = this.state.user;
-    user.userDescription = this.state.pastUserData.userDescription;
-    user.userSkills = this.state.pastUserData.userSkills;
-    user.userLinks = this.state.pastUserData.userLinks;
-
-    this.setState({
-      user,
-      isContentEditable: false,
-    });
-  }
-
-  submitForm() {
-    const skillArray = this.state.user.userSkills.map(skill => { return skill.text });
-    const linkArray = this.state.user.userLinks.map(link => { return link.text });
-
-    const userSkills = encodeURIComponent(skillArray);
-    const userLinks = encodeURIComponent(linkArray);
-    const userDescription = encodeURIComponent(this.state.user.userDescription);
-    const userEmail = encodeURIComponent(this.state.user.userEmail);
-    const formData = `userEmail=${userEmail}&userSkills=${userSkills}&userLinks=${userLinks}&userDescription=${userDescription}`;
-
-    this.setUserInfo(formData);
-  }
-
-  saveReasons(clsName, ExhibitionId) {
-    const array = document.getElementsByClassName(clsName);
-    let reasons = new Array();
-    let i;
-    for (i = 0; i < array.length; i += 1) {
-      if (array[i].checked) {
-        reasons.push(array[i].name);
-      }
-    }
-    if (reasons.length === 0) reasons.push("No Reason");
-
-    const userEmail = encodeURIComponent(this.state.email);
-    const id = encodeURIComponent(ExhibitionId);
-    const reason = encodeURIComponent(reasons.toString());
-    const formData = `userEmail=${userEmail}&id=${id}&reasons=${reason}`;
-
-    const xhr = new XMLHttpRequest();
-    xhr.open('post', `attendance/post/set/oneAttendanceReasons`);
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
-    xhr.responseType = 'json';
-    xhr.addEventListener('load', () => {
-      if (xhr.status === 200) {
-        this.setState({
-          feedback: 'Reasons saved',
-          error: '',
-        });
-      } else {
-        this.setState({
-          feedback: '',
-          error: xhr.response,
-        });
-      }
-    });
-    xhr.send(formData);
-    this.getAttendances(userEmail);
-  }
-
   setUserInfo(formData) {
     if (this.state.user.userSkills !== this.state.skillsCache) {
       const xhr = new XMLHttpRequest();
@@ -386,8 +248,187 @@ class ProfileView extends React.Component {
     }
   }
 
+  /**
+    * functions to manipulate links
+    * tied to ReactTags
+    */
+  handleDeleteLink(i) {
+    const user = this.state.user;
+    user.userLinks = user.userLinks.filter((link, index) => index !== i);
+
+    this.setState({ user });
+  }
+
+  handleDragLink(link, currPos, newPos) {
+    const links = [...this.state.user.userLinks];
+
+    // mutate array
+    links.splice(currPos, 1);
+    links.splice(newPos, 0, link);
+
+    // re-render
+    const user = this.state.user;
+    user.userLinks = links;
+    this.setState({ user });
+  }
+
+  handleAdditionLink(link) {
+    const user = this.state.user;
+    user.userLinks = [
+      ...this.state.user.userLinks,
+      {
+        id: this.state.user.userLinks.length + 1,
+        text: link,
+      },
+    ];
+
+    this.setState({ user });
+  }
+
+  changeEdit(event) {
+    const user = this.state.user;
+    user.userDescription = event.target.value;
+    this.setState({
+      user,
+    });
+  }
+
+  /**
+    * Set editable content to be editable and cache current data before any changes
+    */
+  handleEdit() {
+    this.setState({
+      isContentEditable: !this.state.isContentEditable,
+      descriptionCache: this.state.user.userDescription,
+      skillsCache: this.state.user.userSkills,
+      linksCache: this.state.user.userLinks,
+    });
+  }
+
+  handleCancel() {
+    const user = this.state.user;
+    user.userDescription = this.state.pastUserData.userDescription;
+    user.userSkills = this.state.pastUserData.userSkills;
+    user.userLinks = this.state.pastUserData.userLinks;
+
+    this.setState({
+      user,
+      isContentEditable: false,
+    });
+  }
+
+  /**
+    * Create request to be submitted to database
+    */
+  submitForm() {
+    // reverts skills and links to string array to accomodate database format
+    const skillArray = this.state.user.userSkills.map(skill => skill.text);
+    const linkArray = this.state.user.userLinks.map(link => link.text);
+
+    const userSkills = encodeURIComponent(skillArray);
+    const userLinks = encodeURIComponent(linkArray);
+    const userDescription = encodeURIComponent(this.state.user.userDescription);
+    const userEmail = encodeURIComponent(this.state.user.userEmail);
+    const formData = `userEmail=${userEmail}&userSkills=${userSkills}&userLinks=${userLinks}&userDescription=${userDescription}`;
+
+    this.setUserInfo(formData);
+  }
+
+  saveReasons(clsName, ExhibitionId) {
+    const array = document.getElementsByClassName(clsName);
+    const reasons = [];
+    let i;
+    for (i = 0; i < array.length; i += 1) {
+      if (array[i].checked) {
+        reasons.push(array[i].name);
+      }
+    }
+    if (reasons.length === 0) reasons.push('No Reason');
+
+    const userEmail = encodeURIComponent(this.state.email);
+    const id = encodeURIComponent(ExhibitionId);
+    const reason = encodeURIComponent(reasons.toString());
+    const formData = `userEmail=${userEmail}&id=${id}&reasons=${reason}`;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('post', 'attendance/post/set/oneAttendanceReasons');
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        this.setState({
+          feedback: 'Reasons saved',
+          error: '',
+        });
+      } else {
+        this.setState({
+          feedback: '',
+          error: xhr.response,
+        });
+      }
+    });
+    xhr.send(formData);
+    this.getAttendances(userEmail);
+  }
+
+  /**
+    * Populates the state with data from the database
+    * Information retrieved are user, event, exhibition and attendance for each exhibition and event
+    */
+  retrieveData(userEmail) {
+    this.getUser(userEmail);
+    this.getEvent(userEmail); // gets exhibition after event is retrieved
+    this.getAttendances(userEmail);
+  }
+
+  /**
+    * functions to manipulate skills
+    * tied to ReactTags
+    */
+  handleDeleteSkill(i) {
+    const user = this.state.user;
+    user.userSkills = user.userSkills.filter((skill, index) => index !== i);
+
+    this.setState({ user });
+  }
+
+  handleDragSkill(skill, currPos, newPos) {
+    const skills = [...this.state.user.userSkills];
+
+    // mutate array
+    skills.splice(currPos, 1);
+    skills.splice(newPos, 0, skill);
+
+    // re-render
+    const user = this.state.user;
+    user.userSkills = skills;
+    this.setState({ user });
+  }
+
+  handleAdditionSkill(skill) {
+    const user = this.state.user;
+    user.userSkills = [
+      ...this.state.user.userSkills,
+      {
+        id: this.state.user.userSkills.length + 1,
+        text: skill,
+      },
+    ];
+
+    this.setState({ user });
+  }
+
   addDefaultSrc(event) {
-    event.target.src = "../../resources/images/empty-poster-placeholder.png";
+    event.target.src = '../../resources/images/empty-poster-placeholder.png';
+  }
+
+  toTitleCase(str) {
+    return str.replace(/\w\S*/g,
+      function(txt){
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      }
+    );
   }
 
   render() {
@@ -407,27 +448,27 @@ class ProfileView extends React.Component {
         {
           (Object.keys(this.state.user).length !== 0)
           ? <div className="row justify-content-between justify-content-md-around">
-              <h4 id="user-name" className="col-md-6 push-md-3 col-12 text-center align-self-center">{this.state.user.userName}</h4>
+              <h4 id="user-name" className="col-md-6 push-md-3 col-12 text-center align-self-center">{this.toTitleCase(this.state.user.userName)}</h4>
               <div className="col-md-3 pull-md-6 col-6 text-center d-flex justify-content-center">
-              {
-                (this.state.user.userEmail !== userEmail) ?
-                  <div id="chat-icon-container">
-                    <Link to={`/chat/${this.state.user.userEmail}`}>
-                      <img id="chat-icon" src="../../resources/images/chat-icon.svg" alt="chat-icon" />
-                    </Link>
-                  </div> : <div />
-              }
+                {
+                  (this.state.user.userEmail !== userEmail) ?
+                    <div id="chat-icon-container">
+                      <Link to={`/chat/${this.state.user.userEmail}`}>
+                        <img id="chat-icon" src="../../resources/images/chat-icon.svg" alt="chat-icon" />
+                      </Link>
+                    </div> : <div />
+                }
               </div>
               <div className="col-md-3 col-6 text-center d-flex justify-content-center" onClick={this.handleEdit}>
-              {
-                (this.state.user.userEmail === userEmail) ?
-                  <div id="edit-icon-container">
-                    <img id="edit-icon" src="../../resources/images/edit-icon.svg" alt="edit-icon" />
-                  </div> : <div />
-              }
+                {
+                  (this.state.user.userEmail === userEmail) ?
+                    <div id="edit-icon-container">
+                      <img id="edit-icon" src="../../resources/images/edit-icon.svg" alt="edit-icon" />
+                    </div> : <div />
+                }
               </div>
-            </div>
-          : <div />
+            </div> :
+            <div />
          }
         <div className="profile-info card">
           <div className="card-block">
@@ -440,54 +481,54 @@ class ProfileView extends React.Component {
                 <span className="info-type">Description: </span>
                 {
                   (this.state.isContentEditable) ?
-                  <input id="new-user-description" type="text" className="form-control" value={this.state.user.userDescription} onChange={this.changeEdit} /> :
-                  <span id="user-description" className="user-info">{this.state.user.userDescription}</span>
+                    <input id="new-user-description" type="text" className="form-control" value={this.state.user.userDescription} onChange={this.changeEdit} /> :
+                    <span id="user-description" className="user-info">{this.state.user.userDescription}</span>
                 }
               </div>
               <div>
                 <span className="info-type">Skills: </span>
                 {
                   (this.state.isContentEditable) ?
-                  <ReactTags
-                    tags={this.state.user.userSkills}
-                    suggestions={skillSuggestions}
-                    handleDelete={this.handleDeleteSkill}
-                    handleAddition={this.handleAdditionSkill}
-                    handleDrag={this.handleDragSkill}
-                    placeholder="Add skills"
-                    allowDeleteFromEmptyInput={false}
-                    handleInputBlur={this.handleInputBlur}
-                    autofocus={false}
-                  /> :
-                  <div>
-                    {
-                      (Object.keys(this.state.user).length !== 0) ?
-                        this.state.user.userSkills.map(skill =>
-                          <span id="user-skills" className="user-info" key={`${skill.text}${skill.id}`}>{skill.text}</span>
-                        ) : <div />
-                    }
-                  </div>
+                    <ReactTags
+                      tags={this.state.user.userSkills}
+                      suggestions={skillSuggestions}
+                      handleDelete={this.handleDeleteSkill}
+                      handleAddition={this.handleAdditionSkill}
+                      handleDrag={this.handleDragSkill}
+                      placeholder="Add skills"
+                      allowDeleteFromEmptyInput={false}
+                      handleInputBlur={this.handleInputBlur}
+                      autofocus={false}
+                    /> :
+                    <div>
+                      {
+                        (Object.keys(this.state.user).length !== 0) ?
+                          this.state.user.userSkills.map(skill =>
+                            <span id="user-skills" className="user-info" key={`${skill.text}${skill.id}`}>{skill.text}</span>,
+                          ) : <div />
+                      }
+                    </div>
                 }
               </div>
               <div>
                 <span className="info-type">Links: </span>
                 {
                   (this.state.isContentEditable) ?
-                  <ReactTags
-                    tags={this.state.user.userLinks}
-                    handleDelete={this.handleDeleteLink}
-                    handleAddition={this.handleAdditionLink}
-                    handleDrag={this.handleDragLink}
-                    placeholder="Include http://"
-                  /> :
-                  <div>
-                    {
-                      (Object.keys(this.state.user).length !== 0) ?
-                        this.state.user.userLinks.map(link =>
-                          <a id="user-links" href={link.text} className="user-info" key={`${link.text}${link.id}`}>{link.text}</a>
-                        ) : <div />
-                    }
-                  </div>
+                    <ReactTags
+                      tags={this.state.user.userLinks}
+                      handleDelete={this.handleDeleteLink}
+                      handleAddition={this.handleAdditionLink}
+                      handleDrag={this.handleDragLink}
+                      placeholder="Include http://"
+                    /> :
+                    <div>
+                      {
+                        (Object.keys(this.state.user).length !== 0) ?
+                          this.state.user.userLinks.map(link =>
+                            <a id="user-links" href={link.text} className="user-info" key={`${link.text}${link.id}`}>{link.text}</a>,
+                          ) : <div />
+                      }
+                    </div>
                 }
               </div>
             </div>
@@ -506,14 +547,14 @@ class ProfileView extends React.Component {
                   {
                     (this.state.exhibitions) ?
                     this.state.exhibitions.map((exhibition, i) =>
-                      <div key={i}>
+                      <div key={exhibition.id}>
                         <Link to={`/exhibition/${exhibition.eventName}/${exhibition.exhibitionName}`} key={exhibition.id}>
                           <div id="user-exhibition-container">
                             <img className="img-fluid user-page-thumbnail" src={`${exhibition.poster}`} onError={this.addDefaultSrc} alt="project-poster" />
                             <div id="user-exhibition">
                               <div>{exhibition.exhibitionName}</div>
                               <div className="tag-container">{(this.state.attendances) ? this.state.attendances.filter(
-                                attendance => {if (attendance.attendanceKey === exhibition.id) return attendance;}).map(
+                                attendance => { if (attendance.attendanceKey === exhibition.id) return attendance; }).map(
                                   attendance => attendance.reasons.map(
                                     reason => <span className="tag badge badge-pill badge-success">{reason}</span>)) :
                                     <div/>
@@ -549,7 +590,7 @@ class ProfileView extends React.Component {
                                 </label>
                                 <button className="btn btn-primary post-edit" onClick={this.saveReasons.bind(this, "tag-selection-row-"+i, exhibition.id)}>Save Selection</button>
                               </div> :
-                              <div/>
+                              <div />
                           }
                         </div>
                       </div>
@@ -572,23 +613,25 @@ class ProfileView extends React.Component {
                   <div id="cannot-edit-reason">
                     {
                       (this.state.isContentEditable && this.state.events) ?
-                      <h4 id="cannot-edit-message">You can edit your attendance reason in the homepage</h4> :
-                      <div />
+                        <h4 id="cannot-edit-message">You can edit your attendance reason in the homepage</h4> :
+                        <div />
                     }
                   </div>
                   {
                     (this.state.events) ?
                     this.state.events.map(event =>
-                      <Link to={`/event/${event.name}`}  key={event.id}>
+                      <Link to={`/event/${event.name}`} key={event.id}>
                         <div id="user-event-container">
-                          <img className="img-fluid user-page-thumbnail" src={`${event.event_poster}`} onError={this.addDefaultSrc} alt="event-image" />
+                          <img className="img-fluid user-page-thumbnail" src={`${event.event_poster}`} onError={this.addDefaultSrc} alt="event" />
                           <div id="user-events">
                             <div>{event.name}</div>
                             <div className="tag-container">{(this.state.attendances) ? this.state.attendances.filter(
-                              attendance => {if (attendance.attendanceKey === event.id) return attendance;}).map(
-                                attendance => attendance.reasons.filter(tag => {if (tag !== 'nil') return tag;}).map(
+                              (attendance) => {
+                                if (attendance.attendanceKey === event.id) return attendance;
+                              }).map(
+                                attendance => attendance.reasons.filter((tag) => { if (tag !== 'nil') return tag; }).map(
                                   reason => <span className="tag badge badge-pill badge-success">{reason}</span>)) :
-                                  <div/>
+                            <div />
                             }</div>
                           </div>
                         </div>
@@ -614,6 +657,10 @@ class ProfileView extends React.Component {
 
 ProfileView.contextTypes = {
   router: React.PropTypes.object.isRequired,
+};
+
+ProfileView.propTypes = {
+  location: React.PropTypes.object.isRequired,
 };
 
 export default ProfileView;

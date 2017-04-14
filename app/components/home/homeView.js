@@ -1,5 +1,15 @@
+/*
+   eslint-disable array-callback-return,
+   jsx-a11y/no-static-element-interactions,
+   react/jsx-no-bind,
+   class-methods-use-this,
+   consistent-return,
+   no-param-reassign,
+   react/forbid-prop-types,
+*/
+
 import React from 'react';
-import Search from '../search/search';
+import SearchInput from '../search/searchInputView';
 import Tabs from './tabs';
 import Event from './event';
 import Collapsable from './collapsable';
@@ -22,7 +32,7 @@ class HomeView extends React.Component {
       email: userEmail.replace(/%40/i, '@'),
     };
 
-    this.initializeStates();
+    this.retrieveData();
 
     this.openCollapsable = this.openCollapsable.bind(this);
     this.changeAttendance = this.changeAttendance.bind(this);
@@ -32,7 +42,68 @@ class HomeView extends React.Component {
     this.getAttendances = this.getAttendances.bind(this);
   }
 
-  initializeStates() {
+  /**
+    * Sets priority of event view
+    */
+  setDefaultView() {
+    const copy = this.state.events.slice();
+
+    const nowTime = this.state.todayDate.getTime();
+    const ongoing = copy.filter((event) => {
+      if (nowTime > this.formatMilli(event.start_date) &&
+        nowTime < this.formatMilli(event.end_date)) {
+        return event;
+      }
+    });
+    const upcoming = copy.filter((event) => {
+      if (nowTime < this.formatMilli(event.start_date)) {
+        return event;
+      }
+    });
+    const past = copy.filter((event) => {
+      if (nowTime > this.formatMilli(event.end_date)) {
+        return event;
+      }
+    });
+
+    let defaultTab = 'ongoing';
+    let display = ongoing;
+    if (ongoing.length === 0 && upcoming.length !== 0) {
+      defaultTab = 'upcoming';
+      display = upcoming;
+    } else if (ongoing.length === 0 && upcoming.length === 0 && past.length !== 0) {
+      defaultTab = 'past';
+      display = past;
+    }
+
+    this.setState({
+      currentTab: defaultTab,
+      displayedEvents: display,
+      open: this.createFalseArray(display.length),
+      error: '',
+    });
+  }
+
+  getAttendances() {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', `/attendance/get/oneUserAttendances/${this.state.email}`);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        this.setState({ attendance: xhr.response });
+      } else {
+        this.setState({ attendance: [] });
+      }
+
+      if (this.state.displayedEvents.length === 0) {
+        this.setDefaultView();
+      }
+    });
+    xhr.send();
+  }
+
+  retrieveData() {
     const xhr = new XMLHttpRequest();
     xhr.open('get', '/event/get/allEvents');
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -55,53 +126,42 @@ class HomeView extends React.Component {
     xhr.send();
   }
 
-  getAttendances() {
-    const xhr = new XMLHttpRequest();
-    xhr.open('get', `/attendance/get/oneUserAttendances/${this.state.email}`);
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.responseType = 'json';
-    xhr.addEventListener('load', () => {
-      if (xhr.status === 200) {
-        this.setState({ attendance: xhr.response });
-      } else {
-        this.setState({ attendance: [] });
-      }
-
-      if (this.state.displayedEvents.length === 0) {
-        this.setDefaultView();
-      }
-    });
-    xhr.send();
-  }
-
   createFalseArray(n) {
-    let array = [];
+    const array = [];
     for (let i = 0; i < n; i += 1) {
       array.push(false);
     }
     return array;
   }
 
+  /**
+    * Only one element in this.state.open can be true at all times.
+    * Toggle boolean at the index serial.
+    */
   openCollapsable(serial) {
-    const newStatus = this.createFalseArray(this.state.open.length); // ignore previous state and change all to false
+    // ignore previous state and change all to false
+    const newStatus = this.createFalseArray(this.state.open.length);
     newStatus[serial] = !this.state.open[serial];
     this.setState({ open: newStatus });
   }
 
+  /**
+    * Toggle the attendance of a user.
+    * Will ONLY work if user is not participating in the event in the @param
+    * Status 423 will be given when trying to violate the rule
+    */
   changeAttendance(event) {
-    // modify attendance data here
     const userEmail = encodeURIComponent(this.state.email);
     const eventName = encodeURIComponent(event.name);
     const formData = `userEmail=${userEmail}&eventName=${eventName}`;
     const xhr = new XMLHttpRequest();
-    xhr.open('post', `attendance/post/oneEventAttendance/`);
+    xhr.open('post', 'attendance/post/oneEventAttendance/');
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
         this.getAttendances();
-      } else {
       }
     });
     xhr.send(formData);
@@ -112,43 +172,10 @@ class HomeView extends React.Component {
     return date.getTime();
   }
 
+
   /**
-    * Sets priority of event view
+    * Invoked when user changes tab
     */
-  setDefaultView() {
-    const copy = this.state.events.slice();
-
-    const nowTime = this.state.todayDate.getTime();
-    const ongoing = copy.filter((event) => {
-      if (nowTime > this.formatMilli(event.start_date) && nowTime < this.formatMilli(event.end_date))
-        return event;
-    });
-    const upcoming = copy.filter((event) => {
-      if (nowTime < this.formatMilli(event.start_date))
-        return event;
-    });
-    const past = copy.filter((event) => {
-      if (nowTime > this.formatMilli(event.end_date))
-        return event;
-    });
-
-    let defaultTab = 'ongoing';
-    let display = ongoing;
-    if (ongoing.length === 0 && upcoming.length !== 0) {
-      defaultTab = 'upcoming';
-      display = upcoming;
-    } else if (ongoing.length === 0 && upcoming.length === 0 && past.length !== 0) {
-      defaultTab = 'past';
-      display = past;
-    }
-
-    this.setState({
-      currentTab: defaultTab,
-      displayedEvents: display,
-      open: this.createFalseArray(display.length),
-    });
-  }
-
   changeView(e) {
     const id = e.target.id;
     const copy = this.state.events.slice();
@@ -157,24 +184,30 @@ class HomeView extends React.Component {
     switch (id) {
       case 'ongoing':
         remainder = copy.filter((event) => {
-          if (nowTime > this.formatMilli(event.start_date) && nowTime < this.formatMilli(event.end_date))
+          if (nowTime > this.formatMilli(event.start_date) &&
+            nowTime < this.formatMilli(event.end_date)) {
             return event;
+          }
         });
         break;
       case 'upcoming':
         remainder = copy.filter((event) => {
-          if (nowTime < this.formatMilli(event.start_date))
+          if (nowTime < this.formatMilli(event.start_date)) {
             return event;
+          }
         });
         break;
       case 'past':
         remainder = copy.filter((event) => {
-          if (nowTime > this.formatMilli(event.end_date))
+          if (nowTime > this.formatMilli(event.end_date)) {
             return event;
+          }
         });
         break;
       default:
-        alert('no such id!');
+        this.setState({
+          error: 'No such id',
+        });
     }
     this.setState({
       displayedEvents: remainder,
@@ -191,7 +224,7 @@ class HomeView extends React.Component {
         <div id="home-background" className="hidden-md-down">
           <div id="home-search-container">
             <h2 id="search-title">Find An Opportunity</h2>
-            <Search />
+            <SearchInput />
           </div>
         </div>
 
@@ -201,7 +234,7 @@ class HomeView extends React.Component {
             {
               (this.state.displayedEvents.length !== 0) ?
                 this.state.displayedEvents.map((event, i) =>
-                  <div id="event-container" key={i}>
+                  <div id="event-container" key={event.id}>
                     <Event
                       serial={i}
                       open={this.state.open}
@@ -219,10 +252,13 @@ class HomeView extends React.Component {
                       attendance={this.state.attendance}
                       changeAttendance={this.changeAttendance}
                       email={this.state.email}
-                     />
-                  </div>
-            ) : <div className="no-events justify-content-center">
-                  <p>Sorry! There are no {this.state.currentTab} events. Please check again in the future!</p>
+                    />
+                  </div>,
+                ) : <div className="no-events justify-content-center">
+                  <p>
+                    Sorry! There are no {this.state.currentTab} events.
+                    Please check again in the future!
+                  </p>
                 </div>
             }
           </div>

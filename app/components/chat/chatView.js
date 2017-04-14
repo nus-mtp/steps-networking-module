@@ -1,3 +1,15 @@
+/*
+   eslint-disable array-callback-return,
+   jsx-a11y/no-static-element-interactions,
+   react/jsx-no-bind,
+   class-methods-use-this,
+   consistent-return,
+   no-param-reassign,
+   react/forbid-prop-types,
+   no-undef,
+   prefer-arrow-callback
+*/
+
 import React, { Component } from 'react';
 import MediaQuery from 'react-responsive';
 import ChatBody from './chatBody';
@@ -17,45 +29,44 @@ export default class ChatView extends Component {
       minWidth: '700px',
     };
 
-    this.query = 'screen and (min-width: ' + this.state.minWidth + ')';
+    this.query = `screen and (min-width: ${this.state.minWidth})`;
     this.widthOfChatTabs = '25%';
 
     // Get a specific user that wants to be talked to
     const pathname = this.props.location.pathname;
     this.talkToEmail = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length).trim();
-    if (this.talkToEmail===''||this.talkToEmail==='chat') {
+    if (this.talkToEmail === '' || this.talkToEmail === 'chat') {
       this.talkToEmail = '';
     }
 
-    //*// validate talkToEmail
-    if (this.talkToEmail!=='') {
+    // validate talkToEmail
+    if (this.talkToEmail !== '') {
       const xhr = new XMLHttpRequest();
       xhr.open('get', `user/get/profile/${this.talkToEmail}`);
       xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
       xhr.responseType = 'json';
-      xhr.addEventListener('load', function(){
+      xhr.addEventListener('load', function load() {
         if (xhr.status === 200) {
           // If valid, send to bUsers
           const bookmarkedUserId = encodeURIComponent(xhr.response.id);
           const userEmail = encodeURIComponent(this.state.email);
           const formData = `bookmarkedUserId=${bookmarkedUserId}&userEmail=${userEmail}`;
-          //*
           const xhrBUser = new XMLHttpRequest();
           xhrBUser.open('post', 'user/post/profile/add/bUser');
 
           xhrBUser.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
           xhrBUser.setRequestHeader('Authorization', `Bearer ${JSON.stringify(Auth.getToken())}`);
           xhrBUser.responseType = 'json';
-          xhrBUser.addEventListener('load', function(){
+          /*
+          xhrBUser.addEventListener('load', function()loadBUser{
             //console.log(xhrBUser.status);
           }.bind(this));
-          xhrBUser.send(formData);
           //*/
+          xhrBUser.send(formData);
         }
       }.bind(this));
       xhr.send();
     }
-    //*/
     /* // Get matching users
     const xhr = new XMLHttpRequest();
     xhr.open('get', `user/get/chat/${this.props.email}`);
@@ -72,11 +83,11 @@ export default class ChatView extends Component {
   }
 
   componentWillMount() {
-    if(Auth.isUserAuthenticated) {
+    if (Auth.isUserAuthenticated) {
       let email = Auth.getToken().email;
       email = email.replace(/%40/gi, '@');
 
-      sockets.emit('new user', {userEmail: email}, function(socketId) {
+      sockets.emit('new user', { userEmail: email }, function saveSocketId(socketId) {
         this.socketId = socketId; // save the socket id
       }.bind(this));
 
@@ -85,16 +96,20 @@ export default class ChatView extends Component {
     }
   }
 
+  componentWillUnmount() {
+    sockets.emit('remove user');
+  }
+
   getAllUsers(email) {
-    sockets.emit('get all emails involving user', {userEmail: email}, function(err, userList) {
+    sockets.emit('get all emails involving user', { userEmail: email }, function getUsers(err, userList) {
       if (err) {
         // Stuff went wrong
-        console.log('Unable to retrieve userList');
-      } else if (userList!==undefined && userList!==null) {
+      } else if (userList !== undefined && userList !== null) {
         let current = this.state.current;
-        if (this.talkToEmail!==''&&this.talkToEmail!==undefined) {
+        if (this.talkToEmail !== '' &&
+            this.talkToEmail !== undefined) {
           current = userList.indexOf(this.talkToEmail);
-          if (current===-1) { // If not in the list, add it to the top of the list
+          if (current === -1) { // If not in the list, add it to the top of the list
             userList.splice(0, 0, this.talkToEmail);
             current = 0;
           }
@@ -108,14 +123,14 @@ export default class ChatView extends Component {
         xhr.open('get', `user/get/profiles/${userString}`);
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhr.responseType = 'json';
-        xhr.addEventListener('load', function(){
+        xhr.addEventListener('load', function load() {
           if (xhr.status === 200) {
             const names = [];
             let xhrIndex = 0;
-            for (let i = 0; i < userList.length; i++) {
-              if (xhr.response[xhrIndex].userEmail===userList[i]) {
+            for (let i = 0; i < userList.length; i += 1) {
+              if (xhr.response[xhrIndex].userEmail === userList[i]) {
                 names.push(xhr.response[xhrIndex].userName);
-                xhrIndex++;
+                xhrIndex += 1;
               } else {
                 names.push(null);
               }
@@ -137,63 +152,63 @@ export default class ChatView extends Component {
     if (matches) {
       markup = (
         <div id="chat-sidebar-wrapper">
-        <ChatTabs
-        width={this.widthOfChatTabs}
-        users={this.state.users}
-        names={this.state.names}
-        current={this.state.current}
-        changeConversation={this.changeConversation.bind(this)}
-    email={this.state.email}
-    talkToEmail={this.talkToEmail}
-    />
-    </div>
-    );
+          <ChatTabs
+            width={this.widthOfChatTabs}
+            users={this.state.users}
+            names={this.state.names}
+            current={this.state.current}
+            changeConversation={this.changeConversation.bind(this)}
+            email={this.state.email}
+            talkToEmail={this.talkToEmail}
+          />
+        </div>
+      );
+    }
+    return markup;
   }
-  return markup;
-}
 
-hasPeopleToTalkTo(){
-
-  if (this.state.users!==undefined &&
-      this.state.users!==null &&
-      this.state.users.length===0) {
-    return (
-      <div style={{textAlign: 'center'}}>
-      You have no one to talk to.<br/>
-      Please find someone to talk to.
-      <br/><br/>
-      </div>
-    );
-  } else {
+  hasPeopleToTalkTo() {
+    if (this.state.users !== undefined &&
+      this.state.users !== null &&
+      this.state.users.length === 0) {
+      return (
+        <div style={{ textAlign: 'center' }}>
+          You have no one to talk to.
+          <br />
+          Please find someone to talk to.
+          <br /><br />
+        </div>
+      );
+    } // else
     return (
       <div id="chat">
-      <MediaQuery query={this.query}>
-      {this.showChatTabs.bind(this)}
-  </MediaQuery>
-  <ChatBody
-  query={this.query}
-  marginLeft={this.widthOfChatTabs}
-  users={this.state.users}
-  names={this.state.names}
-  current={this.state.current}
-  changeConversation={this.changeConversation.bind(this)}
-  email={this.state.email}
-  talkToEmail={this.talkToEmail}
-  sockets={sockets}
-  />
-  </div>
-  );
-} //end-else
-}
+        <MediaQuery query={this.query}>
+          {this.showChatTabs.bind(this)}
+        </MediaQuery>
+        <ChatBody
+          query={this.query}
+          marginLeft={this.widthOfChatTabs}
+          users={this.state.users}
+          names={this.state.names}
+          current={this.state.current}
+          changeConversation={this.changeConversation.bind(this)}
+          email={this.state.email}
+          talkToEmail={this.talkToEmail}
+          sockets={sockets}
+        />
+      </div>
+    );
+  }
 
-render() {
-  return (
-    <div id="chat">
-    {this.hasPeopleToTalkTo()}
-</div>
-);
-}
+  render() {
+    return (
+      <div id="chat">
+        {this.hasPeopleToTalkTo()}
+      </div>
+    );
+  }
 }
 
 ChatView.propTypes = {
+  location: React.PropTypes.object.isRequired,
 };

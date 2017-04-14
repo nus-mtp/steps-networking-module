@@ -1,3 +1,14 @@
+/*
+   eslint-disable array-callback-return,
+   jsx-a11y/no-static-element-interactions,
+   react/jsx-no-bind,
+   class-methods-use-this,
+   consistent-return,
+   no-param-reassign,
+   react/forbid-prop-types,
+   arrow-body-style
+*/
+
 import React, { Component } from 'react';
 
 class ChatTabs extends Component {
@@ -7,6 +18,7 @@ class ChatTabs extends Component {
     this.divStyle = {
       width: this.props.width,
     };
+    this.toTitleCase = this.toTitleCase.bind(this);
   }
 
   createTab(email, key = 0, selected = -1) {
@@ -32,11 +44,15 @@ class ChatTabs extends Component {
   inititaliseTabs(selected = 0) {
     const tabList = [];
     if (this.props.names && this.props.users &&
-      this.props.names.length===this.props.users.length) {
+      this.props.names.length === this.props.users.length) {
       for (let i = 0; i < this.props.users.length; i += 1) {
-        if (this.props.names[i]!==null) {
-          tabList.push(this.createTab.bind(this)(this.props.names[i], i, selected));
-        } else if (this.props.users[i]===this.props.talkToEmail) { // that means name is null
+        if (this.props.names[i] !== null) {
+          tabList.push(this.createTab.bind(this)(
+            this.toTitleCase(this.props.names[i]),
+            i,
+            selected,
+          ));
+        } else if (this.props.users[i] === this.props.talkToEmail) { // that means name is null
           tabList.splice(0, 0, this.createTab.bind(this)(this.props.users[i], i, selected));
         }
       }
@@ -53,6 +69,12 @@ class ChatTabs extends Component {
       event.preventDefault();
       this.props.changeConversation(key);
     }.bind(this);
+  }
+
+  toTitleCase(str) {
+    return str.replace(/\w\S*/g, (txt) => {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
   }
 
   render() {
@@ -80,7 +102,6 @@ ChatTabs.propTypes = {
   current: React.PropTypes.number.isRequired,
   width: React.PropTypes.string.isRequired,
   changeConversation: React.PropTypes.func.isRequired,
-  email: React.PropTypes.string.isRequired,
   talkToEmail: React.PropTypes.string.isRequired,
 };
 

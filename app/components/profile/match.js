@@ -1,6 +1,15 @@
+/*
+   eslint-disable array-callback-return,
+   jsx-a11y/no-static-element-interactions,
+   react/jsx-no-bind,
+   class-methods-use-this,
+   consistent-return,
+   no-param-reassign,
+   react/forbid-prop-types,
+*/
+
 import React from 'react';
 import { Link } from 'react-router';
-import Paths from '../../paths';
 import ReactSwipe from 'react-swipe';
 
 class Match extends React.Component {
@@ -18,7 +27,7 @@ class Match extends React.Component {
       eventId: id,
       reasons: reasons.split(','),
       relevantUsers: [],
-      email: email,
+      email,
       userEvents: {},
     }
 
@@ -26,6 +35,7 @@ class Match extends React.Component {
 
     this.getEventsAndExhibitons = this.getEventsAndExhibitons.bind(this);
     this.getRelevantEventsAndExhibitions = this.getRelevantEventsAndExhibitions.bind(this);
+    this.toTitleCase = this.toTitleCase.bind(this);
   }
 
   getRelevantUsers(array) {
@@ -39,12 +49,10 @@ class Match extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        console.log('Finding relevant users match success');
         const array = xhr.response.filter(user => {if (user.userEmail !== this.state.email) return user;});
         this.setState({ relevantUsers: array });
         this.getRelevantEventsAndExhibitions();
       } else {
-        console.log('Finding relevant users match fail');
         this.setState({ relevantUsers: [] });
       }
     });
@@ -57,6 +65,9 @@ class Match extends React.Component {
     }
   }
 
+  /**
+    * For each of the matched user, get their related events and exhibitions.
+    */
   getEventsAndExhibitons(email) {
     const xhr = new XMLHttpRequest();
     xhr.open('get', `/attendance/get/oneUserEventsAndExhibitions/${email}`);
@@ -64,15 +75,22 @@ class Match extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        console.log("Get Events In Match Success");
         const obj = this.state.userEvents;
         obj[`${email}`] = xhr.response;
         this.setState({userEvents: obj });
       } else {
-        console.log("Get Events In Match Fail");
+
       }
     });
     xhr.send();
+  }
+
+  toTitleCase(str) {
+    return str.replace(/\w\S*/g,
+      function(txt){
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      }
+    );
   }
 
   next() {
@@ -116,7 +134,7 @@ class Match extends React.Component {
                 </div>
               </div>
               <div className="row justify-content-center">
-                <h3 className="user-name user-info">{user.userName}</h3>
+                <h3 className="user-name user-info">{this.toTitleCase(user.userName)}</h3>
               </div>
               <div className="row justify-content-center">
                 {
@@ -202,7 +220,7 @@ class Match extends React.Component {
 }
 
 Match.propTypes = {
-  tags: React.PropTypes.array,
-}
+  location: React.PropTypes.object.isRequired,
+};
 
 export default Match;

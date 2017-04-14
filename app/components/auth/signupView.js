@@ -25,8 +25,7 @@ class SignupView extends React.Component {
   }
 
   /**
-  * Process the form.
-  *
+  * Create request for HTTP POST for server side process
   * @param {object} event - the JavaScript event object
   */
   processForm(e) {

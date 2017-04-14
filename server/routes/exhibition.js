@@ -16,7 +16,6 @@ router.get('/get/allExhibitions', (req = {}, res, next) => {
 
   Exhibition.getAllExhibitions((err, exhibitions) => {
     if (err) {
-      console.log(err);
       res.status(500).json('Unable to fetch data!');
     } else if (exhibitions && exhibitions.length > 0) {
       res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
@@ -33,7 +32,6 @@ router.get('/get/oneEventExhibitions/:eventName', (req = {}, res, next) => {
 
     Exhibition.searchExhibitionsByEvent(req.params.eventName, (err, exhibitions) => {
       if (err) {
-        console.log(err);
         res.status(500).json('Unable to fetch data!');
       } else if (exhibitions && exhibitions.length > 0) {
         res.status(200).json(exhibitions.map(exhibition => extractExhibitionInfo(exhibition)));
@@ -54,7 +52,6 @@ router.get('/get/oneExhibition/:eventName/:exhibitionName', (req = {}, res, next
 
     Exhibition.getExhibition(req.params.eventName, req.params.exhibitionName, (err, exhibition) => {
       if (err) {
-        console.log(err);
         res.status(500).json('Unable to fetch data!');
       } else if (exhibition) {
         res.status(200).json(extractExhibitionInfo(exhibition));
@@ -76,10 +73,8 @@ router.get('/get/oneExhibitionById/:exhibitionId', (req = {}, res, next) => {
     Exhibition.getExhibitionById(req.params.exhibitionId, (err, exhibition) => {
       if (err) {
         if (err.name === 'CastError') {
-          console.log(err);
           res.status(404).json('Nothing found!');
         } else {
-          console.log(err);
           res.status(500).json('Unable to fetch data!');
         }
       } else if (exhibition) {
@@ -105,10 +100,8 @@ router.post('/post/search/tags', (req = {}, res, next) => {
     Exhibition.searchExhibitionsByTags(req.body.tags.split(','), (err, exhibitions) => {
       if (err) {
         if (err.name === 'ValidationError') {
-          console.log(err);
           res.status(403).json('Unauthorized!');
         } else {
-          console.log(err);
           res.status(500).json('Unable to post data!');
         }
       } else if (exhibitions && exhibitions.length > 0) {
@@ -132,10 +125,8 @@ router.post('/post/oneExhibition/set/tags', (req = {}, res, next) => {
             req.body.eventName, req.body.exhibitionName, req.body.tags.split(','), (err, exhibition) => {
               if (err) {
                 if (err.name === 'ValidationError') {
-                  console.log(err);
                   res.status(403).json('Unauthorized!');
                 } else {
-                  console.log(err);
                   res.status(500).json('Unable to post data!');
                 }
               } else if (exhibition) {

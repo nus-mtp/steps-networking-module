@@ -14,19 +14,32 @@ const exhibitionSchema = new mongoose.Schema({
         ', and is therefore Required.',
   },
 
-  exhibition_description: String,
+  exhibition_description: {
+    type: String,
+  },
 
-  poster: String,
-  images: [String],
-  videos: [String],
-  website: String,
+  poster: {
+    type: String,
+  },
+  website: {
+    type: String,
+  },
 
+  images: [
+    {
+      type: String,
+    },
+  ],
+  videos: [
+    {
+      type: String,
+    },
+  ],
   tags: [
     {
       type: String,
       lowercase: true,
       trim: true,
-      // unique: true,
     },
   ],
 });

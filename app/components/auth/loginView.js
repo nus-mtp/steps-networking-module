@@ -21,8 +21,7 @@ class LoginView extends React.Component {
   }
 
   /**
-  * Process the form.
-  *
+  * Create request for HTTP POST for server side process
   * @param {object} event - the JavaScript event object
   */
   processForm(e) {
@@ -67,6 +66,9 @@ class LoginView extends React.Component {
       }
     });
     xhr.send(formData);
+    // Hacks to overcome the unwanted 404 error in profile view
+    window.location.href += '.';
+    window.location.href.slice(0, -1);
   }
 
   handleUserPassword(e) {

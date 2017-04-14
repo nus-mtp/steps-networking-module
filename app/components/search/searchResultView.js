@@ -1,9 +1,15 @@
+/*
+   eslint-disable class-methods-use-this,
+   react/forbid-prop-types,
+   no-param-reassign
+*/
+
 import React from 'react';
 import { Link } from 'react-router';
 
-class SearchView extends React.Component {
+class SearchResultView extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
       searchResults: [],
@@ -17,31 +23,42 @@ class SearchView extends React.Component {
 
   componentDidMount() {
     const that = this;
-    window.addEventListener("hashchange", () => {
+    window.addEventListener('hashchange', () => {
       that.checkPath();
     });
   }
 
   componentWillUnmount() {
     const that = this;
-    window.removeEventListener("hashchange", () => {
+    window.removeEventListener('hashchange', () => {
       that.checkPath();
     });
   }
 
-  checkPath() {
-    let pathname = this.props.location.pathname;
-    const tags = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
-    pathname = pathname.slice(0, pathname.lastIndexOf('/'));
-    const category = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
-
-    if (category === 'user') {
-      this.getUsers(tags);
-    } else if (category === 'exhibition') {
-      this.getExhibitions(tags);
-    } else {
-
-    }
+  getUsers(formData) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('post', '/user/post/search/skills');
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.responseType = 'json';
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        // success
+        // change the component-container state
+        this.setState({
+          searchTerm: formData,
+          searchCategory: 'user',
+          searchResults: xhr.response,
+          errors: '',
+        });
+      } else {
+        this.setState({
+          searchTerm: formData,
+          searchResults: [],
+          errors: 'Not found!',
+        });
+      }
+    });
+    xhr.send(`userSkills=${formData}`);
   }
 
   getExhibitions(formData) {
@@ -64,42 +81,32 @@ class SearchView extends React.Component {
         this.setState({
           searchTerm: formData,
           searchResults: [],
-          errors: 'Not found!'
+          errors: 'Not found!',
         });
       }
     });
     xhr.send(`tags=${formData}`);
   }
 
-  getUsers(formData) {
-    const xhr = new XMLHttpRequest();
-    xhr.open('post', '/user/post/search/skills');
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.responseType = 'json';
-    xhr.addEventListener('load', () => {
-      if (xhr.status === 200) {
-        // success
+  /**
+    * Determine what filter has the user used via url and
+    * retrieves the information accordingly
+    */
+  checkPath() {
+    let pathname = this.props.location.pathname;
+    const tags = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
+    pathname = pathname.slice(0, pathname.lastIndexOf('/'));
+    const category = pathname.slice(pathname.lastIndexOf('/') + 1, pathname.length);
 
-        // change the component-container state
-        this.setState({
-          searchTerm: formData,
-          searchCategory: 'user',
-          searchResults: xhr.response,
-          errors: '',
-        });
-      } else {
-        this.setState({
-          searchTerm: formData,
-          searchResults: [],
-          errors: 'Not found!'
-        });
-      }
-    });
-    xhr.send(`userSkills=${formData}`);
+    if (category === 'user') {
+      this.getUsers(tags);
+    } else if (category === 'exhibition') {
+      this.getExhibitions(tags);
+    }
   }
 
   addDefaultSrc(event) {
-    event.target.src = "../../resources/images/empty-poster-placeholder.png";
+    event.target.src = '../../resources/images/empty-poster-placeholder.png';
   }
 
   render() {
@@ -117,30 +124,29 @@ class SearchView extends React.Component {
                 <div className="card-text">Tags:
                   {
                     result.tags.map(tag =>
-                      <span className="badge badge-pill badge-success" key={tag}>{tag}</span>
+                      <span className="badge badge-pill badge-success" key={tag}>{tag}</span>,
                   )}
                 </div>
               </div>
             </div>
-          </Link>
+          </Link>,
         );
       } else if (this.state.searchCategory === 'user') {
         render = this.state.searchResults.map(result =>
           <Link to={`/profile/${result.userEmail}`} key={result.id}>
             <div id="search-result" className="card">
-              <img className="card-img-top card-image align-self-center" src={result.userProfilePicture} onError={this.addDefaultSrc} alt="profile picture" />
               <div className="card-block">
                 <h4 className="card-title">{result.userName}</h4>
                 <div className="card-text">Email: {result.userEmail}</div>
                 <div className="card-text">Skills:
                   {
                     result.userSkills.map(skill =>
-                      <span className="badge badge-pill badge-success" key={skill}>{skill}</span>
+                      <span className="badge badge-pill badge-success" key={skill}>{skill}</span>,
                   )}
                 </div>
               </div>
             </div>
-          </Link>
+          </Link>,
         );
       }
     }
@@ -155,8 +161,12 @@ class SearchView extends React.Component {
           {render}
         </div>
       </div>
-    )
+    );
   }
 }
 
-export default SearchView;
+SearchResultView.propTypes = {
+  location: React.PropTypes.object.isRequired,
+};
+
+export default SearchResultView;
