@@ -157,6 +157,10 @@ class EventView extends React.Component {
     }
   }
 
+  /**
+    * Display modules that contains the id
+    * @param id of the JSX element
+    */
   updateDisplayedExhibitions(id) {
     const newDisplay = this.state.exhibitions.filter(exhibition => {if (exhibition.tags[1] === id) return exhibition});
     this.setState({

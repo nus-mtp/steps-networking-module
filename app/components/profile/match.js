@@ -39,12 +39,10 @@ class Match extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        console.log('Finding relevant users match success');
         const array = xhr.response.filter(user => {if (user.userEmail !== this.state.email) return user;});
         this.setState({ relevantUsers: array });
         this.getRelevantEventsAndExhibitions();
       } else {
-        console.log('Finding relevant users match fail');
         this.setState({ relevantUsers: [] });
       }
     });
@@ -57,6 +55,9 @@ class Match extends React.Component {
     }
   }
 
+  /**
+    * For each of the matched user, get their related events and exhibitions.
+    */
   getEventsAndExhibitons(email) {
     const xhr = new XMLHttpRequest();
     xhr.open('get', `/attendance/get/oneUserEventsAndExhibitions/${email}`);
@@ -64,12 +65,11 @@ class Match extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        console.log("Get Events In Match Success");
         const obj = this.state.userEvents;
         obj[`${email}`] = xhr.response;
         this.setState({userEvents: obj });
       } else {
-        console.log("Get Events In Match Fail");
+
       }
     });
     xhr.send();

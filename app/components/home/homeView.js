@@ -42,7 +42,6 @@ class HomeView extends React.Component {
         this.setState({
           events: xhr.response,
         });
-
         this.getAttendances();
       } else {
         this.setState({
@@ -82,14 +81,22 @@ class HomeView extends React.Component {
     return array;
   }
 
+  /**
+    * Only one element in this.state.open can be true at all times.
+    * Toggle boolean at the index serial.
+    */
   openCollapsable(serial) {
     const newStatus = this.createFalseArray(this.state.open.length); // ignore previous state and change all to false
     newStatus[serial] = !this.state.open[serial];
     this.setState({ open: newStatus });
   }
 
+  /**
+    * Toggle the attendance of a user.
+    * Will ONLY work if user is not participating in the event in the @param
+    * Status 423 will be given when trying to violate the rule
+    */
   changeAttendance(event) {
-    // modify attendance data here
     const userEmail = encodeURIComponent(this.state.email);
     const eventName = encodeURIComponent(event.name);
     const formData = `userEmail=${userEmail}&eventName=${eventName}`;
@@ -100,7 +107,7 @@ class HomeView extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        this.getAttendances();
+        this.getAttendances(); // Refreshes the attendance list
       } else {
       }
     });
@@ -149,6 +156,9 @@ class HomeView extends React.Component {
     });
   }
 
+  /**
+    * Invoked when user changes tab
+    */
   changeView(e) {
     const id = e.target.id;
     const copy = this.state.events.slice();
