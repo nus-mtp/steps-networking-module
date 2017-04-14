@@ -38,6 +38,5 @@ Lint according to https://github.com/airbnb/javascript
 ### Version Standards
 Version numbering according to http://semver.org/
 
-
 ## Licenses
 [MIT License](./LICENSE.md)
