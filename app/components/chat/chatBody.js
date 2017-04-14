@@ -43,28 +43,27 @@ export default class ChatBody extends Component {
 
     this.current = this.props.current;
 
-    this.props.sockets.on('refresh message', function(results){
+    this.props.sockets.on('refresh message', function refresh() {
       this.initialiseMessages();
     }.bind(this));
   }
 
   componentDidUpdate() {
-    if (this.update||this.current!==this.props.current) {
+    if (this.update || this.current !== this.props.current) {
       this.initialiseMessages();
     }
     ChatBody.scrollToBottom();
-    if (this.textInput!==null) {
+    if (this.textInput !== null) {
       this.textInput.focus();
     }
   }
 
   retrieveAllMessages(senderEmail, recipientEmail) {
-
-    this.props.sockets.emit('get message', { senderEmail, recipientEmail }, Auth.getToken(), function(err, conversation) {
-      if (err||conversation===null||conversation.messages===undefined) {
-        this.setState({[`${senderEmail}`]: [] });
+    this.props.sockets.emit('get message', { senderEmail, recipientEmail }, Auth.getToken(), function retrieve(err, conversation) {
+      if (err || conversation === null || conversation.messages === undefined) {
+        this.setState({ [`${senderEmail}`]: [] });
       } else {
-        this.setState({[`${senderEmail}`]: conversation.messages });
+        this.setState({ [`${senderEmail}`]: conversation.messages });
       }
     }.bind(this));
   }
@@ -73,9 +72,8 @@ export default class ChatBody extends Component {
     const senderEmail = this.props.email;
     const recipientEmail = this.props.users[this.props.current];
 
-    if (!senderEmail||!recipientEmail) {
+    if (!senderEmail || !recipientEmail) {
       if (!this.update) {
-        //console.log("Failed to get messages");
         this.update = true;
       }
     } else {
@@ -99,9 +97,9 @@ export default class ChatBody extends Component {
   }
 
   sendMessage(senderEmail, recipientEmail, content) {
-    this.props.sockets.emit('add message', { senderEmail, recipientEmail, content }, Auth.getToken(), function(successful) {
+    this.props.sockets.emit('add message', { senderEmail, recipientEmail, content }, Auth.getToken(), function send(successful) {
       if (!successful) {
-        console.log("The message failed to send.");
+        console.log('The message failed to send.');
       } else {
         this.initialiseMessages();
       }
@@ -109,10 +107,8 @@ export default class ChatBody extends Component {
   }
 
   createPostList(array = [], postFunc = ChatBody.PostSelf) {
-    if (array.length==0) {
-      return [];
-    } else {
-      return array.map(function(object, index) {
+    if (array.length !== 0) {
+      return array.map(function createPost(object, index) {
         // return an object that has been made into a post and keep time stamp
         return {
           content: postFunc(object.content, index),
@@ -120,16 +116,17 @@ export default class ChatBody extends Component {
         };
       });
     }
+    return [];
   }
 
  /* Static functions used throughout */
   static PostSelf(text, key = 0) {
-    key = 's' + key;
+    key = `s${key}`;
     return ChatBody.createPost(text, 'chat-self', key);
   }
 
   static PostOther(text, key = 0) {
-    key = 'o' + key;
+    key = `o${key}`;
     return ChatBody.createPost(text, 'chat-other', key);
   }
 
@@ -142,8 +139,7 @@ export default class ChatBody extends Component {
   }
 
   static scrollToBottom() {
-    //document.body.scrollTop = document.body.scrollHeight;
-    window.scrollTo(0,document.body.scrollHeight);
+    window.scrollTo(0, document.body.scrollHeight);
   }
 
   // Expects to receive arrays made of objects containing { content, timestamp }. Sorts by timestamp
@@ -154,21 +150,21 @@ export default class ChatBody extends Component {
     while (i < list1.length && j < list2.length) {
       if (list1[i].timestamp < list2[j].timestamp) {
         mergedList.push(list1[i].content);
-        i++;
+        i += 1;
       } else {
         mergedList.push(list2[j].content);
-        j++;
+        j += 1;
       }
     }
 
-    while(i < list1.length) {
+    while (i < list1.length) {
       mergedList.push(list1[i].content);
-      i++;
+      i += 1;
     }
 
-    while(j < list2.length) {
+    while (j < list2.length) {
       mergedList.push(list2[j].content);
-      j++;
+      j += 1;
     }
 
     return mergedList;
@@ -178,27 +174,24 @@ export default class ChatBody extends Component {
     const userEmail = this.props.email;
     const recipientEmail = this.props.users[this.props.current];
 
-    if (this.state[userEmail]!=null &&
-      this.state[recipientEmail]!=null && // if not null and
-      (this.state[userEmail].length!=0 ||
-      this.state[recipientEmail].length!=0)) { // if not empty
-
+    if (this.state[userEmail] !== null &&
+      this.state[recipientEmail] !== null && // if not null and
+      (this.state[userEmail].length !== 0 ||
+      this.state[recipientEmail].length !== 0)) { // if not empty
       return this.mergeSortLists(
         this.createPostList(this.state[userEmail], ChatBody.PostSelf),
-        this.createPostList(this.state[recipientEmail], ChatBody.PostOther)
+        this.createPostList(this.state[recipientEmail], ChatBody.PostOther),
       );
       /*
       .map(function(object){ // return only the div objects
         return object.content;
       })//*/
     }
-    else {
-      return (
-        <div className="container-fluid" style={{textAlign: 'center'}}>
-          You have no messages with this person.
-        </div>
-      );
-    }
+    return (
+      <div className="container-fluid" style={{ textAlign: 'center' }} >
+        You have no messages with this person.
+      </div>
+    );
   }
 
   getInputBox() {
@@ -227,7 +220,7 @@ export default class ChatBody extends Component {
     );
   }
 
-  getCurrentConversation(singularMode) {
+  getCurrentConversation() {
     // In singlular mode add a buffer
     const divStyle = {
       marginTop: '30px',
@@ -240,9 +233,16 @@ export default class ChatBody extends Component {
     );
   }
 
+  toTitleCase(str) {
+    return str.replace(/\w\S*/g, (txt) => {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+  }
+
   getUserName() {
     let str = '';
-    if (this.props.names.length===this.props.users.length && this.props.names[this.props.current]!==null) {
+    if (this.props.names.length === this.props.users.length &&
+        this.props.names[this.props.current] !== null) {
       str = this.props.names[this.props.current];
     } else {
       str = this.props.users[this.props.current];
@@ -250,17 +250,9 @@ export default class ChatBody extends Component {
     return this.toTitleCase(str);
   }
 
-  toTitleCase(str) {
-    return str.replace(/\w\S*/g,
-      function(txt){
-        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-      }
-    );
-  }
-
   getName(fixToTop) {
     const recipientEmail = this.props.users[this.props.current];
-    if (recipientEmail===undefined) {
+    if (recipientEmail === undefined) {
       return null;
     } else if (!fixToTop) {
       return (
@@ -268,67 +260,70 @@ export default class ChatBody extends Component {
           {this.getUserName()}
         </div>
       );
-    } else {
-      const _classname = 'fixed-top';
-      const divStyle = {
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        display: 'flex',
-      }
-      const backgroundStyle = {
-        marginTop: '55px',
-        paddingTop: '5px',
-        paddingBottom: '5px',
-        backgroundColor: 'white',
-        width: '100%',
-      };
+    }
 
-      const handleChange = function(index) {
-        return function(event) {
-          event.preventDefault();
-          this.props.changeConversation(index);
-          this.update = true;
-        }.bind(this);
+    const classname = 'fixed-top';
+    const divStyle = {
+      marginLeft: 'auto',
+      marginRight: 'auto',
+      display: 'flex',
+    };
+    const backgroundStyle = {
+      marginTop: '55px',
+      paddingTop: '5px',
+      paddingBottom: '5px',
+      backgroundColor: 'white',
+      width: '100%',
+    };
+
+    const handleChange = function handleChange(index) {
+      return function change(event) {
+        event.preventDefault();
+        this.props.changeConversation(index);
+        this.update = true;
       }.bind(this);
+    }.bind(this);
 
-      return (
-        <div className={_classname} style={backgroundStyle}>
-          <div style={divStyle}>
-            <div className="dropdown" style={{marginLeft: 'auto', marginRight: 'auto'}}>
-              <button className="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                {this.getUserName(recipientEmail)}
-                <span className="caret"></span>
-              </button>
-              <ul className="dropdown-menu" style={{padding: '0px'}}>
-                {
-                  this.props.names.map(function(name, index) {
-                    if (name!==null) {
-                      return (
-                        <li key={index}><button
+    return (
+      <div className={classname} style={backgroundStyle}>
+        <div style={divStyle}>
+          <div className="dropdown" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
+            <button className="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+              {this.getUserName(recipientEmail)}
+            </button>
+            <ul className="dropdown-menu" style={{ padding: '0px' }}>
+              {
+                this.props.names.map(function mapNames(name, index) {
+                  if (name !== null) {
+                    return (
+                      <li key={index}>
+                        <button
                           className="btn btn-secondary"
-                          style={{marginLeft: 'auto', marginRight: 'auto', width:'100%'}}
-                          onClick={handleChange(index)}>
-                            {name}
-                          </button></li>
-                      );
-                    } else if (this.props.users[index]===this.props.talkToEmail) {
-                      return (
-                        <li key={index}><button
+                          style={{ marginLeft: 'auto', marginRight: 'auto', width: '100%' }}
+                          onClick={handleChange(index)}
+                        >
+                          {name}
+                        </button></li>
+                    );
+                  } else if (this.props.users[index] === this.props.talkToEmail) {
+                    return (
+                      <li key={index}>
+                        <button
                           className="btn btn-secondary"
-                          style={{marginLeft: 'auto', marginRight: 'auto', width:'100%'}}
-                          onClick={handleChange(index)}>
-                            {this.props.talkToEmail}
-                          </button></li>
-                      );
-                    }
-                  }.bind(this))
-                }
-              </ul>
-            </div>
+                          style={{ marginLeft: 'auto', marginRight: 'auto', width: '100%' }}
+                          onClick={handleChange(index)}
+                        >
+                          {this.props.talkToEmail}
+                        </button></li>
+                    );
+                  }
+                }.bind(this))
+              }
+            </ul>
           </div>
         </div>
-      ); //<button className="btn btn-secondary" style={{marginLeft: 'auto', marginRight: 'auto', width:'100%'}}>
-    }
+      </div>
+    );
   }
 
   handleChange() {
@@ -367,9 +362,10 @@ export default class ChatBody extends Component {
     }
 
     // if the curent email is invalid and it is the url email
-    if (this.props.names[this.props.current]===null && this.props.users[this.props.current]===this.props.talkToEmail) {
+    if (this.props.names[this.props.current] === null &&
+        this.props.users[this.props.current] === this.props.talkToEmail) {
       this.textInput = null;
-      const notValidStyle = {textAlign: 'center'};
+      const notValidStyle = { textAlign: 'center' };
       if (singularMode) {
         notValidStyle.marginTop = '30px';
       }
@@ -381,15 +377,14 @@ export default class ChatBody extends Component {
           </div>
         </div>
       );
-    } else { // life as usual
-      return (
-        <div id="chat-body" style={divStyle}>
-          {this.getName(singularMode)}
-          {this.getCurrentConversation(singularMode)}
-          {this.getInputBox()}
-        </div>
-      );
-    }
+    }// else life as usual
+    return (
+      <div id="chat-body" style={divStyle}>
+        {this.getName(singularMode)}
+        {this.getCurrentConversation()}
+        {this.getInputBox()}
+      </div>
+    );
   }
 
   render() {
