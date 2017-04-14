@@ -1,3 +1,11 @@
+/*
+   eslint-disable array-callback-return,
+   jsx-a11y/no-static-element-interactions,
+   class-methods-use-this,
+   no-param-reassign,
+   no-restricted-syntax,
+*/
+
 import React from 'react';
 import { Link } from 'react-router';
 
@@ -7,7 +15,7 @@ class Event extends React.Component {
 
     this.state = {
       participating: false,
-    }
+    };
 
     this.isParticipatingEvent(this.props.event.name);
 
@@ -32,9 +40,9 @@ class Event extends React.Component {
     xhr.responseType = 'json';
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        this.setState({ participating: true});
+        this.setState({ participating: true });
       } else {
-        this.setState({ participating: false});
+        this.setState({ participating: false });
       }
     });
     xhr.send();
@@ -45,7 +53,7 @@ class Event extends React.Component {
   }
 
   addDefaultSrc(event) {
-    event.target.src = "../../resources/images/empty-poster-placeholder.png";
+    event.target.src = '../../resources/images/empty-poster-placeholder.png';
   }
 
   render() {
@@ -81,7 +89,7 @@ class Event extends React.Component {
                   src={this.props.event.event_poster.replace(/http/i, 'https')}
                   alt="event-poster"
                 /> :
-                <img className="img-fluid text-center event-thumbnail card-img-top" width="250" height="auto" src='../../resources/images/empty-poster-placeholder.png' alt="event-poster" />
+                <img className="img-fluid text-center event-thumbnail card-img-top" width="250" height="auto" src="../../resources/images/empty-poster-placeholder.png" alt="event-poster" />
             }
           </div>
           <div className="card-block event-info-container">
@@ -112,6 +120,7 @@ class Event extends React.Component {
 
 Event.propTypes = {
   serial: React.PropTypes.number.isRequired,
+  email: React.PropTypes.string.isRequired,
   open: React.PropTypes.arrayOf(React.PropTypes.bool).isRequired,
   openCollapsable: React.PropTypes.func.isRequired,
   event: React.PropTypes.objectOf(React.PropTypes.any).isRequired,
