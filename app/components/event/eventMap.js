@@ -3,10 +3,10 @@ import React from 'react';
 class EventMap extends React.Component {
   constructor(props) {
     super(props);
-    
+
   }
-  
-  // Adds a clickable button to the map that jumps to a project with 'id'
+
+  // Adds a clickable button to the map that jumps to a project with 'id' (NOT IN USE YET)
   static addNode(id = '#0', name = (<div />), left = '0%', top = '0px', divStyle = {}) {
     divStyle.fontSize = '2vw';
     return (
@@ -17,14 +17,14 @@ class EventMap extends React.Component {
       </a>
     );
   }
-  
+
   render() {
     return (
       <div>
         {(this.props.showEventMap) ?
           <div id="event-map" style={{backgroundImage: 'url(http://www.comp.nus.edu.sg/images/resources/content/mapsvenues/COM1_L1.jpg)'}}>
             {/*
-            {EventMap.addNode('#0', 'SearchParty VR', '75%', '29%')} 
+            {EventMap.addNode('#0', 'SearchParty VR', '75%', '29%')}
             {EventMap.addNode('#1', <div>Reality<br/>Escape<br/>Room</div>, '13%', '68%',
                             { backgroundColor: 'blue', color: 'white', } )}
             */}

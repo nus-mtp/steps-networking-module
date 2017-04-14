@@ -134,6 +134,10 @@ class HomeView extends React.Component {
     return array;
   }
 
+  /**
+    * Only one element in this.state.open can be true at all times.
+    * Toggle boolean at the index serial.
+    */
   openCollapsable(serial) {
     // ignore previous state and change all to false
     const newStatus = this.createFalseArray(this.state.open.length);
@@ -141,8 +145,12 @@ class HomeView extends React.Component {
     this.setState({ open: newStatus });
   }
 
+  /**
+    * Toggle the attendance of a user.
+    * Will ONLY work if user is not participating in the event in the @param
+    * Status 423 will be given when trying to violate the rule
+    */
   changeAttendance(event) {
-    // modify attendance data here
     const userEmail = encodeURIComponent(this.state.email);
     const eventName = encodeURIComponent(event.name);
     const formData = `userEmail=${userEmail}&eventName=${eventName}`;
@@ -164,6 +172,10 @@ class HomeView extends React.Component {
     return date.getTime();
   }
 
+
+  /**
+    * Invoked when user changes tab
+    */
   changeView(e) {
     const id = e.target.id;
     const copy = this.state.events.slice();
