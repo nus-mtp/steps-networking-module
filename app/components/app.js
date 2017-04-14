@@ -1,3 +1,7 @@
+/*
+  eslint-disable react/forbid-prop-types,
+*/
+
 import React from 'react';
 import { Link } from 'react-router';
 import SearchInput from './search/searchInputView';

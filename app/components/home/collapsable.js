@@ -1,3 +1,13 @@
+/*
+   eslint-disable array-callback-return,
+   jsx-a11y/no-static-element-interactions,
+   react/jsx-no-bind,
+   class-methods-use-this,
+   consistent-return,
+   no-param-reassign,
+   react/forbid-prop-types,
+*/
+
 import React from 'react';
 import Auth from '../../database/auth';
 import { Link } from 'react-router';
