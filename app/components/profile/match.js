@@ -26,6 +26,7 @@ class Match extends React.Component {
 
     this.getEventsAndExhibitons = this.getEventsAndExhibitons.bind(this);
     this.getRelevantEventsAndExhibitions = this.getRelevantEventsAndExhibitions.bind(this);
+    this.toTitleCase = this.toTitleCase.bind(this);
   }
 
   getRelevantUsers(array) {
@@ -75,6 +76,14 @@ class Match extends React.Component {
     xhr.send();
   }
 
+  toTitleCase(str) {
+    return str.replace(/\w\S*/g,
+      function(txt){
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      }
+    );
+  }
+
   next() {
     this.refs.reactSwipe.next();
   }
@@ -116,7 +125,7 @@ class Match extends React.Component {
                 </div>
               </div>
               <div className="row justify-content-center">
-                <h3 className="user-name user-info">{user.userName}</h3>
+                <h3 className="user-name user-info">{this.toTitleCase(user.userName)}</h3>
               </div>
               <div className="row justify-content-center">
                 {
