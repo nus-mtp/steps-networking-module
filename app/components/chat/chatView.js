@@ -207,7 +207,3 @@ export default class ChatView extends Component {
     );
   }
 }
-
-ChatView.propTypes = {
-  location: React.PropTypes.isRequired,
-};

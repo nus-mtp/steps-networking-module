@@ -174,8 +174,8 @@ export default class ChatBody extends Component {
     const userEmail = this.props.email;
     const recipientEmail = this.props.users[this.props.current];
 
-    if (this.state[userEmail] !== null &&
-      this.state[recipientEmail] !== null && // if not null and
+    if (this.state[userEmail] !== undefined &&
+      this.state[recipientEmail] !== undefined && // if not null and
       (this.state[userEmail].length !== 0 ||
       this.state[recipientEmail].length !== 0)) { // if not empty
       return this.mergeSortLists(
