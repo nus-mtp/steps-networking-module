@@ -4,7 +4,7 @@ SoC term Project Showcase (STePS) System has event workflow management, registra
 ## Setup
 
 ### Prerequisite
-* Node v6.3.0 and above
+* Node v6.3.0 and above.
 
 ### First Installation
 1. Clone the repository
