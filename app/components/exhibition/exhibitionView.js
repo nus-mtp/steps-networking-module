@@ -44,7 +44,6 @@ class ExhibitionView extends React.Component {
     this.handleAdditionTag = this.handleAdditionTag.bind(this);
     this.handleDragTag = this.handleDragTag.bind(this);
     this.saveTags = this.saveTags.bind(this);
-    this.handleTagInputChange = this.handleTagInputChange.bind(this);
     this.toTitleCase = this.toTitleCase.bind(this);
   }
 
@@ -101,7 +100,7 @@ class ExhibitionView extends React.Component {
           }),
         ) : [];
         this.setState({
-          exhibition,
+          exhibition: exhibitions,
           is404: false,
         });
       } else {
@@ -311,9 +310,7 @@ class ExhibitionView extends React.Component {
 
   toTitleCase(str) {
     return str.replace(/\w\S*/g,
-      function(txt){
-        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-      }
+      (txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()),
     );
   }
 
@@ -423,7 +420,7 @@ class ExhibitionView extends React.Component {
                         {
                           commentObject.comments.map(comment =>
                             <li
-                              key={`${comment.id}${commentObject.userEmail}`}
+                              key={`${comment.timestamp}${commentObject.userEmail}`}
                               className={`${(commentObject.userEmail === Auth.getToken().email.replace(/%40/i, '@')) ?
                                 'user-comment-container' : 'others-comment-container'} list-group-item`}
                             >
