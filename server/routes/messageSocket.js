@@ -1,17 +1,16 @@
-exports = module.exports = function(io, db) {
-
+exports = module.exports = function (io, db) {
   const Message = require('../database/objectClasses/Message');
   const User = require('../database/objectClasses/User');
   const ModelHandler = require('../database/models/ourModels');
   const removeDuplicates = require('../utils/utils').removeDuplicates;
   const jwt = require('jsonwebtoken');
 
-  let ModelHandlerObj = new ModelHandler().initWithConnection(db);
+  const ModelHandlerObj = new ModelHandler().initWithConnection(db);
 
   Message.setDBConnection(ModelHandlerObj.getConnection());
   User.setDBConnection(ModelHandlerObj.getConnection());
-  var socketIDs = {};
-  var userEmails = {};
+  const socketIDs = {};
+  const userEmails = {};
 
   // Authorize
   const verify = (token, callback) => {
@@ -30,10 +29,9 @@ exports = module.exports = function(io, db) {
         return callback(true);
       });
     });
-  }
+  };
 
   io.on('connection', (socket) => {
-
     socket.on('new user', (userObject, callback) => {
       if (userObject.userEmail) {
         if (userEmails[socket.id] === undefined) {
@@ -44,8 +42,7 @@ exports = module.exports = function(io, db) {
           userEmails[socket.id] = userObject.userEmail;
         }
         callback(socket.id);
-      }
-      else {
+      } else {
         callback(null);
       }
     });
@@ -54,16 +51,16 @@ exports = module.exports = function(io, db) {
     socket.on('get all emails involving user', (messageObj, callback) => {
       if (messageObj.userEmail) {
         Message.getEmailsInvolvingUser(messageObj.userEmail, (err, listOfUserEmails) => {
-          if (err){
+          if (err) {
             callback('Error with getting emails method', null);
           } else {
             // add email list of bookmarked users into the returned emails
             User.getBookmarksForUser(messageObj.userEmail, (err, userList) => {
-              for (var i= 0; i< userList.length; i++){
+              for (let i = 0; i < userList.length; i++) {
                 listOfUserEmails.push(userList[i].email);
               }
               callback(err, removeDuplicates(listOfUserEmails));
-            })
+            });
           }
         });
       } else {
@@ -73,28 +70,28 @@ exports = module.exports = function(io, db) {
 
     socket.on('get message', (messageObj, token, callback) => {
       if (messageObj.senderEmail && messageObj.recipientEmail && token) {
-        if (token){
+        if (token) {
           verify(token.token, (success) => {
-            if (success){
+            if (success) {
               Message.getConversation(messageObj.senderEmail, messageObj.recipientEmail, (err, conversation) => {
                 callback(err, conversation);
               });
             }
-          })
+          });
         } else {
           callback('Unauthorized', null);
         }
       } else {
-        //Failed to get message
+        // Failed to get message
         callback('Expecting senderEmail, recipientEmail and token', null);
       }
     });
 
-    socket.on('add message',(messageObj, token, callback) => {
-      if (messageObj.senderEmail && messageObj.recipientEmail && messageObj.content && token){
-        if (token){
+    socket.on('add message', (messageObj, token, callback) => {
+      if (messageObj.senderEmail && messageObj.recipientEmail && messageObj.content && token) {
+        if (token) {
           verify(token.token, (success) => {
-            if(success){
+            if (success) {
               Message.addMessage(
                 messageObj.senderEmail,
                 messageObj.recipientEmail,
@@ -105,8 +102,8 @@ exports = module.exports = function(io, db) {
                     callback(false);
                   } else if (results) {
                     const socketIdList = socketIDs[messageObj.recipientEmail];
-                    if (socketIdList!==undefined) {
-                      socketIdList.forEach(function(socketId) {
+                    if (socketIdList !== undefined) {
+                      socketIdList.forEach((socketId) => {
                         // Emit refresh message
                         socket.to(socketId).emit('refresh message', results);
                       });
@@ -114,7 +111,7 @@ exports = module.exports = function(io, db) {
                     const userSocketIdList = socketIDs[messageObj.senderEmail];
                     // if sender is using more than one opened tab
                     if (userSocketIdList.length > 1) {
-                      userSocketIdList.forEach(function(socketId) {
+                      userSocketIdList.forEach((socketId) => {
                         // Emit refresh message
                         socket.to(socketId).emit('refresh message', results);
                       });
@@ -126,15 +123,15 @@ exports = module.exports = function(io, db) {
                       messageObj.senderEmail,
                       messageObj.recipientEmail,
                       messageObj.content,
-                      Date.now()
+                      Date.now(),
                     );
                     newMessage.saveMessage((err) => {
                       if (err) {
                         callback(false);
                       } else {
                         const socketIdList = socketIDs[messageObj.recipientEmail];
-                        if (socketIdList!==undefined) {
-                          socketIdList.forEach(function(socketId) {
+                        if (socketIdList !== undefined) {
+                          socketIdList.forEach((socketId) => {
                             // Emit refresh message
                             socket.to(socketId).emit('refresh message', results);
                           });
@@ -142,7 +139,7 @@ exports = module.exports = function(io, db) {
                         const userSocketIdList = socketIDs[messageObj.senderEmail];
                         // if sender is using more than one opened tab
                         if (userSocketIdList.length > 1) {
-                          userSocketIdList.forEach(function(socketId) {
+                          userSocketIdList.forEach((socketId) => {
                             // Emit refresh message
                             socket.to(socketId).emit('refresh message', results);
                           });
@@ -155,21 +152,21 @@ exports = module.exports = function(io, db) {
             } else {
               callback(false);
             }
-          })
-        } 
+          });
+        }
       } else {
         callback(false);
       }
     });
 
-    //removes user from socketIDs and userEmails
+    // removes user from socketIDs and userEmails
     socket.on('remove user', () => {
       // user is disconnected
       const userEmail = userEmails[socket.id];
 
       // remove the socket from the list
       const socketIdList = socketIDs[userEmail];
-      if (socketIdList!==undefined) {
+      if (socketIdList !== undefined) {
         socketIdList.splice(socketIdList.indexOf(socket.id), 1); // remove 1 item from this position
         socketIDs[userEmail] = socketIdList;
       }
@@ -177,18 +174,17 @@ exports = module.exports = function(io, db) {
       delete userEmails[socket.id];
     });
 
-    //Will close the entire socket. Only called when user close the tab
+    // Will close the entire socket. Only called when user close the tab
     socket.on('disconnect', () => {
       // user is disconnected
       const userEmail = userEmails[socket.id];
       // remove the socket from the list
       const socketIdList = socketIDs[userEmail];
-      if (socketIdList!==undefined) {
+      if (socketIdList !== undefined) {
         socketIdList.splice(socketIdList.indexOf(socket.id), 1); // remove 1 item from this position
         socketIDs[userEmail] = socketIdList;
       }
       delete userEmails[socket.id];
     });
-
   });
-}
+};
