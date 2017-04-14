@@ -22,6 +22,14 @@ SoC term Project Showcase (STePS) System has event workflow management, registra
 5. Wait for clearance from the team (i.e. next meeting) before merging your branch into `develop`
 6. Merge `develop` into `master` upon release
 
+### Vagrant Environment
+A Vagrantfile has been added into the project root. Run ```vagrant up``` from a CLI to obtain a Vagrant Box that has:
+* Node v6.9.5
+* MongoDB - with some sample STePs data inside.
+* Git
+
+For full setup, refer to the setup.txt in the Desktop folder.
+
 ### Coding Standards
 Lint according to https://github.com/airbnb/javascript
 
