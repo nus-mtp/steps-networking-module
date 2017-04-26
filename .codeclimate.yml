@@ -10,9 +10,9 @@ engines:
       - php
   eslint:
     enabled: true
-	checks: 
-	  linebreak-style: 
-	    enabled: false
+    checks: 
+      linebreak-style: 
+        enabled: false
   fixme:
     enabled: true
 ratings:
