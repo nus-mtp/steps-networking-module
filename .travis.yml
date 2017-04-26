@@ -1,8 +1,16 @@
-compiler:
-  - clang
+dist: trusty
 language: node_js
+services: mongodb
 node_js:
   - "6"
+env:
+  - CXX=g++-4.8
 branches:
   only:
     - master
+addons:
+  apt:
+    source:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8

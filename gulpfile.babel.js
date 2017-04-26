@@ -32,7 +32,7 @@ gulp.task('test', () => {
       presets: ['es2015'],
     }))
     .pipe(mocha({
-      reporter: 'Spec',
+      reporter: 'spec',
     }));
 });
 

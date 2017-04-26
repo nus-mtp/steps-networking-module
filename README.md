@@ -1,3 +1,10 @@
+[![Build
+Status](https://travis-ci.org/nus-mtp/steps-networking-module.svg?branch=master)](https://travis-ci.org/nus-mtp/steps-networking-module)
+[![Test
+Coverage](https://codeclimate.com/github/nus-mtp/steps-networking-module/badges/coverage.svg)](https://codeclimate.com/github/nus-mtp/steps-networking-module/coverage)
+[![Code
+Climate](https://codeclimate.com/github/nus-mtp/steps-networking-module/badges/gpa.svg)](https://codeclimate.com/github/nus-mtp/steps-networking-module)
+
 # STePS Networking Module
 SoC term Project Showcase (STePS) System has event workflow management, registration, check-in and voting modules. As the event is getting bigger, a system with a networking module to enable attendees to network meaningfully and effectively before, during and after events is necessary. The module classifies/groups users based on their interest and purpose of attending STePS, allow users to post/comment in forums of each STePS run, have personal chat with other attendees.
 
