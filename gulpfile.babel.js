@@ -7,6 +7,7 @@ const mocha = require('gulp-mocha-co');
 const eslint = require('gulp-eslint');
 const nodemon = require('nodemon');
 const webpack = require('webpack-stream');
+const istanbul = require('gulp-istanbul');
 
 const webpackConfig = require('./webpack.client.config.js');
 const webpackServerConfig = require('./webpack.server.config.js');
@@ -24,8 +25,17 @@ gulp.task('lint', () =>
     .pipe(eslint.failAfterError()),
 );
 
+gulp.task('pre-test', () => {
+  return gulp.src(['tests/*.test.js'])
+        .pipe(babel({
+          presets: ['es2015'],
+        }))
+	.pipe(istanbul())
+	.pipe(istanbul.hookRequire());
+});
+
 /** run test **/
-gulp.task('test', () => {
+gulp.task('test', ['pre-test'], () => {
   process.env.TEST_DB_URI = 'mongodb://localhost:27017/fake-data';
   gulp.src('tests/*.test.js')
     .pipe(babel({
@@ -33,6 +43,13 @@ gulp.task('test', () => {
     }))
     .pipe(mocha({
       reporter: 'spec',
+    }))
+    .pipe(istanbul.writeReports({
+      dir: '.',
+      reporters: ['lcovonly'],
+      reportOpts: {
+        lcov: {dir: 'lcovonly', file: 'lcov.info'}
+        }
     }));
 });
 
